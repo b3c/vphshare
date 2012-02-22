@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+
+{%  block content %}
+
+    {% if not request.user.is_authenticated %}
+        <div>
+        <h3>Login using <a href="http://openid.net/" title="OpenId">OpenId</a> from:</h3>
+        <ul>
+            <form action="{% url socialauth_begin "biomedtown" %}" method="post">
+                {% csrf_token %}
+                <div>
+                    <label for="openid_identifier">Enter your biomedtown username</label>
+                    <input id="openid_identifier" type="text" value="" name="openid_identifier" />
+                    <input type="submit" value="Login" />
+                </div>
+            </form>
+        </ul>
+        </div>
+
+    {% else %}
+        <h2>Hi, {{ request.user }}</h2>
+    {% endif %}
+
+
+
+{% endblock %}

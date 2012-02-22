@@ -1,0 +1,10 @@
+*.pyc
+.*.sw[po]
+vphshare.db
+build/
+dist/
+vphshare_masterinterface.egg-info/
+docs/_build
+
+
+
