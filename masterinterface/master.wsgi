@@ -1,10 +1,9 @@
 import os
 import sys
 
-PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-sys.path.append('/scs/app/vphshare')
-sys.path.append('/scs/app/vphshare/masterinterface')
+sys.path.append(PROJECT_ROOT)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'masterinterface.settings'
 
