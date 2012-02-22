@@ -12,7 +12,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 DATABASES = {
     'default': {
@@ -130,20 +130,9 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.twitter.TwitterBackend',
-    'social_auth.backends.facebook.FacebookBackend',
-    'social_auth.backends.google.GoogleOAuthBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.google.GoogleBackend',
-    'social_auth.backends.yahoo.YahooBackend',
-    'social_auth.backends.contrib.linkedin.LinkedinBackend',
-    'social_auth.backends.contrib.flickr.FlickrBackend',
-    'social_auth.backends.contrib.instagram.InstagramBackend',
     'social_auth.backends.OpenIDBackend',
-    'social_auth.backends.contrib.livejournal.LiveJournalBackend',
-    'social_auth.backends.browserid.BrowserIDBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'masterinterface.scs.backends.contrib.BiomedTownBeckend'
+    'scs.backends.biomedtown.BiomedTownBackend'
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -180,4 +169,3 @@ LOGGING = {
 
 
 LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_USER_MODEL = 'scs.User'

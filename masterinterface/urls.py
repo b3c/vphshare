@@ -18,5 +18,5 @@ urlpatterns = patterns('',
 
     # default roolback
     url(r'', include('social_auth.urls')),
-    url(r'^$', include('masterinterface.scs.urls')),
+    url(r'', include('masterinterface.scs.urls')),
 )
