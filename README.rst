@@ -1,1 +1,1 @@
-..include masterinterface/README.rst
+..include ./masterinterface/README.rst
