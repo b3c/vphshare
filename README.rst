@@ -18,6 +18,8 @@ Download / pull code from git repository
 Install requirements
 ++++++++++++++++++++
 
+    install setuptools from http://pypi.python.org/pypi/setuptools
+
     run the command::
 
         python setup.py install
