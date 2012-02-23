@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'social_auth',
     'masterinterface.scs',
+    'masterinterface.sendsmsworld'
 
 )
 

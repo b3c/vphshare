@@ -19,4 +19,7 @@ urlpatterns = patterns('',
     # default roolback
     url(r'', include('social_auth.urls')),
     url(r'', include('masterinterface.scs.urls')),
+
+    # add url for sendsmsworld
+    url(r'^sendsmsworld/', include('masterinterface.sendsmsworld.urls'))
 )

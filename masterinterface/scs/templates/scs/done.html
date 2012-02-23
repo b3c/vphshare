@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Logged in!{% endblock %}
+
+{% block content %}
+<div>
+  <h3>User data:</h3>
+  <table>
+    <tr class="odd"><th>Id:</th> <td>{{ user.id }}</td></tr>
+    <tr class="even"><th>Username:</th> <td>{{ user.username }}</td></tr>
+    <tr class="odd"><th>Email:</th> <td>{{ user.email|default:"Not provided" }}</td></tr>
+    <tr class="even"><th>First name:</th> <td>{{ user.first_name|default:"Not provided" }}</td></tr>
+    <tr class="odd"><th>Last name:</th> <td>{{ user.last_name|default:"Not provided" }}</td></tr>
+    <tr class="even"><th>Last login backend:</th> <td>{{ last_login }}</td></tr>
+  </table>
+</div>
+
+  <a href="/logout/">Logout</a>
+
+{% endblock %}

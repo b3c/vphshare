@@ -16,6 +16,10 @@
     </head>
     <body>
         <header> {%  block header %} {% endblock %} </header>
+
+        {% if errormessage %} <b>{{ errormessage  }}</b> <br />{% endif %}
+        {% if statusmessage %} <i>{{ statusmessage  }}</i><br />{% endif %}
+
         {% block content %} {% endblock %}
     </body>
 </html>

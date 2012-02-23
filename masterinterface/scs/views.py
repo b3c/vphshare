@@ -8,6 +8,7 @@ from django.contrib.messages.api import get_messages
 from scs import __version__ as version
 from masterinterface import settings
 
+
 def home(request):
     """Home view, displays login """
     if request.user.is_authenticated():
