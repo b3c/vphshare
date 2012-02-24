@@ -1,38 +1,43 @@
 # Create your views here.
+# Create your views here.
 from django.shortcuts import render_to_response
 from django.views.generic.base import View
 from django.template import RequestContext
-from forms import sendSMSForm
-from models import sendSMS as sendSMSRequestType
-from models import sendSMSResponse as sendSMSResponseType
+from forms import {MethodName}Form
+from models import sendSMS as {MethodName}RequestType
+from models import sendSMSResponse as {MethodName}ResponseType
 from masterinterface.scs.services import invokeSoapService
 from masterinterface.scs.permissions import check_sample_permission, login_required
 
 
-class sendSMS(View):
 
-    # set the template name
-    template_name = 'sendsmsworld/sendSMS.html'
-    action_url = '/sendsmsworld/sendSMS/'
-    wsdl_url = 'http://www.webservicex.net/sendsmsworld.asmx?WSDL'
-    method = 'sendSMS'
-    service = 'SendSMSWorld'
-    port = 'SendSMSWorldSoap'
-    requestType = sendSMSRequestType
-    responseType = sendSMSResponseType
+
+
+class {MethodName}(View):
+    """ {MethodName} View Class
+    """
+
+    template_name = '{ServiceName}/{MethodName}.html'
+    action_url = '/{ServiceName}/{MethodName}/'
+    wsdl_url = '{WsdlURL}'
+    method = '{MethodName}'
+    service = '{ServiceName}'
+    port = '{PortName}'
+    requestType = {MethodName}RequestType
+    responseType = {MethodName}ResponseType
 
     def get(self, request):
         """ get the form page to send the request """
 
-        form = sendSMSForm()
+        form = {MethodName}Form()
 
         return render_to_response(
-                    self.template_name,
-                    { 'title':'sendSMS form',
-                      'form' : form,
-                      'action': self.action_url,
-                      'results': None},
-                    context_instance=RequestContext(request)
+            self.template_name,
+                { 'title':'{MethodName} form',
+                  'form' : form,
+                  'action': self.action_url,
+                  'results': None},
+            context_instance=RequestContext(request)
         )
 
     # your permission control goes here
@@ -41,7 +46,7 @@ class sendSMS(View):
         """ validate form and post request to the service """
 
         # check form validation
-        form = sendSMSForm( request.POST, request.FILES)
+        form = {MethodName}Form( request.POST, request.FILES)
 
         if form.is_valid():
 
@@ -58,11 +63,11 @@ class sendSMS(View):
 
             return render_to_response(
                 self.template_name,
-                { 'title':'sendSMS form',
-                  'form' : sendSMSForm(),
-                  'action': self.action_url,
-                  'statusmessage': 'Action Performed',
-                  'result': result},
+                    { 'title':'{MethodName} form',
+                      'form' : {MethodName}Form(),
+                      'action': self.action_url,
+                      'statusmessage': 'Action Performed',
+                      'result': result},
                 context_instance=RequestContext(request)
             )
 
@@ -72,15 +77,10 @@ class sendSMS(View):
 
         return render_to_response(
             self.template_name,
-                { 'title':'sendSMS form',
-                  'form' : sendSMSForm(),
+                { 'title':'{MethodName} form',
+                  'form' : {MethodName}Form(),
                   'action': self.action_url,
                   'errormessage': errormessage,
                   'results': None},
             context_instance=RequestContext(request)
         )
-
-
-
-
-

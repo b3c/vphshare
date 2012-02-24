@@ -1,7 +1,9 @@
 
+from django.contrib.auth.decorators import login_required
+
 from functools import wraps
 
-def checkSamplePermission(f):
+def check_sample_permission(f):
     """ Function decorator mock up
     """
     @wraps(f)

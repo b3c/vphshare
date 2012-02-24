@@ -18,6 +18,8 @@ Download / pull code from git repository
 Install requirements
 ++++++++++++++++++++
 
+    Install distutils:
+
     run the command::
 
         python setup.py install
