@@ -1,2 +1,8 @@
-ServiceName
-MethodName
+ServiceName             sendsmsworld
+WsdlURL                 http://www.webservicex.net/sendsmsworld.asmx?WSDL
+PortName                SendSMSWorldSoap
+MethodName              sendSMS
+MethodNameRequestType   sendSMS
+MethodNameResponseType  sendSMSResponse
+ElementName             FromEmailAddress, CountryCode, MobileNumber, Message
+ElementType             Char,
