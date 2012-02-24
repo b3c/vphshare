@@ -36,7 +36,7 @@ class sendSMS(View):
         )
 
     # your permission control goes here
-    @login_required
+    @check_sample_permission
     def post(self, request):
         """ validate form and post request to the service """
 

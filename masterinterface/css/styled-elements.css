@@ -1,0 +1,45 @@
+
+/* ALIGNMENT ------------------------------------------------------------*/
+
+.left-align{
+    float:left;
+    margin:8px 18px 18px 0;
+    display: block;
+}
+
+.right-align{
+    float:right;
+    margin:0px 0px 0px 10px;
+    display: block;
+}
+
+/* TABLE ------------------------------------------------------------*/
+
+table, td, th {
+    vertical-align:middle;
+}
+
+table {
+    border-collapse:separate;
+    border-spacing:0;
+    border-top:1px solid white;
+    margin-bottom:28px;
+    width:100%;
+    text-align: left;
+}
+
+th{
+    border-top:5px solid #555555;
+    color: #ffffff;
+    padding:10px;
+    text-transform:uppercase;
+    background-color: #49494b;
+}
+
+td{
+    padding:10px;
+}
+
+td, th{
+    border-bottom: 1px solid #1f1f1f;
+}

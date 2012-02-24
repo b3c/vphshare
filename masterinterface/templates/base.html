@@ -10,17 +10,77 @@
             {% endblock %}
         </title>
 
-        {% block extrahead %} {% endblock %}
+        <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
 
+        <script src="/static/js/jquery-1.7.1.js"></script>
+        <script src="/static/js/jquery.tools.min.js"></script>
+
+        {% block extrahead %} {% endblock %}
 
     </head>
     <body>
-        <header> {%  block header %} {% endblock %} </header>
 
-        {% if errormessage %} <b>{{ errormessage  }}</b> <br />{% endif %}
-        {% if statusmessage %} <i>{{ statusmessage  }}</i><br />{% endif %}
+        <div id="wrapper">
+            <header id="header">
+                <a href="index.html"><img id="logo-left" src="/static/logo.png" alt="VphShare" /></a>
+                <a href="index.html"><img id="logo-right" src="/static/logo.png" alt="VphShare" /></a>
+                <nav>
+                    <li class="current-menu-item"><a href="index.html">home</a></li>
+                    <li><a href="services.html">services</a></li>
+                    <li><a href="contact.html">contact</a></li>
+                </nav>
 
-        {% block content %} {% endblock %}
+                <div class="top-search">
+                    <form  method="get" id="searchform" action="#">
+                        <div>
+                            <input type="text" value="Search..." name="s" id="s" onfocus="defaultInput(this)" onblur="clearInput(this)" />
+                            <input type="submit" id="searchsubmit" value=" " />
+                        </div>
+                    </form>
+                </div>
+
+                <div id="headline">
+                    <span>Welcome to the Vph-Share Master Interface</span>
+                </div>
+
+                <div id="breadcrumbs">
+                    <span>you are here: &nbsp;</span> <a href="index.html" title="Home">Home</a>
+                </div>
+
+            </header>
+
+
+            {% if errormessage %} <div class="error-message">{{ errormessage  }}</div> {% endif %}
+            {% if statusmessage %} <div class="status-message">{{ statusmessage  }}</div>{% endif %}
+
+            <div id="main">
+                <div id="content">
+                    <div id="page-content">
+                        {% block content %} {% endblock %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer">
+                <ul id="footer-cols">
+                    <li class="col">
+                        <h6>About the Project</h6>
+                        <p>VPH-Share will develop the organisational fabric (the infostructure) and integrate the optimised services to expose and share data and knowledge,
+                        jointly develop multiscale models for the composition of new VPH workflows and facilitate collaborations within the VPH community</p>
+                    </li>
+                    <li class="col">
+                        <h6>Partners</h6>
+                        <ul>
+                            <li><a href="http://www.scsitaly.com">SCS</a></li>
+                        </ul>
+                                
+                    </li>
+                </ul>
+                <div id="bottom"><span>theme by <a target="_blank" href="http://luiszuno.com/blog/">Luiszuno</a></span></div>
+            </div>
+        </div>
     </body>
 </html>
 
