@@ -1,5 +1,8 @@
 # Create your views here.
-# Create your views here.
+
+import inspect
+import sys
+
 from django.shortcuts import render_to_response
 from django.views.generic.base import View
 from django.template import RequestContext
@@ -12,9 +15,19 @@ from models import {MethodName} as {MethodName}RequestType
 from models import {MethodName}Response as {MethodName}ResponseType
 
 
+def index(request):
+    """ default view with list of available service methods
+    """
+    methods = []
+    for name, obj in inspect.getmembers(sys.modules[__name__]):
+        if inspect.isclass(obj):
+            if str(obj.__bases__).count('View'):
+                methods.append(name)
 
-
-
+    return render_to_response('GlobalWeather/index.html',
+            {'methods':methods},
+        context_instance=RequestContext(request)
+    )
 
 class {MethodName}(View):
     """ {MethodName} View Class
