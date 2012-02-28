@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-from django.shortcuts import render_to_response
+#from django.shortcuts import render_to_response
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
