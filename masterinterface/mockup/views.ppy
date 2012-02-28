@@ -24,7 +24,7 @@ def index(request):
             if str(obj.__bases__).count('View'):
                 methods.append(name)
 
-    return render_to_response('GlobalWeather/index.html',
+    return render_to_response('{ServiceName}/index.html',
             {'methods':methods},
         context_instance=RequestContext(request)
     )
