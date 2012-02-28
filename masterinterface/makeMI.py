@@ -1,133 +1,192 @@
 __author__ = 'asaglimbeni'
+
 from suds import client
+import os, sys
+from  masterinterface.makeMIclassUtility import *
 
+def installService(wsdl_url):
+    """
 
-class Method:
+    Install Service script.
+    It loads wsdl's services , methods and complextype , build directory and files structs.
 
-    input=[]
-    output=[]
+    """
 
-    def __init__(self,name, input=None, output=None):
+    ########
+    ## Start Process Wsdl
+    ########
+    Client =client.Client(wsdl_url)
 
-        if not input: input = []
-        if not output: output = []
-        self.input=input
-        self.output=output
-        self.name=name
+    #List of method
+    methods=[]
 
-    def __str__(self):
-        s=""+self.name+"("
-        s+=str(self.input)+") Return:["
-        s+=str(self.output)
-        s+="]"
-        return s
-    def appendInput(self,input):
-        self.input.append(input)
+    #Istance of Types , process the complessType.
+    types=Types(Client)
 
-    def appendOutput(self,output):
-        self.output.append(output)
+    #List of service name
+    services=[]
 
-class Types:
-    types={}
+    #List of ports name
+    ports=[]
 
+    #Load wsdl's services, method and complexType
+    #This section have to be optimized to process more service more port and check simpletype (all case)
+    #Now we process only one service (the main) and only one port for service.
 
-    class Elem():
+    for service in Client.wsdl.services:
 
-        def __init__(self , name=None , type=None):
+        # parse suds wsdl object
 
-            self.name=name
-            self.type=type
+        services.append(service.name)
+        ports.append(service.ports[0].name)
 
-        def __str__(self):
+        for method in service.ports[0].methods.values():
 
-            s="("
-            s+=str(self.name)+" , "
-            s+=str(self.type)+")"
-
-            return s
-
-    def __init__(self,client):
-        self.client=client
-
-    def __isSimpleType(self,type):
-        if type in ['string','int','bool']:
-            return True
-        return False
-
-
-    def appendType(self,name,type):
-        if self.__isSimpleType(type):
-            self.types[name]=type
-        else:
-            Complex=self.client.factory.resolver.find(type)
-            self.types[Complex.name]=[]
-            for btype, ptype in Complex:
-                self.types[Complex.name].append(self.process(btype.name,btype.type[0]))
-
-    def process(self,name,type):
-
-        if self.__isSimpleType(type):
-            return self.Elem(name,type)
-        else:
-            Complex=self.client.factory.resolver.find(type)
-            subc= {Complex['name']: []}
-            for btype, ptype in Complex:
-                    subc[Complex['name']].append(self.process(btype.name,btype.type[0]))
-            return subc
-
-
-    def __print__(self,typ):
-        if isinstance(typ,type('')):
-            return typ
-        if isinstance(typ,self.Elem):
-            return str(typ)
-        if isinstance(typ,type([])):
-            s="\n"
-            for t in typ:
-                s+=self.__print__(t)+"\n"
-            s+=""
-            return s
-        if isinstance(typ,type({})):
-            for k,t in self.types.iteritems():
-                s+="("+k+"){\n  "
-            s+=self.__print__(t)+"\n }"
-            return s
-
-
-    def __str__(self):
-        s="Type:\n"
-        for k,t in self.types.iteritems():
-            s+="("+k+"){\n  "
-            s+=self.__print__(t)+"\n }\n"
-        return s
-
-
-#####################
-url= "http://www.webservicex.net/sendsmsworld.asmx?WSDL"
-Client =client.Client(url)
-
-methods=[]
-types=Types(Client)
-
-for service in Client.wsdl.services:
-    print "====== service"
-    for port in service.ports:
-        for method in port.methods.values():
-
+            # Initialize Method object
             m=Method(method.name)
 
+            # Process Input types
             for part in method.soap.input.body.parts:
+                ## there is a bug for not <element> tag
+                #if part.element is None:
+                #    continue
                 m.input.append(part.element[0])
                 types.appendType(part.element[0],part.element[0])
 
+            # Process Output type
             for part in method.soap.output.body.parts:
+                ## there is a bug for not <element> tag
+                #if part.element is None:
+                #    continue
                 m.output.append(part.element[0])
                 types.appendType(part.element[0],part.element[0])
 
             methods.append(m)
 
-for method in methods:
-    print method
-print "---------------------------"
-print types
 
+    ########
+    ## End Process Wsdl
+    ########
+
+
+    ########
+    ## Start Create dir struct and build file template.
+    ########
+
+    base_path=os.path.split(__file__)[0]
+    service_path=base_path+'/'+services[0]
+
+    #Make directory
+    if not os.path.exists(service_path):
+        os.makedirs(service_path)
+
+    if not os.path.exists(service_path+'/templates'):
+        os.makedirs(service_path+'/templates')
+
+    if not os.path.exists(service_path+"/templates/"+services[0]):
+        os.makedirs(service_path+"/templates/"+services[0])
+
+    #Istance of templates
+    models=models_template()
+    forms=forms_template()
+    views=views_template()
+    baseHtml=baseHtml_template()
+    serviceHtml=serviceHtml_Template()
+    urls=Urls_Template(services[0])
+
+
+    # Create types in models file
+
+    for TypeName in types.types:
+
+        models.addType(TypeName,types.types[TypeName])
+
+    #Process method and build file from template object
+    ## TODO we need to process more services and more ports, how organize the struct of files and dir with  multiple services and ports?
+
+    for method in methods:
+
+        methodName= method.name
+
+        #Append view on viewsClass
+        views.addView(services[0],methodName,ports[0],wsdl_url)
+
+        #Create a base html file
+        baseHtml.addBaseHtml(services[0])
+
+        #Create a service html file.
+        serviceHtml.addServiceHtml(methodName)
+
+        urls.addUrl(methodName)
+
+        #Create new form based on type input
+        forms.addForm(methodName,method.input)
+
+
+    ## Start create file
+    modelsFile=file(service_path+'/models.py','w')
+    modelsFile.write(models.getModelResult())
+    modelsFile.close()
+
+    formsFile=file(service_path+'/forms.py','w')
+    formsFile.write(forms.getFormsResult())
+    formsFile.close()
+
+    viewsFile=file(service_path+'/views.py','w')
+    viewsFile.write(views.getViewResult())
+    viewsFile.close()
+
+    baseHtmlfile=file(service_path+"/templates/"+services[0]+'/base.html','w')
+    baseHtmlfile.write(baseHtml.getBaseHtmlResult())
+    baseHtmlfile.close()
+
+    for serviceName in serviceHtml.name:
+        serviceHtmlFile=file(service_path+"/templates/"+services[0]+"/"+serviceName+'.html','w')
+        serviceHtmlFile.write(serviceHtml.getServiceHtml())
+        serviceHtmlFile.close()
+
+    initFile=file(service_path+'/__init__.py','w')
+    initFile.close()
+
+    urlsFile=file(service_path+'/urls.py','w')
+    urlsFile.write(urls.getUrl())
+    urlsFile.close()
+
+    ## End create file
+
+    ##Update setting and Urls on Master Inteface
+
+    settingFile=file(base_path+'/settings.py','r')
+    newsettingFile=settingFile.read().replace('\n    ##NEW_APP',',\n    \'masterinterface.'+services[0]+'\'\n    ##NEW_APP')
+    settingFile.close()
+    settingFile=file(base_path+'/settings.py','w')
+    settingFile.write(newsettingFile)
+    settingFile.close()
+
+    ##Update setting and Urls on Master Inteface
+
+    UrlFile=file(base_path+'/urls.py','r')
+    newUrlFile=UrlFile.read().replace('\n    ##NEW_URL',',\n    url(r\'^'+services[0]+'/\', include(\'masterinterface.'+services[0]+'.urls\'))\n    ##NEW_URL')
+    UrlFile.close()
+    UrlFile=file(base_path+'/urls.py','w')
+    UrlFile.write(newUrlFile)
+    UrlFile.close()
+
+
+    ########
+    ## End Create dir struct and build file template.
+    ########
+
+if __name__ == '__main__':
+
+
+    #    Main function. It starts install script with the wsdl url.
+
+
+    ## http://www.webservicex.net/WeatherForecast.asmx?WSDL
+
+    ## http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php?wsdl
+
+    ## "http://www.webservicex.net/sendsmsworld.asmx?WSDL"
+    wsdl_url= sys.argv[1]
+    installService(wsdl_url)
