@@ -16,11 +16,15 @@ urlpatterns = patterns('',
     # admin urls
     url(r'^admin/', include(admin.site.urls)),
 
-    # default roolback
+    # authentication
     url(r'', include('social_auth.urls')),
+
+    # default roolback
     url(r'', include('masterinterface.scs.urls')),
+    url(r'^scs/', include('masterinterface.scs.urls')),
 
     # add url for sendsmsworld
-    url(r'^sendsmsworld/', include('masterinterface.sendsmsworld.urls'))
+    url(r'^sendsmsworld/', include('masterinterface.sendsmsworld.urls')),
+    url(r'^GlobalWeather/', include('masterinterface.GlobalWeather.urls'))
     ##NEW_URL
 )
