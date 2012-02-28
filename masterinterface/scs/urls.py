@@ -10,5 +10,6 @@ urlpatterns = patterns(
     url(r'^error/$', 'error'),
     url(r'^logout/$','logout'),
     url(r'^bt_login/$', 'bt_login'),
+    url(r'^services/$', 'services'),
     url(r'^test/$', 'test'),
 )
