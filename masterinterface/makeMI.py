@@ -4,6 +4,11 @@ from suds import client
 import os, sys
 from  makeMIclassUtility import *
 
+import sys
+
+from django.core.management import execute_manager
+import settings
+
 def installService(wsdl_url):
     """
 
@@ -89,11 +94,11 @@ def installService(wsdl_url):
     #Istance of templates
     models=models_template()
     forms=forms_template()
-    views=views_template()
+    views=views_template(services[0])
     baseHtml=baseHtml_template()
-    serviceHtml=serviceHtml_Template()
+    serviceHtml=serviceHtml_Template(services[0])
     urls=Urls_Template(services[0])
-
+    indexHtml=indexHtml_Template(services[0])
 
     # Create types in models file
 
@@ -101,8 +106,12 @@ def installService(wsdl_url):
 
         models.addType(TypeName,types.types[TypeName])
 
+    #Create a base html file
+    baseHtml.addBaseHtml(services[0])
+
     #Process method and build file from template object
     ## TODO we need to process more services and more ports, how organize the struct of files and dir with  multiple services and ports?
+
 
     for method in methods:
 
@@ -110,9 +119,6 @@ def installService(wsdl_url):
 
         #Append view on viewsClass
         views.addView(services[0],methodName,ports[0],wsdl_url)
-
-        #Create a base html file
-        baseHtml.addBaseHtml(services[0])
 
         #Create a service html file.
         serviceHtml.addServiceHtml(methodName)
@@ -140,6 +146,10 @@ def installService(wsdl_url):
     baseHtmlfile.write(baseHtml.getBaseHtmlResult())
     baseHtmlfile.close()
 
+    indexHtmlFile=file(service_path+"/templates/"+services[0]+'/index.html','w')
+    indexHtmlFile.write(indexHtml.getIndexHtml())
+    indexHtmlFile.close()
+
     for serviceName in serviceHtml.name:
         serviceHtmlFile=file(service_path+"/templates/"+services[0]+"/"+serviceName+'.html','w')
         serviceHtmlFile.write(serviceHtml.getServiceHtml())
@@ -151,6 +161,8 @@ def installService(wsdl_url):
     urlsFile=file(service_path+'/urls.py','w')
     urlsFile.write(urls.getUrl())
     urlsFile.close()
+
+
 
     ## End create file
 
@@ -190,3 +202,6 @@ if __name__ == '__main__':
     ## "http://www.webservicex.net/sendsmsworld.asmx?WSDL"
     wsdl_url= sys.argv[1]
     installService(wsdl_url)
+    sys.argv.pop(1)
+    sys.argv.append('syncdb')
+    execute_manager(settings)
