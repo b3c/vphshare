@@ -1,0 +1,15 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface - Services{% endblock %}
+
+{% block content %} 
+    
+    <h4>Available Services</h4>
+    <p>Below are listed the available services</p>
+    <ul>
+        {% for service in services %}
+            <li><a href="/{{ service }}/"><span>{{ service }}</span></a></li>
+        {% endfor %}
+    </ul>
+    
+{% endblock %}

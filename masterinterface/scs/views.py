@@ -52,3 +52,16 @@ def bt_login(request):
 
 def test(request):
     return render_to_response("scs/test.html", {'ajax':request.is_ajax}, RequestContext(request))
+
+def services(request):
+    serviceList = []
+
+    for app in settings.INSTALLED_APPS:
+        # TODO do a better check
+        if app.count('masterinterface') and not app.count('scs'):
+            service = app.split('.')[1]
+            serviceList.append( service )
+
+    return render_to_response("scs/services.html",
+            {'services':serviceList},
+        RequestContext(request))

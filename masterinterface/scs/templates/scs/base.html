@@ -1,5 +1,108 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
 
-{% block extrahead %}
+    <title>
+        {%  block title %}
+            Welcome to Vph-Share Master Interface
+        {% endblock %}
+    </title>
+
+    <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+
+    <script src="/static/jquery-1.7.1.min.js"></script>
+    <script src="/static/jquery.tools.min.js"></script>
+
     <script src="/static/scs.js"></script>
-{% endblock %}
+
+    {% block extrahead %} {% endblock %}
+
+</head>
+<body>
+<div id="wrapper">
+
+    {% block header %}
+        <header id="header">
+            <a href="/"><img id="logo-left" src="/static/logo.png" alt="VphShare" /></a>
+            <a href="/"><img id="logo-right" src="/static/logo.png" alt="VphShare" /></a>
+
+            {% block nav %}
+                <nav>
+                    <li class="current-menu-item"><a href="/">home</a></li>
+                    <li><a href="/scs/services">services</a></li>
+                    <li><a href="contact.html">contact</a></li>
+                </nav>
+            {% endblock %}
+
+            <div class="top-search">
+                <form  method="get" id="searchform" action="#">
+                    <div>
+                        <input type="text" value="Search..." name="s" id="s" />
+                        <input type="submit" id="searchsubmit" value=" " />
+                    </div>
+                </form>
+            </div>
+
+            <div id="headline">
+                <span>Welcome to the Vph-Share Master Interface</span>
+            </div>
+
+            <div id="breadcrumbs">
+                {%  block breadcumbs %}
+                    <span>you are here: &nbsp;</span> <a href="index.html" title="Home">Home</a>
+                {% endblock %}
+            </div>
+
+            <div id="login">
+                {% block login %}
+                    {% if not request.user.is_authenticated %}
+                        <div>
+                            <span>Login with your Identity Provider: </span>
+                            <a class="popup" rel="#overlay" href="bt_login"><img src="/static/bt_logo.png" alt="bt" title="login with your BiomedTown identity"/></a>
+
+                            <a><img src="/static/google_32.png" alt="google" title="google coming soon" /></a>
+                            <a><img src="/static/facebook_32.png" alt="facebook" title="facebook coming soon" /></a>
+                            <a><img src="/static/twitter_32.png" alt="twitter" title="twitter coming soon"/></a>
+                            <a><img src="/static/linkedin_32.png" alt="linkedin" title="linkedin coming soon"/></a>
+                            <a><img src="/static/github_32.png" alt="github" title="github coming soon"/></a>
+
+                        </div>
+
+                    {% else %}
+                        <h2>Hi, {{ request.user }}</h2>
+                    {% endif %}
+                {% endblock %}
+            </div>
+        </header>
+    {% endblock %}
+
+
+    <div class="errormessage"><span id="errormessage">{{ errormessage  }}</span></div>
+    <div class="statusmessage"><span id="statusmessage">{{ statusmessage  }}</span></div>
+
+    <div id="main">
+        <div id="content">
+            <div id="page-content">
+                {% block content %} {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+        <div id="footer">
+            <ul id="footer-cols">
+                <li class="col">
+                    <h6>About the Project</h6>
+                    <p>VPH-Share will develop the organisational fabric (the infostructure) and integrate the optimised services to expose and share data and knowledge,
+                        jointly develop multiscale models for the composition of new VPH workflows and facilitate collaborations within the VPH community</p>
+                </li>
+            </ul>
+            <div id="bottom"><span>theme by <a target="_blank" href="http://luiszuno.com/blog/">Luiszuno</a></span></div>
+        </div>
+    {% endblock %}
+</div>
+</body>
+</html>
+
