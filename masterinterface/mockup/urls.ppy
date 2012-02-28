@@ -1,0 +1,9 @@
+from django.conf.urls.defaults import patterns, url, include
+
+from views import {MethodName}
+
+urlpatterns = patterns('{ServiceName}.views',
+    url(r'^{MethodName}/', GetWeather.as_view() ),    
+    url(r'','index')
+
+)
