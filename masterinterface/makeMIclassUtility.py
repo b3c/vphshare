@@ -71,7 +71,7 @@ class Types:
             # add new simple type to better performance
         """
 
-        if type in ['string','int','bool','float']:
+        if type in ['string','int','integer','bool','float','dateTime','boolean','decimal','date','time']:
             return True
         return False
 
@@ -196,7 +196,7 @@ class {MethodNameRequestType}(models.Model):
                 self.modelsResult+=self.element.format(ElementName=element, ElementType=Type)
 
     def isStadardFiled(self,fieldType):
-        if fieldType in ['string','int','bool','float']:
+        if fieldType in ['string','int','integer','bool','float','dateTime','boolean','decimal','date','time']:
             return True
         return False
 
@@ -204,7 +204,6 @@ class {MethodNameRequestType}(models.Model):
         """
         """
         self.modelsResult+=self.modelclass.format(MethodNameRequestType=TypeName)
-
 
         for element,Type in ElementsName:
             if self.isStadardFiled(Type):
@@ -549,4 +548,4 @@ class indexHtml_Template:
 
 ####################
 #### END Template section
-####################
+#####################
