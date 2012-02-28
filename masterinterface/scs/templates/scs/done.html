@@ -2,6 +2,12 @@
 
 {% block title %}Logged in!{% endblock %}
 
+
+{% block login %}
+    <span>Hi, {{ request.user }}</span>
+    <a href="/lo>gout/">Logout</a>
+{% endblock %}
+
 {% block content %}
 <div>
   <h3>User data:</h3>
@@ -15,6 +21,6 @@
   </table>
 </div>
 
-  <a href="/logout/">Logout</a>
+
 
 {% endblock %}

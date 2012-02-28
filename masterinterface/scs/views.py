@@ -38,10 +38,17 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 
-def form(request):
+def bt_login(request):
     if request.method == 'POST' and request.POST.get('username'):
         name = settings('SOCIAL_AUTH_PARTIAL_PIPELINE_KEY', 'partial_pipeline')
         request.session['saved_username'] = request.POST['username']
         backend = request.session[name]['backend']
         return redirect('socialauth_complete', backend=backend)
-    return render_to_response('scs/form.html', {}, RequestContext(request))
+
+    return render_to_response('scs/bt_login.html',
+            {'version': version},
+        RequestContext(request)
+    )
+
+def test(request):
+    return render_to_response("scs/test.html", {'ajax':request.is_ajax}, RequestContext(request))

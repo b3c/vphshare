@@ -1,29 +1,35 @@
-{% extends 'base.html' %}
+{% extends 'scs/base.html' %}
 
 {%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
 
 
-{%  block content %}
+{% block login %}
 
     {% if not request.user.is_authenticated %}
         <div>
-        <h3>Login using <a href="http://openid.net/" title="OpenId">OpenId</a> from:</h3>
-        <ul>
-            <form action="{% url socialauth_begin "biomedtown" %}" method="post">
-                {% csrf_token %}
-                <div>
-                    <label for="openid_identifier">Enter your biomedtown username</label>
-                    <input id="openid_identifier" type="text" value="" name="openid_identifier" />
-                    <input type="submit" value="Login" />
-                </div>
-            </form>
-        </ul>
+            <span>Login with your Identity Provider: </span>
+            <a class="popup" rel="#overlay" href="bt_login"><img src="/static/bt_logo.png" alt="bt" title="login with your BiomedTown identity"/></a>
+
+            <a><img src="/static/google_32.png" alt="google" title="google coming soon" /></a>
+            <a><img src="/static/facebook_32.png" alt="facebook" title="facebook coming soon" /></a>
+            <a><img src="/static/twitter_32.png" alt="twitter" title="twitter coming soon"/></a>
+            <a><img src="/static/linkedin_32.png" alt="linkedin" title="linkedin coming soon"/></a>
+            <a><img src="/static/github_32.png" alt="github" title="github coming soon"/></a>
+
         </div>
 
     {% else %}
         <h2>Hi, {{ request.user }}</h2>
     {% endif %}
 
+{% endblock %}
 
+{%  block content %}
+    
+        <form id="testForm" class="ajax" action="/test/" enctype="multipart/form-data">
+            <input type="text" name="a" value="a" />
+            <input type="text" name="b" value="b" />
+            <input type="submit" name="submit" />
+        </form>
 
 {% endblock %}
