@@ -3,11 +3,14 @@
 from django.shortcuts import render_to_response
 from django.views.generic.base import View
 from django.template import RequestContext
-from forms import {MethodName}Form
-from models import sendSMS as {MethodName}RequestType
-from models import sendSMSResponse as {MethodName}ResponseType
 from masterinterface.scs.services import invokeSoapService
 from masterinterface.scs.permissions import check_sample_permission, login_required
+
+from forms import {MethodName}Form
+
+from models import {MethodName} as {MethodName}RequestType
+from models import {MethodName}Response as {MethodName}ResponseType
+
 
 
 

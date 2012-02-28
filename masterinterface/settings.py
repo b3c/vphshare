@@ -130,7 +130,7 @@ INSTALLED_APPS = (
     'social_auth',
     'masterinterface.scs',
     'masterinterface.sendsmsworld'
-
+    ##NEW_APP
 )
 
 AUTHENTICATION_BACKENDS = (
