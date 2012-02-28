@@ -2,7 +2,7 @@ __author__ = 'asaglimbeni'
 
 from suds import client
 import os, sys
-from  masterinterface.makeMIclassUtility import *
+from  makeMIclassUtility import *
 
 def installService(wsdl_url):
     """
@@ -73,7 +73,7 @@ def installService(wsdl_url):
     ## Start Create dir struct and build file template.
     ########
 
-    base_path=os.path.split(__file__)[0]
+    base_path=os.path.abspath(os.path.dirname(__file__))
     service_path=base_path+'/'+services[0]
 
     #Make directory
