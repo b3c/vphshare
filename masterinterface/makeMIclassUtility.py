@@ -389,8 +389,8 @@ class baseHtml_template:
 {{% extends 'base.html' %}}
 
 {{% block title %}}
-    <!-- the page tile goes here -->
     Welcome to {ServiceName}
+    <!-- the page tile goes here -->
 {{% endblock %}}
 
 {{% block extrahead %}}
@@ -429,8 +429,8 @@ class serviceHtml_Template:
     serviceHtml="""
 
 {% block title %}
-    <!-- the page tile goes here -->
     {{ title }}
+    <!-- the page tile goes here -->
 {% endblock %}
 
 
