@@ -1,3 +1,5 @@
+{% load scs_extras %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +35,7 @@
             {% block nav %}
                 <nav>
                     <li class="current-menu-item"><a href="/">home</a></li>
-                    <li><a href="/scs/services">services</a></li>
+                    <li><a href="/services">services</a></li>
                     <li><a href="contact.html">contact</a></li>
                 </nav>
             {% endblock %}
@@ -52,9 +54,11 @@
             </div>
 
             <div id="breadcrumbs">
-                {%  block breadcumbs %}
-                    <span>you are here: &nbsp;</span> <a href="index.html" title="Home">Home</a>
-                {% endblock %}
+
+                <span>you are here: &nbsp;</span> <a href="/" title="Home">Home</a>
+                {%  for crumb in request.path|breadcrumbs %}
+                    <a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>
+                {% endfor %}
             </div>
 
             <div id="login">
