@@ -11,26 +11,40 @@ from masterinterface import settings
 
 def home(request):
     """Home view, displays login """
+
+    data = {'version': version}
+
     if request.user.is_authenticated():
-        return HttpResponseRedirect('done')
-    else:
-        return render_to_response('scs/index.html', {'version': version},
-            RequestContext(request))
+        data['last_login'] = request.session.get('social_auth_last_login_backend')
+
+    return render_to_response(
+        'scs/index.html',
+        data,
+        RequestContext(request)
+    )
 
 @login_required
-def done(request):
+def profile(request):
     """Login complete view, displays user data"""
     ctx = {
         'version': version,
         'last_login': request.session.get('social_auth_last_login_backend')
     }
-    return render_to_response('scs/done.html', ctx, RequestContext(request))
+    return render_to_response(
+        'scs/profile.html',
+        ctx,
+        RequestContext(request)
+    )
 
 def error(request):
     """Error view"""
     messages = get_messages(request)
-    return render_to_response('scs/error.html', {'version': version, 'messages': messages},
-        RequestContext(request))
+    return render_to_response(
+        'scs/error.html',
+        {'version': version,
+         'messages': messages},
+        RequestContext(request)
+    )
 
 def logout(request):
     """Logs out user"""

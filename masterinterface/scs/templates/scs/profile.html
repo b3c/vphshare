@@ -1,0 +1,20 @@
+{% extends "scs/base.html" %}
+
+{% block title %}Logged in!{% endblock %}
+
+{% block content %}
+<div>
+  <h3>Your personal data:</h3>
+  <ul>
+    <li><strong>Id:</strong> <span>{{ request.user.id }}</span></li>
+    <li><strong>Username:</strong> <span>{{ request.user.username }}</span></li>
+    <li><strong>Email:</strong> <span>{{ request.user.email|default:"Not provided" }}</span></li>
+    <li><strong>First name:</strong> <span>{{ request.user.first_name|default:"Not provided" }}</span></li>
+    <li><strong>Last name:</strong> <span>{{ request.user.last_name|default:"Not provided" }}</span></li>
+    <li><strong>Last login backend:</strong> <span>{{ last_login }}</span></li>
+  </ul>
+</div>
+
+
+
+{% endblock %}

@@ -1,4 +1,4 @@
-<form action="{% url socialauth_begin "biomedtown" %}" method="post">
+<form class="ajax" action="{% url socialauth_begin "biomedtown" %}" method="post">
     {% csrf_token %}
     <div>
         <label for="openid_identifier">Enter your biomedtown username</label>

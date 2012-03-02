@@ -6,7 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     'scs.views',
     url(r'^$', 'home'),
-    url(r'^done/$', 'done'),
+    url(r'^profile/$', 'profile'),
     url(r'^error/$', 'error'),
     url(r'^logout/$','logout'),
     url(r'^bt_login/$', 'bt_login'),

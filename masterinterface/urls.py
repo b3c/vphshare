@@ -21,9 +21,7 @@ urlpatterns = patterns('',
 
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
-    url(r'^scs/', include('masterinterface.scs.urls')),
+    url(r'^scs/', include('masterinterface.scs.urls'))
 
-    # add url for sendsmsworld
-    url(r'^sendsmsworld/', include('masterinterface.sendsmsworld.urls'))
     ##NEW_URL
 )

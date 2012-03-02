@@ -43,7 +43,7 @@ class BiomedTownBackend(OpenIDBackend):
 
         values.update({'fullname': fullname, 'first_name': first_name,
                        'last_name': last_name,
-                       USERNAME: values.get(USERNAME) or (first_name.title() + last_name.title())})
+                       USERNAME: values.get('nickname')})
         return values
 
 
