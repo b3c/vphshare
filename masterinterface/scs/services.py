@@ -36,13 +36,22 @@ def invokeSoapService( wsdl_url, service, port, method, requestParameters, reque
     response = client.service[port][method](request)
 
     # marshall response
-    result = responseType()
+    result= client.factory.create(responseType.__name__)
+    #result = responseType()
 
+    if type(response) is type([]):
+        i=0
+        for key, value in result:
+            result[key]=response[i]
+            i+=1
+    else:
+        result=response
     # HACK!!
     # for key,value in response:
     #    result[key] = value
 
-    result.sendSMSResult = str(response)
+   # result.sendSMSResult = str(response)
+
 
     return result
 
