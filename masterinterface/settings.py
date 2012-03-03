@@ -129,12 +129,16 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'social_auth',
     'masterinterface.scs'
+
     ##NEW_APP
 )
 
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.OpenIDBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'social_auth.backends.google.GoogleOAuthBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.google.GoogleBackend',
     'scs.backends.biomedtown.BiomedTownBackend'
     )
 
@@ -172,4 +176,5 @@ LOGGING = {
 }
 
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/done'
+LOGIN_ERROR_URL    = '/login-error/'

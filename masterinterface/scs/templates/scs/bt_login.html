@@ -1,8 +1,43 @@
-<form class="ajax" action="{% url socialauth_begin "biomedtown" %}" method="post">
-    {% csrf_token %}
-    <div>
-        <label for="openid_identifier">Enter your biomedtown username</label>
-        <input id="openid_identifier" type="text" value="" name="openid_identifier" />
-        <input type="submit" value="Login" />
-    </div>
-</form>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>
+            Login with BiomedTown OpenID provider
+        </title>
+        <script src="/static/jquery-1.7.1.min.js"></script>
+        <script src="/static/jquery.tools.min.js"></script>
+        
+        <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+
+        <script type="text/javascript">
+            function closeFrame(){
+                var iframe = window.parent.document.getElementById('btloginiframe');
+                $(iframe).hide();
+                window.parent.location.replace('/');
+            }
+        </script>
+
+    </head>
+    <body class="loginbody">
+
+        <a class="close" onclick="closeFrame();"></a>
+
+        <img src="/static/biomedtown_logo.png" alt="biomedtown"/>
+
+        <br /><br />
+
+        <form action="{% url socialauth_begin "biomedtown" %}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="openid_identifier">Enter your biomedtown username</label>
+                <input id="openid_identifier" type="text" value="" name="openid_identifier" />
+                <input type="submit" value="Login" />
+            </div>
+        </form>
+
+
+    </body>
+</html>

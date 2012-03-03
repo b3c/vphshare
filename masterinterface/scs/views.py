@@ -23,6 +23,19 @@ def home(request):
         RequestContext(request)
     )
 
+
+def done(request):
+    """ login complete view """
+    ctx = {
+        'version': version,
+        'last_login': request.session.get('social_auth_last_login_backend')
+    }
+    return render_to_response(
+        'scs/done.html',
+        ctx,
+        RequestContext(request)
+    )
+
 @login_required
 def profile(request):
     """Login complete view, displays user data"""
@@ -36,8 +49,8 @@ def profile(request):
         RequestContext(request)
     )
 
-def error(request):
-    """Error view"""
+def login_error(request):
+    """Very simpole login error view"""
     messages = get_messages(request)
     return render_to_response(
         'scs/error.html',

@@ -7,9 +7,10 @@ urlpatterns = patterns(
     'scs.views',
     url(r'^$', 'home'),
     url(r'^profile/$', 'profile'),
-    url(r'^error/$', 'error'),
+    url(r'^login-error/$', 'login_error'),
     url(r'^logout/$','logout'),
     url(r'^bt_login/$', 'bt_login'),
     url(r'^services/$', 'services'),
     url(r'^test/$', 'test'),
+    url(r'^done/$', 'done'),
 )

@@ -719,6 +719,7 @@ div.contentWrap {
     display:none;
     background-color: white;
     width:720px;
+    height: 320px;
     z-index: 9999;
     padding:40px;
     border: 1px solid black;
@@ -743,6 +744,28 @@ div.contentWrap {
     text-align: center;
 }
 
+/* ------------------------------- LOGIN ------------------------- */
 
+.loginbody{
+    background: #ffffff;
+}
 
+.loginbody img{
+    clear:both;
+    margin: 0 15px;
+    padding:5px;
+    overflow-y: hidden;
+}
+.loginbody .close {
+    background-image:url(/static/close.png);
+    position:absolute;
+    right:10px;
+    top:10px;
+    cursor:pointer;
+    height:28px;
+    width:28px;
+}
 
+.unavailable{
+    opacity: 0.3;
+}
