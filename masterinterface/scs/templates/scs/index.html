@@ -4,12 +4,14 @@
 
 
 
+{% block page-title %}
+    <span class="title">Welcome!</span>
+    <span class="subtitle">This is a demo version of the Master Interface</span>
+{% endblock%}
+
 {%  block content %}
-    
-        <form id="testForm" class="ajax" action="/test/" enctype="multipart/form-data">
-            <input type="text" name="a" value="a" />
-            <input type="text" name="b" value="b" />
-            <input type="submit" name="submit" />
-        </form>
+
+    <p>VPH-Share will develop the organisational fabric (the infostructure) and integrate the optimised services to expose and share data and knowledge,
+        jointly develop multiscale models for the composition of new VPH workflows and facilitate collaborations within the VPH community</p>
 
 {% endblock %}

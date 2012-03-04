@@ -17,7 +17,7 @@
         function closeFrame(){
             var iframe = window.parent.document.getElementById('btloginiframe');
             $(iframe).hide();
-            window.parent.location.replace('/');
+            window.parent.location.reload();
         }
 
         $(document).ready(
@@ -28,12 +28,10 @@
     </script>
 
 </head>
-<body class="loginbody">
+<body class="loginbody" style="overflow-y: hidden;">
 
-<a class="close" onclick="closeFrame();"></a>
-
+<br />
 <h4> Dear {{ request.user.first_name|default:"Friend"}}, your login attempt has been successful</h4>
-
 
 </body>
 </html>

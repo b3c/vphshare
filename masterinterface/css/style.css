@@ -55,7 +55,6 @@ body {
     min-height: 400px;
     overflow: hidden;
     margin-bottom: 40px;
-    padding-top: 20px;
 }
 
 footer{
@@ -146,7 +145,6 @@ header #login a img{
 
 #page-title{
     overflow: hidden;
-    height: 90px;
     margin-bottom: 30px;
     background: #f2f1f1 url(../img/twitter-border.png) repeat-x bottom left;
 }
@@ -155,7 +153,7 @@ header #login a img{
     display: block;
     float: left;
     font-size: 30px;
-    line-height: 90px;
+    line-height: 80px;
     margin-left: 30px;
     text-shadow: 0 1px rgba(255, 255, 255, 1);
 }
@@ -719,9 +717,9 @@ div.contentWrap {
     display:none;
     background-color: white;
     width:720px;
-    height: 320px;
+    height: 420px;
     z-index: 9999;
-    padding:40px;
+    padding:10px;
     border: 1px solid black;
     border-radius: 10px;
     box-shadow: 0 0 50px #222;
@@ -767,5 +765,5 @@ div.contentWrap {
 }
 
 .unavailable{
-    opacity: 0.3;
+    opacity: 0.5;
 }

@@ -1,0 +1,76 @@
+<html>
+
+    <head>
+        <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
+        <style type="text/css">
+
+            body {
+                font-size:  90%;
+                font-family: 'Inder', sans-serif;
+            }
+            #content {                
+                padding: 2px;
+            }
+            .documentContent{
+            }
+            h2 {
+                font-size: 18px;
+                text-decoration: underline;
+            }
+            ul.formTabs {
+                display: block;
+                list-style-type: none;
+                margin: 0 0 -1.2em;
+                padding: 0;
+                position: relative;
+                text-align: center;
+            }
+            li.formTab {
+                display: inline;
+                margin: 0;
+                padding: 0;
+            }
+            li.formTab a {
+                background: none repeat scroll 0 0 #FFFFFF;
+                border: 1px solid #CCCCCC;
+                margin: 0;
+                padding: 0.125em 0.75em;
+                text-decoration: none;
+            }
+            label {
+                font-weight: bold;
+            }
+            .formHelp {
+                color: #76797C;
+                font-size: 90%;
+                margin: 0 0 0.2em;
+            }
+            .formPanel {
+                border: 1px solid #CCCCCC;
+                padding: 10px;
+            }
+            p {
+                line-height: 1.5em;
+                margin: 0 0 0.75em;
+            }
+            ul li .formTab {
+                font-weight: bold;
+            }
+
+            
+
+        </style>
+    </head>
+
+    <body>
+        <form action="{% url socialauth_begin "biomedtown" %}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="openid_identifier">Enter your BiomedTown username</label>
+                <input id="openid_identifier" type="text" value="" name="openid_identifier" />
+                <input type="submit" value="Login" />
+            </div>
+        </form>
+    </body>
+
+</html>

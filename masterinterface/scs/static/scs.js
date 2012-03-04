@@ -62,6 +62,8 @@ $(document).ready(
             }
         });
 
+
+
         // set up default ajax form behaviour
         $('.ajax').submit(
             function(event){

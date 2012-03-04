@@ -27,94 +27,103 @@
 
     {% if not request.is_ajax %}
 
-    {% block header %}
-        <header id="header">
-            <a href="/"><img id="logo-left" src="/static/logo.png" alt="VphShare" /></a>
-            <a href="/"><img id="logo-right" src="/static/logo.png" alt="VphShare" /></a>
+        {% block header %}
+            <header id="header">
+                <a href="/"><img id="logo-left" src="/static/logo.png" alt="VphShare" /></a>
+                <a href="/"><img id="logo-right" src="/static/logo.png" alt="VphShare" /></a>
 
-            {% block nav %}
-                <nav>
-                    <li class="current-menu-item"><a href="/">home</a></li>
-                    <li><a href="/services">services</a></li>
-                    <li><a href="contact.html">contact</a></li>
-                </nav>
-            {% endblock %}
-
-            <div class="top-search">
-                <form  method="get" id="searchform" action="#">
-                    <div>
-                        <input type="text" value="Search..." name="s" id="s" />
-                        <input type="submit" id="searchsubmit" value=" " />
-                    </div>
-                </form>
-            </div>
-
-            <div id="headline">
-                <span>Welcome to the Vph-Share Master Interface</span>
-            </div>
-
-            <div id="breadcrumbs">
-
-                <span>you are here: &nbsp;</span> <a href="/" title="Home">Home</a>
-                {%  for crumb in request.path|breadcrumbs %}
-                    <a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>
-                {% endfor %}
-            </div>
-
-            <div id="login">
-                {% block login %}
-                    {% if not request.user.is_authenticated %}
-                        <div>
-                            <span>Login with your Identity Provider: </span>
-                            <a class="popup login" id="btlogin" href="/scs/bt_login">
-                                <img src="/static/biomedtown_32.png" alt="bt" title="login with your BiomedTown identity"/>
-                            </a>
-
-                            <a id="googlelogin" class="popup" rel="#overlay" href="/login/google">
-                                <img src="/static/google_32.png" alt="google" title="login with your Google identity" />
-                            </a>
-                            <a class="unavailable"><img src="/static/facebook_32.png" alt="facebook" title="facebook coming soon" /></a>
-                            <a class="unavailable"><img src="/static/twitter_32.png" alt="twitter" title="twitter coming soon"/></a>
-                            <!--<a><img src="/static/linkedin_32.png" alt="linkedin" title="linkedin coming soon"/></a>
-                            <a><img src="/static/github_32.png" alt="github" title="github coming soon"/></a>-->
-
-                        </div>
-
-                    {% else %}
-                        <span>Hi, {{ request.user.first_name|default:"Friend"}}!</span>
-                        <a href="/profile/">Profile</a>
-                        <a href="/logout/">Logout</a>
-                    {% endif %}
+                {% block nav %}
+                    <nav>
+                        <li class="current-menu-item"><a href="/">home</a></li>
+                        <li><a href="/services">services</a></li>
+                        <li><a href="contact.html">contact</a></li>
+                    </nav>
                 {% endblock %}
-            </div>
-        </header>
-    {% endblock %}
+
+                <div class="top-search">
+                    <form  method="get" id="searchform" action="#">
+                        <div>
+                            <input type="text" value="Search..." name="s" id="s" />
+                            <input type="submit" id="searchsubmit" value=" " />
+                        </div>
+                    </form>
+                </div>
+
+                <div id="headline">
+                    <span>Welcome to the Vph-Share Master Interface</span>
+                </div>
+
+                <div id="breadcrumbs">
+
+                    <span>you are here: &nbsp;</span> <a href="/" title="Home">Home</a>
+                    {%  for crumb in request.path|breadcrumbs %}
+                        <a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>
+                    {% endfor %}
+                </div>
+
+                <div id="login">
+                    {% block login %}
+                        {% if not request.user.is_authenticated %}
+                            <div>
+                                <span>Login with your Identity Provider: </span>
+                                <a class="popup" id="btlogin" rel="#overlay" href="/scs/bt_login">
+                                    <img src="/static/biomedtown_32.png" alt="bt" title="login with your BiomedTown identity"/>
+                                </a>
+
+                                <a id="googlelogin" class="popup" rel="#overlay" href="/login/google">
+                                    <img src="/static/google_32.png" alt="google" title="login with your Google identity" />
+                                </a>
+                                <a class="unavailable"><img src="/static/facebook_32.png" alt="facebook" title="facebook coming soon" /></a>
+                                <a class="unavailable"><img src="/static/twitter_32.png" alt="twitter" title="twitter coming soon"/></a>
+                                <!--<a><img src="/static/linkedin_32.png" alt="linkedin" title="linkedin coming soon"/></a>
+                                <a><img src="/static/github_32.png" alt="github" title="github coming soon"/></a>-->
+
+                            </div>
+
+                        {% else %}
+                            <span>Hi, {{ request.user.first_name|default:"Friend"}}!</span>
+                            <a href="/profile/">Profile</a>
+                            <a href="/logout/">Logout</a>
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            </header>
+        {% endblock %}
+
+        <div class="errormessage"><span id="errormessage">{{ errormessage  }}</span></div>
+        <div class="statusmessage"><span id="statusmessage">{{ statusmessage  }}</span></div>
 
     {% endif %}
 
-    <div class="errormessage"><span id="errormessage">{{ errormessage  }}</span></div>
-    <div class="statusmessage"><span id="statusmessage">{{ statusmessage  }}</span></div>
+
 
     <div id="main">
         <div id="content">
+            <div id="page-title">
+                {% block page-title %} {% endblock %}
+            </div>
+
             <div id="page-content">
                 {% block content %} {% endblock %}
             </div>
         </div>
     </div>
 
-    {% block footer %}
-        <div id="footer">
-            <ul id="footer-cols">
-                <li class="col">
-                    <h6>About the Project</h6>
-                    <p>VPH-Share will develop the organisational fabric (the infostructure) and integrate the optimised services to expose and share data and knowledge,
-                        jointly develop multiscale models for the composition of new VPH workflows and facilitate collaborations within the VPH community</p>
-                </li>
-            </ul>
-            <div id="bottom"><span>theme by <a target="_blank" href="http://luiszuno.com/blog/">Luiszuno</a></span></div>
-        </div>
-    {% endblock %}
+    {% if not request.is_ajax %}
+        {% block footer %}
+            <div id="footer">
+                <ul id="footer-cols">
+                    <li class="col">
+                        <h6>About the Project</h6>
+                        <p>VPH-Share will develop the organisational fabric (the infostructure) and integrate the optimised services to expose and share data and knowledge,
+                            jointly develop multiscale models for the composition of new VPH workflows and facilitate collaborations within the VPH community</p>
+                    </li>
+                </ul>
+                <div id="bottom"><span>theme by <a target="_blank" href="http://luiszuno.com/blog/">Luiszuno</a></span></div>
+            </div>
+        {% endblock %}
+    {% endif %}
+
 </div>
 </body>
 </html>
