@@ -10,7 +10,7 @@ from masterinterface import settings
 
 
 def home(request):
-    """Home view, displays login """
+    """Home view """
 
     data = {'version': version}
 
@@ -20,6 +20,15 @@ def home(request):
     return render_to_response(
         'scs/index.html',
         data,
+        RequestContext(request)
+    )
+
+def login(request):
+    """Login view"""
+
+    return render_to_response(
+        'scs/login.html',
+        {'version': version, 'next': request.GET.get('next','/')},
         RequestContext(request)
     )
 

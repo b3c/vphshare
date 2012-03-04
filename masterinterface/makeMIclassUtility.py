@@ -267,7 +267,7 @@ from django.shortcuts import render_to_response
 from django.views.generic.base import View
 from django.template import RequestContext
 from masterinterface.scs.services import invokeSoapService
-from masterinterface.scs.permissions import check_sample_permission, login_required
+from masterinterface.scs.permissions import guard, check_sample_permission, login_required
     """
 
     imports_forms_modules="""
@@ -290,6 +290,8 @@ class {MethodName}(View):
     requestType = {MethodName}RequestType
     responseType = {MethodName}ResponseType
 
+    # your permission control goes here
+    @guard(check_sample_permission)
     def get(self, request):
         \"\"\" get the form page to send the request \"\"\"
 
@@ -305,7 +307,7 @@ class {MethodName}(View):
         )
 
     # your permission control goes here
-    @check_sample_permission
+    @guard(check_sample_permission)
     def post(self, request):
         \"\"\" validate form and post request to the service \"\"\"
 

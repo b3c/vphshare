@@ -146,7 +146,7 @@ header #login a img{
 #page-title{
     overflow: hidden;
     margin-bottom: 30px;
-    background: #f2f1f1 url(../img/twitter-border.png) repeat-x bottom left;
+    background: #f2f1f1;
 }
 
 #page-title .title{

@@ -175,6 +175,6 @@ LOGGING = {
     }
 }
 
-
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/done'
 LOGIN_ERROR_URL    = '/login-error/'
