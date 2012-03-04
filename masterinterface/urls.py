@@ -19,6 +19,9 @@ urlpatterns = patterns('',
     # authentication
     url(r'', include('social_auth.urls')),
 
+    # favicon
+    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/favicon.ico'}),
+
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
     url(r'^scs/', include('masterinterface.scs.urls'))
