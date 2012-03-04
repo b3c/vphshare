@@ -2,14 +2,22 @@
 
 {%  block title %} Welcome to the Vph-Share Master Interface - Services{% endblock %}
 
-{% block content %} 
-    
-    <h4>Available Services</h4>
-    <p>Below are listed the available services</p>
-    <ul>
-        {% for service in services %}
-            <li><a href="/{{ service }}/"><span>{{ service }}</span></a></li>
-        {% endfor %}
-    </ul>
+{% block page-title %}
+    <span class="title">Services</span>
+    <span class="subtitle">Below are listed the available services</span>
+{% endblock%}
+
+{% block content %}
+
+    {% if services %}
+        <p>Below are listed the available services</p>
+        <ul>
+            {% for service in services %}
+                <li><a href="/{{ service }}/"><span>{{ service }}</span></a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Sorry, there are no services available</p>
+    {% endif %}
     
 {% endblock %}

@@ -32,7 +32,6 @@ def login(request):
         RequestContext(request)
     )
 
-
 def done(request):
     """ login complete view """
     ctx = {
@@ -68,6 +67,7 @@ def login_error(request):
         RequestContext(request)
     )
 
+@login_required
 def logout(request):
     """Logs out user"""
     auth_logout(request)
@@ -75,6 +75,7 @@ def logout(request):
 
 
 def bt_loginform(request):
+    """ return the biomedtown login form """
     if request.method == 'POST' and request.POST.get('username'):
         name = settings('SOCIAL_AUTH_PARTIAL_PIPELINE_KEY', 'partial_pipeline')
         request.session['saved_username'] = request.POST['username']
@@ -86,15 +87,19 @@ def bt_loginform(request):
         RequestContext(request)
     )
 def bt_login(request):
+    """ return the biomedtown login page with and embedded login iframe"""
+
     return render_to_response('scs/bt_login.html',
             {'version': version},
         RequestContext(request)
     )
 
 def test(request):
+    """ just a test page """
     return render_to_response("scs/test.html", {'ajax':request.is_ajax}, RequestContext(request))
 
 def services(request):
+    """ a page with all available applications """
     serviceList = []
 
     for app in settings.INSTALLED_APPS:
@@ -105,4 +110,14 @@ def services(request):
 
     return render_to_response("scs/services.html",
             {'services':serviceList},
+        RequestContext(request))
+
+def contacts(request):
+    return render_to_response("scs/contacts.html",
+            {},
+        RequestContext(request))
+
+def help(request):
+    return render_to_response("scs/help.html",
+            {},
         RequestContext(request))

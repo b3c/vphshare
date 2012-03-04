@@ -667,11 +667,14 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
     position: relative;
     width: 100%;
     font-size: 12px;
-    line-height: 1.5em;
     line-height: 80px;
     text-align: center;
     color: #868686;
     background: url(/static/bottom-shadow.png) repeat-x;
+}
+
+#footer #bottom span{
+    margin-right: 10px;
 }
 
 #footer #bottom a{
