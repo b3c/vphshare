@@ -300,7 +300,7 @@ class {MethodName}(View):
                 {{ 'title':'{MethodName} form',
                   'form' : form,
                   'action': self.action_url,
-                  'results': None}},
+                  'result': None}},
             context_instance=RequestContext(request)
         )
 
@@ -345,7 +345,7 @@ class {MethodName}(View):
                   'form' : {MethodName}Form(),
                   'action': self.action_url,
                   'errormessage': errormessage,
-                  'results': None}},
+                  'result': None}},
             context_instance=RequestContext(request)
         )
     """
