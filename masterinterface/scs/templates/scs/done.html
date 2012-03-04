@@ -22,7 +22,11 @@
 
         $(document).ready(
                 function(){
-                    closeFrame();
+                    {% if last_login == 'biomedtown' %}
+                        closeFrame();
+                    {% else %}
+                        window.parent.location.replace("/");
+                    {% endif %}
                 }
         );
     </script>
