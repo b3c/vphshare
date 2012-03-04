@@ -1,0 +1,27 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+
+
+{% block page-title %}
+    <span class="title">Login Required!</span>
+    <span class="subtitle"></span>
+{% endblock%}
+
+{%  block content %}
+
+    {% if not request.user.is_authenticated %}
+
+        <h3>A valid user is required!</h3>
+        <p>In order to access to the requested resource you must login.</p>
+        <p>Please choose your Identity Provider from the above list.</p>
+        
+    {% else %}
+        
+        <h3>Thanks, {{ request.user.first_name|default:"Friend"}}</h3>
+        <p>If not redirect automatically, continue to the requested resource by clicking <a href="{{ next }}">here</a></p>
+        
+    {% endif %}
+
+{% endblock %}
