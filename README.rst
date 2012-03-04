@@ -7,25 +7,6 @@ Welcome to the Vph-Share Master Interface Django project.
 Installation
 ------------
 
-
-Python installation requirements
-++++++++++++++++++++++++++++++++
-
-    Download and install **Python** from the Python web site: http://www.python.org/download/releases/
-
-    Python version from 2.5 to 2.7 are supported.
-
-    Download and install **setuptools** according to your Python version from http://pypi.python.org/pypi/setuptools
-
-    Move into vphshare/masterinterface directory, then run the command::
-
-        python setup.py install
-
-    **depending on your os, the command may need to be executed as a super user**
-
-    All Python dependencies packages will be installed into your system
-
-
 Git installation requirements
 +++++++++++++++++++++++++++++
 
@@ -45,6 +26,24 @@ Clone our repository with git
 
     While the *vphshare* directory is meant to be just a container, the *masterinterface* directory will be the base
     project location
+
+
+Python installation requirements
+++++++++++++++++++++++++++++++++
+
+    Download and install **Python** from the Python web site: http://www.python.org/download/releases/
+
+    Python version from 2.5 to 2.7 are supported.
+
+    Download and install **setuptools** according to your Python version from http://pypi.python.org/pypi/setuptools
+
+    Move into *vphshare/masterinterface* directory, then run the command::
+
+        python setup.py install
+
+    **depending on your os, the command may need to be executed as a super user**
+
+    All Python dependencies packages will be installed into your system
 
 
 Django
