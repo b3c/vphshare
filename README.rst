@@ -3,7 +3,7 @@ vphshare-masterinterface
 
 Welcome to the Vph-Share Master Interface Django project.
 
-
+------------
 Installation
 ------------
 
@@ -45,9 +45,9 @@ Python installation requirements
 
     All Python dependencies packages will be installed into your system
 
-
+------
 Django
-++++++
+------
 
     Django is a powerful and easy to use web framework.
 
@@ -57,7 +57,7 @@ Django
 
 
 Database Syncronization
-***********************
++++++++++++++++++++++++
 
     By default, the Master Interface application will store his data into a SQLite datbase.
 
@@ -74,7 +74,7 @@ Database Syncronization
 
 
 Start and Stop the web application
-**********************************
+++++++++++++++++++++++++++++++++++
 
     From the */vphshare/masterinterface/* directory, simply run the command ::
 
@@ -84,27 +84,28 @@ Start and Stop the web application
 
     To stop the service, simply kill the process.
 
-
+--------------------------------
 Create a new service application
-++++++++++++++++++++++++++++++++
+--------------------------------
 
-    To create the interface for your service within the master interface application,
+    To create the interface application for your service within the master interface project,
     just run the command ::
 
         python manage.py wsdl2mi.py <your wsdl url>
 
-    To have an example of what it will be created, run the following ::
+    To have an example of what it will be created, try to run the following ::
 
         python manage.py http://www.webservicex.net/sendsmsworld.asmx?WSDL
-
-    More detailed description is coming soon
 
 
 wsdl2mi limitations at version 0.1
 ++++++++++++++++++++++++++++++++++
 
+    Only SOAP services
+
     One service per WSDL
 
-    Complex types can only be a composition of simple types
+    One port per service
 
+    Complex types can only be a composition of simple types
 
