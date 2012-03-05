@@ -8,6 +8,8 @@ from django.contrib.messages.api import get_messages
 from scs import __version__ as version
 from masterinterface import settings
 
+from tktauth import createTicket, validateTicket
+import binascii
 
 def home(request):
     """Home view """
@@ -38,22 +40,46 @@ def done(request):
         'version': version,
         'last_login': request.session.get('social_auth_last_login_backend')
     }
-    return render_to_response(
+
+    # create ticket
+    tokens = ('foo','bar') #to be random generated
+    user_data = '%s %s' % (request.user.first_name, request.user.last_name)
+    tkt = createTicket(
+        settings.SECRET_KEY,
+        request.user.username,
+        tokens=tokens,
+        user_data=user_data
+    )
+
+    tkt64 = binascii.b2a_base64(tkt).rstrip()
+
+    response = render_to_response(
         'scs/done.html',
         ctx,
         RequestContext(request)
     )
 
+    response.set_cookie( 'vph-tkt', tkt64 )
+
+    return response
+
 @login_required
 def profile(request):
     """Login complete view, displays user data"""
-    ctx = {
+
+    tkt64 = request.COOKIES.get('vph-tkt','No ticket')
+
+    data = {
         'version': version,
-        'last_login': request.session.get('social_auth_last_login_backend')
+        'last_login': request.session.get('social_auth_last_login_backend'),
+        'tkt64': tkt64
     }
+
+
+
     return render_to_response(
         'scs/profile.html',
-        ctx,
+        data,
         RequestContext(request)
     )
 

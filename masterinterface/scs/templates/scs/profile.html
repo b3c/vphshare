@@ -12,6 +12,8 @@
     <li><strong>First name:</strong> <span>{{ request.user.first_name|default:"Not provided" }}</span></li>
     <li><strong>Last name:</strong> <span>{{ request.user.last_name|default:"Not provided" }}</span></li>
     <li><strong>Last login backend:</strong> <span>{{ last_login }}</span></li>
+      <br />
+     <li><strong>Your Authentication Ticket (base64)</strong> <br /> <span>{{ tkt64 }}</span></li>
   </ul>
 </div>
 
