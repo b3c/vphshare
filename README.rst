@@ -91,11 +91,11 @@ Create a new service application
     To create the interface application for your service within the master interface project,
     just run the command ::
 
-        python manage.py wsdl2mi.py <your wsdl url>
+        python wsdl2mi.py <your wsdl url>
 
     To have an example of what it will be created, try to run the following ::
 
-        python manage.py http://www.webservicex.net/sendsmsworld.asmx?WSDL
+        python wsdl2mi.py http://www.webservicex.net/sendsmsworld.asmx?WSDL
 
 
 wsdl2mi limitations at version 0.1
