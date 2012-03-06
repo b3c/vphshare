@@ -4,7 +4,6 @@ from suds import client
 import os, sys
 from  wsdl2mi_utils import *
 
-import sys
 
 from django.core.management import execute_manager
 import settings
@@ -169,7 +168,7 @@ def installService(wsdl_url):
     ##Update setting and Urls on Master Inteface
 
     settingFile=file(base_path+'/settings.py','r')
-    newsettingFile=settingFile.read().replace('\n    ##NEW_APP',',\n    \'masterinterface.'+services[0]+'\'\n    ##NEW_APP')
+    newsettingFile=settingFile.read().replace('\n\n    ##NEW_APP',',\n    \'masterinterface.'+services[0]+'\'\n\n    ##NEW_APP')
     settingFile.close()
     settingFile=file(base_path+'/settings.py','w')
     settingFile.write(newsettingFile)
@@ -178,7 +177,7 @@ def installService(wsdl_url):
     ##Update setting and Urls on Master Inteface
 
     UrlFile=file(base_path+'/urls.py','r')
-    newUrlFile=UrlFile.read().replace('\n    ##NEW_URL',',\n    url(r\'^'+services[0]+'/\', include(\'masterinterface.'+services[0]+'.urls\'))\n    ##NEW_URL')
+    newUrlFile=UrlFile.read().replace('\n\n    ##NEW_URL',',\n    url(r\'^'+services[0]+'/\', include(\'masterinterface.'+services[0]+'.urls\'))\n\n    ##NEW_URL')
     UrlFile.close()
     UrlFile=file(base_path+'/urls.py','w')
     UrlFile.write(newUrlFile)
