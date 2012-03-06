@@ -8,12 +8,12 @@ from django.views.generic.base import View
 from django.template import RequestContext
 from masterinterface.scs.services import invokeSoapService
 from masterinterface.scs.permissions import check_sample_permission, login_required
-
+#-split-#
 from forms import {MethodName}Form
 
 from models import {MethodName} as {MethodName}RequestType
 from models import {MethodName}Response as {MethodName}ResponseType
-
+#-split-#
 
 def index(request):
     """ default view with list of available service methods
@@ -25,9 +25,11 @@ def index(request):
                 methods.append(name)
 
     return render_to_response('{ServiceName}/index.html',
-            {'methods':methods},
+            {{'methods':methods}},
         context_instance=RequestContext(request)
     )
+
+#-split-#
 
 class {MethodName}(View):
     """ {MethodName} View Class
@@ -42,6 +44,8 @@ class {MethodName}(View):
     requestType = {MethodName}RequestType
     responseType = {MethodName}ResponseType
 
+    # your permission control goes here
+    @check_sample_permission
     def get(self, request):
         """ get the form page to send the request """
 
@@ -49,15 +53,15 @@ class {MethodName}(View):
 
         return render_to_response(
             self.template_name,
-                { 'title':'{MethodName} form',
+                {{ 'title':'{MethodName} form',
                   'form' : form,
                   'action': self.action_url,
-                  'results': None},
+                  'result': None}},
             context_instance=RequestContext(request)
         )
 
     # your permission control goes here
-    @login_required
+    @check_sample_permission
     def post(self, request):
         """ validate form and post request to the service """
 
@@ -79,11 +83,11 @@ class {MethodName}(View):
 
             return render_to_response(
                 self.template_name,
-                    { 'title':'{MethodName} form',
+                    {{ 'title':'{MethodName} form',
                       'form' : {MethodName}Form(),
                       'action': self.action_url,
                       'statusmessage': 'Action Performed',
-                      'result': result},
+                      'result': result }},
                 context_instance=RequestContext(request)
             )
 
@@ -93,10 +97,10 @@ class {MethodName}(View):
 
         return render_to_response(
             self.template_name,
-                { 'title':'{MethodName} form',
+                {{ 'title':'{MethodName} form',
                   'form' : {MethodName}Form(),
                   'action': self.action_url,
                   'errormessage': errormessage,
-                  'results': None},
+                  'result': None}},
             context_instance=RequestContext(request)
         )

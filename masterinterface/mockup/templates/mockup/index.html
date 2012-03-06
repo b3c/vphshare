@@ -1,13 +1,13 @@
-{% extends '{ServiceName}/base.html' %}
+{{% extends '{ServiceName}/base.html' %}}
 
-{% block content %}
+{{% block content %}}
 
     <h4>{ServiceName} Available Methods</h4>
     <p>Below are listed the available methods for {ServiceName} Service</p>
     <ul>
-        {% for method in methods %}
-            <li><a href="/{ServiceName}/{{ method}}/"><span>{{ method }}</span></a></li>
-        {% endfor %}
+        {{% for method in methods %}}
+            <li><a href="/{ServiceName}/{{{{ method}}}}/"><span>{{{{ method }}}}</span></a></li>
+        {{% endfor %}}
     </ul>
 
-{% endblock %}
+{{% endblock %}}

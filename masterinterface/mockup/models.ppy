@@ -4,15 +4,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from masterinterface.scs.config import CharField_max_length
 
-
-
-class {MethodNameRequestType}(models.Model):
-    # {MethodName} Request Model
-    {ElementName} = models.{ElementType}Field(_('{ElementName}'), null=False, max_length=CharField_max_length)
-
+#-split-#
 
 class {MethodNameRequestType}(models.Model):
-    # {MethodName} Response Model
+    # {MethodNameRequestType} Model
+
+#-split-#
     {ElementName} = models.{ElementType}Field(_('{ElementName}'), null=False, max_length=CharField_max_length)
 
-
+#-split-#
+    {ElementName} = models.ForeignKey('{ElementType}')
