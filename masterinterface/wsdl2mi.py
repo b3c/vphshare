@@ -1,7 +1,7 @@
 __author__ = 'asaglimbeni'
 
 from suds import client
-import os, sys
+import sys
 from  wsdl2mi_utils import *
 
 
