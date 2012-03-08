@@ -44,20 +44,21 @@ def installService(wsdl_url):
         # parse suds wsdl object
         services.append(service.name)
 
-        settingFile=file(base_path+'/settings.py','r')
-        if settingFile.read().find(',\n    \'masterinterface.'+services[0])>0:
-            settingFile.close()
+        settings=file(base_path+'/settings.py','r')
+        settingFile=settings.read()
+        settings.close()
+
+        if settingFile.find(',\n    \'masterinterface.'+services[0])>0:
+
             while True:
                 print "\nService %s always exist, you can (D) Delete (R) Replace (A) Abort :\n" %services[0]
                 response = sys.stdin.readline()
-                if response[0] == 'D':
+                if response[0] in ['D','d','R','r']:
 
                     if os.path.exists(base_path+'/'+services[0]):
                         shutil.rmtree(base_path+'/'+services[0])
 
-                    settingFile=file(base_path+'/settings.py','r')
-                    newsettingFile=settingFile.read().replace(',\n    \'masterinterface.'+services[0]+'\'','')
-                    settingFile.close()
+                    newsettingFile=settingFile.replace(',\n    \'masterinterface.'+services[0]+'\'','')
 
                     settingFile=file(base_path+'/settings.py','w')
                     settingFile.write(newsettingFile)
@@ -69,31 +70,12 @@ def installService(wsdl_url):
                     UrlFile=file(base_path+'/urls.py','w')
                     UrlFile.write(newUrlFile)
                     UrlFile.close()
-                    exit(0)
-                if response[0] == 'R':
-
-                    if os.path.exists(base_path+'/'+services[0]):
-                        shutil.rmtree(base_path+'/'+services[0])
-
-                    settingFile=file(base_path+'/settings.py','r')
-                    newsettingFile=settingFile.read().replace(',\n    \'masterinterface.'+services[0],'')
-                    settingFile.close()
-
-                    settingFile=file(base_path+'/settings.py','w')
-                    settingFile.write(newsettingFile)
-                    settingFile.close()
-
-                    UrlFile=file(base_path+'/urls.py','r')
-                    newUrlFile=UrlFile.read().replace(',\n    url(r\'^'+services[0]+'/\', include(\'masterinterface.'+services[0]+'.urls\'))','')
-                    UrlFile.close()
-                    UrlFile=file(base_path+'/urls.py','w')
-                    UrlFile.write(newUrlFile)
-                    UrlFile.close()
-                    break
+                    if response[0] in ['d','D']:
+                        exit(0)
+                    else:
+                        break
                 if response[0] == 'A':
                     exit(0)
-
-        settingFile.close()
 
         ports.append(service.ports[0].name)
 
