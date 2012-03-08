@@ -1,7 +1,7 @@
 __author__ = 'asaglimbeni'
 
 from suds import client
-import sys
+import sys, shutil
 from  wsdl2mi_utils import *
 
 
@@ -15,6 +15,8 @@ def installService(wsdl_url):
     It loads wsdl's services , methods and complextype , build directory and files structs.
 
     """
+
+    base_path=os.path.abspath(os.path.dirname(__file__))
 
     ########
     ## Start Process Wsdl
@@ -40,8 +42,59 @@ def installService(wsdl_url):
     for service in Client.wsdl.services:
 
         # parse suds wsdl object
-
         services.append(service.name)
+
+        settingFile=file(base_path+'/settings.py','r')
+        if settingFile.read().find(',\n    \'masterinterface.'+services[0])>0:
+            settingFile.close()
+            while True:
+                print "\nService %s always exist, you can (D) Delete (R) Replace (A) Abort :\n" %services[0]
+                response = sys.stdin.readline()
+                if response[0] == 'D':
+
+                    if os.path.exists(base_path+'/'+services[0]):
+                        shutil.rmtree(base_path+'/'+services[0])
+
+                    settingFile=file(base_path+'/settings.py','r')
+                    newsettingFile=settingFile.read().replace(',\n    \'masterinterface.'+services[0]+'\'','')
+                    settingFile.close()
+
+                    settingFile=file(base_path+'/settings.py','w')
+                    settingFile.write(newsettingFile)
+                    settingFile.close()
+
+                    UrlFile=file(base_path+'/urls.py','r')
+                    newUrlFile=UrlFile.read().replace(',\n    url(r\'^'+services[0]+'/\', include(\'masterinterface.'+services[0]+'.urls\'))','')
+                    UrlFile.close()
+                    UrlFile=file(base_path+'/urls.py','w')
+                    UrlFile.write(newUrlFile)
+                    UrlFile.close()
+                    exit(0)
+                if response[0] == 'R':
+
+                    if os.path.exists(base_path+'/'+services[0]):
+                        shutil.rmtree(base_path+'/'+services[0])
+
+                    settingFile=file(base_path+'/settings.py','r')
+                    newsettingFile=settingFile.read().replace(',\n    \'masterinterface.'+services[0],'')
+                    settingFile.close()
+
+                    settingFile=file(base_path+'/settings.py','w')
+                    settingFile.write(newsettingFile)
+                    settingFile.close()
+
+                    UrlFile=file(base_path+'/urls.py','r')
+                    newUrlFile=UrlFile.read().replace(',\n    url(r\'^'+services[0]+'/\', include(\'masterinterface.'+services[0]+'.urls\'))','')
+                    UrlFile.close()
+                    UrlFile=file(base_path+'/urls.py','w')
+                    UrlFile.write(newUrlFile)
+                    UrlFile.close()
+                    break
+                if response[0] == 'A':
+                    exit(0)
+
+        settingFile.close()
+
         ports.append(service.ports[0].name)
 
         for method in service.ports[0].methods.values():
@@ -85,7 +138,7 @@ def installService(wsdl_url):
     ## Start Create dir struct and build file template.
     ########
 
-    base_path=os.path.abspath(os.path.dirname(__file__))
+
     service_path=base_path+'/'+services[0]
 
     #Make directory
