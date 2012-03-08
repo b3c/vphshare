@@ -54,6 +54,10 @@ def installService(wsdl_url):
                 ## there is a bug for not <element> tag
                 #if part.element is None:
                 #    continue
+                #if part.name is not None and part.type is not None:
+                #    m.input.append(part.name)
+                #    types.appendType(part.name,part.type[0])
+                #else:
                 m.input.append(part.element[0])
                 types.appendType(part.element[0],part.element[0])
 
@@ -62,6 +66,10 @@ def installService(wsdl_url):
                 ## there is a bug for not <element> tag
                 #if part.element is None:
                 #    continue
+                #if part.name is not None and part.type is not None:
+                #    m.output.append(part.name)
+                #    types.appendType(part.name,part.type[0])
+                #else:
                 m.output.append(part.element[0])
                 types.appendType(part.element[0],part.element[0])
 
