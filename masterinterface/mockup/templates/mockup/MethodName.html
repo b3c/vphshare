@@ -13,7 +13,7 @@
     <!-- render request form -->
     <p> Fill the form below to submit the request:</p>
 
-    <form action="{{ action }}" method="post" enctype="multipart/form-data">
+    <form action="{{{{ action }}}}" method="post" enctype="multipart/form-data">
         {{% csrf_token %}}
         {{{{ form.as_ul }}}}
         <input type="submit" name="submit" value="submit" />
