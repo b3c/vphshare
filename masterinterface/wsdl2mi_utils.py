@@ -1,4 +1,6 @@
 import os
+from pysimplesoap.simplexml import *
+
 __author__ = 'asaglimbeni'
 
 MOCKUP_ROOT = os.path.abspath(os.path.dirname(__file__))+'/mockup'
@@ -66,17 +68,34 @@ class Types:
         """
         self.wsdl=wsdl
 
-    def isSimpleType(self,type):
+    def isSimpleType(self,Type):
 
         """
             check if type is a simple type
             # add new simple type to better performance
         """
+        checkType=type(Type)
+        if checkType is OrderedDict:
+            return False
+        if checkType is type:
+           if Type in TYPE_MAP:
+               return True
+        if isinstance(Type,Alias):
+            if Type.py_type in TYPE_MAP:
+                return True
 
-        if type in ['string','int','integer','bool','float','dateTime','boolean','decimal','date','time']:
-            return True
         return False
 
+    def resolveType(self,Type):
+
+        checkType=type(Type)
+
+        if checkType is OrderedDict:
+            return type([])
+        if checkType is type:
+            return Type
+        if isinstance(Type,Alias):
+            return Type.py_type
 
     def appendType(self,name,type):
 
@@ -86,12 +105,14 @@ class Types:
         """
 
         if self.isSimpleType(type):
-            self.types[name]=type
+            self.types[name]=self.resolveType(type)
         else:
-            Complex=self.wsdl.factory.resolver.find(type)
-            self.types[Complex.name]=[]
-            for btype, ptype in Complex:
-                self.types[Complex.name].append(self.process(btype.name,btype.type[0]))
+            self.types[name]=[]
+            for fieldName, fieldNameType in type.iteritems():
+                if fieldNameType is None:
+                    continue
+                self.types[name].append(self.process(fieldName,fieldNameType))
+
 
     def process(self,name,type):
 
@@ -100,16 +121,13 @@ class Types:
         """
 
         if self.isSimpleType(type):
-            return [name,type]
-            #self.Elem(name,type)
+
+            return [name,self.resolveType(type)]
+
         else:
-            Complex=self.wsdl.factory.resolver.find(type)
-            self.appendType(Complex.name,Complex.name)
-            return [name,type]
-            #subc= {Complex.name: []}
-            #for btype, ptype in Complex:
-            #    subc[Complex.name].append(self.process(btype.name,btype.type[0]))
-            #return subc
+
+            self.appendType(name,type)
+            return [name,self.resolveType(type)]
 
     def getType(self,typeName):
 
@@ -192,7 +210,10 @@ class models_template:
                 self.modelsResult+=self.element.format(ElementName=element, ElementType=Type)
 
     def isStadardFiled(self,fieldType):
-        if fieldType in ['string','int','integer','bool','float','dateTime','boolean','decimal','date','time']:
+
+        if type(fieldType) is OrderedDict:
+            return False
+        if fieldType in TYPE_MAP:
             return True
         return False
 
@@ -205,7 +226,7 @@ class models_template:
             if self.isStadardFiled(Type):
                 self.modelsResult+=self.element.format(ElementName=element, ElementType='Char')
             else:
-                self.modelsResult+=self.complexElement.format(ElementName=element, ElementType=Type)
+                self.modelsResult+=self.complexElement.format(ElementName=element, ElementType=element)
 
     def getModelResult(self):
 
@@ -232,14 +253,27 @@ class forms_template:
         """
         """
         self.mockupFormsFile=file(self.path,'r')
-        self.imports, self.importModelType, self.form_method, self.model=self.mockupFormsFile.read().split(SPLIT_TAG)
+        self.imports, self.importModelType, self.form_method, self.modelClass, self.model, self.SimpleType=self.mockupFormsFile.read().split(SPLIT_TAG)
 
     def addForm(self,methodName, modelTypes):
-        self.formsResult+=  self.form_method.format(MethodName=methodName)
 
-        for methodNameRequestType in modelTypes:
-            self.imports+=self.importModelType.format(MethodNameRequestType=methodNameRequestType)
-            self.formsResult+=self.model.format(MethodNameRequestType=methodNameRequestType)
+
+        modelclass=self.modelClass
+        simplefield=""
+
+        for methodNameRequestTypeName,methodNameRequestType in modelTypes:
+            if methodNameRequestType == 'ComplexType':
+                self.imports+=self.importModelType.format(MethodNameRequestType=methodNameRequestTypeName)
+                modelclass+=self.model.format(MethodNameRequestType=methodNameRequestTypeName)
+            else:
+                simplefield+=self.SimpleType.format(MethodNameRequestType=methodNameRequestTypeName)
+
+        if modelclass == self.modelClass:
+            self.formsResult+=  self.form_method.format(MethodName=methodName,superClass="Form")
+            self.formsResult+=simplefield
+        else:
+            self.formsResult+=  self.form_method.format(MethodName=methodName,superClass="ModelForm")
+            self.formsResult+=simplefield+modelclass
 
     def getFormsResult(self):
         return self.imports+self.formsResult
@@ -269,11 +303,18 @@ class views_template:
 
         self.viewResult+=self.indexView.format(ServiceName=ServiceName)
 
-    def addView(self,ServiceName, MethodName,PortName,wsdl_url):
+    def addView(self,ServiceName, MethodName,RequestType,ResponseType,PortName,wsdl_url):
         self.imports+=self.imports_forms_modules.format(MethodName=MethodName)
-        self.viewResult+=self.viewMethodClass.format(MethodName=MethodName,ServiceName=ServiceName,PortName=PortName,WsdlURL=wsdl_url)
-        ###TODO
-        ### COMPLETE CLASS: MORE SERVICE CASE.
+
+        for name , Type in RequestType:
+            RequestType=name
+
+        for name , Type in ResponseType:
+            ResponseType=name
+
+
+
+        self.viewResult+=self.viewMethodClass.format(MethodName=MethodName,RequestType=RequestType,ResponseType=ResponseType,ServiceName=ServiceName,PortName=PortName,WsdlURL=wsdl_url)
 
     def getViewResult(self):
         return self.imports+self.viewResult
@@ -285,22 +326,7 @@ class baseHtml_template:
 
     mockupBaseFile=None
 
-    baseHtml="""
-<!-- Automatically generated by SCS Service Interface Generator -->
-
-{{% extends 'base.html' %}}
-
-{{% block title %}}
-    Welcome to {ServiceName}
-    <!-- the page tile goes here -->
-{{% endblock %}}
-
-{{% block extrahead %}}
-    <!-- your styles, javascript and whatever you want to put into the page header go here -->
-{{% endblock %}}
-
-{{% block content %}} {{% endblock %}}
-    """
+    baseHtml=""
 
     baseHtmlResult=""
 
@@ -420,9 +446,6 @@ class indexHtml_Template:
 
     def getIndexHtml(self):
         return self.indexHtmlResult
-
-
-
 
 
 ####################

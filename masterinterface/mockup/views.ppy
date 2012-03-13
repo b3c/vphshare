@@ -8,11 +8,10 @@ from django.views.generic.base import View
 from django.template import RequestContext
 from masterinterface.scs.services import invokeSoapService
 from masterinterface.scs.permissions import guard, check_sample_permission, login_required
+from models import *
 #-split-#
+# import {MethodName} form
 from forms import {MethodName}Form
-
-from models import {MethodName} as {MethodName}RequestType
-from models import {MethodName}Response as {MethodName}ResponseType
 #-split-#
 
 def index(request):
@@ -41,8 +40,8 @@ class {MethodName}(View):
     method = '{MethodName}'
     service = '{ServiceName}'
     port = '{PortName}'
-    requestType = {MethodName}RequestType
-    responseType = {MethodName}ResponseType
+    requestType = {RequestType}
+    responseType = {ResponseType}
 
     # your permission control goes here
     @guard(check_sample_permission)
