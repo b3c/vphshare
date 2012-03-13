@@ -1,4 +1,4 @@
-import suds
+from pysimplesoap.client import SoapClient
 
 def invokeSoapService( wsdl_url, service, port, method, requestParameters, requestType, responseType):
     """
@@ -23,37 +23,47 @@ def invokeSoapService( wsdl_url, service, port, method, requestParameters, reque
     """
 
     # create client
-    client = suds.client.Client( wsdl_url )
+    client = SoapClient(wsdl=wsdl_url,trace=True)
 
-    # create request object
-    request = client.factory.create( requestType.__name__ )
+    # create request string
+    ## NOTE now it work good, but it need to test for a more complex request (es: complextype of complextype, sequence or array)
+    request=""
+    for name, Type in requestParameters.iteritems():
 
-    for key, value in request:
-        # element is a tuple (key, value)
-        request[ key ] = requestParameters[key]
+        request+=name+"='"+Type+"', "
+
+    request=request[:-2]
+
 
     # invoke service
-    response = client.service[port][method](request)
+    try:
 
+        call= 'client.'+method+'('+request+')'
+        response=eval(str(call),globals(),locals())
+
+    except Exception, e:
+        response= "there was an error: %s" %str(e)
+
+    return response
+    ##To Continue,if Mokup view need to render complex response, have to change it.
+    """
+    result={}
     # marshall response
-    result= client.factory.create(responseType.__name__)
-    #result = responseType()
-
-    if type(response) is type([]):
-        i=0
-        for key, value in result:
-            result[key]=response[i]
-            i+=1
-    else:
+    if type(response) == 'Text':
         result=response
-    # HACK!!
-    # for key,value in response:
-    #    result[key] = value
+    else:
+        for name, Type in responseType:
+            # arg is a tuple (name, type)
 
-   # result.sendSMSResult = str(response)
+            if Type == 'ComplexType':
+                complexType = client.factory.create( name )
+                for key, value in complexType:
+                    result[key] =  response[key]
 
-
+            result[name] = response[name]
     return result
+
+    """
 
 
 
