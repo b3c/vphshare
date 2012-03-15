@@ -97,20 +97,24 @@ class Types:
         if isinstance(Type,Alias):
             return Type.py_type
 
-    def appendType(self,name,type):
+    def appendType(self,name,Type):
 
         """
             Add new type
 
         """
-
-        if self.isSimpleType(type):
-            self.types[name]=self.resolveType(type)
+        if name in self.types:
+            return
+        if self.isSimpleType(Type):
+            self.types[name]=self.resolveType(Type)
         else:
             self.types[name]=[]
-            for fieldName, fieldNameType in type.iteritems():
+            if type(Type)==list:
+                Type=Type[0]
+            for fieldName, fieldNameType in Type.iteritems():
                 if fieldNameType is None:
                     continue
+
                 self.types[name].append(self.process(fieldName,fieldNameType))
 
 
@@ -190,6 +194,14 @@ class models_template:
 
     modelsResult=""
 
+    FIELD_MAP = {str:'Char',unicode:'Char',
+                bool:'Boolean',
+                int:'Integer', long:'BigInteger',
+                float:'Float',
+                Decimal:'Decimal',
+                datetime.datetime:'DateTime', datetime.date:'Date',
+                }
+
     def __init__(self):
         """
         """
@@ -217,6 +229,21 @@ class models_template:
             return True
         return False
 
+    def resolveType(self,Type):
+
+        checkType=type(Type)
+
+        if checkType is OrderedDict:
+            # the Orderdict is a sequence but it have to test
+            return  str(type([])).split('\'')[1]
+
+        if checkType is type:
+
+            return self.FIELD_MAP[Type]
+
+        #Default Field
+        return 'Char'
+
     def addType(self, TypeName, ElementsName ):
         """
         """
@@ -224,7 +251,8 @@ class models_template:
 
         for element,Type in ElementsName:
             if self.isStadardFiled(Type):
-                self.modelsResult+=self.element.format(ElementName=element, ElementType='Char')
+                ElementType=self.resolveType(Type)
+                self.modelsResult+=self.element.format(ElementName=element, ElementType=ElementType)
             else:
                 self.modelsResult+=self.complexElement.format(ElementName=element, ElementType=element)
 
