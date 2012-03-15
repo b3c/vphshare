@@ -198,6 +198,10 @@ if __name__ == '__main__':
 
     ## "http://www.webservicex.net/sendsmsworld.asmx?WSDL"
 
+    ## "http://peopleask.ooz.ie/soap.wsdl"
+
+    ## "http://www.predic8.com:8080/shop/ShopService?wsdl"
+
     wsdl_url= sys.argv[1]
 
 
