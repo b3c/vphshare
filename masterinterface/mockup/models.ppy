@@ -9,6 +9,6 @@ from masterinterface.scs.config import CharField_max_length
 class {MethodNameRequestType}(models.Model):
     """  {MethodNameRequestType} Model """
 #-split-#
-    {ElementName} = models.{ElementType}Field(_('{ElementName}'), null=False, max_length=CharField_max_length)
+    {ElementName} = models.{ElementType}Field(_('{ElementName}'), null=False, {Options})
 #-split-#
     {ElementName} = models.ForeignKey('{ElementType}')

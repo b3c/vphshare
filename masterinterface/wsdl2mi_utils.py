@@ -194,12 +194,15 @@ class models_template:
 
     modelsResult=""
 
-    FIELD_MAP = {str:'Char',unicode:'Char',
-                bool:'Boolean',
-                int:'Integer', long:'BigInteger',
-                float:'Float',
-                Decimal:'Decimal',
-                datetime.datetime:'DateTime', datetime.date:'Date',
+    FIELD_MAP = {str:['Char','max_length=CharField_max_length'],
+                 unicode:['Char','max_length=CharField_max_length'],
+                 bool:['Boolean',''],
+                 int:['Integer',''],
+                 long:['BigInteger',''],
+                 float:['Float',''],
+                 Decimal:['Decimal','max_digits=DecimalField_max_length, decimal_places=DecimalField_max_places'],
+                 datetime.datetime:['DateTime','auto_now=True, auto_now_add=True'],
+                 datetime.date:['Date','auto_now=False, auto_now_add=False'],
                 }
 
     def __init__(self):
@@ -235,15 +238,15 @@ class models_template:
 
         if checkType is OrderedDict:
             # the Orderdict is a sequence but it have to test
-            return  str(type([])).split('\'')[1]
+            return  str(type([])).split('\'')[1], ""
 
         if checkType is type:
 
-            return self.FIELD_MAP[Type]
+            return self.FIELD_MAP[Type][0],self.FIELD_MAP[Type][1]
 
         #Default Field
         return 'Char'
-
+    #max_length=CharField_max_length
     def addType(self, TypeName, ElementsName ):
         """
         """
@@ -251,8 +254,8 @@ class models_template:
 
         for element,Type in ElementsName:
             if self.isStadardFiled(Type):
-                ElementType=self.resolveType(Type)
-                self.modelsResult+=self.element.format(ElementName=element, ElementType=ElementType)
+                ElementType, Options=self.resolveType(Type)
+                self.modelsResult+=self.element.format(ElementName=element, ElementType=ElementType, Options=Options)
             else:
                 self.modelsResult+=self.complexElement.format(ElementName=element, ElementType=element)
 

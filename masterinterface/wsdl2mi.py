@@ -48,16 +48,18 @@ def installService(service):
             m=Method(methodName)
 
             # Process Input types
-            for inputName, input in method['input'].iteritems():
-                # TODO it's not clear if OrderType in pysymplesoap library is a sequence input, so we have to provide form sequence input whit formset!
-                m.input.append([inputName,'ComplexType'])
-                types.appendType(inputName,input)
+            if method['input'] is not None:
+                for inputName, input in method['input'].iteritems():
+                    # TODO it's not clear if OrderType in pysymplesoap library is a sequence input, so we have to provide form sequence input whit formset!
+                    m.input.append([inputName,'ComplexType'])
+                    types.appendType(inputName,input)
 
             # Process Output type
-            for outputName, output in method['output'].iteritems():
-                # TODO the same of previous
-                m.output.append([outputName,'ComplexType'])
-                types.appendType(outputName,output)
+            if method['output'] is not None:
+                for outputName, output in method['output'].iteritems():
+                    # TODO the same of previous
+                    m.output.append([outputName,'ComplexType'])
+                    types.appendType(outputName,output)
             methods.append(m)
 
 
