@@ -1,9 +1,13 @@
+import sys
+from masterinterface import wsdl2mi
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.messages.api import get_messages
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 from scs import __version__ as version
 from masterinterface import settings
@@ -133,6 +137,21 @@ def services(request):
         if app.count('masterinterface') and not app.count('scs'):
             service = app.split('.')[1]
             serviceList.append( service )
+
+    message=""
+
+    if 'wsdlURL' in request.POST:
+        wsdlURL=request.POST['wsdlURL']
+        try:
+            val = URLValidator(verify_exists=True)
+            val(wsdlURL)
+            #here install service with new feature of wsdl2mi the power is now!
+        except ValidationError, e:
+            message="This wsdl URL is not valid"
+            return render_to_response("scs/services.html",
+                    {'services':serviceList,
+                     'errormessage':message},
+                RequestContext(request))
 
     return render_to_response("scs/services.html",
             {'services':serviceList},

@@ -8,7 +8,11 @@
 {% endblock%}
 
 {% block content %}
-
+    <form action="/services/" method="post" enctype="multipart/form-data" >
+    {% csrf_token %}
+    <span>Install new service from wsdl URL on Master interface:<br/>
+    </span> <input name="wsdlURL" type="text" > <input type="submit" value="Install">
+    </form>
     {% if services %}
         <p>Below are listed the available services</p>
         <ul>

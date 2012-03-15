@@ -30,7 +30,7 @@ def invokeSoapService( wsdl_url, service, port, method, requestParameters, reque
     request=""
     for name, Type in requestParameters.iteritems():
 
-        request+=name+"='"+Type+"', "
+        request+=str(name)+"='"+str(Type)+"', "
 
     request=request[:-2]
 
@@ -44,6 +44,7 @@ def invokeSoapService( wsdl_url, service, port, method, requestParameters, reque
     except Exception, e:
         response= "there was an error: %s" %str(e)
 
+    # if response is a list the type in wsdl is arrayofType
     return response
     ##To Continue,if Mokup view need to render complex response, have to change it.
     """
