@@ -17,4 +17,6 @@ urlpatterns = patterns(
     url(r'^services/$', 'services'),
     url(r'^test/$', 'test'),
     url(r'^done/$', 'done'),
+    url(r'^cloudmanager/$', 'cloudmanager'),
+    url(r'^datamanager/$', 'datamanager'),
 )

@@ -16,12 +16,12 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
+        'USER': 'vph',                      # Not used with sqlite3.
+        'PASSWORD': 'vph123',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -178,3 +178,5 @@ LOGGING = {
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/done'
 LOGIN_ERROR_URL    = '/login-error/'
+
+CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://localhost:8080/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
