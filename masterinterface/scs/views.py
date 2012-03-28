@@ -132,29 +132,45 @@ def services(request):
     """ a page with all available applications """
     serviceList = []
 
+    message={}
+    if 'delete' in request.GET:
+        serviceToDelete=request.GET['delete']
+        success = wsdl2mi.DeleteService(serviceToDelete)
+        if success[0]:
+
+            message['statusmessage']=success[1]
+
+        else:
+
+            message['errormessage']=success[1]
+
+    if 'wsdlURL' in request.POST:
+        wsdlURL=request.POST['wsdlURL']
+        try:
+            val = URLValidator(verify_exists=False)
+            val(wsdlURL)
+            success = wsdl2mi.startInstallService(wsdlURL)
+            if success[0]:
+
+                message['statusmessage']=success[1]
+
+            else:
+
+                message['errormessage']=success[1]
+
+        except ValidationError, e:
+            message['errormessage']="This wsdl URL is not valid"
+
     for app in settings.INSTALLED_APPS:
         # TODO do a better check
         if app.count('masterinterface') and not app.count('scs'):
             service = app.split('.')[1]
             serviceList.append( service )
 
-    message=""
-
-    if 'wsdlURL' in request.POST:
-        wsdlURL=request.POST['wsdlURL']
-        try:
-            val = URLValidator(verify_exists=True)
-            val(wsdlURL)
-            #here install service with new feature of wsdl2mi the power is now!
-        except ValidationError, e:
-            message="This wsdl URL is not valid"
-            return render_to_response("scs/services.html",
-                    {'services':serviceList,
-                     'errormessage':message},
-                RequestContext(request))
+    message['services']=serviceList
 
     return render_to_response("scs/services.html",
-            {'services':serviceList},
+            message,
         RequestContext(request))
 
 def contacts(request):

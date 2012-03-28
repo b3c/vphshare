@@ -1,5 +1,8 @@
 from pysimplesoap.client import SoapClient
 
+
+
+
 def invokeSoapService( wsdl_url, service, port, method, requestParameters, requestType, responseType):
     """
         Invoke a soap method for a wsdl with only one service.
@@ -40,6 +43,8 @@ def invokeSoapService( wsdl_url, service, port, method, requestParameters, reque
 
         call= 'client.'+method+'('+request+')'
         response=eval(str(call),globals(),locals())
+
+        #response=response2Html(response)
 
     except Exception, e:
         response= "there was an error: %s" %str(e)

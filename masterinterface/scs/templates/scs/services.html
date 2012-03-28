@@ -17,7 +17,7 @@
         <p>Below are listed the available services</p>
         <ul>
             {% for service in services %}
-                <li><a href="/{{ service }}/"><span>{{ service }}</span></a></li>
+                <li><a href="/{{ service }}/"><span>{{ service }}</span></a> | <a href="?delete={{ service }}"> Delete</a></li>
             {% endfor %}
         </ul>
     {% else %}
