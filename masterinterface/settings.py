@@ -128,7 +128,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'social_auth',
-    'masterinterface.scs'
+    'masterinterface.scs',
+    'masterinterface.scs_auth'
 
     ##NEW_APP
 )
@@ -139,7 +140,7 @@ AUTHENTICATION_BACKENDS = (
     'social_auth.backends.google.GoogleOAuthBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
     'social_auth.backends.google.GoogleBackend',
-    'scs.backends.biomedtown.BiomedTownBackend'
+    'scs_auth.backends.biomedtown.BiomedTownBackend'
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

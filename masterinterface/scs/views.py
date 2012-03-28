@@ -1,10 +1,9 @@
-import sys
 from masterinterface import wsdl2mi
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response
 from django.contrib.messages.api import get_messages
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -12,14 +11,10 @@ from django.core.exceptions import ValidationError
 from scs import __version__ as version
 from masterinterface import settings
 
-from tktauth import createTicket, validateTicket
-import binascii
-
 def home(request):
     """Home view """
 
     data = {'version': version}
-
     if request.user.is_authenticated():
         data['last_login'] = request.session.get('social_auth_last_login_backend')
 
@@ -37,35 +32,6 @@ def login(request):
         {'version': version, 'next': request.GET.get('next','/')},
         RequestContext(request)
     )
-
-def done(request):
-    """ login complete view """
-    ctx = {
-        'version': version,
-        'last_login': request.session.get('social_auth_last_login_backend')
-    }
-
-    # create ticket
-    tokens = ('foo','bar') #to be random generated
-    user_data = '%s %s' % (request.user.first_name, request.user.last_name)
-    tkt = createTicket(
-        settings.SECRET_KEY,
-        request.user.username,
-        tokens=tokens,
-        user_data=user_data
-    )
-
-    tkt64 = binascii.b2a_base64(tkt).rstrip()
-
-    response = render_to_response(
-        'scs/done.html',
-        ctx,
-        RequestContext(request)
-    )
-
-    response.set_cookie( 'vph-tkt', tkt64 )
-
-    return response
 
 @login_required
 def profile(request):
@@ -94,33 +60,6 @@ def login_error(request):
         'scs/error.html',
         {'version': version,
          'messages': messages},
-        RequestContext(request)
-    )
-
-@login_required
-def logout(request):
-    """Logs out user"""
-    auth_logout(request)
-    return HttpResponseRedirect('/')
-
-
-def bt_loginform(request):
-    """ return the biomedtown login form """
-    if request.method == 'POST' and request.POST.get('username'):
-        name = settings('SOCIAL_AUTH_PARTIAL_PIPELINE_KEY', 'partial_pipeline')
-        request.session['saved_username'] = request.POST['username']
-        backend = request.session[name]['backend']
-        return redirect('socialauth_complete', backend=backend)
-
-    return render_to_response('scs/bt_loginform.html',
-            {'version': version},
-        RequestContext(request)
-    )
-def bt_login(request):
-    """ return the biomedtown login page with and embedded login iframe"""
-
-    return render_to_response('scs/bt_login.html',
-            {'version': version},
         RequestContext(request)
     )
 
