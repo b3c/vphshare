@@ -83,18 +83,26 @@ def auth_loginform(request):
 
         if service_response is not False:
 
-            response['ticket']= binascii.a2b_base64(service_response['tkt'])
+            response['ticket']= binascii.a2b_base64(service_response)
+            user_data=validateTicket(settings.SECRET_KEY,response['ticket'])
+            if user_data:
+                token_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                token_value=user_data[2]
+                token_dict={}
 
-            if validateTicket(settings.SECRET_KEY,response['ticket']):
+                for i in range(0, len(token_key)):
+                    token_dict[token_key[i]]=token_value[i]
+
 
                 new_user = RemoteUserBackend()
                 user = new_user.authenticate(username)
 
                 user.backend ='django.contrib.auth.backends.RemoteUserBackend'
-                user.first_name = service_response['fullname'].split(" ")[0]
-                user.last_name = service_response['fullname'].split(" ")[1]
-                user.email = service_response['email']
+                user.first_name = token_dict['fullname'].split(" ")[0]
+                user.last_name = token_dict['fullname'].split(" ")[1]
+                user.email = token_dict['email']
                 user.last_login = str(datetime.now())
+
                 user.save()
                 login(request,user)
 
@@ -102,7 +110,8 @@ def auth_loginform(request):
 
                 new_tkt = createTicket(
                     settings.SECRET_KEY,
-                    username
+                    username,
+                    token_value
                 )
                 tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
@@ -135,25 +144,11 @@ def auth_done(request,token):
     }
 
 
-    # create ticket
-    tokens = ('foo','bar') #to be random generated
-    user_data = '%s %s' % (request.user.first_name, request.user.last_name)
-    tkt = createTicket(
-        settings.SECRET_KEY,
-        request.user.username,
-        tokens=tokens,
-        user_data=user_data
-    )
-
-    tkt64 = binascii.b2a_base64(tkt).rstrip()
-
     response = render_to_response(
         'scs_auth/done.html',
         ctx,
         RequestContext(request)
     )
-
-    response.set_cookie( 'vph-tkt', tkt64 )
 
     return response
 
