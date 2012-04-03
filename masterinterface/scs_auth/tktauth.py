@@ -134,7 +134,7 @@ def mod_auth_tkt_digest(secret, data1, data2):
     return digest
 
 
-def createTicket(secret, userid, tokens=(), user_data=u'', ip='0.0.0.0', timestamp=None, encoding='utf8', mod_auth_tkt=True):
+def createTicket(secret, userid, tokens=(), user_data=(), ip='0.0.0.0', timestamp=None, encoding='utf8', mod_auth_tkt=True):
     """
     By default, use a more compatible
     """
@@ -143,14 +143,15 @@ def createTicket(secret, userid, tokens=(), user_data=u'', ip='0.0.0.0', timesta
 
     userid = userid.encode(encoding)
     token_list = ','.join(tokens).encode(encoding)
-    user_data = user_data.encode(encoding)
+
+    user_list = ','.join(user_data).encode(encoding)
 
     # ip address is part of the format, set it to 0.0.0.0 to be ignored.
     # inet_aton packs the ip address into a 4 bytes in network byte order.
     # pack is used to convert timestamp from an unsigned integer to 4 bytes
     # in network byte order.
     data1 = inet_aton(ip) + pack("!I", timestamp)
-    data2 = '\0'.join((userid, token_list, user_data))
+    data2 = '\0'.join((userid, token_list, user_list))
     if mod_auth_tkt:
         digest = mod_auth_tkt_digest(secret, data1, data2)
     else:
@@ -161,7 +162,8 @@ def createTicket(secret, userid, tokens=(), user_data=u'', ip='0.0.0.0', timesta
     ticket = "%s%08x%s!" % (digest, timestamp, userid)
     if tokens:
         ticket += token_list + '!'
-    ticket += user_data
+    if user_data:
+        ticket += user_list
 
     return ticket
 
@@ -178,9 +180,13 @@ def splitTicket(ticket, encoding='utf8'):
     if len(parts) == 2:
         userid, user_data = parts
         tokens = ()
+        if len(user_data)>0:
+            user_data = tuple(user_data.split(','))
+
     elif len(parts) == 3:
         userid, token_list, user_data = parts
-        tokens = tuple(token_list.split(','))
+        tokens = tuple(user_data.split(','))
+        user_data = tuple(user_data.split(','))
     else:
         raise ValueError
 

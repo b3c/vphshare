@@ -29,28 +29,28 @@ class MultiHostMiddleware:
                 user_data = validateTicket(settings.SECRET_KEY,ticket)
                 if  user_data is not None :
 
-                    token_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
-                    token_value=user_data[2]
-                    token_dict={}
+                    user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                    user_value=user_data[3]
+                    user_dict={}
 
-                    for i in range(0, len(token_key)):
-                        token_dict[token_key[i]]=token_value[i]
+                    for i in range(0, len(user_key)):
+                        user_dict[user_key[i]]=user_value[i]
 
 
                     new_user = RemoteUserBackend()
-                    user = new_user.authenticate(token_dict['nickname'])
-
+                    user = new_user.authenticate(username)
 
                     user.backend ='django.contrib.auth.backends.RemoteUserBackend'
-                    user.first_name = token_dict['fullname'].split(" ")[0]
-                    user.last_name = token_dict['fullname'].split(" ")[1]
-                    user.email = token_dict['email']
+                    user.first_name = user_dict['fullname'].split(" ")[0]
+                    user.last_name =  user_dict['fullname'].split(" ")[1]
+                    user.email = user_dict['email']
                     user.last_login = str(datetime.now())
+
                     user.save()
 
                     login(request,user)
                     request.META['NEW_VPH_TKT_COOKIE'] = True
-                    request.META['TKT_TOKEN'] = token_value
+                    request.META['TKT_USER_DATA'] = user_value
 
 
 
@@ -64,7 +64,7 @@ class MultiHostMiddleware:
             new_tkt = createTicket(
                 settings.SECRET_KEY,
                 request.user.username,
-                request.META['TKT_TOKEN']
+                user_data=request.META['TKT_USER_DATA']
             )
 
             tkt64 = binascii.b2a_base64(new_tkt).rstrip()
