@@ -1,5 +1,6 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.contrib.auth import logout as auth_logout, login
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
@@ -33,7 +34,7 @@ def done(request):
         settings.SECRET_KEY,
         request.user.username,
         tokens=tokens,
-        user_data=user_data
+        user_list=user_data
     )
 
     tkt64 = binascii.b2a_base64(tkt).rstrip()
@@ -86,21 +87,21 @@ def auth_loginform(request):
             response['ticket']= binascii.a2b_base64(service_response)
             user_data=validateTicket(settings.SECRET_KEY,response['ticket'])
             if user_data:
-                token_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
-                token_value=user_data[2]
-                token_dict={}
+                user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                user_value=user_data[3]
+                user_dict={}
 
-                for i in range(0, len(token_key)):
-                    token_dict[token_key[i]]=token_value[i]
+                for i in range(0, len(user_key)):
+                    user_dict[user_key[i]]=user_value[i]
 
 
                 new_user = RemoteUserBackend()
                 user = new_user.authenticate(username)
 
                 user.backend ='django.contrib.auth.backends.RemoteUserBackend'
-                user.first_name = token_dict['fullname'].split(" ")[0]
-                user.last_name = token_dict['fullname'].split(" ")[1]
-                user.email = token_dict['email']
+                user.first_name = user_dict['fullname'].split(" ")[0]
+                user.last_name =  user_dict['fullname'].split(" ")[1]
+                user.email = user_dict['email']
                 user.last_login = str(datetime.now())
 
                 user.save()
@@ -111,7 +112,7 @@ def auth_loginform(request):
                 new_tkt = createTicket(
                     settings.SECRET_KEY,
                     username,
-                    token_value
+                    user_data=user_value
                 )
                 tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
@@ -174,5 +175,25 @@ def logout(request):
     response.delete_cookie('vph_cookie')
 
     return response
+
+def validate_tkt(request):
+
+    if request.GET.get('ticket'):
+        ticket= binascii.a2b_base64(request.GET['ticket'])
+        user_data=validateTicket(settings.SECRET_KEY,ticket)
+        if user_data:
+            user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+            user_value=user_data[3]
+            user_dict={}
+
+            for i in range(0, len(user_key)):
+                user_dict[user_key[i]]=user_value[i]
+
+            user=User.objects.get(username=user_dict['nickname'])
+
+            if user:
+                return HttpResponse("VALID")
+
+    return HttpResponse("NOT_VALID")
 
 

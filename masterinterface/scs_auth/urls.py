@@ -10,5 +10,6 @@ urlpatterns = patterns(
     url(r'^auth_login/$', 'auth_login'),
     url(r'^auth_loginform/$', 'auth_loginform'),
     url(r'^done/$', 'done'),
-    url(r'^logout/$','logout')
+    url(r'^logout/$','logout'),
+    url(r'^validatetkt','validate_tkt')
     )
