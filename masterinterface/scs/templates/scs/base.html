@@ -36,8 +36,16 @@
                     <nav>
                         <li class="current-menu-item"><a href="/">home</a></li>
                         <li><a href="/services">services</a></li>
+
+                        {% if request.user.is_authenticated %}
+                            <li><a href="/cyfronet">cyfronet</a></li>
+                        {% endif %}
+
                         <li><a href="/contacts">contact</a></li>
                         <li><a href="/help">help</a></li>
+
+
+
                     </nav>
                 {% endblock %}
 

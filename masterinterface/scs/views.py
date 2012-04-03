@@ -102,7 +102,7 @@ def services(request):
 
     for app in settings.INSTALLED_APPS:
         # TODO do a better check
-        if app.count('masterinterface') and not app.count('scs'):
+        if app.count('masterinterface') and not app.count('scs') and not app.count('cyfronet'):
             service = app.split('.')[1]
             serviceList.append( service )
 

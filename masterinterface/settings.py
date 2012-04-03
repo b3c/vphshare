@@ -132,7 +132,8 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'social_auth',
     'masterinterface.scs',
-    'masterinterface.scs_auth'
+    'masterinterface.scs_auth',
+    'masterinterface.cyfronet'
 
     ##NEW_APP
 )
@@ -182,3 +183,6 @@ LOGGING = {
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/done'
 LOGIN_ERROR_URL    = '/login-error/'
+
+# Cyfronet Settings
+CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://localhost:8080/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'

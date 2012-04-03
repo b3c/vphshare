@@ -22,6 +22,9 @@ urlpatterns = patterns('',
     # favicon
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/favicon.ico'}),
 
+    # cyfronet
+    url(r'^cyfronet/', include('masterinterface.cyfronet.urls')),
+
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
     url(r'^scs/', include('masterinterface.scs.urls')),

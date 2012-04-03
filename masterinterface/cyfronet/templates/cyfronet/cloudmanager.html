@@ -1,0 +1,15 @@
+{% extends 'cyfronet/base.html' %}
+
+{%  block title %} VPH-Share Cloud Manager {% endblock %}
+
+{% block page-title %}
+    <span class="title">Cloud Manager</span>
+    <span class="subtitle">Manage cloud resources</span>
+{% endblock%}
+
+{%  block content %}
+    <iframe id="cloudmanagerframe"
+            src="{{ source }}"
+            frameborder="0" border="0" scrolling="no">
+    </iframe>
+{% endblock %}
