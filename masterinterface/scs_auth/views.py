@@ -74,7 +74,7 @@ def auth_loginform(request):
     """
     """
 
-    service = ServerProxy(settings('AUTH_SERVICES'))
+    service = ServerProxy(settings.AUTH_SERVICES)
     response = {'version': version}
 
     if request.method == 'POST' and request.POST.get('biomedtown_username') and request.POST.get('biomedtown_password'):
