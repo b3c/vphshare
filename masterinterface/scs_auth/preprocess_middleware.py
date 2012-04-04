@@ -29,7 +29,8 @@ class MultiHostMiddleware:
                 user_data = validateTicket(settings.SECRET_KEY,ticket)
                 if  user_data is not None :
 
-                    user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                    # user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                    user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
                     user_value=user_data[3]
                     user_dict={}
 
@@ -38,7 +39,7 @@ class MultiHostMiddleware:
 
 
                     new_user = RemoteUserBackend()
-                    user = new_user.authenticate(username)
+                    user = new_user.authenticate( user_dict['nickname'] )
 
                     user.backend ='django.contrib.auth.backends.RemoteUserBackend'
                     user.first_name = user_dict['fullname'].split(" ")[0]
@@ -52,10 +53,10 @@ class MultiHostMiddleware:
                     request.META['NEW_VPH_TKT_COOKIE'] = True
                     request.META['TKT_USER_DATA'] = user_value
 
-
-
         except KeyError:
             pass # use default urlconf (settings.ROOT_URLCONF)
+
+
 
     def process_response(self, request, response):
 
@@ -70,7 +71,6 @@ class MultiHostMiddleware:
             tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
             response.set_cookie( 'vph-tkt', tkt64 )
-
 
 
         if request.META.get("VPH_TKT_COOKIE") is None:

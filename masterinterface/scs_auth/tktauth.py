@@ -185,7 +185,7 @@ def splitTicket(ticket, encoding='utf8'):
 
     elif len(parts) == 3:
         userid, token_list, user_data = parts
-        tokens = tuple(user_data.split(','))
+        tokens = tuple(token_list.split(','))
         user_data = tuple(user_data.split(','))
     else:
         raise ValueError

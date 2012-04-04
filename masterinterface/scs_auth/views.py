@@ -28,8 +28,10 @@ def done(request):
 
 
     # create ticket
-    tokens = ('foo','bar') #to be random generated
-    user_data = '%s %s' % (request.user.first_name, request.user.last_name)
+    tokens = ['developer'] #to be random generated
+
+    user_data = [ request.user.username, '%s %s' % (request.user.first_name, request.user.last_name), '', '', '', '']
+
     tkt = createTicket(
         settings.SECRET_KEY,
         request.user.username,
@@ -87,7 +89,8 @@ def auth_loginform(request):
             response['ticket']= binascii.a2b_base64(service_response)
             user_data=validateTicket(settings.SECRET_KEY,response['ticket'])
             if user_data:
-                user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                # user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
                 user_value=user_data[3]
                 user_dict={}
 
@@ -112,6 +115,7 @@ def auth_loginform(request):
                 new_tkt = createTicket(
                     settings.SECRET_KEY,
                     username,
+                    tokens=['developer'],
                     user_data=user_value
                 )
                 tkt64 = binascii.b2a_base64(new_tkt).rstrip()
@@ -176,13 +180,15 @@ def logout(request):
 
     return response
 
+
 def validate_tkt(request):
 
     if request.GET.get('ticket'):
         ticket= binascii.a2b_base64(request.GET['ticket'])
         user_data=validateTicket(settings.SECRET_KEY,ticket)
         if user_data:
-            user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+            #user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+            user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
             user_value=user_data[3]
             user_dict={}
 
