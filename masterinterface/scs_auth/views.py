@@ -10,10 +10,10 @@ from django.contrib.messages.api import get_messages
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
-from scs import __version__ as version
-from masterinterface import settings
+from scs_auth import __version__ as version
+from django.conf import settings
 from xmlrpclib import ServerProxy
-from masterinterface.settings import AUTH_SERVICES
+
 from datetime import datetime, time
 from tktauth import createTicket, validateTicket
 import binascii
@@ -74,7 +74,7 @@ def auth_loginform(request):
     """
     """
 
-    service = ServerProxy(AUTH_SERVICES)
+    service = ServerProxy(settings('AUTH_SERVICES'))
     response = {'version': version}
 
     if request.method == 'POST' and request.POST.get('biomedtown_username') and request.POST.get('biomedtown_password'):
