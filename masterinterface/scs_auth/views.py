@@ -1,20 +1,17 @@
 from django.http import HttpResponse
 from django.contrib.auth import logout as auth_logout, login
-from django.contrib.auth.models import User
+from Cookie import BaseCookie
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.backends import RemoteUserBackend
-from django.contrib.messages.api import get_messages
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 
 from scs_auth import __version__ as version
 from django.conf import settings
 from xmlrpclib import ServerProxy
 
-from datetime import datetime, time
+from datetime import datetime
 from tktauth import createTicket, validateTicket
 import binascii
 
@@ -125,8 +122,8 @@ def auth_loginform(request):
                     response,
                     RequestContext(request)
                 )
-
-                response.set_cookie( 'vph-tkt', tkt64 )
+                response.cookies = BaseCookie()
+                response.set_cookie('vph-tkt', tkt64, path='/')
 
                 return response
 

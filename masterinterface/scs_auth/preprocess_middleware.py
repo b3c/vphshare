@@ -3,13 +3,16 @@ from django.contrib.auth.backends import RemoteUserBackend
 from django.contrib.auth import logout , login
 from tktauth import validateTicket, createTicket
 from datetime import datetime
+from Cookie import BaseCookie
 import binascii
 
 class MultiHostMiddleware:
 
+
     def process_view(self, request, callback, callback_args, callback_kwargs):
 
-        request.META['NEW_VPH_TKT_COOKIE']=False
+        request.META['NEW_VPH_TKT_COOKIE'] = False
+        request.META['VPH_TKT_COOKIE'] = None
 
         try:
             host = request.META["HTTP_HOST"]
@@ -21,7 +24,8 @@ class MultiHostMiddleware:
                     logout(request)
                 request.META['VPH_TKT_COOKIE'] = ticket
             else:
-                if not request.user.is_authenticated() and not request.user.username == 'admin':
+
+                if not request.user.username == 'admin':
                     logout(request)
 
             if request.GET.get('ticket'):
@@ -70,18 +74,24 @@ class MultiHostMiddleware:
 
             tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
+            response.cookies = BaseCookie()
             response.set_cookie( 'vph-tkt', tkt64 )
 
 
         if request.META.get("VPH_TKT_COOKIE") is None:
+            #if not request.user.is_authenticated():
+            #    response.delete_cookie('vph-tkt')
             return response
 
         ticket=binascii.a2b_base64(request.COOKIES['vph-tkt'])
         data = validateTicket(settings.SECRET_KEY,ticket)
         if data is not None:
             (digest, userid, tokens, user_data, timestamp) = data
-            tkt64 =binascii.b2a_base64(createTicket(settings.SECRET_KEY, userid, tokens, user_data))
-            response.set_cookie( 'vph-tkt', tkt64 )
+            tkt64 =binascii.b2a_base64(createTicket(settings.SECRET_KEY, userid, tokens, user_data)).rstrip()
+
+            response.cookies = BaseCookie()
+            response.set_cookie('vph-tkt', tkt64, path='/')
+
 
             return response
 
