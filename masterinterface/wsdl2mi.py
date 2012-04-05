@@ -9,7 +9,7 @@ from pysimplesoap.client import SoapClient
 from django.core.management import execute_manager
 import settings as masterInterfaceSettings
 
-base_path=os.path.abspath(os.path.dirname(__file__))
+base_path=masterInterfaceSettings.PROJECT_ROOT
 
 def installService(service):
     """
@@ -111,7 +111,7 @@ def installService(service):
             methodName= method.name
     
             #Append view on viewsClass
-            views.addView(serviceName,methodName,method.input,method.output,ports[0],wsdl_url)
+            views.addView(serviceName,methodName,method.input,method.output,ports[0],service['wsdlURL'])
     
             #Create a service html file.
             serviceHtml.addServiceHtml(methodName)
@@ -181,6 +181,80 @@ def installService(service):
 
         #Now we support only one entry Port
         break
+
+def startInstallService(wsdl_url):
+    """
+        Base for installService function , callable from other django application
+
+        return : 0 -> install ok
+                 1 -> install error
+    """
+
+
+    client = SoapClient(wsdl=wsdl_url,trace=False)
+
+    #Check that service already exist , if not, go on.
+    #This section have to be optimized to process more service more port
+    #Now we process only one service (the main) and only one port for service.
+
+    for serviceName, service in client.services.iteritems():
+
+        settings=file(base_path+'/settings.py','r')
+        settingFile=settings.read()
+        settings.close()
+
+        if settingFile.find(',\n    \'masterinterface.'+serviceName)>0:
+
+            while True:
+                return 0, "\nService %s already exist" %serviceName
+
+
+        service['serviceName']=serviceName
+        service['wsdlURL']=wsdl_url
+        installService(service)
+        break
+
+
+
+    sys.argv.append('syncdb')
+    execute_manager(masterInterfaceSettings)
+    return 1 , "Installation success"
+
+
+def DeleteService(serviceName):
+    """
+        Base for DeleteService function , callable from other django application
+    """
+    try:
+        settings=file(base_path+'/settings.py','r')
+        settingFile=settings.read()
+        settings.close()
+
+        if settingFile.find(',\n    \'masterinterface.'+serviceName)>0:
+
+            if os.path.exists(base_path+'/'+serviceName):
+                shutil.rmtree(base_path+'/'+serviceName)
+
+            newsettingFile=settingFile.replace(',\n    \'masterinterface.'+serviceName+'\'','')
+
+            settingFile=file(base_path+'/settings.py','w')
+            settingFile.write(newsettingFile)
+            settingFile.close()
+
+            UrlFile=file(base_path+'/urls.py','r')
+            newUrlFile=UrlFile.read().replace(',\n    url(r\'^'+serviceName+'/\', include(\'masterinterface.'+serviceName+'.urls\'))','')
+            UrlFile.close()
+            UrlFile=file(base_path+'/urls.py','w')
+            UrlFile.write(newUrlFile)
+            UrlFile.close()
+        else:
+            return 0, "Service doesn't exist"
+
+        sys.argv.append('syncdb')
+        execute_manager(masterInterfaceSettings)
+        return 1, "Delete done"
+    except Exception, e:
+        return 0, "Error on Delete"
 
 if __name__ == '__main__':
 
@@ -252,6 +326,7 @@ if __name__ == '__main__':
                     exit(0)
 
         service['serviceName']=serviceName
+        service['wsdlURL']=wsdl_url
         installService(service)
         break
 

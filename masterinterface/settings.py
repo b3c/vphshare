@@ -10,9 +10,21 @@ ADMINS = (
     ('Alfredo Saglimbeni', 'a.saglimbeni@scsitaly.com')
 )
 
+AUTH_SERVICES = "http://auth.biomedtown.org/api"
+
 MANAGERS = ADMINS
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+# Cyfronet Database
+#'default': {
+#    'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#    'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
+#    'USER': 'vph',                      # Not used with sqlite3.
+#    'PASSWORD': 'vph123',                  # Not used with sqlite3.
+#    'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+#    'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+#}
 
 DATABASES = {
     'default': {
@@ -92,7 +104,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'f9#b@adpsn5!!7aqkp6z*_32wd)r+98$xf(5dk8b!je#+p%42)'
+SECRET_KEY = '09b63a0aa787db09b73c675b1e04224a'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -107,6 +119,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'scs_auth.preprocess_middleware.MultiHostMiddleware'
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -128,7 +141,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'social_auth',
-    'masterinterface.scs'
+    'masterinterface.scs',
+    'masterinterface.scs_auth',
+    'masterinterface.cyfronet'
 
     ##NEW_APP
 )
@@ -139,7 +154,7 @@ AUTHENTICATION_BACKENDS = (
     'social_auth.backends.google.GoogleOAuthBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
     'social_auth.backends.google.GoogleBackend',
-    'scs.backends.biomedtown.BiomedTownBackend'
+    'scs_auth.backends.biomedtown.BiomedTownBackend'
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -179,4 +194,5 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/done'
 LOGIN_ERROR_URL    = '/login-error/'
 
+# Cyfronet Settings
 CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://localhost:8080/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'

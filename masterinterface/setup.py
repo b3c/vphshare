@@ -17,7 +17,7 @@ METADATA = dict(
     long_description=open('../README.rst').read(),
     url='http://github.com/b3c/vphshare',
     keywords='django openid registration github vphshare',
-    install_requires=['django>=1.3.1', 'oauth2>=1.5.167', 'python_openid>=2.2', 'django-social-auth', 'suds'],
+    install_requires=['django>=1.3.1', 'oauth2>=1.5.167', 'python_openid>=2.2', 'django-social-auth', 'suds', 'pysimplesoap'],
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',

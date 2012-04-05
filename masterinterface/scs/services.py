@@ -1,5 +1,8 @@
 from pysimplesoap.client import SoapClient
 
+
+
+
 def invokeSoapService( wsdl_url, service, port, method, requestParameters, requestType, responseType):
     """
         Invoke a soap method for a wsdl with only one service.
@@ -41,30 +44,32 @@ def invokeSoapService( wsdl_url, service, port, method, requestParameters, reque
         call= 'client.'+method+'('+request+')'
         response=eval(str(call),globals(),locals())
 
+        #response=response2Html(response)
+
     except Exception, e:
         response= "there was an error: %s" %str(e)
 
     # if response is a list the type in wsdl is arrayofType
     return response
+    
     ##To Continue,if Mokup view need to render complex response, have to change it.
-    """
-    result={}
-    # marshall response
-    if type(response) == 'Text':
-        result=response
-    else:
-        for name, Type in responseType:
-            # arg is a tuple (name, type)
 
-            if Type == 'ComplexType':
-                complexType = client.factory.create( name )
-                for key, value in complexType:
-                    result[key] =  response[key]
+    #    result={}
+    #    # marshall response
+    #    if type(response) == 'Text':
+    #        result=response
+    #    else:
+    #        for name, Type in responseType:
+    #            # arg is a tuple (name, type)
+    #
+    #            if Type == 'ComplexType':
+    #                complexType = client.factory.create( name )
+    #                for key, value in complexType:
+    #                    result[key] =  response[key]
+    #
+    #            result[name] = response[name]
+    #    return result
 
-            result[name] = response[name]
-    return result
-
-    """
 
 
 

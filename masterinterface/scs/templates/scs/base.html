@@ -40,13 +40,13 @@
                     <nav>
                         <li class="current-menu-item"><a href="/">home</a></li>
                         <li><a href="/services">services</a></li>
+
+                        {% if request.user.is_authenticated %}
+                            <li><a href="/cyfronet">cyfronet</a></li>
+                        {% endif %}
+
                         <li><a href="/contacts">contact</a></li>
                         <li><a href="/help">help</a></li>
-                        
-                        {% if request.user.is_authenticated %}
-                        	<li><a href="/cloudmanager">Cloud Manager</a></li>
-                        	<li><a href="/datamanager">Data Manager</a></li>
-                        {% endif %}
                     </nav>
                 {% endblock %}
 
@@ -76,8 +76,12 @@
                         {% if not request.user.is_authenticated %}
                             <div>
                                 <span>Login with your Identity Provider: </span>
-                                <a class="popup" id="btlogin" rel="#overlay" href="/scs/bt_login">
+                                <a class="popup" id="btlogin" rel="#overlay" href="/scs_auth/bt_login">
                                     <img src="/static/biomedtown_32.png" alt="bt" title="login with your BiomedTown identity"/>
+                                </a>
+
+                                <a class="popup" id="authlogin" rel="#overlay" href="/scs_auth/auth_login">
+                                    <img src="/static/auth_logo_32.png" alt="bt" title="login with your Authentication module"/>
                                 </a>
 
                                 <a id="googlelogin" class="popup" rel="#overlay" href="/login/google">
