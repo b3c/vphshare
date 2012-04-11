@@ -11,11 +11,15 @@
         {% endblock %}
     </title>
 
-    <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+   	<link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'/>
+   	<link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+   	{% block stylesheets %}
+    {% endblock %}
 
     <script src="/static/jquery-1.7.1.min.js"></script>
     <script src="/static/jquery.tools.min.js"></script>
+    {% block javascripts %}
+    {% endblock %}
 
     <script src="/static/scs.js"></script>
 
@@ -43,9 +47,6 @@
 
                         <li><a href="/contacts">contact</a></li>
                         <li><a href="/help">help</a></li>
-
-
-
                     </nav>
                 {% endblock %}
 

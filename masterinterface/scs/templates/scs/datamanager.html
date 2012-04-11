@@ -1,0 +1,23 @@
+{% extends 'scs/base.html' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="/static/cloudportlets.css" type="text/css" media="screen" />
+{% endblock %}
+{% block javascripts %}
+	<script src="/static/cloudportlets.js" type="text/javascript"></script>
+	<script src="/static/postmessage.js" type="text/javascript"></script>
+{% endblock %}
+
+{%  block title %} VPH-Share Data Manager {% endblock %}
+
+{% block page-title %}
+    <span class="title">Data Manager</span>
+    <span class="subtitle">Manage cloud data resources</span>
+{% endblock%}
+
+{%  block content %}
+    <iframe id="datamanagerframe" 
+    	src="{{ source }}"
+    	frameborder="0" border="0" scrolling="no">
+    </iframe>
+{% endblock %}

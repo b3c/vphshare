@@ -121,3 +121,15 @@ def help(request):
     return render_to_response("scs/help.html",
             {},
         RequestContext(request))
+
+@login_required
+def cloudmanager(request):
+    return render_to_response("scs/cloudmanager.html",
+            {'source': settings.CLOUD_PORTLET_LOGIN_URL_TEMPLATE.format(request.user.username, request.COOKIES.get('vph-tkt','No ticket'), 'cloud')},
+        RequestContext(request))
+
+@login_required
+def datamanager(request):
+    return render_to_response("scs/datamanager.html",
+            {'source': settings.CLOUD_PORTLET_LOGIN_URL_TEMPLATE.format(request.user.username, request.COOKIES.get('vph-tkt','No ticket'), 'data')},
+        RequestContext(request))
