@@ -16,18 +16,18 @@ MANAGERS = ADMINS
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-# Cyfronet Database
-#'default': {
-#    'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#    'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
-#    'USER': 'vph',                      # Not used with sqlite3.
-#    'PASSWORD': 'vph123',                  # Not used with sqlite3.
-#    'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-#    'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-#}
+# Default Database
+DEFAULT_DB = {
+    'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
+    'USER': '',                      # Not used with sqlite3.
+    'PASSWORD': '',                  # Not used with sqlite3.
+    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+}
 
-DATABASES = {
-    'default': {
+# Cyfronet Database
+CYFRONET_DB = {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
         'USER': 'vph',                      # Not used with sqlite3.
@@ -35,6 +35,10 @@ DATABASES = {
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
     }
+
+
+DATABASES = {
+    'default': DEFAULT_DB
 }
 
 # Local time zone for this installation. Choices can be found here:
