@@ -213,7 +213,10 @@ class validate_tkt(BaseHandler):
 
                     if user:
                         return user_dict
-
-            return HttpResponse(status=403)
+            response = HttpResponse(status=403)
+            response._is_string = True
+            return response
         except :
-            return HttpResponse(status=403)
+            response = HttpResponse(status=403)
+            response._is_string = True
+            return response
