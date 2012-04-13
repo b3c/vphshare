@@ -28,7 +28,7 @@ class MultiHostMiddleware:
                 try:
                     ticket = binascii.a2b_base64(request.GET['ticket'])
                 except :
-                    pass
+                    return
                 user_data = validateTicket(settings.SECRET_KEY,ticket)
                 if  user_data is not None :
 
