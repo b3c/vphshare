@@ -18,6 +18,8 @@ from datetime import datetime, time
 from tktauth import createTicket, validateTicket
 import binascii
 
+from piston.handler import BaseHandler
+
 
 def done(request):
     """ login complete view """
@@ -92,6 +94,7 @@ def auth_loginform(request):
                 # user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
                 user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
                 user_value=user_data[3]
+
                 user_dict={}
 
                 for i in range(0, len(user_key)):
@@ -112,10 +115,15 @@ def auth_loginform(request):
 
                 response['last_login'] ='biomedtown'
 
+                if username=='mi_testuser':
+                    tokens=[]
+                else:
+                    tokens=['developer']
+
                 new_tkt = createTicket(
                     settings.SECRET_KEY,
                     username,
-                    tokens=['developer'],
+                    tokens=tokens,
                     user_data=user_value
                 )
                 tkt64 = binascii.b2a_base64(new_tkt).rstrip()
@@ -181,25 +189,31 @@ def logout(request):
     return response
 
 
-def validate_tkt(request):
-
-    if request.GET.get('ticket'):
-        ticket= binascii.a2b_base64(request.GET['ticket'])
-        user_data=validateTicket(settings.SECRET_KEY,ticket)
-        if user_data:
-            #user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
-            user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-            user_value=user_data[3]
-            user_dict={}
-
-            for i in range(0, len(user_key)):
-                user_dict[user_key[i]]=user_value[i]
-
-            user=User.objects.get(username=user_dict['nickname'])
-
-            if user:
-                return HttpResponse("VALID")
-
-    return HttpResponse("NOT_VALID")
+class validate_tkt(BaseHandler):
 
 
+    def read(self, request, ticket=''):
+        try:
+            if request.GET.get('ticket'):
+                ticket= binascii.a2b_base64(request.GET['ticket'])
+                user_data=validateTicket(settings.SECRET_KEY,ticket)
+                if user_data:
+                    #user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+                    user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
+                    user_value=user_data[3]
+                    user_dict={}
+
+                    for i in range(0, len(user_key)):
+                        user_dict[user_key[i]]=user_value[i]
+
+                    roles=user_data[2]
+                    user_dict['roles']=roles
+
+                    user=User.objects.get(username=user_dict['nickname'])
+
+                    if user:
+                        return user_dict
+
+            return HttpResponse(status=403)
+        except :
+            return HttpResponse(status=403)

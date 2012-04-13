@@ -25,7 +25,10 @@ class MultiHostMiddleware:
                     logout(request)
 
             if request.GET.get('ticket'):
-                ticket = binascii.a2b_base64(request.GET['ticket'])
+                try:
+                    ticket = binascii.a2b_base64(request.GET['ticket'])
+                except :
+                    pass
                 user_data = validateTicket(settings.SECRET_KEY,ticket)
                 if  user_data is not None :
 
@@ -76,6 +79,9 @@ class MultiHostMiddleware:
         if request.META.get("VPH_TKT_COOKIE") is None:
             return response
 
+        if not request.user.is_authenticated():
+            response.delete_cookie('vph-tkt')
+            return response
         ticket=binascii.a2b_base64(request.COOKIES['vph-tkt'])
         data = validateTicket(settings.SECRET_KEY,ticket)
         if data is not None:
