@@ -21,7 +21,7 @@ class MultiHostMiddleware:
                     logout(request)
                 request.META['VPH_TKT_COOKIE'] = ticket
             else:
-                if not request.user.is_authenticated() and not request.user.username == 'admin':
+                if request.user.is_authenticated() and not request.user.username == 'admin':
                     logout(request)
 
             if request.GET.get('ticket'):
