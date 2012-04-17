@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -177,6 +177,10 @@ def auth_login(request):
 @login_required
 def logout(request):
     """Logs out user"""
+    if request.META.get('HTTP_REFERER'):
+        if request.META['HTTP_REFERER'].count('logout') and request.user.is_authenticated():
+            return HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/')
+
     auth_logout(request)
     data = {'version': version}
     response = render_to_response(
