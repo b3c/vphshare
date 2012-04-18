@@ -174,6 +174,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #SOCIAL_AUTH SETTINGS
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL =True
 
+
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
@@ -203,3 +205,6 @@ LOGIN_ERROR_URL    = '/login-error/'
 
 # Cyfronet Settings
 CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+
+#Atos service
+ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"

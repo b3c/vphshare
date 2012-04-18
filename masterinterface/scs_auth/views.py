@@ -16,7 +16,7 @@ from xmlrpclib import ServerProxy
 
 from datetime import datetime, time
 from tktauth import createTicket, validateTicket
-import binascii
+import binascii ,base64, urllib2
 
 from piston.handler import BaseHandler
 
@@ -200,17 +200,45 @@ class validate_tkt(BaseHandler):
                     for i in range(0, len(user_key)):
                         user_dict[user_key[i]]=user_value[i]
 
+
                     roles=user_data[2]
                     user_dict['roles']=roles
 
                     user=User.objects.get(username=user_dict['nickname'])
 
                     if user:
-                        return user_dict
+                        """
+                        username = user_dict['nickname']
+                        passwd = request.GET['ticket']
+                        b64str = base64.encodestring('%s:%s' % (username, passwd))
+                        url = settings.ATOS_SERVICE_URL
+                        req = urllib2.Request(url)
+                        auth = 'Basic %s' % b64str
+                        req.add_header('Authorization', auth)
+
+
+                        opener = urllib2.urlopen(req)
+                        """
+
+                        theurl = settings.ATOS_SERVICE_URL
+                        username = user_dict['nickname']
+                        password = request.GET['ticket']
+
+                        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                        passman.add_password(None, theurl, username, password)
+                        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+
+                        opener = urllib2.build_opener(authhandler)
+
+                        urllib2.install_opener(opener)
+                        pagehandle = urllib2.urlopen(theurl)
+
+                        if pagehandle.code == 200 :
+                            return user_dict
             response = HttpResponse(status=403)
             response._is_string = True
             return response
-        except :
+        except Exception, e:
             response = HttpResponse(status=403)
             response._is_string = True
             return response

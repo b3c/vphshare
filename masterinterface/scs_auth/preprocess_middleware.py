@@ -43,7 +43,7 @@ class MultiHostMiddleware:
                     logout(request)
 
 
-            if request.GET.get('ticket'):
+            if request.GET.get('ticket') and not request.path.count('validatetkt'):
                 try:
                     ticket = binascii.a2b_base64(request.GET['ticket'])
                 except :
