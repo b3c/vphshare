@@ -30,18 +30,6 @@ def done(request):
 
 
     # create ticket
-    tokens = ['developer'] #to be random generated
-
-    user_data = [ request.user.username, '%s %s' % (request.user.first_name, request.user.last_name), '', '', '', '']
-
-    tkt = createTicket(
-        settings.SECRET_KEY,
-        request.user.username,
-        tokens=tokens,
-        user_data=user_data
-    )
-
-    tkt64 = binascii.b2a_base64(tkt).rstrip()
 
     response = render_to_response(
         'scs_auth/done.html',
@@ -49,7 +37,7 @@ def done(request):
         RequestContext(request)
     )
 
-    response.set_cookie( 'vph-tkt', tkt64 )
+
 
     return response
 
@@ -115,10 +103,12 @@ def auth_loginform(request):
 
                 response['last_login'] ='biomedtown'
 
+                #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
                 if username=='mi_testuser':
                     tokens=[]
                 else:
                     tokens=['developer']
+                #######
 
                 new_tkt = createTicket(
                     settings.SECRET_KEY,

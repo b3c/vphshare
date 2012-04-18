@@ -171,6 +171,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_by_type_backends',
     )
 
+#SOCIAL_AUTH SETTINGS
+SOCIAL_AUTH_ASSOCIATE_BY_MAIL =True
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
