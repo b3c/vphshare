@@ -3,11 +3,21 @@ BiomedTown OpenID support.
 
 This contribution adds support for BiomedTown OpenID service.
 """
-import urlparse
 
-from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, SREG_ATTR, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME
+import binascii
+from datetime import  datetime
+from django.conf import settings
+from xmlrpclib import ServerProxy
+from django.contrib.auth.backends import RemoteUserBackend
+
+from django.contrib.auth import authenticate
+
+from social_auth.backends import SocialAuthBackend, BaseAuth, OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, SREG_ATTR, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME
+from masterinterface.scs_auth.tktauth import *
+from django.contrib.auth.models import User
 
 BIOMEDTOWN_URL = 'https://www.biomedtown.org/identity/%s'
+
 
 
 class BiomedTownBackend(OpenIDBackend):
@@ -57,8 +67,125 @@ class BiomedTownAuth(OpenIdAuth):
         return BIOMEDTOWN_URL % self.data[OPENID_ID_FIELD]
 
 
+class BiomedTownTicketBackend (RemoteUserBackend):
+
+    service = ServerProxy(settings.AUTH_SERVICES)
+    user_dict = {}
+    create_unknown_user = True
+
+
+    def userTicket(self, ticket64):
+
+        ticket= binascii.a2b_base64(ticket64)
+
+        user_data=validateTicket(settings.SECRET_KEY,ticket)
+        if user_data:
+            # user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
+            user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
+            user_value=user_data[3]
+
+            self.user_dict={}
+
+            for i in range(0, len(user_key)):
+                self.user_dict[user_key[i]]=user_value[i]
+
+            user = None
+
+            if self.create_unknown_user:
+
+                #TODO here we can create a pipeline
+                user, created = User.objects.get_or_create(username=self.user_dict['nickname'],email=self.user_dict['email'])
+
+                if created:
+                    user = self.configure_user(user)
+            else:
+                try:
+                    user = User.objects.get(email=self.user_dict['email'])
+                except User.DoesNotExist:
+                    pass
+
+
+            #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
+            if user.username=='mi_testuser':
+                tokens=[]
+            else:
+                tokens=['developer']
+            #######
+
+            new_tkt = createTicket(
+                settings.SECRET_KEY,
+                self.user_dict['nickname'],
+                tokens=tokens,
+                user_data=user_value
+            )
+            tkt64 = binascii.b2a_base64(new_tkt).rstrip()
+
+            return user, tkt64
+
+
+    def authenticate( self, username = None, password= None):
+        """
+
+        """
+        if username is None or password is None:
+            return None
+
+        try:
+            service_response = self.service.rpc_login(username, password)
+
+            if service_response is not False:
+
+                user, tkt64 =self.userTicket(service_response)
+
+                if user is None:
+                    return
+
+                return user, tkt64
+
+            return None
+
+        except Exception, e:
+            return None
+
+    def configure_user(self, user):
+
+        user.backend ='scs_auth.backend.biomedtowntkt'
+        user.first_name = self.user_dict['fullname'].split(" ")[0]
+        user.last_name =  self.user_dict['fullname'].split(" ")[1]
+        user.email = self.user_dict['email']
+        user.last_login = str(datetime.now())
+
+        user.save()
+
+        return user
+
+class FromTicketBackend (BiomedTownTicketBackend):
+
+
+
+    def authenticate( self, ticket=None):
+        """
+
+        """
+
+        if ticket is None:
+            return
+
+        try:
+
+            user, tkt64 =self.userTicket(ticket)
+
+            if user is None:
+                return
+
+            return user, tkt64
+
+        except Exception, e:
+            return None
+
+
 # Backend definition
 BACKENDS = {
-    'biomedtown': BiomedTownAuth,
+    'biomedtown' : BiomedTownAuth,
     }
 

@@ -158,6 +158,8 @@ AUTHENTICATION_BACKENDS = (
     'social_auth.backends.google.GoogleOAuthBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
     'social_auth.backends.google.GoogleBackend',
+    'scs_auth.backends.biomedtown.BiomedTownTicketBackend',
+    'scs_auth.backends.biomedtown.FromTicketBackend',
     'scs_auth.backends.biomedtown.BiomedTownBackend'
     )
 
