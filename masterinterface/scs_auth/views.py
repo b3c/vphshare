@@ -129,15 +129,10 @@ def logout(request):
             return HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/')
 
     auth_logout(request)
-    data = {'version': version}
-    response = render_to_response(
-        'scs/index.html',
-        data,
-        RequestContext(request)
-    )
+    response = HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/?loggedout')
     response.delete_cookie('vph_cookie')
-
     return response
+    #return response
 
 
 class validate_tkt(BaseHandler):

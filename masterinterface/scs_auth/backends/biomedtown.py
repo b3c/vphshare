@@ -10,7 +10,7 @@ from django.conf import settings
 from xmlrpclib import ServerProxy
 from django.contrib.auth.backends import RemoteUserBackend
 from masterinterface.scs_auth.auth import authenticate
-from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, SREG_ATTR, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME
+from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME, sreg,ax
 from openid.consumer.consumer import SUCCESS, CANCEL, FAILURE
 from masterinterface.scs_auth.tktauth import *
 from django.contrib.auth.models import User
@@ -21,12 +21,21 @@ PIPELINE = (
     'social_auth.backends.pipeline.associate.associate_by_email',
     'social_auth.backends.pipeline.user.get_username',
     'social_auth.backends.pipeline.user.create_user',
+    'masterinterface.scs_auth.auth.userProfileUpdate',
     'masterinterface.scs_auth.auth.socialtktGen',
     'social_auth.backends.pipeline.social.associate_user',
     'social_auth.backends.pipeline.social.load_extra_data',
     'social_auth.backends.pipeline.user.update_user_details',
-    'masterinterface.scs_auth.auth.userProfileUpdate',
     )
+
+SREG_ATTR = [
+    ('email', 'email'),
+    ('fullname', 'fullname'),
+    ('nickname', 'nickname'),
+    ('country', 'country'),
+    ('language', 'language'),
+    ('postcode', 'postcode'),
+]
 class BiomedTownBackend(OpenIDBackend):
     """BiomedTown OpenID authentication backend"""
     name = 'biomedtown'
@@ -136,7 +145,22 @@ class BiomedTownAuth(OpenIdAuth):
         else:
             raise ValueError('Unknown OpenID response type: %r' %\
                              response.status)
+    def setup_request(self, extra_params=None):
+        """Setup request"""
+        openid_request = self.openid_request(extra_params)
+        # Request some user details. Use attribute exchange if provider
+        # advertises support.
+        if openid_request.endpoint.supportsType(ax.AXMessage.ns_uri):
+            fetch_request = ax.FetchRequest()
+            # Mark all attributes as required, Google ignores optional ones
+            for attr, alias in (AX_SCHEMA_ATTRS + OLD_AX_ATTRS):
+                fetch_request.add(ax.AttrInfo(attr, alias=alias,
+                    required=True))
+        else:
+            fetch_request = sreg.SRegRequest(optional=dict(SREG_ATTR).keys())
+        openid_request.addExtension(fetch_request)
 
+        return openid_request
 # Backend definition
 BACKENDS = {
     'biomedtown' : BiomedTownAuth,

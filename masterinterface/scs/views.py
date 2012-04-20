@@ -18,6 +18,9 @@ def home(request):
     if request.user.is_authenticated():
         data['last_login'] = request.session.get('social_auth_last_login_backend')
 
+    if not request.user.is_authenticated() and request.GET.get('loggedout') is not None:
+        data['statusmessage']='Logout done.'
+
     return render_to_response(
         'scs/index.html',
         data,
