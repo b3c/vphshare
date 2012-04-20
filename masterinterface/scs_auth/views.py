@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import logout as auth_logout, login , authenticate
+from django.contrib.auth import logout as auth_logout, login
+from auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
@@ -150,22 +151,22 @@ class validate_tkt(BaseHandler):
 
                 if user is not None:
 
-                    if user:
-                        theurl = settings.ATOS_SERVICE_URL
-                        username = user.username
-                        password = ticket
 
-                        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                        passman.add_password(None, theurl, username, password)
-                        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+                    theurl = settings.ATOS_SERVICE_URL
+                    username = user.username
+                    password = request.GET['ticket']
 
-                        opener = urllib2.build_opener(authhandler)
+                    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                    passman.add_password(None, theurl, username, password)
+                    authhandler = urllib2.HTTPBasicAuthHandler(passman)
 
-                        urllib2.install_opener(opener)
-                        pagehandle = urllib2.urlopen(theurl)
+                    opener = urllib2.build_opener(authhandler)
 
-                        if pagehandle.code == 200 :
-                            return user.get_dict()
+                    urllib2.install_opener(opener)
+                    pagehandle = urllib2.urlopen(theurl)
+
+                    if pagehandle.code == 200 :
+                        return user.userprofile.to_dict()
 
             response = HttpResponse(status=403)
             response._is_string = True

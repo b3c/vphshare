@@ -1,5 +1,5 @@
 from django.contrib.auth import logout , login
-from django.contrib.auth import authenticate
+from auth import authenticate
 import binascii
 
 class MultiHostMiddleware:
@@ -10,29 +10,12 @@ class MultiHostMiddleware:
 
         try:
 
-            ##QUESTA E' DA SISTEMARE CON LA PIPELINE
-            if request.session._session.get('_auth_user_backend'):
-                if request.session._session['_auth_user_backend'] == 'scs_auth.backends.biomedtown.BiomedTownBackend' and request.user.is_authenticated():
-                    """
-                    """
-
-                    #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-                    if request.user.username=='mi_testuser':
-                        tokens=[]
-                    else:
-                        tokens=['developer']
-                    #######
-
-                    user_value = [ request.user.username, '%s %s' % (request.user.first_name, request.user.last_name), request.user.email, '', '', '']
-                    request.META['NEW_VPH_TKT_COOKIE'] = True
-                    request.META['TKT_TOKEN'] = tokens
-                    request.META['TKT_USER_DATA'] = user_value
-                    return
-            ######
-
             if  request.COOKIES.get('vph-tkt'):
-
-                user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'])
+                try:
+                    user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'])
+                except :
+                    logout(request)
+                    return
 
                 if user is None:
                     logout(request)

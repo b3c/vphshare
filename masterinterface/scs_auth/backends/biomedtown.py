@@ -9,20 +9,66 @@ from datetime import  datetime
 from django.conf import settings
 from xmlrpclib import ServerProxy
 from django.contrib.auth.backends import RemoteUserBackend
-
-from django.contrib.auth import authenticate
-
-from social_auth.backends import SocialAuthBackend, BaseAuth, OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, SREG_ATTR, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME
+from masterinterface.scs_auth.auth import authenticate
+from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, SREG_ATTR, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME
+from openid.consumer.consumer import SUCCESS, CANCEL, FAILURE
 from masterinterface.scs_auth.tktauth import *
 from django.contrib.auth.models import User
-
 BIOMEDTOWN_URL = 'https://www.biomedtown.org/identity/%s'
 
-
-
+PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'masterinterface.scs_auth.auth.socialtktGen',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details',
+    'masterinterface.scs_auth.auth.userProfileUpdate',
+    )
 class BiomedTownBackend(OpenIDBackend):
     """BiomedTown OpenID authentication backend"""
     name = 'biomedtown'
+
+    def authenticate(self, *args, **kwargs):
+        """Authenticate user using social credentials
+
+        Authentication is made if this is the correct backend, backend
+        verification is made by kwargs inspection for current backend
+        name presence.
+        """
+        # Validate backend and arguments. Require that the Social Auth
+        # response be passed in as a keyword argument, to make sure we
+        # don't match the username/password calling conventions of
+        # authenticate.
+        if not (self.name and kwargs.get(self.name) and 'response' in kwargs):
+            return None
+
+        response = kwargs.get('response')
+        pipeline = PIPELINE
+        kwargs = kwargs.copy()
+        kwargs['backend'] = self
+
+        if 'pipeline_index' in kwargs:
+            pipeline = pipeline[kwargs['pipeline_index']:]
+        else:
+            kwargs['details'] = self.get_user_details(response)
+            kwargs['uid'] = self.get_user_id(kwargs['details'], response)
+            kwargs['is_new'] = False
+
+        out = self.pipeline(pipeline, *args, **kwargs)
+        if not isinstance(out, dict):
+            return out
+
+        social_user = out.get('social_user')
+        if social_user:
+            # define user.social_user attribute to track current social
+            # account
+            user = social_user.user
+            user.social_user = social_user
+            user.is_new = out.get('is_new')
+            return user , out['ticket']
 
     def get_user_details(self, response):
         """Return user details from an OpenID request"""
@@ -66,6 +112,35 @@ class BiomedTownAuth(OpenIdAuth):
 
         return BIOMEDTOWN_URL % self.data[OPENID_ID_FIELD]
 
+    def auth_complete(self, *args, **kwargs):
+        """Complete auth process"""
+        response = self.consumer().complete(dict(self.data.items()),
+            self.request.build_absolute_uri())
+        if not response:
+            raise ValueError('This is an OpenID relying party endpoint')
+        elif response.status == SUCCESS:
+            kwargs.update({
+                'auth': self,
+                'response': response,
+                self.AUTH_BACKEND.name: True
+            })
+            user, tkt64 = authenticate(*args, **kwargs)
+            if user:
+                self.request.META['VPH_TKT_COOKIE'] = tkt64
+                return user
+        elif response.status == FAILURE:
+            raise ValueError('OpenID authentication failed: %s' %\
+                             response.message)
+        elif response.status == CANCEL:
+            raise ValueError('Authentication cancelled')
+        else:
+            raise ValueError('Unknown OpenID response type: %r' %\
+                             response.status)
+
+# Backend definition
+BACKENDS = {
+    'biomedtown' : BiomedTownAuth,
+    }
 
 class BiomedTownTicketBackend (RemoteUserBackend):
 
@@ -154,7 +229,11 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         user.last_name =  self.user_dict['fullname'].split(" ")[1]
         user.email = self.user_dict['email']
         user.last_login = str(datetime.now())
-
+        user.userprofile.country = self.user_dict['country']
+        user.userprofile.fullname = self.user_dict['fullname']
+        user.userprofile.language = self.user_dict['language']
+        user.userprofile.postcode = self.user_dict['postcode']
+        user.userprofile.save()
         user.save()
 
         return user
@@ -184,8 +263,5 @@ class FromTicketBackend (BiomedTownTicketBackend):
             return None
 
 
-# Backend definition
-BACKENDS = {
-    'biomedtown' : BiomedTownAuth,
-    }
+
 
