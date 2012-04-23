@@ -11,11 +11,15 @@
         {% endblock %}
     </title>
 
-    <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+   	<link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'/>
+   	<link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+   	{% block stylesheets %}
+    {% endblock %}
 
     <script src="/static/jquery-1.7.1.min.js"></script>
     <script src="/static/jquery.tools.min.js"></script>
+    {% block javascripts %}
+    {% endblock %}
 
     <script src="/static/scs.js"></script>
 
@@ -43,9 +47,6 @@
 
                         <li><a href="/contacts">contact</a></li>
                         <li><a href="/help">help</a></li>
-
-
-
                     </nav>
                 {% endblock %}
 
@@ -83,9 +84,10 @@
                                     <img src="/static/auth_logo_32.png" alt="bt" title="login with your Authentication module"/>
                                 </a>
 
-                                <a id="googlelogin" class="popup" rel="#overlay" href="/login/google">
+                                <!--<a id="googlelogin" class="popup" rel="#overlay" href="/login/google">
                                     <img src="/static/google_32.png" alt="google" title="login with your Google identity" />
-                                </a>
+                                </a>-->
+                                <a class="unavailable"><img src="/static/google_32.png" alt="google" title="login with your Google identity" /></a>
                                 <a class="unavailable"><img src="/static/facebook_32.png" alt="facebook" title="facebook coming soon" /></a>
                                 <a class="unavailable"><img src="/static/twitter_32.png" alt="twitter" title="twitter coming soon"/></a>
                                 <!--<a><img src="/static/linkedin_32.png" alt="linkedin" title="linkedin coming soon"/></a>

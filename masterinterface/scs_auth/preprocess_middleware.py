@@ -1,61 +1,56 @@
-from django.conf import settings
-from django.contrib.auth.backends import RemoteUserBackend
 from django.contrib.auth import logout , login
-from tktauth import validateTicket, createTicket
-from datetime import datetime
 from Cookie import BaseCookie
+from auth import authenticate
 import binascii
 
-class MultiHostMiddleware:
+class masterInterfaceMiddleware:
 
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
-
-        request.META['NEW_VPH_TKT_COOKIE'] = False
-        request.META['VPH_TKT_COOKIE'] = None
+        """
+        Proces_view work before view rendering. Verify usere's ticket (from cookie or ticket attribute)
+        """
 
         try:
-            host = request.META["HTTP_HOST"]
+            #FROM COOKIE
+            #Check user's cookie  if validate ticket is ok, update ticket timestamp else session expire.
             if  request.COOKIES.get('vph-tkt'):
-
-                ticket=binascii.a2b_base64(request.COOKIES['vph-tkt'])
-
-                if validateTicket(settings.SECRET_KEY,ticket) is None:
+                try:
+                    user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'])
+                except :
                     logout(request)
-                request.META['VPH_TKT_COOKIE'] = ticket
+                    request.META['VPH_TKT_COOKIE']=True
+                    return
+
+                if user is None:
+                    logout(request)
+                    request.META['VPH_TKT_COOKIE']=True
+                    return
+
+                request.META['VPH_TKT_COOKIE'] = tkt64
+
             else:
-
-                if not request.user.username == 'admin':
+                if request.user.is_authenticated() and not request.user.username == 'admin':
                     logout(request)
+                    request.META['VPH_TKT_COOKIE']=True
+                    return
 
-            if request.GET.get('ticket'):
-                ticket = binascii.a2b_base64(request.GET['ticket'])
-                user_data = validateTicket(settings.SECRET_KEY,ticket)
-                if  user_data is not None :
+            #FROM GET ATTRIBUTE
+            #if validate ticket is ok, open new session and set ticket cookie.
+            if request.GET.get('ticket') and not request.path.count('validatetkt'):
+                try:
+                    ticket = binascii.a2b_base64(request.GET['ticket'])
+                except :
+                    return
 
-                    # user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
-                    user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-                    user_value=user_data[3]
-                    user_dict={}
+                user, tkt64 = authenticate(ticket=request.GET['ticket'])
 
-                    for i in range(0, len(user_key)):
-                        user_dict[user_key[i]]=user_value[i]
-
-
-                    new_user = RemoteUserBackend()
-                    user = new_user.authenticate( user_dict['nickname'] )
-
-                    user.backend ='django.contrib.auth.backends.RemoteUserBackend'
-                    user.first_name = user_dict['fullname'].split(" ")[0]
-                    user.last_name =  user_dict['fullname'].split(" ")[1]
-                    user.email = user_dict['email']
-                    user.last_login = str(datetime.now())
-
-                    user.save()
+                if  user is not None :
 
                     login(request,user)
-                    request.META['NEW_VPH_TKT_COOKIE'] = True
-                    request.META['TKT_USER_DATA'] = user_value
+
+                    request.META['VPH_TKT_COOKIE'] = tkt64
+
 
         except KeyError:
             pass # use default urlconf (settings.ROOT_URLCONF)
@@ -63,20 +58,10 @@ class MultiHostMiddleware:
 
 
     def process_response(self, request, response):
-
-        if request.META.get('NEW_VPH_TKT_COOKIE'):
-
-            new_tkt = createTicket(
-                settings.SECRET_KEY,
-                request.user.username,
-                user_data=request.META['TKT_USER_DATA']
-            )
-
-            tkt64 = binascii.b2a_base64(new_tkt).rstrip()
-
-            response.cookies = BaseCookie()
-            response.set_cookie( 'vph-tkt', tkt64 )
-
+        """
+        Process_response work after view rendering.
+        Set/update ticket cookie if necessary.
+        """
 
         if request.META.get("VPH_TKT_COOKIE") is None:
             #if not request.user.is_authenticated():
@@ -93,7 +78,7 @@ class MultiHostMiddleware:
             response.set_cookie('vph-tkt', tkt64, path='/')
 
 
-            return response
+        response.set_cookie( 'vph-tkt', request.META['VPH_TKT_COOKIE'])
 
         return response
 

@@ -16,26 +16,33 @@ MANAGERS = ADMINS
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
+# Default Database
+DEFAULT_DB = {
+    'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
+    'USER': '',                      # Not used with sqlite3.
+    'PASSWORD': '',                  # Not used with sqlite3.
+    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+}
+
 # Cyfronet Database
-#'default': {
-#    'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#    'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
-#    'USER': 'vph',                      # Not used with sqlite3.
-#    'PASSWORD': 'vph123',                  # Not used with sqlite3.
-#    'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-#    'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-#}
+CYFRONET_DB = {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
+        'USER': 'vph',                      # Not used with sqlite3.
+        'PASSWORD': 'vph123',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+    }
+
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+    'default': DEFAULT_DB
 }
+
+#Define class where extened user profile
+AUTH_PROFILE_MODULE = 'scs_auth.UserProfile'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -79,11 +86,6 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT,'static/')
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
-# URL prefix for admin static files -- CSS, JavaScript and images.
-# Make sure to use a trailing slash.
-# Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
-
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -119,7 +121,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'scs_auth.preprocess_middleware.MultiHostMiddleware'
+    'scs_auth.preprocess_middleware.masterInterfaceMiddleware'
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -154,6 +156,8 @@ AUTHENTICATION_BACKENDS = (
     'social_auth.backends.google.GoogleOAuthBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
     'social_auth.backends.google.GoogleBackend',
+    'scs_auth.backends.biomedtown.BiomedTownTicketBackend',
+    'scs_auth.backends.biomedtown.FromTicketBackend',
     'scs_auth.backends.biomedtown.BiomedTownBackend'
     )
 
@@ -166,6 +170,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'social_auth.context_processors.social_auth_by_type_backends',
     )
+
+#SOCIAL_AUTH SETTINGS
+SOCIAL_AUTH_ASSOCIATE_BY_MAIL =True
+
+
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -195,4 +204,10 @@ LOGIN_REDIRECT_URL = '/done'
 LOGIN_ERROR_URL    = '/login-error/'
 
 # Cyfronet Settings
-CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://localhost:8080/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+
+#Atos service
+ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
+
+#Ticket expiration timeout in seconds
+TICKET_TIMEOUT = 12*60*60  # 12 h

@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import patterns, url, include
 from django.contrib import admin
+from piston.resource import Resource
+from views import validate_tkt
 
+entries = Resource(handler=validate_tkt)
 admin.autodiscover()
 
 urlpatterns = patterns(
@@ -11,5 +14,6 @@ urlpatterns = patterns(
     url(r'^auth_loginform/$', 'auth_loginform'),
     url(r'^done/$', 'done'),
     url(r'^logout/$','logout'),
-    url(r'^validatetkt','validate_tkt')
+    url(r'^validatetkt/',entries),
+    url(r'^validatetkt\.(?P<emitter_format>.+)', entries),
     )

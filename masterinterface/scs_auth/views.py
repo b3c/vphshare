@@ -1,19 +1,16 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout, login
-from Cookie import BaseCookie
+from auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth.backends import RemoteUserBackend
 
 from scs_auth import __version__ as version
 from django.conf import settings
-from xmlrpclib import ServerProxy
 
-from datetime import datetime
-from tktauth import createTicket, validateTicket
-import binascii
+import  urllib2
+
+from piston.handler import BaseHandler
 
 
 def done(request):
@@ -25,18 +22,6 @@ def done(request):
 
 
     # create ticket
-    tokens = ['developer'] #to be random generated
-
-    user_data = [ request.user.username, '%s %s' % (request.user.first_name, request.user.last_name), '', '', '', '']
-
-    tkt = createTicket(
-        settings.SECRET_KEY,
-        request.user.username,
-        tokens=tokens,
-        user_data=user_data
-    )
-
-    tkt64 = binascii.b2a_base64(tkt).rstrip()
 
     response = render_to_response(
         'scs_auth/done.html',
@@ -44,7 +29,7 @@ def done(request):
         RequestContext(request)
     )
 
-    response.set_cookie( 'vph-tkt', tkt64 )
+
 
     return response
 
@@ -71,64 +56,39 @@ def bt_login(request):
 
 def auth_loginform(request):
     """
+    Process login request.
+    Create session and user into database if not exist.
     """
 
-    service = ServerProxy(settings.AUTH_SERVICES)
     response = {'version': version}
 
     if request.method == 'POST' and request.POST.get('biomedtown_username') and request.POST.get('biomedtown_password'):
         username=request.POST['biomedtown_username']
         password=request.POST['biomedtown_password']
-        service_response = service.rpc_login(username, password)
 
-        if service_response is not False:
-
-            response['ticket']= binascii.a2b_base64(service_response)
-            user_data=validateTicket(settings.SECRET_KEY,response['ticket'])
-            if user_data:
-                # user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
-                user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-                user_value=user_data[3]
-                user_dict={}
-
-                for i in range(0, len(user_key)):
-                    user_dict[user_key[i]]=user_value[i]
+        user , tkt64 =authenticate(username=username,password=password)
 
 
-                new_user = RemoteUserBackend()
-                user = new_user.authenticate(username)
+        if user is not None:
 
-                user.backend ='django.contrib.auth.backends.RemoteUserBackend'
-                user.first_name = user_dict['fullname'].split(" ")[0]
-                user.last_name =  user_dict['fullname'].split(" ")[1]
-                user.email = user_dict['email']
-                user.last_login = str(datetime.now())
+            response['ticket']= tkt64
+            response['last_login'] ='biomedtown'
 
-                user.save()
-                login(request,user)
+            login(request,user)
 
-                response['last_login'] ='biomedtown'
+            response = render_to_response(
+                'scs_auth/done.html',
+                response,
+                RequestContext(request)
+            )
 
-                new_tkt = createTicket(
-                    settings.SECRET_KEY,
-                    username,
-                    tokens=['developer'],
-                    user_data=user_value
-                )
-                tkt64 = binascii.b2a_base64(new_tkt).rstrip()
+            response.set_cookie( 'vph-tkt', tkt64 )
 
-                response = render_to_response(
-                    'scs_auth/done.html',
-                    response,
-                    RequestContext(request)
-                )
-                response.cookies = BaseCookie()
-                response.set_cookie('vph-tkt', tkt64, path='/')
-
-                return response
+            return response
 
         else:
             response['info']="Username or password not valid."
+
     elif request.method == 'POST':
         response['info']="Login error"
 
@@ -156,7 +116,7 @@ def auth_done(request,token):
 
 
 def auth_login(request):
-    """ return the biomedtown login page with and embedded login iframe"""
+    """ return the biomedtown mod_auth tkt login page"""
 
     return render_to_response('scs_auth/auth_login.html',
             {'version': version},
@@ -166,37 +126,68 @@ def auth_login(request):
 @login_required
 def logout(request):
     """Logs out user"""
+    if request.META.get('HTTP_REFERER'):
+        if request.META['HTTP_REFERER'].count('logout') and request.user.is_authenticated():
+            return HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/')
+
     auth_logout(request)
-    data = {'version': version}
-    response = render_to_response(
-        'scs/index.html',
-        data,
-        RequestContext(request)
-    )
+    response = HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/?loggedout')
     response.delete_cookie('vph_cookie')
-
     return response
+    #return response
 
 
-def validate_tkt(request):
+class validate_tkt(BaseHandler):
+    """
+    REST service based on Django-Piston Library.
+    Now Service support:
+        application/json -> http://HOSTvalidatetkt.json?ticket=<ticket>
+        text/xml -> http://HOST/validatetkt.xml?ticket=<ticket>
+        application/x-yaml -> http://HOST/validatetkt.yaml?ticket=<ticket>
 
-    if request.GET.get('ticket'):
-        ticket= binascii.a2b_base64(request.GET['ticket'])
-        user_data=validateTicket(settings.SECRET_KEY,ticket)
-        if user_data:
-            #user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
-            user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-            user_value=user_data[3]
-            user_dict={}
+    Method validate given ticket, if it valid return User info else 403 error return
+    """
 
-            for i in range(0, len(user_key)):
-                user_dict[user_key[i]]=user_value[i]
+    def read(self, request, ticket=''):
 
-            user=User.objects.get(username=user_dict['nickname'])
+        """
+            Arguments:
+                request (HTTP request istance): HTTP request send from client.
+                ticket (string) : base 64 ticket.
 
-            if user:
-                return HttpResponse("VALID")
+            Return:
+                Successes - Json/xml/yaml format response (response format depend on request content/type)
+                Failure - 403 error
 
-    return HttpResponse("NOT_VALID")
+        """
+        try:
+            if request.GET.get('ticket'):
+
+                user, tkt64 = authenticate(ticket=request.GET['ticket'])
+
+                if user is not None:
 
 
+                    theurl = settings.ATOS_SERVICE_URL
+                    username = user.username
+                    password = request.GET['ticket']
+
+                    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                    passman.add_password(None, theurl, username, password)
+                    authhandler = urllib2.HTTPBasicAuthHandler(passman)
+
+                    opener = urllib2.build_opener(authhandler)
+
+                    urllib2.install_opener(opener)
+                    pagehandle = urllib2.urlopen(theurl)
+
+                    if pagehandle.code == 200 :
+                        return user.userprofile.to_dict()
+
+            response = HttpResponse(status=403)
+            response._is_string = True
+            return response
+        except Exception, e:
+            response = HttpResponse(status=403)
+            response._is_string = True
+            return response
