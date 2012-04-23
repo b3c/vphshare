@@ -219,7 +219,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         """
         ticket = binascii.a2b_base64(ticket64)
 
-        user_data = validateTicket(settings.SECRET_KEY,ticket)
+        user_data = validateTicket(settings.SECRET_KEY,ticket,timeout=settings.TICKET_TIMEOUT)
 
         if user_data:
 

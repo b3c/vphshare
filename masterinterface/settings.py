@@ -208,3 +208,6 @@ CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/def
 
 #Atos service
 ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
+
+#Ticket expiration timeout in seconds
+TICKET_TIMEOUT = 12*60*60  # 12 h

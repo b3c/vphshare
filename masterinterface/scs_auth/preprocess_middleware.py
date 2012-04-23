@@ -18,10 +18,13 @@ class masterInterfaceMiddleware:
                     user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'])
                 except :
                     logout(request)
+                    request.META['VPH_TKT_COOKIE']=True
                     return
 
                 if user is None:
                     logout(request)
+                    request.META['VPH_TKT_COOKIE']=True
+                    return
 
                 request.META['VPH_TKT_COOKIE'] = tkt64
 
@@ -29,6 +32,8 @@ class masterInterfaceMiddleware:
 
                 if request.user.is_authenticated() and not request.user.username == 'admin':
                     logout(request)
+                    request.META['VPH_TKT_COOKIE']=True
+                    return
 
             #FROM GET ATTRIBUTE
             #if validate ticket is ok, open new session and set ticket cookie.
@@ -57,6 +62,7 @@ class masterInterfaceMiddleware:
         Process_response work after view rendering.
         Set/update ticket cookie if necessary.
         """
+
         if request.META.get("VPH_TKT_COOKIE") is None:
             return response
 
