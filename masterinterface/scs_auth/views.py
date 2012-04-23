@@ -56,6 +56,8 @@ def bt_login(request):
 
 def auth_loginform(request):
     """
+    Process login request.
+    Create session and user into database if not exist.
     """
 
     response = {'version': version}
@@ -114,7 +116,7 @@ def auth_done(request,token):
 
 
 def auth_login(request):
-    """ return the biomedtown login page with and embedded login iframe"""
+    """ return the biomedtown mod_auth tkt login page"""
 
     return render_to_response('scs_auth/auth_login.html',
             {'version': version},
@@ -136,9 +138,28 @@ def logout(request):
 
 
 class validate_tkt(BaseHandler):
+    """
+    REST service based on Django-Piston Library.
+    Now Service support:
+        application/json -> http://HOSTvalidatetkt.json?ticket=<ticket>
+        text/xml -> http://HOST/validatetkt.xml?ticket=<ticket>
+        application/x-yaml -> http://HOST/validatetkt.yaml?ticket=<ticket>
 
+    Method validate given ticket, if it valid return User info else 403 error return
+    """
 
     def read(self, request, ticket=''):
+
+        """
+            Arguments:
+                request (HTTP request istance): HTTP request send from client.
+                ticket (string) : base 64 ticket.
+
+            Return:
+                Successes - Json/xml/yaml format response (response format depend on request content/type)
+                Failure - 403 error
+
+        """
         try:
             if request.GET.get('ticket'):
 

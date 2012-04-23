@@ -3,31 +3,45 @@ BiomedTown OpenID support.
 
 This contribution adds support for BiomedTown OpenID service.
 """
+__author__ = 'Alfredo Saglimbeni (a.saglimbeni@scsitaly.com), Matteo Balasso (m.balasso@scsitaly.com)'
+
+
+from django.conf import settings
+
+from django.contrib.auth.backends import RemoteUserBackend
+from django.contrib.auth.models import User
+
+from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME, sreg,ax
+from openid.consumer.consumer import SUCCESS, CANCEL, FAILURE
+
+from masterinterface.scs_auth.tktauth import *
+from masterinterface.scs_auth.auth import authenticate
 
 import binascii
 from datetime import  datetime
-from django.conf import settings
 from xmlrpclib import ServerProxy
-from django.contrib.auth.backends import RemoteUserBackend
-from masterinterface.scs_auth.auth import authenticate
-from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME, sreg,ax
-from openid.consumer.consumer import SUCCESS, CANCEL, FAILURE
-from masterinterface.scs_auth.tktauth import *
-from django.contrib.auth.models import User
+
+############################
+#BIOMEDTOWN OPEN ID BACKEND
+############################
+
+#Biomedtown authentication URL
 BIOMEDTOWN_URL = 'https://www.biomedtown.org/identity/%s'
 
+#OPENIP play pipeline to resolve User in databases else create it.
 PIPELINE = (
-    'social_auth.backends.pipeline.social.social_auth_user',
-    'social_auth.backends.pipeline.associate.associate_by_email',
-    'social_auth.backends.pipeline.user.get_username',
-    'social_auth.backends.pipeline.user.create_user',
-    'masterinterface.scs_auth.auth.userProfileUpdate',
-    'masterinterface.scs_auth.auth.socialtktGen',
-    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.social_auth_user',      # exist in social_auth database
+    'social_auth.backends.pipeline.associate.associate_by_email', # exist User by given email
+    'social_auth.backends.pipeline.user.get_username',            # exist User by Username
+    'social_auth.backends.pipeline.user.create_user',             # else Create User
+    'masterinterface.scs_auth.auth.userProfileUpdate',            # Update user profile with openid data response
+    'masterinterface.scs_auth.auth.socialtktGen',                 # Generate Ticket
+    'social_auth.backends.pipeline.social.associate_user',        # Associate Social_auth user with django user instance
     'social_auth.backends.pipeline.social.load_extra_data',
     'social_auth.backends.pipeline.user.update_user_details',
     )
 
+#Attribute to extract from OPENID response
 SREG_ATTR = [
     ('email', 'email'),
     ('fullname', 'fullname'),
@@ -36,8 +50,12 @@ SREG_ATTR = [
     ('language', 'language'),
     ('postcode', 'postcode'),
 ]
+
+
 class BiomedTownBackend(OpenIDBackend):
-    """BiomedTown OpenID authentication backend"""
+    """BiomedTown OpenID authentication backend
+    Class Extend OpenIDBackend from social_auth library.
+    It proces new pipeline and extract specific attribute from response"""
     name = 'biomedtown'
 
     def authenticate(self, *args, **kwargs):
@@ -113,7 +131,10 @@ class BiomedTownBackend(OpenIDBackend):
 
 
 class BiomedTownAuth(OpenIdAuth):
-    """BiomedTown OpenID authentication"""
+    """BiomedTown OpenID authentication.
+    Define Biomedtown Authentication URL.
+    It Work with local SREG_ATTR"""
+
     AUTH_BACKEND = BiomedTownBackend
 
     def openid_url(self):
@@ -166,34 +187,56 @@ BACKENDS = {
     'biomedtown' : BiomedTownAuth,
     }
 
-class BiomedTownTicketBackend (RemoteUserBackend):
+############################
+#END BIOMEDTOWN OPEN ID BACKEND
+############################
 
+############################
+#BIOMEDTOWN MOD_AUTH_TKT BACKEND
+############################
+
+class BiomedTownTicketBackend (RemoteUserBackend):
+    """Biomedtown backend over mod_auth_tkt.
+    This class authenticate user to biomedtown credential manager.
+    It work over xmlrpc request: If user exist and credentials are right than service return ticket"""
+
+    #XML-RPC Client istance
     service = ServerProxy(settings.AUTH_SERVICES)
     user_dict = {}
+
+    #Force backend to create new user if not exist in django database
     create_unknown_user = True
 
 
     def userTicket(self, ticket64):
+        """usertTicket verify given ticket , if it valid and user exist in database return user instance.
 
-        ticket= binascii.a2b_base64(ticket64)
+             Arguments:
+                ticket64 (string) : base 64 ticket.
 
-        user_data=validateTicket(settings.SECRET_KEY,ticket)
+            Return:
+                User (User instance): Django User instance.
+        """
+        ticket = binascii.a2b_base64(ticket64)
+
+        user_data = validateTicket(settings.SECRET_KEY,ticket)
+
         if user_data:
-            # user_key =  ['language', 'country', 'postcode', 'fullname', 'nickname', 'email']
-            user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-            user_value=user_data[3]
 
-            self.user_dict={}
+            user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
+            user_value = user_data[3]
+
+            self.user_dict = {}
 
             for i in range(0, len(user_key)):
-                self.user_dict[user_key[i]]=user_value[i]
+                self.user_dict[user_key[i]] = user_value[i]
 
             user = None
 
             if self.create_unknown_user:
 
                 #TODO here we can create a pipeline
-                user, created = User.objects.get_or_create(username=self.user_dict['nickname'],email=self.user_dict['email'])
+                user, created = User.objects.get_or_create(username = self.user_dict['nickname'],email = self.user_dict['email'])
 
                 if created:
                     user = self.configure_user(user)
@@ -217,6 +260,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
                 tokens=tokens,
                 user_data=user_value
             )
+
             tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
             return user, tkt64
@@ -224,6 +268,16 @@ class BiomedTownTicketBackend (RemoteUserBackend):
 
     def authenticate( self, username = None, password= None):
         """
+            Biomedtown backend authenticate method.
+            It delivery Authenticate request to biomedtown mod_auth_tkt service.
+
+            Arguments:
+                username (string) : Username.
+                password (string) : Password.
+
+            Return:
+                User (User instance) : Django User instance.
+                tkt64 (string) : return new  ticket generation.
 
         """
         if username is None or password is None:
@@ -247,7 +301,15 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             return None
 
     def configure_user(self, user):
+        """
+            Update user profile with given attribute.
 
+            Arguments:
+                user (User instance) : Django User instance.
+
+            Return:
+                user (User instance) : Django User instance.
+        """
         user.backend ='scs_auth.backend.biomedtowntkt'
         user.first_name = self.user_dict['fullname'].split(" ")[0]
         user.last_name =  self.user_dict['fullname'].split(" ")[1]
@@ -263,12 +325,20 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         return user
 
 class FromTicketBackend (BiomedTownTicketBackend):
-
+    """Extend BiomedTownTicketBackend. FromTicketBackend authenticate user from given ticket (and not username, password)"""
 
 
     def authenticate( self, ticket=None):
         """
+        Authenticate User over given ticket.
 
+        Arguments:
+
+            ticket (string) :  base 64 ticket.
+
+            Return:
+                User (User instance) : Django User instance.
+                tkt64 (string) : return new  ticket generation.
         """
 
         if ticket is None:
@@ -283,7 +353,7 @@ class FromTicketBackend (BiomedTownTicketBackend):
 
             return user, tkt64
 
-        except Exception, e:
+        except Exception:
             return None
 
 

@@ -14,7 +14,6 @@ urlpatterns = patterns(
     url(r'^auth_loginform/$', 'auth_loginform'),
     url(r'^done/$', 'done'),
     url(r'^logout/$','logout'),
-    #url(r'^validatetkt','validate_tkt'),
     url(r'^validatetkt/',entries),
     url(r'^validatetkt\.(?P<emitter_format>.+)', entries),
     )

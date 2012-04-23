@@ -1,8 +1,9 @@
+"""
+Extend User model with new attribute in user profile.
+"""
+__author__ = "Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)"
+
 from django.db import models
-
-# Create your models here.
-# in models.py
-
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 

@@ -1,4 +1,4 @@
-__author__ = 'Alfredo Saglimbeni'
+__author__ = 'Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)'
 
 from django.contrib.auth import get_backends
 from django.conf import  settings
@@ -8,7 +8,8 @@ import binascii
 
 def authenticate(**credentials):
     """
-    If the given credentials are valid, return a User object.
+    Override orginal authenticate to support ticket retrun.
+    Now, If the given credentials are valid, return a User object and ticket.
     """
     for backend in get_backends():
         try:
@@ -26,6 +27,10 @@ def authenticate(**credentials):
         return user
 
 def userProfileUpdate(details, user, *args, **kwargs):
+    """
+    New pipeline for Social_auth. It set userProfile attribute.
+    """
+
     if not user:
         return
 
@@ -43,10 +48,13 @@ def userProfileUpdate(details, user, *args, **kwargs):
 
 
 def socialtktGen(details, *args, **kwargs):
-
+    """
+    New pipeline for social_auth.
+    Generation of ticket from given user details.
+    """
     email = details.get('email')
 
-    if email:#### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
+    if email:
 
         user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
         user_value=[]
@@ -54,11 +62,12 @@ def socialtktGen(details, *args, **kwargs):
         for i in range(0, len(user_key)):
             user_value.append(details[user_key[i]])
 
+        #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
         if details['nickname']=='mi_testuser':
             tokens=[]
         else:
             tokens=['developer']
-            #######
+        #######
 
         new_tkt = createTicket(
             settings.SECRET_KEY,
