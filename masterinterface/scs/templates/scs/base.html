@@ -39,12 +39,13 @@
                 {% block nav %}
                     <nav>
                         <li class="current-menu-item"><a href="/">home</a></li>
-                        <li><a href="/services">services</a></li>
 
                         {% if request.user.is_authenticated %}
-                            <li><a href="/cyfronet">cyfronet</a></li>
+                            <li><a href="/cyfronet/cloudmanager/">Cloud Manager</a></li>
+                            <li><a href="/cyfronet/datamanager/">Data Manager</a></li>
                         {% endif %}
 
+                        <li><a href="/services">services</a></li>
                         <li><a href="/contacts">contact</a></li>
                         <li><a href="/help">help</a></li>
                     </nav>
