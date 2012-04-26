@@ -94,7 +94,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT,'js'),
     os.path.join(PROJECT_ROOT,'img'),
     os.path.join(PROJECT_ROOT,'css'),
-
+    os.path.join(PROJECT_ROOT,'files'),
 )
 
 # List of finder classes that know how to find static files in

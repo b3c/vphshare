@@ -38,16 +38,17 @@
 
                 {% block nav %}
                     <nav>
-                        <li class="current-menu-item"><a href="/">home</a></li>
+                        <li class="current-menu-item"><a href="/">Home</a></li>
 
                         {% if request.user.is_authenticated %}
                             <li><a href="/cyfronet/cloudmanager/">Cloud Manager</a></li>
                             <li><a href="/cyfronet/datamanager/">Data Manager</a></li>
+                            <li><a href="/scs/workflows/">Workflows</a></li>
                         {% endif %}
 
-                        <li><a href="/services">services</a></li>
-                        <li><a href="/contacts">contact</a></li>
-                        <li><a href="/help">help</a></li>
+                        <li><a href="/scs/services">Services</a></li>
+                        <li><a href="/scs/contacts">Contact</a></li>
+                        <li><a href="/scs/help">Help</a></li>
                     </nav>
                 {% endblock %}
 

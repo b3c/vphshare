@@ -12,5 +12,6 @@ urlpatterns = patterns(
     url(r'^profile/$', 'profile'),
     url(r'^login-error/$', 'login_error'),
     url(r'^services/$', 'services'),
+    url(r'^workflows/$', 'workflows'),
     url(r'^test/$', 'test'),
 )

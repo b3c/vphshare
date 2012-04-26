@@ -1,0 +1,22 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+{% block page-title %}
+    <span class="title">Workflow Definition Files</span>
+    <span class="subtitle">Below are listed all availables workflow definition files</span>
+{% endblock%}
+
+{%  block content %}
+
+    <h4>@neurist Morphological Workflow</h4>
+    <p>The @neurIST workflow classifies a complex information processing chain, which originally comprised morphological,
+        haemodynamic and structural characterisations of intracranial aneurysms appearing in a medical image. The VPH-Share
+        @neurIST workflow concentrates on the morphological and haemodynamic characterisations, and will exclude the structural
+        measures.</p>
+    <a href="/static/AneuristMorphologicalWorkflowStatic.t2flow">click here to download the file</a>
+
+
+
+
+{% endblock %}
