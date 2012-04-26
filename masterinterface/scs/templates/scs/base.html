@@ -38,7 +38,7 @@
 
                 {% block nav %}
                     <nav>
-                        <li class="current-menu-item"><a href="/">Home</a></li>
+                        <li class="current-menu-item" id="navhome"><a href="/">Home</a></li>
 
                         {% if request.user.is_authenticated %}
                             <li><a href="/cyfronet/cloudmanager/">Cloud Manager</a></li>
