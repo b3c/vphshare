@@ -12,6 +12,18 @@ function defaultAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
 $(document).ready(
     function(){
 
+        // highlight current section
+        var thereIsASection = false;
+        $('nav li[id!="navhome"] a').each(
+            function(){
+                if ( document.URL.match($(this).attr("href")) ){
+                    $(this).parent().toggleClass("current-menu-item");
+                    thereIsASection = true;
+                }
+            }
+        );
+        if (thereIsASection){ $("#navhome").removeClass("current-menu-item");}
+
         //create if not exist overlay div
         if ( $("#overlay").length == 0 ) {
 
