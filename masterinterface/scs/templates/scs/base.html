@@ -100,7 +100,7 @@
                         {% else %}
                             <span>Hi, {{ request.user.first_name|default:"Friend"}}!</span>
                             <a href="/profile/">Profile</a>
-                            <a href="/logout/">Logout</a>
+                            <a  class="popup" rel="#overlay" href="/logout">Logout</a>
                         {% endif %}
                     {% endblock %}
                 </div>

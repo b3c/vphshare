@@ -1,7 +1,26 @@
 {% extends "scs/base.html" %}
 
 {% block title %}Logged in!{% endblock %}
+{% block javascripts  %}
+    <script type="text/javascript" src="/static/jquery.zclip.min.js"></script>
+    <script type="text/javascript">
 
+    $(document).ready(function(){
+
+        $('a#copy-description').zclip({
+            path:'/static/ZeroClipboard.swf',
+            copy:$('div#copy').text(),
+            afterCopy:function(){
+                $('div#copy').html('COPIED!');
+                $(this).preventDefault();
+                $('div#copy').css('background','green');
+            }
+        });
+
+    });
+    </script>
+
+{% endblock %}
 {% block content %}
 <div>
   <h3>Your personal data:</h3>
@@ -17,7 +36,8 @@
     <li><strong>Last login backend:</strong> <span>{{ request.user.last_login }}</span></li>
 
       <br />
-     <li><strong>Your Authentication Ticket (base64)</strong> <br /> <span>{{ tkt64 }}</span></li>
+     <li><strong>Your Authentication Ticket (base64)</strong> <br /> <span><div id="copy">{{ tkt64 }}</div></span></li>
+     <a id="copy-description" href="#copied">Copy Ticket to Clipboard</a>
   </ul>
 </div>
 

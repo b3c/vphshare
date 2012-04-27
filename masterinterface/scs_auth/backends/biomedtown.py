@@ -238,7 +238,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
                 #TODO here we can create a pipeline
                 user, created = User.objects.get_or_create(username = self.user_dict['nickname'],email = self.user_dict['email'])
 
-                if created:
+                if user:
                     user = self.configure_user(user)
             else:
                 try:
@@ -320,6 +320,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         user.userprofile.language = self.user_dict['language']
         user.userprofile.postcode = self.user_dict['postcode']
         user.userprofile.save()
+        user.password="!"
         user.save()
 
         return user
@@ -355,7 +356,6 @@ class FromTicketBackend (BiomedTownTicketBackend):
 
         except Exception:
             return None
-
 
 
 

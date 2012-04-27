@@ -1,15 +1,14 @@
 from django.contrib.auth import logout , login
-from Cookie import BaseCookie
 from auth import authenticate
 import binascii
 
 class masterInterfaceMiddleware:
 
-
     def process_view(self, request, callback, callback_args, callback_kwargs):
         """
         Proces_view work before view rendering. Verify usere's ticket (from cookie or ticket attribute)
         """
+        request.META['NEW_VPH_TKT_COOKIE']=False
 
         try:
             #FROM COOKIE
@@ -30,6 +29,7 @@ class masterInterfaceMiddleware:
                 request.META['VPH_TKT_COOKIE'] = tkt64
 
             else:
+
                 if request.user.is_authenticated() and not request.user.username == 'admin':
                     logout(request)
                     request.META['VPH_TKT_COOKIE']=True
@@ -64,21 +64,14 @@ class masterInterfaceMiddleware:
         """
 
         if request.META.get("VPH_TKT_COOKIE") is None:
-            #if not request.user.is_authenticated():
-            #    response.delete_cookie('vph-tkt')
             return response
 
-        ticket=binascii.a2b_base64(request.COOKIES['vph-tkt'])
-        data = validateTicket(settings.SECRET_KEY,ticket)
-        if data is not None:
-            (digest, userid, tokens, user_data, timestamp) = data
-            tkt64 =binascii.b2a_base64(createTicket(settings.SECRET_KEY, userid, tokens, user_data)).rstrip()
-
-            response.cookies = BaseCookie()
-            response.set_cookie('vph-tkt', tkt64, path='/')
-
+        if not request.user.is_authenticated():
+            response.delete_cookie('vph-tkt')
+            return response
 
         response.set_cookie( 'vph-tkt', request.META['VPH_TKT_COOKIE'])
 
         return response
+
 

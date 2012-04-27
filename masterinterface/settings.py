@@ -151,14 +151,14 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.OpenIDBackend',
-    'django.contrib.auth.backends.ModelBackend',
-    'social_auth.backends.google.GoogleOAuthBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.google.GoogleBackend',
     'scs_auth.backends.biomedtown.BiomedTownTicketBackend',
     'scs_auth.backends.biomedtown.FromTicketBackend',
-    'scs_auth.backends.biomedtown.BiomedTownBackend'
+    'scs_auth.backends.biomedtown.BiomedTownBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    #'social_auth.backends.OpenIDBackend',
+    #'social_auth.backends.google.GoogleOAuthBackend',
+    #'social_auth.backends.google.GoogleOAuth2Backend',
+    #'social_auth.backends.google.GoogleBackend',
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -169,6 +169,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.contrib.messages.context_processors.messages',
     'social_auth.context_processors.social_auth_by_type_backends',
+    )
+
+PASSWORD_HASHERS = (
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+    'django.contrib.auth.hashers.CryptPasswordHasher',
     )
 
 #SOCIAL_AUTH SETTINGS
