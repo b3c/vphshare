@@ -63,6 +63,9 @@
     </head>
 
     <body>
+    {% if info %}
+        <p id="info">{{info}}</p>
+    {% endif %}
         <form action="{% url socialauth_begin "biomedtown" %}" method="post">
             {% csrf_token %}
             <div>

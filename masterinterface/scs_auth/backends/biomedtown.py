@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 
 from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, OLD_AX_ATTRS, AX_SCHEMA_ATTRS, USERNAME, sreg,ax
 from openid.consumer.consumer import SUCCESS, CANCEL, FAILURE
+from social_auth.backends.exceptions import *
 
 from masterinterface.scs_auth.tktauth import *
 from masterinterface.scs_auth.auth import authenticate
@@ -145,9 +146,9 @@ class BiomedTownAuth(OpenIdAuth):
     def auth_complete(self, *args, **kwargs):
         """Complete auth process"""
         response = self.consumer().complete(dict(self.data.items()),
-            self.request.build_absolute_uri())
+            self.build_absolute_uri())
         if not response:
-            raise ValueError('This is an OpenID relying party endpoint')
+            raise AuthException(self, 'OpenID relying party endpoint')
         elif response.status == SUCCESS:
             kwargs.update({
                 'auth': self,
@@ -158,14 +159,15 @@ class BiomedTownAuth(OpenIdAuth):
             if user:
                 self.request.META['VPH_TKT_COOKIE'] = tkt64
                 return user
+            else:
+                AuthFailed(self, 'Authentication Error')
         elif response.status == FAILURE:
-            raise ValueError('OpenID authentication failed: %s' %\
-                             response.message)
+            raise AuthFailed(self, response.message)
         elif response.status == CANCEL:
-            raise ValueError('Authentication cancelled')
+            raise AuthCanceled(self)
         else:
-            raise ValueError('Unknown OpenID response type: %r' %\
-                             response.status)
+            raise AuthUnknownError(self, response.status)
+
     def setup_request(self, extra_params=None):
         """Setup request"""
         openid_request = self.openid_request(extra_params)

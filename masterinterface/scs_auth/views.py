@@ -41,9 +41,11 @@ def bt_loginform(request):
         request.session['saved_username'] = request.POST['username']
         backend = request.session[name]['backend']
         return redirect('socialauth_complete', backend=backend)
-
+    context={'version': version}
+    if request.GET.get('error'):
+        context['info']='Login Error'
     return render_to_response('scs_auth/bt_loginform.html',
-            {'version': version},
+            context,
         RequestContext(request)
     )
 def bt_login(request):
