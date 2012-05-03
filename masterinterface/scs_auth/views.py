@@ -41,9 +41,11 @@ def bt_loginform(request):
         request.session['saved_username'] = request.POST['username']
         backend = request.session[name]['backend']
         return redirect('socialauth_complete', backend=backend)
-
+    context={'version': version}
+    if request.GET.get('error'):
+        context['info']='Login Error'
     return render_to_response('scs_auth/bt_loginform.html',
-            {'version': version},
+            context,
         RequestContext(request)
     )
 def bt_login(request):
@@ -61,35 +63,37 @@ def auth_loginform(request):
     """
 
     response = {'version': version}
+    try:
+        if request.method == 'POST' and request.POST.get('biomedtown_username') and request.POST.get('biomedtown_password'):
+            username=request.POST['biomedtown_username']
+            password=request.POST['biomedtown_password']
 
-    if request.method == 'POST' and request.POST.get('biomedtown_username') and request.POST.get('biomedtown_password'):
-        username=request.POST['biomedtown_username']
-        password=request.POST['biomedtown_password']
-
-        user , tkt64 =authenticate(username=username,password=password)
+            user , tkt64 =authenticate(username=username,password=password)
 
 
-        if user is not None:
+            if user is not None:
 
-            response['ticket']= tkt64
-            response['last_login'] ='biomedtown'
+                response['ticket']= tkt64
+                response['last_login'] ='biomedtown'
 
-            login(request,user)
+                login(request,user)
 
-            response = render_to_response(
-                'scs_auth/done.html',
-                response,
-                RequestContext(request)
-            )
+                response = render_to_response(
+                    'scs_auth/done.html',
+                    response,
+                    RequestContext(request)
+                )
 
-            response.set_cookie( 'vph-tkt', tkt64 )
+                response.set_cookie( 'vph-tkt', tkt64 )
 
-            return response
+                return response
 
-        else:
-            response['info']="Username or password not valid."
+            else:
+                response['info']="Username or password not valid."
 
-    elif request.method == 'POST':
+        elif request.method == 'POST':
+            response['info']="Login error"
+    except :
         response['info']="Login error"
 
     return render_to_response('scs_auth/auth_loginform.html',
@@ -131,10 +135,14 @@ def logout(request):
             return HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/')
 
     auth_logout(request)
-    response = HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/?loggedout')
+    #response = HttpResponseRedirect('http://'+request.META['HTTP_HOST']+'/?loggedout')
+    response = render_to_response(
+        'scs_auth/logout.html',
+        None,
+        RequestContext(request)
+    )
     response.delete_cookie('vph_cookie')
     return response
-    #return response
 
 
 class validate_tkt(BaseHandler):

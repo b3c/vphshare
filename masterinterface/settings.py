@@ -151,14 +151,14 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.OpenIDBackend',
-    'django.contrib.auth.backends.ModelBackend',
-    'social_auth.backends.google.GoogleOAuthBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.google.GoogleBackend',
     'scs_auth.backends.biomedtown.BiomedTownTicketBackend',
     'scs_auth.backends.biomedtown.FromTicketBackend',
-    'scs_auth.backends.biomedtown.BiomedTownBackend'
+    'scs_auth.backends.biomedtown.BiomedTownBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    #'social_auth.backends.OpenIDBackend',
+    #'social_auth.backends.google.GoogleOAuthBackend',
+    #'social_auth.backends.google.GoogleOAuth2Backend',
+    #'social_auth.backends.google.GoogleBackend',
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -168,11 +168,21 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.contrib.messages.context_processors.messages',
+    'social_auth.context_processors.social_auth_by_name_backends',
+    'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
     )
 
-#SOCIAL_AUTH SETTINGS
-SOCIAL_AUTH_ASSOCIATE_BY_MAIL =True
+PASSWORD_HASHERS = (
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+    'django.contrib.auth.hashers.CryptPasswordHasher',
+    )
+
+
 
 
 
@@ -202,6 +212,12 @@ LOGGING = {
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/done'
 LOGIN_ERROR_URL    = '/login-error/'
+
+#SOCIAL_AUTH SETTINGS
+SOCIAL_AUTH_ASSOCIATE_BY_MAIL =True
+SOCIAL_AUTH_BACKEND_ERROR_URL = '/scs_auth/bt_loginform/?error=True'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/scs_auth/bt_loginform/?error=True'
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
 CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
