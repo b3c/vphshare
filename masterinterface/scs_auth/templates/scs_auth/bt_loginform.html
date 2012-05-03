@@ -57,6 +57,13 @@
                 font-weight: bold;
             }
 
+            #info{clear:both;
+                margin-bottom:15px;
+                color:black;
+                font-weight: bold;}
+
+            #info span {border-bottom: 2px solid #df0019;}
+
             
 
         </style>
@@ -64,7 +71,7 @@
 
     <body>
     {% if info %}
-        <p id="info">{{info}}</p>
+        <p id="info"><span>{{info}}</span></p>
     {% endif %}
         <form action="{% url socialauth_begin "biomedtown" %}" method="post">
             {% csrf_token %}
