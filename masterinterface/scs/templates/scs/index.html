@@ -5,8 +5,13 @@
 
 
 {% block page-title %}
-    <span class="title">Welcome!</span>
-    <span class="subtitle">This is a demo version of the Master Interface</span>
+    {% if request.user.is_authenticated %}
+        <span class="title">Welcome, {{ request.user.first_name|default:"Friend"}}!</span>
+        <span class="subtitle">This is a demo version of the Master Interface</span>
+    {% else %}
+        <span class="title">Welcome!</span>
+        <span class="subtitle"> Please login by choosing your identity provider</span>
+    {% endif %}
 {% endblock%}
 
 {%  block content %}
