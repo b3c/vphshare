@@ -10,13 +10,17 @@
 {%  block content %}
 
     <table>
+        <form id="contact" action="/scs/contacts/" method="POST">
+            {% csrf_token %}
         <tr>
             <td><strong for="name">Your Name:</strong></td>
-            <td><input id="name" type="text" maxlength="50" /></td>
+            <td><input id="name" type="text" maxlength="50"
+                       value="{{ request.user.first_name|default:""}}" /></td>
         </tr>
         <tr>
             <td><strong for="email">Your Email:</strong></td>
-            <td><input id="email" type="text" maxlength="50" /></td>
+            <td><input id="email" type="text" maxlength="50"
+                      value="{{ request.user.email|default:""}}"/></td>
         </tr>
         <tr><td><strong for="subject">Subject</strong></td>
             <td><input id="subject" type="text" maxlength="50" /></td></tr>
@@ -24,7 +28,7 @@
             <td><textarea id="message"></textarea></td></tr>
 
         <tr><td colspan="2"><button>Send!</button></td></tr>
-
+        </form>
     </table>
 
 {% endblock %}
