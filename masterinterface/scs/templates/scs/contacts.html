@@ -3,13 +3,28 @@
 {%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
 
 {% block page-title %}
-    <span class="title">Contacts</span>
+    <span class="title">Contact us!</span>
     <span class="subtitle">Send an email to the Master Interface developers</span>
 {% endblock%}
 
 {%  block content %}
-    
-    <h4>Contact us!</h4>
-    <p><a href="mailto:web.developers@scsitaly.com">Send us an email</a></p>
+
+    <table>
+        <tr>
+            <td><strong for="name">Your Name:</strong></td>
+            <td><input id="name" type="text" maxlength="50" /></td>
+        </tr>
+        <tr>
+            <td><strong for="email">Your Email:</strong></td>
+            <td><input id="email" type="text" maxlength="50" /></td>
+        </tr>
+        <tr><td><strong for="subject">Subject</strong></td>
+            <td><input id="subject" type="text" maxlength="50" /></td></tr>
+        <tr><td><strong for="message">Message</strong></td>
+            <td><textarea id="message"></textarea></td></tr>
+
+        <tr><td colspan="2"><button>Send!</button></td></tr>
+
+    </table>
 
 {% endblock %}
