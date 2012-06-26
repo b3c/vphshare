@@ -227,3 +227,6 @@ ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
 
 #Ticket expiration timeout in seconds
 TICKET_TIMEOUT = 12*60*60  # 12 h
+
+#MOD_AUTH_TKT settings
+MOD_AUTH_PUBTKT=True

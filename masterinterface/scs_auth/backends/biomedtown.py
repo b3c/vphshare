@@ -222,7 +222,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         """
         ticket = binascii.a2b_base64(ticket64)
 
-        user_data = validateTicket(settings.SECRET_KEY,ticket,timeout=settings.TICKET_TIMEOUT)
+        user_data = validateTicket(ticket, settings.SECRET_KEY,timeout=settings.TICKET_TIMEOUT, mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT)
 
         if user_data:
 
@@ -258,10 +258,12 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             #######
 
             new_tkt = createTicket(
-                settings.SECRET_KEY,
                 self.user_dict['nickname'],
+                settings.SECRET_KEY,
                 tokens=tokens,
-                user_data=user_value
+                user_data=user_value,
+                mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT
+
             )
 
             tkt64 = binascii.b2a_base64(new_tkt).rstrip()
