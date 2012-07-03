@@ -116,9 +116,15 @@ def services(request):
         RequestContext(request))
 
 def contacts(request):
-    return render_to_response("scs/contacts.html",
+
+    if request.method == 'GET':
+        return render_to_response("scs/contacts.html",
             {},
         RequestContext(request))
+    else:
+        return render_to_response("scs/contacts.html",
+                {'statusmessage':'Thanks, your message has been sent!'},
+            RequestContext(request))
 
 def help(request):
     return render_to_response("scs/help.html",

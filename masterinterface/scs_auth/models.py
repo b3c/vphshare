@@ -1,5 +1,11 @@
 """
-Extend User model with new attribute in user profile.
+Extend User model with new attribute in user profile.\n
+New fields are:\n
+        -postcode.\n
+        -country.\n
+        -fullname.\n
+        -language.\n
+
 """
 __author__ = "Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)"
 

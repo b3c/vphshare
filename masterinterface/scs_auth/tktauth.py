@@ -136,7 +136,21 @@ def mod_auth_tkt_digest(secret, data1, data2):
 
 def createTicket(secret, userid, tokens=(), user_data=(), ip='0.0.0.0', timestamp=None, encoding='utf8', mod_auth_tkt=True):
     """
-    By default, use a more compatible
+    Create Ticket from given data.
+
+    Arguments:
+            secret (string) : secret.\n
+            userid (string) : The user unique identifier.\n
+            tokens (tupla) : Permission for Given user.\n
+            user_data (tupla) : User's infromations.\n
+            ip : sender ip.\n
+            timestamp : ticket timestamp.\n
+            encoding : encoding\n
+            mod_auth_tkt : if true encode ticket with secret key.\n
+
+    Return:
+            Ticket (string) : Resulting ticket.\n
+
     """
     if timestamp is None:
         timestamp = int(time.time())
@@ -199,6 +213,17 @@ def validateTicket(secret, ticket, ip='0.0.0.0', timeout=0, now=None, encoding='
     and the shared secret. The two digests are compared and timestamp checked.
     Successful validation returns (digest, userid, tokens, user_data, timestamp).
     On failure, return None.
+    Arguments:
+                secret (string) : secret.\n
+                ticket: given ticket.\n
+                ip : sender ip.\n
+                timestamp : ticket timestamp.\n
+                now: now timestamp.\n
+                encoding : encoding.\n
+                mod_auth_tkt : if true encode ticket with secret key.\n
+
+    Return:
+                Ticket (string) : Resulting ticket.
     """
     try:
         (digest, userid, tokens, user_data, timestamp) = data = splitTicket(ticket)

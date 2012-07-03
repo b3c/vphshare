@@ -1,3 +1,6 @@
+"""
+Scs_auth views contain all frontend views about authentication process.
+"""
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout, login
 from auth import authenticate
@@ -147,25 +150,28 @@ def logout(request):
 
 class validate_tkt(BaseHandler):
     """
-    REST service based on Django-Piston Library.
-    Now Service support:
-        application/json -> http://HOSTvalidatetkt.json?ticket=<ticket>
-        text/xml -> http://HOST/validatetkt.xml?ticket=<ticket>
-        application/x-yaml -> http://HOST/validatetkt.yaml?ticket=<ticket>
+        REST service based on Django-Piston Library.\n
+        Now Service support:\n
+        # application/json -> http://HOSTvalidatetkt.json?ticket=<ticket>\n
+        # text/xml -> http://HOST/validatetkt.xml?ticket=<ticket>\n
+        # application/x-yaml -> http://HOST/validatetkt.yaml?ticket=<ticket>\n
 
-    Method validate given ticket, if it valid return User info else 403 error return
+        Method validate given ticket, if it valid return User info else 403 error return
     """
 
     def read(self, request, ticket=''):
 
         """
+            Process a Validate ticket request.
             Arguments:
-                request (HTTP request istance): HTTP request send from client.
-                ticket (string) : base 64 ticket.
+
+            request (HTTP request istance): HTTP request send from client.
+            ticket (string) : base 64 ticket.
 
             Return:
-                Successes - Json/xml/yaml format response (response format depend on request content/type)
-                Failure - 403 error
+
+            Successes - Json/xml/yaml format response (response format depend on request content/type)
+            Failure - 403 error
 
         """
         try:

@@ -1,5 +1,5 @@
 """
-BiomedTown OpenID support.
+BiomedTown OpenID support.\n\n
 
 This contribution adds support for BiomedTown OpenID service.
 """
@@ -211,13 +211,14 @@ class BiomedTownTicketBackend (RemoteUserBackend):
 
 
     def userTicket(self, ticket64):
-        """usertTicket verify given ticket , if it valid and user exist in database return user instance.
+        """
+        usertTicket verify given ticket , if it valid and user exist in database return user instance.
 
-             Arguments:
-                ticket64 (string) : base 64 ticket.
+        Arguments:
+                    ticket64 (string) : base 64 ticket.\n
 
-            Return:
-                User (User instance): Django User instance.
+        Return:
+                    User (User instance): Django User instance.\n
         """
         ticket = binascii.a2b_base64(ticket64)
 
@@ -270,16 +271,16 @@ class BiomedTownTicketBackend (RemoteUserBackend):
 
     def authenticate( self, username = None, password= None):
         """
-            Biomedtown backend authenticate method.
-            It delivery Authenticate request to biomedtown mod_auth_tkt service.
+        Biomedtown backend authenticate method.
+        It delivery Authenticate request to biomedtown mod_auth_tkt service.
 
-            Arguments:
-                username (string) : Username.
-                password (string) : Password.
+        Arguments:
+                username (string) : Username.\n
+                password (string) : Password.\n
 
-            Return:
-                User (User instance) : Django User instance.
-                tkt64 (string) : return new  ticket generation.
+        Return:
+                User (User instance) : Django User instance.\n
+                tkt64 (string) : return new  ticket generation.\n
 
         """
         if username is None or password is None:
@@ -304,13 +305,13 @@ class BiomedTownTicketBackend (RemoteUserBackend):
 
     def configure_user(self, user):
         """
-            Update user profile with given attribute.
+        Update user profile with given attribute.
 
-            Arguments:
-                user (User instance) : Django User instance.
+        Arguments:
+                user (User instance) : Django User instance.\n
 
-            Return:
-                user (User instance) : Django User instance.
+        Return:
+                user (User instance) : Django User instance.\n
         """
         user.backend ='scs_auth.backend.biomedtowntkt'
         user.first_name = self.user_dict['fullname'].split(" ")[0]
@@ -337,11 +338,11 @@ class FromTicketBackend (BiomedTownTicketBackend):
 
         Arguments:
 
-            ticket (string) :  base 64 ticket.
+                ticket (string) :  base 64 ticket.\n
 
-            Return:
-                User (User instance) : Django User instance.
-                tkt64 (string) : return new  ticket generation.
+        Return:
+                User (User instance) : Django User instance.\n
+                tkt64 (string) : return new  ticket generation.\n
         """
 
         if ticket is None:

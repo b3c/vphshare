@@ -37,19 +37,18 @@ class masterInterfaceMiddleware:
 
             #FROM GET ATTRIBUTE
             #if validate ticket is ok, open new session and set ticket cookie.
-            if request.GET.get('ticket') and not request.path.count('validatetkt'):
-                try:
-                    ticket = binascii.a2b_base64(request.GET['ticket'])
-                except :
-                    return
 
-                user, tkt64 = authenticate(ticket=request.GET['ticket'])
+            #FUNCTION open session from url GET variabile  !!!! DISABLED !!!
 
-                if  user is not None :
-
-                    login(request,user)
-
-                    request.META['VPH_TKT_COOKIE'] = tkt64
+            # if request.GET.get('ticket') and not request.path.count('validatetkt'):
+            #    try:
+            #        ticket = binascii.a2b_base64(request.GET['ticket'])
+            #    except :
+            #        return
+            #    user, tkt64 = authenticate(ticket=request.GET['ticket'])
+            #    if  user is not None :
+            #        login(request,user)
+            #        request.META['VPH_TKT_COOKIE'] = tkt64
 
 
         except KeyError:

@@ -5,13 +5,30 @@
 
 
 {% block page-title %}
-    <span class="title">Welcome!</span>
-    <span class="subtitle">This is a demo version of the Master Interface</span>
+    {% if request.user.is_authenticated %}
+        <span class="title">Welcome, {{ request.user.first_name|default:"Friend"}}!</span>
+        <span class="subtitle">This is a demo version of the Master Interface</span>
+    {% else %}
+        <span class="title">Welcome!</span>
+        <span class="subtitle"> Please login by choosing your identity provider</span>
+    {% endif %}
 {% endblock%}
 
 {%  block content %}
 
-    <p>VPH-Share will develop the organisational fabric (the infostructure) and integrate the optimised services to expose and share data and knowledge,
-        jointly develop multiscale models for the composition of new VPH workflows and facilitate collaborations within the VPH community</p>
+    <h6>What is VPH-Share?</h6>
+        <p style="text-align: justify; max-width: 90%;">VPH-Share is a large EC-funded research project that is building a
+            safe online facility in which medical simulation developers can easily
+            and quickly develop workflows – chains of processing tasks – to allow
+            raw medical information to be refined into meaningful diagnostic
+            and therapeutic information. Via an easy-to-use graphical interface
+            it provides all the routine facilities needed by workflow developers,
+            including design, construction, data-access and storage, test, highspeed
+            computation, sensitivity analyses and results presentation. By
+            allowing users to work collaboratively, and concentrate only on the
+            actual workflow design process, we estimate that over half the tasks
+            usually associated with workflow project construction can be avoided,
+            leading to huge savings in time and avoiding complex interactions with
+            infrastructure designers. Simple workflows can be running within minutes.</p>
 
 {% endblock %}
