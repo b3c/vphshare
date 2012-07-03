@@ -14,4 +14,5 @@ urlpatterns = patterns(
     url(r'^services/$', 'services'),
     url(r'^workflows/$', 'workflows'),
     url(r'^test/$', 'test'),
+    url(r'^users_admin/$', 'user_access_admin'),
 )

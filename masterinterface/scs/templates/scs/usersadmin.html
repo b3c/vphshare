@@ -3,22 +3,58 @@
 {%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
 
 {% block page-title %}
-    <span class="title">User access administrator</span>
+    <span class="title">Users access administrator</span>
     <span class="subtitle"></span>
 {% endblock%}
 
 {%  block content %}
 
-
+    <ul class="rowcontainer" style="height: 100px;">
+    <li>
     <div class="windowcontainer">
-
-        test
+        <div class="windowcontainerTitle">Serach for a User in Biomedtown</div>
+        <form action="#">
+            <input type="text"/>
+            <input type="submit" value="Search"/>
+        </form>
 
     </div>
+    </li>
 
+    <li>
     <div class="windowcontainer">
-        test2
-
+        <div class="windowcontainerTitle">Create a new role</div>
+        <form action="#">
+            <input type="text"/>
+            <input type="submit" value="Create"/>
+        </form>
+    </div>
+    </li>
+    </ul>
+    <div class="windowcontainer">
+        <div class="windowcontainerTitle">Assign Roles to users</div>
+        <form action="#">
+        <table>
+            <thead><tr><th>Username</th><th>email</th><th>Role1</th><th>Role2</th></tr></thead>
+            <tbody>
+            <tr class="odd"><td>Test</td><td>tes@dsf.it</td><td><input type="checkbox" checked></td><td><input type="checkbox"></td></tr>
+            <tr class="even"><td>Test</td><td>tes@dsf.it</td><td><input type="checkbox" checked></td><td><input type="checkbox"></td></tr>
+            </tbody>
+        </table>
+            <input type="submit" value="Update Role Map"/>
+        </form>
+    </div>
+    <div class="windowcontainer">
+        <div class="windowcontainerTitle">Configure a security agent</div>
+        <form action="#">
+            <label>Service Url: </label><input type="text"/>
+            <br/><label>Permissions: </label>
+            <ul style="list-style: none">
+            <li><input type="checkbox"/>Role1</li>
+            <li><input type="checkbox" checked=""/>Role2</li>
+            </ul>
+            <button type="button"  > Set</button>
+        </form>
     </div>
 
 

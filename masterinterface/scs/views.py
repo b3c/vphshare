@@ -130,3 +130,9 @@ def workflows(request):
     return render_to_response("scs/workflows.html",
             {},
         RequestContext(request))
+
+def user_access_admin(request):
+
+    return render_to_response("scs/usersadmin.html",
+            {},
+        RequestContext(request))

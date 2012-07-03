@@ -12,6 +12,12 @@ class roles(models.Model):
     id=models.AutoField(primary_key=True)
     role=models.CharField(max_length=20, default="")
 
+class user_role(models.Model):
+
+    username = models.CharField( max_length=30)
+    role = models.ManyToManyField(roles)
+
+
 class UserProfile(models.Model):
     # This field is required.
     user = models.OneToOneField(User)
@@ -32,13 +38,19 @@ class UserProfile(models.Model):
                 user_dict[user_key[i]]=getattr(self,user_key[i])
             else:
                 user_dict[user_key[i]]=getattr(self.user,user_key[i])
+
+        user_roles = roles.objects.get(username=user_dict["username"])
+        user_dict['role'] = []
+        for j in range(0, len(user_roles)):
+            user_dict['role'].append(user_roles[j]['role'].role)
+
         #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-        if user_dict['username']=='mi_testuser':
-            user_dict['role'] = []
-        else:
-            user_dict['role'] = ['developer']
-        #######
-        return user_dict
+        #if user_dict['username']=='mi_testuser':
+        #    user_dict['role'] = []
+        #else:
+        #    user_dict['role'] = ['developer']
+            #######
+        #return user_dict
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
