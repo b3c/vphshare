@@ -132,7 +132,7 @@ def auth_login(request):
         RequestContext(request)
     )
 
-@login_required
+
 def logout(request):
     """Logs out user"""
     if request.META.get('HTTP_REFERER'):
