@@ -1,0 +1,11 @@
+{% for username , userInfo in resultUsers.items   %}
+    <tr class="{% cycle 'odd' 'even' %}">
+        <td>{{  username }}</td><td>{{  userInfo.email }}</td>
+        {% for role in Roles %}
+            {% if role.roleName in userInfo.roles %}
+            <td><input  name="{{  role.roleName}}!{{ username }}!{{  userInfo.email }}" type="checkbox" checked ></td>
+            {% else %}
+            <td><input  name="{{  role.roleName}}!{{ username }}!{{  userInfo.email }}" type="checkbox" ></td>
+            {% endif %}
+        {%  endfor %}
+{% endfor %}

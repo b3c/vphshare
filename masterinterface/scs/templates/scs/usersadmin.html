@@ -1,0 +1,90 @@
+{% extends 'scs/base.html' %}
+{% block extrahead %}
+    <script type="text/javascript">
+
+        function stopRKey(evt) {
+            var evt = (evt) ? evt : ((event) ? event : null);
+            var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+            if ((evt.keyCode == 13) && (node.type=="text"))  {return false;}
+        }
+
+
+
+        $(document).ready(
+
+                function(){loadRoleMap();
+                    document.onkeypress = stopRKey;
+                }
+        );
+    </script>
+
+{% endblock %}
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+{% block page-title %}
+    <span class="title">Users access administration</span>
+    <span class="subtitle"></span>
+{% endblock%}
+
+{%  block content %}
+
+    <ul class="rowcontainer" style="height: 100px;">
+    <li>
+    <div class="windowcontainer">
+        <div class="windowcontainerTitle">Serach for a User in Biomedtown</div>
+        <form method="POST" id="users_access_search" action="{%   url users_access_search %}">
+            {% csrf_token %}
+            <input name="email" type="text"/>
+        </form>
+        <button onclick="users_access_search();" type="button">Search</button> <img class="invisible" src="/static/tiny-ajax-loader.gif" id="users_access_searchLOADIMG">
+
+    </div>
+    </li>
+
+    <li>
+    <div class="windowcontainer">
+        <div class="windowcontainerTitle">Create a new role</div>
+        <form id= "users_create_role" action="{%   url users_create_role %}">
+            {% csrf_token %}
+            <input name="role_name" type="text">
+            <button type="button" onclick="users_create_role();" >Create</button> <img class="invisible" src="/static/tiny-ajax-loader.gif" id="users_create_roleLOADIMG">
+        </form>
+    </div>
+    </li>
+    </ul>
+    <div style="margin-left: 450px"><img class="invisible" src="/static/tiny-ajax-loader.gif" id="users_update_role_mapLOADIMG"></div>
+    <div id="usersList">
+
+    <div  class="windowcontainer">
+        <div class="windowcontainerTitle">Assign Roles to users</div>
+        <form id ="users_update_role_map" action="{%   url users_update_role_map %}">
+            {% csrf_token %}
+        <table>
+            <thead><tr><th>Username</th><th>email</th><th>Role1</th><th>Role2</th></tr></thead>
+            <tbody>
+            <tr class="odd"><td>Test</td><td>tes@dsf.it</td><td><input type="checkbox" checked></td><td><input type="checkbox"></td></tr>
+            <tr class="even"><td>Test</td><td>tes@dsf.it</td><td><input type="checkbox" checked></td><td><input type="checkbox"></td></tr>
+            </tbody>
+        </table>
+            <button onclick="users_update_role_map()" type="button">Update Role Map</button>
+        </form>
+    </div>
+    </div>
+    <div class="windowcontainer">
+        <div class="windowcontainerTitle">Configure a security agent</div>
+        <form action="{%   url set_security_agent %}">
+            {% csrf_token %}
+            <label>Service Url: </label><input type="text"/>
+            <br/><label>Permissions: </label>
+            <ul style="list-style: none">
+            <li><input type="checkbox"/>Role1</li>
+            <li><input type="checkbox" checked=""/>Role2</li>
+            </ul>
+            <button type="button"  > Set</button>
+        </form>
+    </div>
+
+
+
+
+{% endblock %}
