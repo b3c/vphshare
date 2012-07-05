@@ -814,3 +814,7 @@ tr.even, tr.odd {
 tr.odd {
     background: #fff;
 }
+
+.invisible {
+    display: none;
+}

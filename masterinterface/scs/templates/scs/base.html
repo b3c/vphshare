@@ -18,6 +18,7 @@
 
     <script src="/static/jquery-1.7.1.min.js"></script>
     <script src="/static/jquery.tools.min.js"></script>
+    <script src="/static/scs.js"></script>
     {% block javascripts %}
     {% endblock %}
 
@@ -41,10 +42,10 @@
                         <li class="current-menu-item" id="navhome"><a href="/">Home</a></li>
 
                         {% if request.user.is_authenticated %}
+                        {% if request.user.is_staff %}<li><a href="/scs/users_admin/">Users access admin</a></li>{% endif %}
                             <li><a href="/cyfronet/cloudmanager/">Cloud Manager</a></li>
                             <li><a href="/cyfronet/datamanager/">Data Manager</a></li>
                             <li><a href="/scs/workflows/">Workflows</a></li>
-                            <li><a href="/scs/users_admin/">Users admin</a></li>
                         {% endif %}
 
                         <!--<li><a href="/scs/services">Services</a></li>-->

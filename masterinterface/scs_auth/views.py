@@ -7,14 +7,16 @@ from auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
+from django.utils.datastructures import SortedDict
 
 from scs_auth import __version__ as version
 from django.conf import settings
-
+from masterinterface.scs.permissions import is_staff
 import  urllib2
 
 from piston.handler import BaseHandler
 
+from models import *
 
 def done(request):
     """ login complete view """
@@ -193,10 +195,10 @@ class validate_tkt(BaseHandler):
                     opener = urllib2.build_opener(authhandler)
 
                     urllib2.install_opener(opener)
-                    pagehandle = urllib2.urlopen(theurl)
+                    #pagehandle = urllib2.urlopen(theurl)
 
-                    if pagehandle.code == 200 :
-                        return user.userprofile.to_dict()
+                    #if pagehandle.code == 200 :
+                    return user.userprofile.to_dict()
 
             response = HttpResponse(status=403)
             response._is_string = True
@@ -205,3 +207,135 @@ class validate_tkt(BaseHandler):
             response = HttpResponse(status=403)
             response._is_string = True
             return response
+
+@is_staff()
+def users_access_search(request):
+    Response={}
+
+    try:
+        if request.method == "POST":
+
+            import urllib2
+
+            usermail=str(request.POST['email'])
+            f = urllib2.urlopen('https://www.biomedtown.org/getMemberByEmail?email='+usermail)
+            username=f.read()
+
+            if username != '':
+                Roles = roles.objects.all()
+                try:
+                    usersRole, created = User.objects.get_or_create(username = username,email = usermail)
+                except :
+                    usersRole = {}
+                    pass
+
+                resultUsers ={}
+
+                if not isinstance(usersRole,dict):
+                    if getattr(resultUsers,usersRole.username,None) is None:
+                        resultUsers[usersRole.username] = {}
+                        resultUsers[usersRole.username]['email'] = usersRole.email
+                    resultUsers[usersRole.username]['roles'] =[]
+                    for value in usersRole.userprofile.roles.all().values():
+                        resultUsers[usersRole.username]['roles'].append(value['roleName'])
+
+                #If user is not present into local db
+                if username not in resultUsers:
+                    resultUsers[username]={}
+                    resultUsers[username]['email']= usermail
+                    resultUsers[username]['roles'] =[]
+                Response={'Roles' : Roles.values(), 'resultUsers':resultUsers  }
+
+                return render_to_response("scs_auth/user_role_search.html",
+                    Response,
+                    RequestContext(request))
+
+            return HttpResponse('FALSE')
+
+    except Exception, e:
+        return HttpResponse('FALSE')
+
+
+@is_staff()
+def users_create_role(request):
+
+
+    try:
+        if request.method == "POST":
+            if request.POST['role_name'].lower() == "":
+                return HttpResponse("FALSE")
+            newRole,created = roles.objects.get_or_create(roleName=request.POST['role_name'].lower())
+            if created:
+                newRole.save()
+            else :
+                return HttpResponse("FALSE")
+            return HttpResponse("TRUE")
+
+    except  Exception, e:
+        return HttpResponse("FALSE")
+    return HttpResponse("FALSE")
+
+@is_staff()
+def users_remove_role(request):
+
+    try:
+        if request.method == "POST":
+
+            newRole = roles.objects.get(roleName=request.POST['role_name'].lower())
+            newRole.delete()
+            return HttpResponse("TRUE")
+
+    except  Exception, e:
+        return HttpResponse("FALSE")
+    return HttpResponse("FALSE")
+
+
+@is_staff()
+def users_update_role_map(request):
+
+    try:
+        if request.method == "POST":
+            for key , value in request.POST.iteritems() :
+                if len(key.split('!')) == 3 :
+
+                    userinfo=key.split('!')
+                    role = roles.objects.get(roleName=userinfo[0])
+                    if  not isinstance(role,roles):
+                        return HttpResponse('FALSE')
+                    user, created = User.objects.get_or_create(username = userinfo[1],email = userinfo[2])
+                    if value == 'on':
+                        user.userprofile.roles.add(role)
+                    else:
+                        user.userprofile.roles.remove(role)
+
+            return HttpResponse('TRUE')
+    except Exception, e:
+        return HttpResponse("FALSE")
+
+
+
+    Roles = roles.objects.all()
+    usersRole=User.objects.order_by('username').all()
+
+    resultUsers =SortedDict()
+    for i in range(0 , len(usersRole.values())):
+
+        if getattr(resultUsers,usersRole[i].username,None) is None:
+            resultUsers[usersRole[i].username] = {}
+            resultUsers[usersRole[i].username]['email'] = usersRole[i].email
+        resultUsers[usersRole[i].username]['roles'] =[]
+        for value in usersRole[i].userprofile.roles.all().values():
+            resultUsers[usersRole[i].username]['roles'].append(value['roleName'])
+
+    return render_to_response("scs_auth/users_role_map.html",
+            {
+            'Roles' : Roles.values(),
+            'resultUsers':resultUsers},
+        RequestContext(request))
+
+@is_staff()
+def set_security_agent(request):
+
+    return render_to_response("scs/users_access_search.html",
+            {},
+        RequestContext(request))
