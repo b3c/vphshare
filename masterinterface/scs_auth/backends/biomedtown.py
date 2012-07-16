@@ -249,12 +249,15 @@ class BiomedTownTicketBackend (RemoteUserBackend):
                 except User.DoesNotExist:
                     pass
 
+            tokens = []
+            for value in user.userprofile.roles.all().values():
+                tokens.append(value['roleName'])
 
             #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-            if user.username=='mi_testuser':
-                tokens=[]
-            else:
-                tokens=['developer']
+            #if user.username=='mi_testuser':
+            #    tokens=[]
+            #else:
+            #    tokens=['developer']
             #######
 
             new_tkt = createTicket(

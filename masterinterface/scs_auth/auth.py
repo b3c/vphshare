@@ -62,11 +62,16 @@ def socialtktGen(details, *args, **kwargs):
         for i in range(0, len(user_key)):
             user_value.append(details[user_key[i]])
 
+        tokens = []
+        user = kwargs.get('user')
+        for value in user.userprofile.roles.all().values():
+            tokens.append(value['roleName'])
+
         #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-        if details['nickname']=='mi_testuser':
-            tokens=[]
-        else:
-            tokens=['developer']
+        #if details['nickname']=='mi_testuser':
+        #    tokens=[]
+        #else:
+        #    tokens=['developer']
         #######
 
         new_tkt = createTicket(
