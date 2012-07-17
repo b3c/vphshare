@@ -178,7 +178,7 @@ class validate_tkt(BaseHandler):
         """
         try:
             if request.GET.get('ticket'):
-                client_address = request.META['HTTP_X_FORWARDED_FOR']
+                client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'],cip = client_address)
 
                 if user is not None:
