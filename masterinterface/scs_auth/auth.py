@@ -79,6 +79,7 @@ def socialtktGen(details, *args, **kwargs):
             details['nickname'],
             settings.SECRET_KEY,
             tokens=tokens,
+            ip = kwargs['request'].META['REMOTE_ADDR'],
             user_data=user_value,
             validuntil=validuntil,
             mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT,
