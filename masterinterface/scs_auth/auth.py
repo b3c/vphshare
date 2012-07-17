@@ -3,7 +3,7 @@ __author__ = 'Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)'
 from django.contrib.auth import get_backends
 from django.conf import  settings
 from tktauth import createTicket
-from datetime import  datetime
+import time
 import binascii
 
 def authenticate(**credentials):
@@ -74,12 +74,15 @@ def socialtktGen(details, *args, **kwargs):
         #    tokens=['developer']
         #######
 
+        validuntil= settings.TICKET_TIMEOUT + int(time.time())
         new_tkt = createTicket(
             details['nickname'],
             settings.SECRET_KEY,
             tokens=tokens,
             user_data=user_value,
-            mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT
+            validuntil=validuntil,
+            mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT,
+            signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE
         )
         tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
