@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from scs import __version__ as version
 from permissions import is_staff
 from masterinterface import settings
-
+from masterinterface.scs_auth.models import roles
 
 
 
@@ -146,7 +146,9 @@ def workflows(request):
 @is_staff()
 def users_access_admin(request):
 
+
+    Roles = roles.objects.all()
     return render_to_response("scs/usersadmin.html",
-            {},
+            {'Roles' : Roles.values()},
         RequestContext(request))
 
