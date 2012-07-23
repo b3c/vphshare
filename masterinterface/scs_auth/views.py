@@ -361,7 +361,7 @@ def set_security_agent(request):
             try:
                 validator(serviceURL)
             except Exception, e:
-                return HttpResponse('FALSE')
+                return HttpResponse("Service URL is not well formed")
             granted_roles = ""
             for value in Roles:
                 granted_roles+= str(value)+","
@@ -388,7 +388,7 @@ def set_security_agent(request):
             except :
                 pagehandle = urllib2.urlopen(requestURL)
             if pagehandle.code != 200 :
-                return HttpResponse('FALSE')
+                return HttpResponse(' Sec/Agent request refused.')
 
             return HttpResponse('TRUE')
     except Exception, e:

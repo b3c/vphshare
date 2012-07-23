@@ -76,7 +76,7 @@
         <div class="statusmessage"><span id="set_security_agent_statusmessage" style="color: #000000;">{{ statusmessage  }}</span></div>
         <form id="set_security_agent" action="{% url set_security_agent %}">
             {% csrf_token %}
-            <label>Service Url: </label><input name="serviceURL" type="text"/>
+            <label>Service Url: </label><input onfocus="$('#urlHelp').fadeIn().delay(9000).fadeOut('slow');" name="serviceURL" type="text"/> <div class="invisible" style="color: #d3d3d3;position: relative;float: right;" id="urlHelp">Well formed URL ex:<br/> http://vph.cyfronet.pl:8000/4ffd56d38664880b00001ccb/4fa7faa08664880a2c00061a</div>
             <br/><label>Permissions: </label>
             <ul id="listRoles" style="list-style: none">
             {% for role in Roles %}

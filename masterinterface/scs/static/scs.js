@@ -260,6 +260,7 @@ function users_access_searchResponseHandler(responseText, statusText, xhr, jqfor
 
 function users_remove_role(action, role){
 
+    if(!confirm('Are you sure remove '+role+' ?')) return false
     if ( $("#users_create_roleLOADIMG").hasClass( "invisible" ) ){
         $("#users_create_roleLOADIMG").removeClass("invisible");
     }
@@ -325,8 +326,11 @@ function set_security_agentResponseHandler(responseText, statusText, xhr, jqform
     if (responseText == "TRUE"){
         $("#set_security_agent_statusmessage").empty().text("Sec/Agent configured");
         $('#set_security_agent_statusmessage').fadeIn().delay(2000).fadeOut('slow');
-    }else{
+    }else if(responseText == "FALSE"){
         $("#set_security_agent_errormessage").empty().text("Some error occurred");
+        $('#set_security_agent_errormessage').fadeIn().delay(2000).fadeOut('slow');
+    }else {
+        $("#set_security_agent_errormessage").empty().text(responseText);
         $('#set_security_agent_errormessage').fadeIn().delay(2000).fadeOut('slow');
     }
 
