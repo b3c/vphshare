@@ -341,7 +341,7 @@ def users_update_role_map(request):
 def set_security_agent(request):
 
     serviceDIGEST = "user_id=%s&granted_roles=%s&timestamp=%s"
-    serviceACTION = "%s/setgrantedroles?%s&sig=%s"
+    serviceACTION = "%s/setgrantedroles?%s&sign=%s"
     Roles = ()
     serviceURL = ""
     try:
@@ -367,10 +367,22 @@ def set_security_agent(request):
                 granted_roles+= str(value)+","
             granted_roles=granted_roles[:-1]
 
-            serviceDIGEST = serviceDIGEST %(request.user.username,granted_roles,str(time.time()))
+            serviceDIGEST = serviceDIGEST %(request.user.username,granted_roles,str(int(time.time())))
             key = DSA.load_key(os.path.abspath(os.path.dirname(__file__))+'/keys/privkey_DSA.pem')
             serviceSIGN = calculate_sign(key,serviceDIGEST)
+
             requestURL = serviceACTION % (serviceURL,serviceDIGEST,serviceSIGN)
+            username = "test"
+            password = "test"
+
+            passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            passman.add_password(None, requestURL, username, password)
+            authhandler = urllib2.HTTPBasicAuthHandler(passman)
+
+            opener = urllib2.build_opener(authhandler)
+
+            urllib2.install_opener(opener)
+
             try:
                 pagehandle = urllib2.urlopen(requestURL)
             except :
