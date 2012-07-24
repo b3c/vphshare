@@ -15,7 +15,8 @@ class masterInterfaceMiddleware:
             #Check user's cookie  if validate ticket is ok, update ticket timestamp else session expire.
             if  request.COOKIES.get('vph-tkt'):
                 try:
-                    user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'])
+                    client_address = request.META['REMOTE_ADDR']
+                    user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'],cip=client_address)
                 except :
                     logout(request)
                     request.META['VPH_TKT_COOKIE']=True

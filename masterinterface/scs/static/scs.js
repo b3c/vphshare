@@ -137,9 +137,10 @@ function users_create_roleResponseHandler(responseText, statusText, xhr, jqform)
     // example of overriding the expires and speed options for one notification
 
     $("#users_create_roleLOADIMG").addClass("invisible");
-    if (responseText == "TRUE"){
+    if (responseText != "FALSE"){
         $("#statusmessage").empty().text("Role Created");
         $('#statusmessage').fadeIn().delay(2000).fadeOut('slow');
+        $('#listRoles').append(responseText)
     }else{
         $("#errormessage").empty().text("Some error occurred");
         $('#errormessage').fadeIn().delay(2000).fadeOut('slow');
@@ -259,6 +260,7 @@ function users_access_searchResponseHandler(responseText, statusText, xhr, jqfor
 
 function users_remove_role(action, role){
 
+    if(!confirm('Are you sure remove '+role+' ?')) return false
     if ( $("#users_create_roleLOADIMG").hasClass( "invisible" ) ){
         $("#users_create_roleLOADIMG").removeClass("invisible");
     }
@@ -283,13 +285,53 @@ function users_remove_roleResponseHandler(responseText, statusText, xhr, jqform)
     // example of overriding the expires and speed options for one notification
 
     $("#users_create_roleLOADIMG").addClass("invisible");
-    if (responseText == "TRUE"){
+    if (responseText != "FALSE"){
         $("#statusmessage").empty().text("Role Deleted");
         $('#statusmessage').fadeIn().delay(2000).fadeOut('slow');
+        $('#'+responseText).remove()
     }else{
         $("#errormessage").empty().text("Some error occurred");
         $('#errormessage').fadeIn().delay(2000).fadeOut('slow');
     }
 
     loadRoleMap();
+}
+
+
+function set_security_agent(action, role){
+
+    if ( $("#set_security_agentLOADIMG").hasClass( "invisible" ) ){
+        $("#set_security_agentLOADIMG").removeClass("invisible");
+    }
+
+    var form = $("#set_security_agent");
+    var csrfmiddlewaretoken = form.find( 'input[name="csrfmiddlewaretoken"]' ).val();
+    var data = form.serializeArray();
+    var url = form.attr( 'action' );
+
+    $.ajax({
+            type: 'POST',
+            url : url,
+            data: data,
+            success: set_security_agentResponseHandler
+        }
+    );
+
+}
+
+function set_security_agentResponseHandler(responseText, statusText, xhr, jqform){
+    // example of overriding the expires and speed options for one notification
+
+    $("#set_security_agentLOADIMG").addClass("invisible");
+    if (responseText == "TRUE"){
+        $("#set_security_agent_statusmessage").empty().text("Sec/Agent configured");
+        $('#set_security_agent_statusmessage').fadeIn().delay(2000).fadeOut('slow');
+    }else if(responseText == "FALSE"){
+        $("#set_security_agent_errormessage").empty().text("Some error occurred");
+        $('#set_security_agent_errormessage').fadeIn().delay(2000).fadeOut('slow');
+    }else {
+        $("#set_security_agent_errormessage").empty().text(responseText);
+        $('#set_security_agent_errormessage').fadeIn().delay(2000).fadeOut('slow');
+    }
+
 }

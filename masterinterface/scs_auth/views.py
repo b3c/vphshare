@@ -8,13 +8,17 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.utils.datastructures import SortedDict
+from django.core.validators import URLValidator
 
 from scs_auth import __version__ as version
 from django.conf import settings
 from masterinterface.scs.permissions import is_staff
+from masterinterface.scs_auth.tktauth import calculate_sign
 import  urllib2
-
+import time
 from piston.handler import BaseHandler
+import  os
+from M2Crypto import DSA
 
 from models import *
 
@@ -178,8 +182,8 @@ class validate_tkt(BaseHandler):
         """
         try:
             if request.GET.get('ticket'):
-
-                user, tkt64 = authenticate(ticket=request.GET['ticket'])
+                client_address = request.META['REMOTE_ADDR']
+                user, tkt64 = authenticate(ticket=request.GET['ticket'],cip = client_address)
 
                 if user is not None:
 
@@ -269,7 +273,7 @@ def users_create_role(request):
                 newRole.save()
             else :
                 return HttpResponse("FALSE")
-            return HttpResponse("TRUE")
+            return HttpResponse('<li id="'+request.POST['role_name'].lower()+'">'+request.POST['role_name'].lower()+' <input  name="'+request.POST['role_name'].lower()+'" type="checkbox" ></li>')
 
     except  Exception, e:
         return HttpResponse("FALSE")
@@ -283,7 +287,7 @@ def users_remove_role(request):
 
             newRole = roles.objects.get(roleName=request.POST['role_name'].lower())
             newRole.delete()
-            return HttpResponse("TRUE")
+            return HttpResponse(request.POST['role_name'].lower())
 
     except  Exception, e:
         return HttpResponse("FALSE")
@@ -338,6 +342,56 @@ def users_update_role_map(request):
 @is_staff()
 def set_security_agent(request):
 
-    return render_to_response("scs/users_access_search.html",
-            {},
-        RequestContext(request))
+    serviceDIGEST = "user_id=%s&granted_roles=%s&timestamp=%s"
+    serviceACTION = "%s/setgrantedroles?%s&sign=%s"
+    Roles = ()
+    serviceURL = ""
+    try:
+        if request.method == "POST":
+            for key , value in request.POST.iteritems() :
+                if key == "serviceURL" :
+                    serviceURL = value
+                elif key == "csrfmiddlewaretoken":
+                    continue
+                else:
+                    role = roles.objects.get(roleName=key)
+                    if  not isinstance(role,roles):
+                        return HttpResponse('FALSE')
+                    Roles =  Roles + ( key, )
+
+            validator = URLValidator()
+            try:
+                validator(serviceURL)
+            except Exception, e:
+                return HttpResponse("Service URL is not well formed")
+            granted_roles = ""
+            for value in Roles:
+                granted_roles+= str(value)+","
+            granted_roles=granted_roles[:-1]
+
+            serviceDIGEST = serviceDIGEST %(request.user.username,granted_roles,str(int(time.time())))
+            key = DSA.load_key(os.path.abspath(os.path.dirname(__file__))+'/keys/privkey_DSA.pem')
+            serviceSIGN = calculate_sign(key,serviceDIGEST)
+
+            requestURL = serviceACTION % (serviceURL,serviceDIGEST,serviceSIGN)
+            username = "test"
+            password = "test"
+
+            passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            passman.add_password(None, requestURL, username, password)
+            authhandler = urllib2.HTTPBasicAuthHandler(passman)
+
+            opener = urllib2.build_opener(authhandler)
+
+            urllib2.install_opener(opener)
+
+            try:
+                pagehandle = urllib2.urlopen(requestURL)
+            except :
+                pagehandle = urllib2.urlopen(requestURL)
+            if pagehandle.code != 200 :
+                return HttpResponse(' Sec/Agent request refused.')
+
+            return HttpResponse('TRUE')
+    except Exception, e:
+        return HttpResponse("FALSE")

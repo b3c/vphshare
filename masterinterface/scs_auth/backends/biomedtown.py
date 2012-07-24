@@ -210,7 +210,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
     create_unknown_user = True
 
 
-    def userTicket(self, ticket64):
+    def userTicket(self, ticket64,cip=None):
         """
         usertTicket verify given ticket , if it valid and user exist in database return user instance.
 
@@ -222,8 +222,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         """
         ticket = binascii.a2b_base64(ticket64)
 
-        user_data = validateTicket(ticket, settings.SECRET_KEY,timeout=settings.TICKET_TIMEOUT, mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT)
-
+        user_data = validateTicket(ticket, settings.SECRET_KEY, mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT, signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE)
         if user_data:
 
             user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
@@ -260,13 +259,16 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             #    tokens=['developer']
             #######
 
+            validuntil= settings.TICKET_TIMEOUT + int(time.time())
             new_tkt = createTicket(
                 self.user_dict['nickname'],
                 settings.SECRET_KEY,
+                ip = cip,
                 tokens=tokens,
                 user_data=user_value,
-                mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT
-
+                validuntil= validuntil,
+                mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT,
+                signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE
             )
 
             tkt64 = binascii.b2a_base64(new_tkt).rstrip()
@@ -274,7 +276,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             return user, tkt64
 
 
-    def authenticate( self, username = None, password= None):
+    def authenticate( self, username = None, password= None, *args, **kwargs):
         """
         Biomedtown backend authenticate method.
         It delivery Authenticate request to biomedtown mod_auth_tkt service.
@@ -337,7 +339,7 @@ class FromTicketBackend (BiomedTownTicketBackend):
     """Extend BiomedTownTicketBackend. FromTicketBackend authenticate user from given ticket (and not username, password)"""
 
 
-    def authenticate( self, ticket=None):
+    def authenticate( self, ticket=None,cip=None, *args, **kwargs):
         """
         Authenticate User over given ticket.
 
@@ -355,7 +357,7 @@ class FromTicketBackend (BiomedTownTicketBackend):
 
         try:
 
-            user, tkt64 =self.userTicket(ticket)
+            user, tkt64 =self.userTicket(ticket,cip)
 
             if user is None:
                 return
