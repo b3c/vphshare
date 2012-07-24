@@ -75,10 +75,11 @@ def socialtktGen(details, *args, **kwargs):
         #######
 
         new_tkt = createTicket(
-            settings.SECRET_KEY,
             details['nickname'],
+            settings.SECRET_KEY,
             tokens=tokens,
-            user_data=user_value
+            user_data=user_value,
+            mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT
         )
         tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
