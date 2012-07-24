@@ -12,7 +12,11 @@
 
             <tr><th>Username</th><th>Email</th>
                 {% for role in Roles %}
-                        <th onmouseout="$('#{{role.roleName}}DELETE').hide();" onmouseover="$('#{{role.roleName}}DELETE').show();" onclick="users_remove_role( '{% url users_remove_role %}','{{role.roleName}}');">{{role.roleName}}<img style="position: absolute;padding-left:4px;float: right;" class="invisible" src="/static/delete.png" id="{{role.roleName}}DELETE"></th>
+                        {% if request.user.is_superuser %}
+                            <th onmouseout="$('#{{role.roleName}}DELETE').hide();" onmouseover="$('#{{role.roleName}}DELETE').show();" onclick="users_remove_role( '{% url users_remove_role %}','{{role.roleName}}');">{{role.roleName}}<img style="position: absolute;padding-left:4px;float: right;" class="invisible" src="/static/delete.png" id="{{role.roleName}}DELETE"></th>
+                        {% else%}
+                            <th >{{role.roleName}}<img style="position: absolute;padding-left:4px;float: right;" class="invisible" src="/static/delete.png" id="{{role.roleName}}DELETE"></th>
+                        {% endif  %}
                 {%  endfor %}
             </thead>
             <tbody>

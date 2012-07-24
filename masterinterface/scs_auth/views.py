@@ -279,7 +279,7 @@ def users_create_role(request):
 def users_remove_role(request):
 
     try:
-        if request.method == "POST":
+        if request.method == "POST" and request.user.is_superuser:
 
             newRole = roles.objects.get(roleName=request.POST['role_name'].lower())
             newRole.delete()
@@ -330,7 +330,9 @@ def users_update_role_map(request):
     return render_to_response("scs_auth/users_role_map.html",
             {
             'Roles' : Roles.values(),
-            'resultUsers':resultUsers},
+            'resultUsers':resultUsers,
+            'request' : request
+            },
         RequestContext(request))
 
 @is_staff()
