@@ -13,7 +13,7 @@ from django.core.validators import URLValidator
 from scs_auth import __version__ as version
 from django.conf import settings
 from masterinterface.scs.permissions import is_staff
-from masterinterface.scs_auth.tktauth import calculate_sign
+from masterinterface.scs_auth.auth import calculate_sign
 import  urllib2
 import time
 from piston.handler import BaseHandler
@@ -370,7 +370,7 @@ def set_security_agent(request):
             granted_roles=granted_roles[:-1]
 
             serviceDIGEST = serviceDIGEST %(request.user.username,granted_roles,str(int(time.time())))
-            key = DSA.load_key(os.path.abspath(os.path.dirname(__file__))+'/keys/privkey_DSA.pem')
+            key = DSA.load_key(settings.MOD_AUTH_PRIVTICKET)
             serviceSIGN = calculate_sign(key,serviceDIGEST)
 
             requestURL = serviceACTION % (serviceURL,serviceDIGEST,serviceSIGN)

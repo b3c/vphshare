@@ -1,6 +1,7 @@
 # Django settings for vphshare masterinterface project.
 
 import os
+from mod_auth import SignedTicket, Ticket
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -229,5 +230,10 @@ ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
 TICKET_TIMEOUT = 12*60*60  # 12 h
 
 #MOD_AUTH_TKT settings
-MOD_AUTH_PUBTKT=True
-MOD_AUTH_PUBTKT_SIGNTYPE = 'DSA'
+MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/pubkey_DSA.pem')
+MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/privkey_DSA.pem')
+#MOD_AUTH_PUBTKY COOKIE STYLE
+TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
+
+#MOD_AUTH_TKY COOKIE STYLE
+#TICKET =  Ticket(SECRET_KEY)
