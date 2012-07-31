@@ -85,7 +85,7 @@ def socialtktGen(details, *args, **kwargs):
                 details['nickname'],
                 tokens=tokens,
                 user_data=user_value,
-                cip = kwargs['request'].META['REMOTE_ADDR'],
+                #cip = kwargs['request'].META['REMOTE_ADDR'],
                 validuntil=validuntil,
             )
         except  Exception, e:

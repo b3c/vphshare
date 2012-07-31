@@ -226,10 +226,10 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         ticketObj = settings.TICKET
 
         #user_data = validateTicket(ticket, settings.SECRET_KEY, mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT, signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE)
-        if isinstance(ticketObj,SignedTicket):
-            user_data = ticketObj.validateTkt(ticket)
-        else:
-            user_data = ticketObj.validateTkt(ticket,cip)
+        #if isinstance(ticketObj,SignedTicket):
+        user_data = ticketObj.validateTkt(ticket)
+        #else:
+            #user_data = ticketObj.validateTkt(ticket,cip)
         if user_data:
 
             user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
@@ -274,7 +274,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
                 self.user_dict['nickname'],
                 tokens=tokens,
                 user_data=user_value,
-                cip = cip,
+                #cip = cip,
                 validuntil=validuntil,
             )
             #new_tkt = createTicket(
