@@ -20,8 +20,8 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEFAULT_DB = {
     'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
     'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
-    'USER': 'b3c',                      # Not used with sqlite3.
-    'PASSWORD': 'B3C_sdp',                  # Not used with sqlite3.
+    'USER': 'vph',                      # Not used with sqlite3.
+    'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
     'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
     'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 }

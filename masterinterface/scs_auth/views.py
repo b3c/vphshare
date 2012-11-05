@@ -212,6 +212,16 @@ class validate_tkt(BaseHandler):
             response._is_string = True
             return response
 
+
+def validateEmail( email ):
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
+    try:
+        validate_email( email )
+        return True
+    except ValidationError:
+        return False
+
 @is_staff()
 def users_access_search(request):
     Response={}
@@ -220,6 +230,9 @@ def users_access_search(request):
         if request.method == "POST":
 
             import urllib2
+
+            if not validateEmail(str(request.POST['email'])):
+                return  HttpResponse('FALSE')
 
             usermail=str(request.POST['email'])
             f = urllib2.urlopen('https://www.biomedtown.org/getMemberByEmail?email='+usermail)
