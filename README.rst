@@ -66,7 +66,7 @@ Database Syncronization
     If you feel the database for certain reason has been corrupted, delete the file and then
     run the command ::
 
-        python manage.py syncd
+        python manage.py syncdb
 
     You will be asked for some information.
 
