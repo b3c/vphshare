@@ -72,6 +72,16 @@ Database Syncronization
 
     Admin user is not mandatory for our purposes, its creation is at your will.
 
+Database Migration
++++++++++++++++++++++++
+    
+    When there is a new version of Database schema, Master Interface need to be update schema 
+    and data to new version.
+    Run the command ::
+        
+        python manage.py migrate
+    
+
 
 Start and Stop the web application
 ++++++++++++++++++++++++++++++++++
