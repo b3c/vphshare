@@ -6,5 +6,6 @@ from views import *
 urlpatterns = patterns(
 
     'scs_search.views',
+    url(r'^search/$', automaticSearchView , name='automaticSearchView'),
 
     )
