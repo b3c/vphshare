@@ -15,9 +15,14 @@
    	<link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
    	{% block stylesheets %}
     {% endblock %}
+    
+    <link href="/static/ui-lightness/jquery-ui-1.9.1.custom.css" rel="stylesheet">
+    <script src="/static/jquery-1.8.2.js"></script>
+    <script src="/static/jquery-ui-1.9.1.custom.min.js"></script>
 
-    <script src="/static/jquery-1.7.1.min.js"></script>
+<!--    <script src="/static/jquery-1.7.1.min.js"></script> -->
     <script src="/static/jquery.tools.min.js"></script>
+    <script src="/static/scs.js"></script>
     {% block javascripts %}
     {% endblock %}
 
@@ -41,8 +46,10 @@
                         <li class="current-menu-item" id="navhome"><a href="/">Home</a></li>
 
                         {% if request.user.is_authenticated %}
+                            {% if request.user.is_staff %}<li><a href="/scs/users_admin/">Users access admin</a></li>
                             <li><a href="/cyfronet/cloudmanager/">Cloud Manager</a></li>
                             <li><a href="/cyfronet/datamanager/">Data Manager</a></li>
+                            {% endif %}
                             <li><a href="/scs/workflows/">Workflows</a></li>
                         {% endif %}
 

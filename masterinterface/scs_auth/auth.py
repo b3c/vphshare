@@ -2,9 +2,12 @@ __author__ = 'Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)'
 
 from django.contrib.auth import get_backends
 from django.conf import  settings
-from tktauth import createTicket
-from datetime import  datetime
+import time
 import binascii
+
+import base64
+import hashlib
+from M2Crypto import RSA, DSA
 
 def authenticate(**credentials):
     """
@@ -62,19 +65,66 @@ def socialtktGen(details, *args, **kwargs):
         for i in range(0, len(user_key)):
             user_value.append(details[user_key[i]])
 
+        tokens = []
+        user = kwargs.get('user')
+        for value in user.userprofile.roles.all().values():
+            tokens.append(value['roleName'])
+
         #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-        if details['nickname']=='mi_testuser':
-            tokens=[]
-        else:
-            tokens=['developer']
+        #if details['nickname']=='mi_testuser':
+        #    tokens=[]
+        #else:
+        #    tokens=['developer']
         #######
 
-        new_tkt = createTicket(
-            settings.SECRET_KEY,
-            details['nickname'],
-            tokens=tokens,
-            user_data=user_value
-        )
+        validuntil= settings.TICKET_TIMEOUT + int(time.time())
+
+        ticketObj = settings.TICKET
+        try:
+            new_tkt = ticketObj.createTkt(
+                details['nickname'],
+                tokens=tokens,
+                user_data=user_value,
+                #cip = kwargs['request'].META['REMOTE_ADDR'],
+                validuntil=validuntil,
+            )
+        except  Exception, e:
+            print e
+        #new_tkt = createTicket(
+        #    details['nickname'],
+        #    settings.SECRET_KEY,
+        #   tokens=tokens,
+        #    ip = kwargs['request'].META['REMOTE_ADDR'],
+        #    user_data=user_value,
+        #    validuntil=validuntil,
+        #    mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT,
+        #    signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE
+        #)
+
         tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
         return  {'ticket' : tkt64 }
+
+def calculate_sign(privkey, data):
+    """Calculates and returns ticket's signature.
+
+    Arguments:
+
+    ``privkey``:
+       Private key object. It must be M2Crypto.RSA.RSA or M2Crypto.DSA.DSA instance.
+
+    ``data``:
+       Ticket string without signature part.
+
+    """
+    dgst = hashlib.sha1(data).digest()
+    if isinstance(privkey, RSA.RSA):
+        sig = privkey.sign(dgst, 'sha1')
+        sig = base64.b64encode(sig)
+    elif isinstance(privkey, DSA.DSA):
+        sig = privkey.sign_asn1(dgst)
+        sig = base64.b64encode(sig)
+    else:
+        raise ValueError('Unknonw key type: %s' % privkey)
+
+    return sig

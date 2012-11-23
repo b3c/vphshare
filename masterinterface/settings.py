@@ -1,6 +1,7 @@
 # Django settings for vphshare masterinterface project.
 
 import os
+from mod_auth import SignedTicket, Ticket
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -18,13 +19,22 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Default Database
 DEFAULT_DB = {
-    'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
-    'USER': '',                      # Not used with sqlite3.
-    'PASSWORD': '',                  # Not used with sqlite3.
+    'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
+    'USER': 'vph',                      # Not used with sqlite3.
+    'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
     'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
     'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 }
+
+#DEFAULT_DB = {
+#   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
+#    'USER': '',                      # Not used with sqlite3.
+#    'PASSWORD': '',                  # Not used with sqlite3.
+#    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+#    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#}
 
 # Cyfronet Database
 CYFRONET_DB = {
@@ -66,6 +76,7 @@ USE_I18N = True
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
 USE_L10N = True
+USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -145,8 +156,9 @@ INSTALLED_APPS = (
     'social_auth',
     'masterinterface.scs',
     'masterinterface.scs_auth',
-    'masterinterface.cyfronet'
-
+    'masterinterface.cyfronet',
+    'south'
+    
     ##NEW_APP
 )
 
@@ -227,3 +239,12 @@ ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
 
 #Ticket expiration timeout in seconds
 TICKET_TIMEOUT = 12*60*60  # 12 h
+
+#MOD_AUTH_TKT settings
+MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/pubkey_DSA.pem')
+MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/privkey_DSA.pem')
+#MOD_AUTH_PUBTKY COOKIE STYLE
+TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
+
+#MOD_AUTH_TKY COOKIE STYLE
+#TICKET =  Ticket(SECRET_KEY)

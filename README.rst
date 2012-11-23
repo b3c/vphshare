@@ -66,11 +66,21 @@ Database Syncronization
     If you feel the database for certain reason has been corrupted, delete the file and then
     run the command ::
 
-        python manage.py syncd
+        python manage.py syncdb
 
     You will be asked for some information.
 
     Admin user is not mandatory for our purposes, its creation is at your will.
+
+Database Migration
++++++++++++++++++++++++
+    
+    When there is a new version of Database schema, Master Interface need to be update schema 
+    and data to new version.
+    Run the command ::
+        
+        python manage.py migrate
+    
 
 
 Start and Stop the web application

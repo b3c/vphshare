@@ -15,13 +15,14 @@ from social_auth.backends import OpenIDBackend, OpenIdAuth, OPENID_ID_FIELD, OLD
 from openid.consumer.consumer import SUCCESS, CANCEL, FAILURE
 from social_auth.backends.exceptions import *
 
-from masterinterface.scs_auth.tktauth import *
+#from masterinterface.scs_auth.tktauth import *
 from masterinterface.scs_auth.auth import authenticate
 
 import binascii
 from datetime import  datetime
 from xmlrpclib import ServerProxy
-
+from mod_auth import SignedTicket,Ticket
+import time
 ############################
 #BIOMEDTOWN OPEN ID BACKEND
 ############################
@@ -210,7 +211,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
     create_unknown_user = True
 
 
-    def userTicket(self, ticket64):
+    def userTicket(self, ticket64,cip=None):
         """
         usertTicket verify given ticket , if it valid and user exist in database return user instance.
 
@@ -222,12 +223,17 @@ class BiomedTownTicketBackend (RemoteUserBackend):
         """
         ticket = binascii.a2b_base64(ticket64)
 
-        user_data = validateTicket(settings.SECRET_KEY,ticket,timeout=settings.TICKET_TIMEOUT)
+        ticketObj = settings.TICKET
 
+        #user_data = validateTicket(ticket, settings.SECRET_KEY, mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT, signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE)
+        #if isinstance(ticketObj,SignedTicket):
+        user_data = ticketObj.validateTkt(ticket)
+        #else:
+            #user_data = ticketObj.validateTkt(ticket,cip)
         if user_data:
 
             user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-            user_value = user_data[3]
+            user_value = user_data[2]
 
             self.user_dict = {}
 
@@ -249,27 +255,45 @@ class BiomedTownTicketBackend (RemoteUserBackend):
                 except User.DoesNotExist:
                     pass
 
+            tokens = []
+            for value in user.userprofile.roles.all().values():
+                tokens.append(value['roleName'])
 
             #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-            if user.username=='mi_testuser':
-                tokens=[]
-            else:
-                tokens=['developer']
+            #if user.username=='mi_testuser':
+            #    tokens=[]
+            #else:
+            #    tokens=['developer']
             #######
 
-            new_tkt = createTicket(
-                settings.SECRET_KEY,
+            validuntil= settings.TICKET_TIMEOUT + int(time.time())
+
+            ticketObj = settings.TICKET
+
+            new_tkt = ticketObj.createTkt(
                 self.user_dict['nickname'],
                 tokens=tokens,
-                user_data=user_value
+                user_data=user_value,
+                #cip = cip,
+                validuntil=validuntil,
             )
+            #new_tkt = createTicket(
+            #    self.user_dict['nickname'],
+            #    settings.SECRET_KEY,
+            #    ip = cip,
+            #    tokens=tokens,
+            #    user_data=user_value,
+            #    validuntil= validuntil,
+            #    mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT,
+            #    signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE
+            #)
 
             tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
             return user, tkt64
 
 
-    def authenticate( self, username = None, password= None):
+    def authenticate( self, username = None, password= None, *args, **kwargs):
         """
         Biomedtown backend authenticate method.
         It delivery Authenticate request to biomedtown mod_auth_tkt service.
@@ -332,7 +356,7 @@ class FromTicketBackend (BiomedTownTicketBackend):
     """Extend BiomedTownTicketBackend. FromTicketBackend authenticate user from given ticket (and not username, password)"""
 
 
-    def authenticate( self, ticket=None):
+    def authenticate( self, ticket=None,cip=None, *args, **kwargs):
         """
         Authenticate User over given ticket.
 
@@ -350,7 +374,7 @@ class FromTicketBackend (BiomedTownTicketBackend):
 
         try:
 
-            user, tkt64 =self.userTicket(ticket)
+            user, tkt64 =self.userTicket(ticket,cip)
 
             if user is None:
                 return

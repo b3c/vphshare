@@ -770,3 +770,51 @@ div.contentWrap {
 .unavailable{
     opacity: 0.5;
 }
+
+
+.windowcontainer {
+    background: white;
+    padding: 15px;
+    margin: 10px;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+}
+
+.windowcontainerTitle {
+    float: left;
+    position: absolute;
+    background-color: white;
+    height: 20px;
+    margin-top: -25px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.rowcontainer{
+    display: block;
+    width: 100%;
+
+}
+
+.rowcontainer li{
+    display: block;
+    float: left;
+    width: 50%;
+
+}
+
+
+tr.even, tr.odd {
+    border-width: 0 1px 0 1px;
+    border-style: solid;
+    border-color: #bebfb9;
+    background: #f3f4ee;
+}
+
+tr.odd {
+    background: #fff;
+}
+
+.invisible {
+    display: none;
+}
