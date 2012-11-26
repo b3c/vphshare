@@ -67,10 +67,12 @@ Database Syncronization
     run the command ::
 
         python manage.py syncdb
+        python manage.py migrate
+	
 
     You will be asked for some information.
-
-    Admin user is not mandatory for our purposes, its creation is at your will.
+    
+    Not create Admin user in this step please. (see 'Create Superuser')
 
 Database Migration
 +++++++++++++++++++++++
@@ -81,6 +83,17 @@ Database Migration
         
         python manage.py migrate
     
+Create Superuser
++++++++++++++++++++++++
+
+    To create a super user you have to apply the migration command before.
+    Then
+    Run the command ::
+        
+        python manage.py createsuperuser
+
+    and follow the wizard. 
+
 
 
 Start and Stop the web application
