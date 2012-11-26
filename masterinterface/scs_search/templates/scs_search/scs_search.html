@@ -13,7 +13,8 @@
     <script>
     $(function() {
         // there's the gallery and the trash
-        var $term = $( ".term" );
+        var $term = $( ".term"),
+        $groups = $( "#group0" );
 
         // let the gallery items be draggable
         $($term ).draggable({
@@ -23,6 +24,23 @@
             helper: "clone",
             cursor: "move"
         });
+
+        $groups.droppable({
+            accept: ".term",
+            activeClass: "ui-state-highlight",
+            drop: function( event, ui ) {
+                dropTerm( ui.draggable );
+            }
+        });
+
+
+        function dropTerm( $item ) {
+            $item.fadeOut(function() {
+
+                $item.appendTo( $groups ).fadeIn();
+            });
+        }
+
     });
     </script>
 {% endblock %}
@@ -67,7 +85,10 @@
                         </li>
                     </ul>
                 </div>
-                <div class="span10 breadcrumb">
+                <div id="groupsContent" class="span10 breadcrumb">
+
+                    <div id="group0" class="ui-widget-content ui-state-default" style="height:50px">
+                    </div>
                     <!--Body content-->
                 </div>
             </div>
