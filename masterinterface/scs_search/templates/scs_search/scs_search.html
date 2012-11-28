@@ -5,16 +5,54 @@
 {% endblock %}
 
 {% block extrahead %}
+
+    <!-- START scs_search  -->
+
     <link rel="stylesheet" href="/static/css/scs_search_style.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="/static/bootstrap/bootstrap.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.css" type="text/css" media="screen" />
     <script src="/static/js/scs_search_script.js" type="text/javascript"></script>
+
+    <!-- END scs_search  -->
+
+    <!-- START bootstrap  -->
+
+    <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.css" type="text/css" media="screen" />
     <script src="/static/bootstrap.min.js" type="text/javascript"></script>
+
+    <!-- END bootstrap  -->
+
+    <!-- START kendo ui  -->
+
+    <script src="/static/kendo.web.min.js"></script>
+    <link href="/static/kendo/kendo.common.min.css" rel="stylesheet" />
+    <link href="/static/kendo/kendo.blueopal.min.css" rel="stylesheet" />
+
+    <!-- END kendo ui -->
+
+
+    <!-- START local script  -->
     <script>
     $(function() {
         // there's the gallery and the trash
         var $term = $( ".term"),
-        $groups = $( "#group0" );
+        $groups =[],
+        $new_group = $( "#new-group" );
+        $groups[0]= $( "#group0" ) ;
+        /*$('#guidedSearchCheckBox').popover({
+            trigger : "click",
+            title : 'Guide Search',
+            content : 'enable this form to guide search.',
+            delay: { show: 100, hide: 50 }
+        });*/
+
+        $("#termsList").kendoTreeView({
+            select: noSelect
+        });
+        $(".group").kendoTreeView({
+            select: noSelect
+        });
+
+
 
         // let the gallery items be draggable
         $($term ).draggable({
@@ -25,35 +63,140 @@
             cursor: "move"
         });
 
-        $groups.droppable({
+        $groups[0].droppable({
             accept: ".term",
-            activeClass: "ui-state-highlight",
+            activeClass: "drop-in",
             drop: function( event, ui ) {
-                dropTerm( ui.draggable );
+
+                dropTerm( ui.draggable ,$(this) );
+            }
+        });
+
+        $new_group.droppable({
+            accept: ".term",
+            activeClass: "drop-in",
+            drop: function( event, ui ) {
+
+                newGroup( ui.draggable ,$(this) );
             }
         });
 
 
-        function dropTerm( $item ) {
-            $item.fadeOut(function() {
+        $('#guidedSearchCheckBox').click(function(){
+            if ($('#guidedSearchCheckBox').attr('checked')) {
 
-                $item.appendTo( $groups ).fadeIn();
+                $("#searchContent").fadeIn();
+                $("#freeText").attr( 'placeholder', 'Search Terms' )
+            }
+            else{
+
+                $("#searchContent").fadeOut();
+                $("#freeText").attr( 'placeholder', 'Search Dataset' )
+
+            }
+        });
+
+        $('#querySubmit').click(function(){
+
+                $("#search").toggle( 'slide', {direction:'left'}, 500 );
+                $("#results").delay(500).effect( 'slide', {direction:'right'}, 500 );
+
+        });
+
+
+
+        $('#backToQuery').click(function(){
+
+            $("#results").toggle( 'slide', {direction:'rigth'}, 500);
+            $("#search").delay(500).effect( 'slide', {direction:'left'}, 500 );
+
+        });
+
+        function noSelect(e){
+
+            var item = e.node;
+
+            item.children(".k-state-selected").removeClass('k-state-selected')
+            item.children("k-state-focused").removeClass("k-state-focused");
+
+
+        }
+
+        function newGroup( $item , $dropTarget  ) {
+
+            var groupsContent = $( "#groupsContent" );
+            var $item_cloned = $item.clone().hide();
+
+            var group = $dropTarget.clone();
+            var n_group = $groups.length;
+            group.attr("id", "group"+n_group);
+            group.find( "#help").hide();
+            group.insertAfter($groups[n_group-1].parent());
+            group.hide();
+            $groups[n_group]=group;
+            group.kendoTreeView({
+                select: noSelect
+            }).fadeIn();
+            //group.insertAfter(group.parent().parent());
+
+
+
+            $groups[n_group].droppable({
+                accept: ".term",
+                activeClass: "drop-in",
+                drop: function( event, ui ) {
+
+                    dropTerm( ui.draggable ,$(this) );
+                }
             });
+
+            $item_cloned.children().children().append("<a class='delete-link' href='#'></a>");
+            $item_cloned.appendTo(group).delay(200).fadeIn(200);
+
+        }
+
+        function dropTerm( $item , $dropTarget  ) {
+
+                var $item_cloned = $item.clone().hide();
+                $item_cloned.children().children().append("<a class='delete-link' href='#'></a>");
+                $dropTarget.find('#help').fadeOut(200);
+                $item_cloned.appendTo($dropTarget ).delay(200).fadeIn(200);
         }
 
     });
+
+
+
+
+    $( document ).on("click", ".delete-link", function( e ) {
+
+        e.preventDefault();
+        var parent = $(this).parents(".group");
+        if ( parent.children(".term").length == 1 && parent.attr("id") != 'group0' ){
+            $(this).parents('.k-treeview').fadeOut(400,function(){$(this).parents('.k-treeview').remove()});
+            return;
+        }
+
+        $(this).closest(".k-item").remove();
+
+        if ( parent.attr("id") == 'group0' &&  parent.children(".term").length == 0  )
+            parent.children("#help").fadeIn();
+
+    });
     </script>
+
+    <!-- END local script  -->
 {% endblock %}
 
 {% block content %}
 
-    <div class="container-fluid">
+    <div id="search" class="container-fluid">
         <div id="searchBlock"  class="row-fluid">
 
             <div class="navbar">
                 <div class="navbar-inner">
                 <form id="automaticSearchForm" class="navbar-form pull-left">
-                    <input type="text" class="nput-medium search-query" name="freeText" id="freeText">
+                    <input type="text" class="nput-medium search-query" name="freeText" id="freeText" placeholder="Search dataset" >
                     <button type="submit" class="btn">Search</button>
                     <label class="checkbox"> <input id="guidedSearchCheckBox" type="checkbox"> Guided Search</label>
                 </form>
@@ -61,41 +204,54 @@
             </div>
 
         </div>
-        <div id="searchContent" class="row-fluid">
+
+        <div id="searchContent" class="row-fluid" style="display:none;">
             <div id="guideSearchContentBlock" class="row-fluid ">
-                <div id="termListBlock" class="span2 breadcrumb">
-                    <ul class="media-list nav nav-pills nav-stacked">
-                        <li class="media term" >
-                            <a class="" href="#">
-                                <img class="" src="http://placehold.it/24x24">
-                                Term1
-                            </a>
+
+                <div id="termListBlock" class="span2 k-header " style="min-height: 200px">
+                    <ul id="termsList" class="ui-state-default" >
+                        <li class="term">
+                            <span class="k-sprite folder"></span>Term 1
                         </li>
-                        <li class="media term">
-                            <a class="" href="#">
-                                <img class="" src="http://placehold.it/24x24">
-                                Term1
-                            </a>
+                        <li class="term">
+                            <span class="k-sprite folder"></span>Term 2
                         </li>
-                        <li class="media term">
-                            <a class="" href="#">
-                                <img class="" src="http://placehold.it/24x24">
-                                Term1
-                            </a>
+                        <li class="term">
+                            <span class="k-sprite folder"></span>Term 3
                         </li>
                     </ul>
                 </div>
-                <div id="groupsContent" class="span10 breadcrumb">
 
-                    <div id="group0" class="ui-widget-content ui-state-default" style="height:50px">
-                    </div>
-                    <!--Body content-->
+                <div id="groupsContent" class="span9 k-header" style="min-height: 200px" >
+
+                    <ul id="group0" class="group ui-widget-content ui-state-default" style="min-height: 50px;">
+                        <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN OR</div></div>
+                    </ul>
+
+                    <ul id="new-group" class="group ui-widget-content ui-state-default" style="min-height: 50px;">
+                        <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN AND</div></div>
+                    </ul>
+
+
+                </div>
+                <div class="span1">
+
+                    <button id="querySubmit" type="button" class="btn btn-primary" style="height: 200px;opacity: 60px;">Query</button>
+
                 </div>
             </div>
 
-            <div id="resultsBlock" class="row-fluid">
+
+        </div>
+
+    </div>
+    <div id="results"   style="display:none;">
+        <div class="row-fluid" >
+            <button id="backToQuery" type="button" class="btn btn-primary" style="opacity: 60px;">Query</button>
+        </div>
+        <div id="resultsBlock" class="container-fluid" >
             <ul class="media-list">
-                <li class="media breadcrumb">
+                <li class="media result-item">
                     <a class="pull-left" href="#">
                         <img class="media-object" src="http://placehold.it/64x64">
                     </a>
@@ -123,7 +279,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="media breadcrumb">
+                <li class="media result-item">
                     <a class="pull-left" href="#">
                         <img class="media-object" src="http://placehold.it/64x64">
                     </a>
@@ -154,9 +310,8 @@
             </ul>
 
 
-            </div>
         </div>
-
     </div>
+
 
 {% endblock %}
