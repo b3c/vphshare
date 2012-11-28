@@ -27,14 +27,14 @@ DEFAULT_DB = {
     'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 }
 
-#DEFAULT_DB = {
-#   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
-#    'USER': '',                      # Not used with sqlite3.
-#    'PASSWORD': '',                  # Not used with sqlite3.
-#    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-#    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-#}
+TEO_DB = {
+   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
+    'USER': '',                      # Not used with sqlite3.
+    'PASSWORD': '',                  # Not used with sqlite3.
+    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+}
 
 # Cyfronet Database
 CYFRONET_DB = {
@@ -48,7 +48,7 @@ CYFRONET_DB = {
 
 
 DATABASES = {
-    'default': DEFAULT_DB
+    'default': TEO_DB
 }
 
 #Define class where extened user profile

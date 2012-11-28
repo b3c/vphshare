@@ -23,21 +23,24 @@
 body {
     line-height: 1;
     color: #696969;
-    background: #f1f1f1 url(/static/obl-1x1.png);
+    background: url('/static/bg.png') no-repeat top right fixed white;
     font-size:  100%;
     margin: 0 0 1px;
     height: 100%;
     font-family: 'Inder', sans-serif;
+    min-height: 768px;
+
 }
 
 #wrapper{
     width: 966px;
-    margin: 30px auto;
-    background: #363636;
-    min-height: 700px;
+    margin: auto;
+    background: white;
+    min-height: 410px;
     font-size: 14px;
     line-height: 1.5em;
     border-radius: 10px;
+    padding: 10px;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
 }
@@ -72,10 +75,13 @@ footer{
 
 /* header --------------------------------------------------------*/
 header{
-    height: 215px;
+    height: 130px;
     z-index: 10;
     display: block;
     position:relative;
+    top:0px;
+    left:0px;
+    width: 100%;
 }
 
 header #headline{
@@ -90,32 +96,42 @@ header #headline{
 
 #headline a{
     text-decoration: none;
-    color: #FFD800;
+    color: #0072af;
 }
 
+#breadcrumbs-wrapper{
+    font-size: 26px;
+    color:white;
+    background-color: #0072af;
+    width:100%;
+    height: 25px;
+    padding-top: 5px;
+}
 
-header #breadcrumbs{
-    position: absolute;
-    bottom: 11px;
-    left: 30px;
+#breadcrumbs{
+    margin:auto;
+    width:920px;
+    clear:both;
     font-style: italic;
-    color: #999;
+    color: white;
     font-size: 12px;
+    background-color: transparent;
 }
 
-header #breadcrumbs a{
-    color: #bfbdbd;
+#breadcrumbs a{
+    color: white;
     text-decoration: none;
     background: url(/static/breadcrumb-slash.png) no-repeat top right;
     padding-right: 14px;
 }
 
 header #login {
-    position: absolute;
-    bottom: 11px;
-    right: 30px;
-    color: #f5f5f5;
+    position: relative;
+    bottom: 30px;
+    float:right;
+    color: #0072af;
     font-size: 12px;
+    margin-right: 40px;
 }
 
 header #login a{
@@ -124,6 +140,8 @@ header #login a{
     font-weight: bold;
     text-decoration: none;
     cursor:pointer;
+    position:relative;
+    top:10px;
 }
 
 header #login a img{
@@ -132,21 +150,29 @@ header #login a img{
 
 #logo-left{
     position: absolute;
-    top: 10px;
-    left: 25px;
+    top: 0px;
+    left: 0px;
 }
 #logo-right{
     position: absolute;
-    top: 10px;
-    right: 25px;
+    top: 0px;
+    right: 0px;
 }
 
 /* TITLE --------------------------------------------------------*/
 
+#page-title-wrapper{
+    width: 100%;
+    /*background: url('/static/logo-web.png') no-repeat top right #0072af;*/
+    background-color: #0072af;
+}
 #page-title{
+    margin: auto;
+    width: 920px;
     overflow: hidden;
-    margin-bottom: 30px;
-    background: #f2f1f1;
+    text-align: right;
+    position:relative;
+    left: 300px;
 }
 
 #page-title .title{
@@ -156,6 +182,7 @@ header #login a img{
     line-height: 80px;
     margin-left: 30px;
     text-shadow: 0 1px rgba(255, 255, 255, 1);
+    color:white;
 }
 
 #page-title .subtitle{
@@ -165,6 +192,7 @@ header #login a img{
     line-height: 90px;
     color: #929191;
     font-style: italic;
+    color: white;
 }
 
 
@@ -277,23 +305,22 @@ h6{ font-size: 20px; }
 }
 /* NAVIGATION --------------------------------------------------------*/
 
-
+#nav-wrapper{
+    background: rgba(51, 153, 204, 0.19);
+    width: 100%;
+    border-top: 1px solid #0072af;
+}
 nav{
     display: block;
-    position: absolute;
-    top: 108px;
-    left: 30px;
-    height: 46px;
-    width: 906px;
-    background: white url(/static/gloss.png);
-    border-radius: 10px;
+    height: 35px;
+    width: 920px;
+    margin:auto;
 }
 
 nav>li{
     display: block;
     float: left;
     margin-left: 5px;
-    margin-top: 12px;
 }
 
 nav>li:first-child{
@@ -301,18 +328,19 @@ nav>li:first-child{
 }
 
 nav>li>a{
+    padding-top: 10px;
     font-size: 12px;
-    color: #363636;
+    color: #0072af;
     text-decoration: none;
     padding: 7px 10px 6px 10px;
-    border-radius: 10px;
 }
 
 nav>li>a:hover,
 nav>li.current-menu-item>a{
     color: #fff;
-    background: #363636;
+    background: #0072af;
     text-shadow: none;
+    border-radius: 2px;
 }
 
 /* sub navigation */
@@ -320,7 +348,7 @@ nav>li.current-menu-item>a{
 nav>li ul{
     display: block;
     margin-top: -1px;
-    background: #ffd800;
+    background: #0072af;
     border-radius: 0px 0px 10px 10px;
     -moz-border-radius: 0px 0px 10px 10px;
     -webkit-border-radius: 0px 0px 10px 10px;
@@ -613,12 +641,20 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 
 /* FOOTER - COLS ------------------------------------------------------------*/
 
+footer{
+    position:fixed;
+    width:100%;
+    bottom:0px;
+    left:0px;
+
+}
+
 #footer-cols{
     display: block;
     overflow: hidden;
     color: #bbbaba;
     line-height: 1.5em;
-    margin-top: 40px;
+    margin-top: 10px;
 }
 
 #footer-cols li.col{
@@ -663,31 +699,31 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 
 /* FOOTER BOTTOM --------------------------------------------------------*/
 
-#footer #bottom{
+footer #bottom{
     position: relative;
     width: 100%;
     font-size: 12px;
-    line-height: 80px;
+    line-height: 45px;
     text-align: center;
+    height: 40px;
     color: #868686;
-    background: url(/static/bottom-shadow.png) repeat-x;
+    background: url(/static/bottom-shadow.png) repeat-x rgba(51, 153, 204, 0.19);
 }
 
-#footer #bottom span{
+footer #bottom span{
     margin-right: 10px;
 }
 
-#footer #bottom a{
-    color: #ffd800;
+footer #bottom a{
+    color: #0072af;
     text-decoration: none;
 }
 
-#footer #bottom #to-top{
+footer #bottom #to-top{
     position: absolute;
     right: 30px;
     top: 26px;
     width: 33px;
-    height: 33px;
     cursor: pointer;
 }
 
