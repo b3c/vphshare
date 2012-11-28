@@ -32,21 +32,30 @@
 
 </head>
 <body>
-<div id="wrapper">
 
     {% if not request.is_ajax %}
 
         {% block header %}
             <header id="header">
-                <a href="/"><img id="logo-left" src="/static/logo.png" alt="VphShare" /></a>
-                <a href="/"><img id="logo-right" src="/static/logo.png" alt="VphShare" /></a>
+
+                <img id="logo-left" src="/static/logo-web.png"/>
+
+                <div id="page-title-wrapper">
+                    <div id="page-title">
+                        {% block page-title %} {% endblock %}
+                    </div>
+                </div>
+
 
                 {% block nav %}
+                <div id="nav-wrapper">
                     <nav>
                         <li class="current-menu-item" id="navhome"><a href="/">Home</a></li>
 
                         {% if request.user.is_authenticated %}
-                            {% if request.user.is_staff %}<li><a href="/scs/users_admin/">Users access admin</a></li>
+                            {% if request.user.is_staff %}
+                            <li><a href="/search/">Search</a></li>
+                            <li><a href="/scs/users_admin/">Users access admin</a></li>
                             <li><a href="/cyfronet/cloudmanager/">Cloud Manager</a></li>
                             <li><a href="/cyfronet/datamanager/">Data Manager</a></li>
                             {% endif %}
@@ -56,10 +65,43 @@
                         <!--<li><a href="/scs/services">Services</a></li>-->
                         <li><a href="/scs/contacts">Contact</a></li>
                         <li><a href="/scs/help">Help</a></li>
+                        <div id="login">
+                            {% block login %}
+                                {% if not request.user.is_authenticated %}
+                                    <div>
+                                        <span>Login with your Identity Provider: </span>
+                                        <a class="popup" id="btlogin" rel="#overlay" href="/scs_auth/bt_login">
+                                            <img src="/static/biomedtown_32.png" alt="bt" title="login with your BiomedTown identity"/>
+                                        </a>
+
+                                        <!-- <a class="popup" id="authlogin" rel="#overlay" href="/scs_auth/auth_login">
+                                           <img src="/static/auth_logo_32.png" alt="bt" title="login with your Authentication module"/>
+                                       </a> -->
+
+                                        <!--<a id="googlelogin" class="popup" rel="#overlay" href="/login/google">
+                                            <img src="/static/google_32.png" alt="google" title="login with your Google identity" />
+                                        </a>-->
+                                        <a class="unavailable"><img src="/static/google_32.png" alt="google" title="login with your Google identity" /></a>
+                                        <!--<a class="unavailable"><img src="/static/facebook_32.png" alt="facebook" title="facebook coming soon" /></a>
+                                   <a class="unavailable"><img src="/static/twitter_32.png" alt="twitter" title="twitter coming soon"/></a>
+                                   <a><img src="/static/linkedin_32.png" alt="linkedin" title="linkedin coming soon"/></a>
+                                   <a><img src="/static/github_32.png" alt="github" title="github coming soon"/></a>-->
+
+                                    </div>
+
+                                {% else %}
+                                    <span>Hi, {{ request.user.first_name|default:"Friend"}}!</span>
+                                    <a href="/profile/">Profile</a>
+                                    <a  class="popup" rel="#overlay" href="/logout">Logout</a>
+                                {% endif %}
+                            {% endblock %}
+                        </div>
                     </nav>
+                </div>
                 {% endblock %}
 
-                <div class="top-search">
+
+               <!-- <div class="top-search">
                     <form  method="get" id="searchform" action="#">
                         <div>
                             <input type="text" value="Search..." name="s" id="s" />
@@ -67,50 +109,8 @@
                         </div>
                     </form>
                 </div>
+                -->
 
-                <div id="headline">
-                    <span>Welcome to the VPH-Share Master Interface</span>
-                </div>
-
-                <div id="breadcrumbs">
-
-                    <span>you are here: &nbsp;</span> <a href="/" title="Home">Home</a>
-                    {%  for crumb in request.path|breadcrumbs %}
-                        <a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>
-                    {% endfor %}
-                </div>
-
-                <div id="login">
-                    {% block login %}
-                        {% if not request.user.is_authenticated %}
-                            <div>
-                                <span>Login with your Identity Provider: </span>
-                                <a class="popup" id="btlogin" rel="#overlay" href="/scs_auth/bt_login">
-                                    <img src="/static/biomedtown_32.png" alt="bt" title="login with your BiomedTown identity"/>
-                                </a>
-
-                                <!-- <a class="popup" id="authlogin" rel="#overlay" href="/scs_auth/auth_login">
-                                    <img src="/static/auth_logo_32.png" alt="bt" title="login with your Authentication module"/>
-                                </a> -->
-
-                                <!--<a id="googlelogin" class="popup" rel="#overlay" href="/login/google">
-                                    <img src="/static/google_32.png" alt="google" title="login with your Google identity" />
-                                </a>-->
-                                <a class="unavailable"><img src="/static/google_32.png" alt="google" title="login with your Google identity" /></a>
-                                <!--<a class="unavailable"><img src="/static/facebook_32.png" alt="facebook" title="facebook coming soon" /></a>
-                                <a class="unavailable"><img src="/static/twitter_32.png" alt="twitter" title="twitter coming soon"/></a>
-                                <a><img src="/static/linkedin_32.png" alt="linkedin" title="linkedin coming soon"/></a>
-                                <a><img src="/static/github_32.png" alt="github" title="github coming soon"/></a>-->
-
-                            </div>
-
-                        {% else %}
-                            <span>Hi, {{ request.user.first_name|default:"Friend"}}!</span>
-                            <a href="/profile/">Profile</a>
-                            <a  class="popup" rel="#overlay" href="/logout">Logout</a>
-                        {% endif %}
-                    {% endblock %}
-                </div>
             </header>
         {% endblock %}
 
@@ -119,42 +119,39 @@
 
     {% endif %}
 
+    <div id="wrapper">
 
 
     <div id="main">
         <div id="content">
-            <div id="page-title">
-                {% block page-title %} {% endblock %}
-            </div>
-
             <div id="page-content">
                 {% block content %} {% endblock %}
             </div>
         </div>
     </div>
+</div>
 
     {% if not request.is_ajax %}
         {% block footer %}
-            <div id="footer">
-                <ul id="footer-cols">
-                    <li class="col">
-                        <h6>About the Project</h6>
-                        <p>VPH-Share will develop the organisational fabric (the infostructure) and integrate the optimised services to expose and share data and knowledge,
-                            jointly develop multiscale models for the composition of new VPH workflows and facilitate collaborations within the VPH community</p>
-                    </li>
-                </ul>
+            <footer>
+                <div id="breadcrumbs-wrapper">
+                    <div id="breadcrumbs">
+                        <span>you are here: &nbsp;</span> <a href="/" title="Home">Home</a>
+                        {%  for crumb in request.path|breadcrumbs %}
+                            <a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div id="bottom">
-                    <span>temporary theme courtesy of <a target="_blank" href="http://luiszuno.com/blog/">Luiszuno</a></span>
-                    <span>&dash;</span>
                     <span>application developed by <a href="http://www.scsitaly.com/">SCS</a></span>
                     <span>&dash;</span>
                     <span>powered by <a href="https://www.djangoproject.com/">Django</a></span>
                 </div>
-            </div>
+            </footer>
         {% endblock %}
     {% endif %}
 
-</div>
+
 </body>
 </html>
 

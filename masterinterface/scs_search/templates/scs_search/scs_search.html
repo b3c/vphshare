@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 
-{% block title %}
-
-{% endblock %}
 
 {% block extrahead %}
 
@@ -38,12 +35,12 @@
         $groups =[],
         $new_group = $( "#new-group" );
         $groups[0]= $( "#group0" ) ;
-        /*$('#guidedSearchCheckBox').popover({
+        $('#guidedSearchCheckBox').popover({
             trigger : "click",
             title : 'Guide Search',
             content : 'enable this form to guide search.',
             delay: { show: 100, hide: 50 }
-        });*/
+        });
 
         $("#termsList").kendoTreeView({
             select: noSelect
@@ -98,7 +95,7 @@
 
         $('#querySubmit').click(function(){
 
-                $("#search").toggle( 'slide', {direction:'left'}, 500 );
+                $("#search").toggle( 'slide', {direction:'left'}, 400 );
                 $("#results").delay(500).effect( 'slide', {direction:'right'}, 500 );
 
         });
@@ -107,7 +104,7 @@
 
         $('#backToQuery').click(function(){
 
-            $("#results").toggle( 'slide', {direction:'rigth'}, 500);
+            $("#results").toggle( 'slide', {direction:'rigth'}, 400);
             $("#search").delay(500).effect( 'slide', {direction:'left'}, 500 );
 
         });
@@ -187,6 +184,13 @@
 
     <!-- END local script  -->
 {% endblock %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+{% block page-title %}
+    <span class="title">Search</span>
+    <span class="subtitle">sematic search for your data</span>
+{% endblock%}
 
 {% block content %}
 
