@@ -68,7 +68,7 @@ def guidedSearchS1Connector( free_text ):
     doc = etree.parse( response )
 
     # Adding to results max_matches and num_results_total
-    root_elem = doc.find('/')
+    root_elem = doc#.find('/')
     results.append( root_elem.findtext('max_matches') or None )
     results.append( root_elem.findtext('num_results_total') or None )
 
