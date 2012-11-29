@@ -40,8 +40,8 @@ class AutomaticSearchService( BaseHandler ):
 
             free_text = request.POST['input']
 
-            connector = automaticSearchConnector( free_text )
-            #connector = guidedSearchS1Connector( free_text )
+            #connector = automaticSearchConnector( free_text )
+            connector = guidedSearchS1Connector( free_text )
 
             return connector
 
