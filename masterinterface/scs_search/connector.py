@@ -3,7 +3,7 @@ __author__ = ""
 import requests
 from config import *
 from lxml import etree,html
-
+from pysimplesoap.simplexml import *
 
 def automaticSearchConnector( free_text ):
     """
@@ -17,10 +17,7 @@ def automaticSearchConnector( free_text ):
             dataset (list): list of dataset grouped by concept_uri
 
     """
-    results = []
-    dataset = []
-    dict_concept = {}
-    dict_dataset = {}
+    results = OrderedDict()
 
     #response = urllib2.urlopen( AUTOMATIC_SEARCH_API % free_text )
     response = requests.get( AUTOMATIC_SEARCH_API % free_text )
@@ -30,20 +27,19 @@ def automaticSearchConnector( free_text ):
     concept_list = doc
 
     for concept_elem in concept_list:
-
-        dict_concept['concept_uri'] = concept_elem.attrib['uri']
+        dataset = OrderedDict()
+        concept_uri = concept_elem.attrib['uri']
 
         for dataset_elem in concept_elem:
-            dict_dataset['dataset_label'] = dataset_elem.attrib['label']
-            dict_dataset['num_matches'] = dataset_elem[0].text
-            dict_dataset['rdf_data'] = dataset_elem[1].text
-            dataset.append( dict_dataset )
-            dict_dataset = {}
+            dataset_label = dataset_elem.attrib[ 'label' ]
+            num_metch = dataset_elem[0].text
+            rdf_data = dataset_elem[1].text
+            dataset[dataset_label] = [ num_metch, rdf_data ]
+            #dataset.append( {dataset_label: [ num_metch, rdf_data ]} )
 
-        results.append( dict_concept )
-        results.append( dataset )
-        dataset = []
-        dict_concept = {}
+        results[concept_uri] = dataset
+        #results.append( { concept_uri: dataset } )
+
 
     return results
 
