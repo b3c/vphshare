@@ -1,8 +1,8 @@
 __author__ = ""
 
-import urllib2
+import requests
 from config import *
-from lxml import etree
+from lxml import etree,html
 
 
 def automaticSearchConnector( free_text ):
@@ -22,24 +22,23 @@ def automaticSearchConnector( free_text ):
     dict_concept = {}
     dict_dataset = {}
 
-    response = urllib2.urlopen( AUTOMATIC_SEARCH_API % free_text )
-    doc = etree.parse( response )
+    #response = urllib2.urlopen( AUTOMATIC_SEARCH_API % free_text )
+    response = requests.get( AUTOMATIC_SEARCH_API % free_text )
 
-    concept_list = doc.findall('/concept')
+    doc = etree.fromstring( response.text.encode() )
+
+    concept_list = doc
 
     for concept_elem in concept_list:
 
         dict_concept['concept_uri'] = concept_elem.attrib['uri']
 
-        dataset_list =  concept_elem.findall('dataset') or None
-        if dataset_list is not None:
-
-            for dataset_elem in dataset_list:
-                dict_dataset['dataset_label'] = dataset_elem.attrib['label']
-                dict_dataset['num_matches'] = dataset_elem.findtext('numMatches')
-                dict_dataset['rdf_data'] = dataset_elem.findtext('rdf-data')
-                dataset.append( dict_dataset )
-                dict_dataset = {}
+        for dataset_elem in concept_elem:
+            dict_dataset['dataset_label'] = dataset_elem.attrib['label']
+            dict_dataset['num_matches'] = dataset_elem[0].text
+            dict_dataset['rdf_data'] = dataset_elem[1].text
+            dataset.append( dict_dataset )
+            dict_dataset = {}
 
         results.append( dict_concept )
         results.append( dataset )
@@ -64,22 +63,23 @@ def guidedSearchS1Connector( free_text ):
     list_pages = []
     dict_concepts = {}
 
-    response = urllib2.urlopen( GUIDED_SEARCH_S1_API % free_text )
-    doc = etree.parse( response )
+    response = requests.get( GUIDED_SEARCH_S1_API % free_text )
+    doc = etree.fromstring( response.text.encode() )
 
-    # Adding to results max_matches and num_results_total
-    root_elem = doc#.find('/')
-    results.append( root_elem.findtext('max_matches') or None )
-    results.append( root_elem.findtext('num_results_total') or None )
+    # Adding max_matches and num_results_total to results
+    root_elem = doc
 
-    page_elem = root_elem.findall('page')
+    results.append( root_elem[0].text or None )
+    results.append( root_elem[0].text or None )
+
+    page_elem = root_elem.xpath('page')
+
     for page in page_elem:
-        # Adding to results page_num and num_pages
-        list_pages.append( page.findtext('page_num') or None )
-        list_pages.append( page.findtext('num_pages') or None )
+        # Adding page_num and num_pages to list_pages
+        list_pages.append( page[0].text or None )
+        list_pages.append( page[1].text or None )
 
-        result_list_elem = page.find('content/searchResultList/')
-        concept_list = result_list_elem.findall('concept')
+        concept_list = page[2][0].xpath('concept')
 
         for concept_elem in concept_list:
             dict_concepts['uri_concept'] = concept_elem.findtext('uri_concept')

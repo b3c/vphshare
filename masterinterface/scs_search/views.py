@@ -36,7 +36,6 @@ class AutomaticSearchService( BaseHandler ):
         """
             call on POST
         """
-
         if request.method == "POST":
 
             free_text = request.POST['input']
@@ -46,6 +45,7 @@ class AutomaticSearchService( BaseHandler ):
 
         response = HttpResponse(status=403)
         response._is_string = True
+
         return response
 
 
@@ -67,7 +67,6 @@ class GuidedSearchS1Service( BaseHandler ):
         """
             call on POST
         """
-
         if request.method == "POST":
 
             free_text = request.POST['input']
@@ -77,6 +76,7 @@ class GuidedSearchS1Service( BaseHandler ):
 
         response = HttpResponse(status=403)
         response._is_string = True
+
         return response
 
 
@@ -85,3 +85,20 @@ class GuidedSearchS2Service( BaseHandler ):
     """
     """
 
+    allowed_methods = ('POST', 'GET')
+
+    def create(self, request):
+        """
+            call on POST
+        """
+        if request.method == "POST":
+
+            concept_uri_list = request.POST['concept_uri_list']
+            connector = guidedSearchS1Connector( concept_uri_list )
+
+            return connector
+
+        response = HttpResponse(status=403)
+        response._is_string = True
+
+        return response
