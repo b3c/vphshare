@@ -46,7 +46,27 @@ function guidedSearchS1Call ( )
     });
 }
 
+function guidedSearchS2Call ( )
+{
+    var form = $( "#automaticSearchForm" );
+    var input = form.find( 'input[name="freeText"]' ).val();
+    var url = '/guided_search_s2/'
+
+    $.ajax({
+        type : 'POST',
+        url : url,
+        data : {concept_uri_list : ''
+        },
+        success: function( results ) {
+            alert(results[0]['concept_uri']);
+        },
+        error: function (error) {
+            alert(error);
+        }
+    });
+}
 /* END AJAX call  */
+
 
 
 /* START jquery ready in search page */
@@ -116,6 +136,8 @@ $(function() {
     /** END drang & drop events */
 
     /** START click events */
+
+    $( '#querySubmit' ).bind( "click", function(){ guidedSearchS2Call(); } );
 
     $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
 

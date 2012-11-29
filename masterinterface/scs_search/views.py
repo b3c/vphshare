@@ -5,6 +5,8 @@ from django.template import RequestContext
 from piston.handler import BaseHandler
 from connector import automaticSearchConnector
 from connector import guidedSearchS1Connector
+from connector import guidedSearchS2Connector
+
 
 def automaticSearchView( request ):
     """
@@ -93,8 +95,9 @@ class GuidedSearchS2Service( BaseHandler ):
         """
         if request.method == "POST":
 
-            concept_uri_list = request.POST['concept_uri_list']
-            connector = guidedSearchS1Connector( concept_uri_list )
+            #concept_uri_list = request.POST['concept_uri_list']
+            concept_uri_list = "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl%23Patient"
+            connector = guidedSearchS2Connector( concept_uri_list )
 
             return connector
 

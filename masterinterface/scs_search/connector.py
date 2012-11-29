@@ -107,4 +107,32 @@ def guidedSearchS2Connector( concept_uri_list ):
         Returns:
             dataset (list): list of dataset grouped by concept
     """
+    results = []
+    dataset = []
+    dict_concept = {}
+    dict_dataset = {}
 
+    #response = urllib2.urlopen( AUTOMATIC_SEARCH_API % free_text )
+    response = requests.get( GUIDED_SEARCH_S2_API % concept_uri_list )
+
+    doc = etree.fromstring( response.text.encode() )
+
+    concept_list = doc
+
+    for concept_elem in concept_list:
+
+        dict_concept['concept_uri'] = concept_elem.attrib['uri']
+
+        for dataset_elem in concept_elem:
+            dict_dataset['dataset_label'] = dataset_elem.attrib['label']
+            dict_dataset['num_matches'] = dataset_elem[0].text
+            dict_dataset['rdf_data'] = dataset_elem[1].text
+            dataset.append( dict_dataset )
+            dict_dataset = {}
+
+        results.append( dict_concept )
+        results.append( dataset )
+        dataset = []
+        dict_concept = {}
+
+    return results

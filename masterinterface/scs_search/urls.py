@@ -6,6 +6,7 @@ from piston.resource import Resource
 
 automatic_search_entries = Resource( handler=AutomaticSearchService)
 guided_search_s1_entries = Resource( handler=GuidedSearchS1Service)
+guided_search_s2_entries = Resource( handler=GuidedSearchS2Service)
 
 urlpatterns = patterns(
 
@@ -13,4 +14,5 @@ urlpatterns = patterns(
     url( r'^search/$', automaticSearchView , name='automaticSearchView' ),
     url( r'^automatic_search/', automatic_search_entries ) ,
     url( r'^guided_search_s1/', guided_search_s1_entries ) ,
+    url( r'^guided_search_s2/', guided_search_s2_entries ) ,
     )
