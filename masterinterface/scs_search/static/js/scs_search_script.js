@@ -25,3 +25,23 @@ function automaticSearchCall ( )
             }
         });
 }
+
+function guidedSearchS1Call ( )
+{
+    var form = $( "#automaticSearchForm" );
+    var input = form.find( 'input[name="freeText"]' ).val();
+    var url = '/guided_search_s1/'
+
+    $.ajax({
+        type : 'POST',
+        url : url,
+        data : {input : input
+        },
+        success: function( results ) {
+            alert(results[0]);
+        },
+        error: function (error) {
+            alert(error);
+        }
+    });
+}

@@ -36,12 +36,11 @@ class AutomaticSearchService( BaseHandler ):
         """
             call on POST
         """
+
         if request.method == "POST":
 
             free_text = request.POST['input']
-
-            #connector = automaticSearchConnector( free_text )
-            connector = guidedSearchS1Connector( free_text )
+            connector = automaticSearchConnector( free_text )
 
             return connector
 
@@ -49,11 +48,13 @@ class AutomaticSearchService( BaseHandler ):
         response._is_string = True
         return response
 
+
     def read( self, request ):
         """
             call on GET
         """
         pass
+
 
 
 class GuidedSearchS1Service( BaseHandler ):
@@ -66,28 +67,21 @@ class GuidedSearchS1Service( BaseHandler ):
         """
             call on POST
         """
-        if request.method == "POST":
-            pass
 
-        response = HttpResponse(status=200)
+        if request.method == "POST":
+
+            free_text = request.POST['input']
+            connector = guidedSearchS1Connector( free_text )
+
+            return connector
+
+        response = HttpResponse(status=403)
         response._is_string = True
         return response
+
 
 
 class GuidedSearchS2Service( BaseHandler ):
     """
     """
-
-    allowed_methods = ('POST', 'GET')
-
-    def create(self, request):
-        """
-            call on POST
-        """
-        if request.method == "POST":
-            pass
-
-        response = HttpResponse(status=200)
-        response._is_string = True
-        return response
 

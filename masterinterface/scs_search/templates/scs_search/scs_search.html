@@ -35,12 +35,13 @@
         $groups =[],
         $new_group = $( "#new-group" );
         $groups[0]= $( "#group0" ) ;
-        $('#guidedSearchCheckBox').popover({
-            trigger : "click",
-            title : 'Guide Search',
-            content : 'enable this form to guide search.',
-            delay: { show: 100, hide: 50 }
-        });
+//        $('#guidedSearchCheckBox').popover({
+//            trigger : "click",
+//            title : 'Guide Search',
+//            content : 'enable this form to guide search.',
+//            delay: { show: 100, hide: 50 }
+//        });
+
 
         $("#termsList").kendoTreeView({
             select: noSelect
@@ -82,11 +83,13 @@
         $('#guidedSearchCheckBox').click(function(){
             if ($('#guidedSearchCheckBox').attr('checked')) {
 
+                $('#searchButton')[0].setAttribute('onclick','guidedSearchS1Call()');
                 $("#searchContent").fadeIn();
                 $("#freeText").attr( 'placeholder', 'Search Terms' )
             }
             else{
 
+                $('#searchButton')[0].setAttribute('onclick','automaticSearchCall()');
                 $("#searchContent").fadeOut();
                 $("#freeText").attr( 'placeholder', 'Search Dataset' )
 
@@ -201,7 +204,7 @@
                 <div class="navbar-inner">
                 <form id="automaticSearchForm" class="navbar-form pull-left">
                     <input type="text" class="input-medium search-query" name="freeText" id="freeText" placeholder="Search dataset" >
-                    <button type="button" class="btn" onclick="automaticSearchCall()">Search</button>
+                    <button type="button" class="btn" id="searchButton" onclick="automaticSearchCall()">Search</button>
                     <label class="checkbox"> <input id="guidedSearchCheckBox" type="checkbox"> Guided Search</label>
                 </form>
                 </div>

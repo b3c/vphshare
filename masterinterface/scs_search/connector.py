@@ -62,7 +62,6 @@ def guidedSearchS1Connector( free_text ):
     """
     results = []
     list_pages = []
-    dict_pages = {}
     dict_concepts = {}
 
     response = urllib2.urlopen( GUIDED_SEARCH_S1_API % free_text )
