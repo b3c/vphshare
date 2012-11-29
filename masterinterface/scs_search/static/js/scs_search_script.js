@@ -66,7 +66,7 @@ $(function() {
 
     $( '#termsList' ).kendoTreeView( {
 
-        select: noSelect
+        select:  noSelect
 
     } );
 
@@ -153,25 +153,6 @@ $(function() {
 
     } );
 
-    $( '.delete-link' ).click(function( e ) {
-
-        var parent = $( this ).parents( '.group' );
-
-        e.preventDefault();
-        if ( parent.children( '.term' ).length == 1 && parent.attr( 'id' ) != 'group0' ){
-
-            $( this ).parents( '.k-treeview' ).fadeOut( 400, function(){ $( this ).parents( '.k-treeview' ).remove() } );
-            return;
-
-        }
-
-        $( this ).closest( '.k-item' ).remove();
-
-        if ( parent.attr( 'id' ) == 'group0' &&  parent.children( '.term' ).length == 0  )
-
-            parent.children( '#help' ).fadeIn();
-
-    });
     /** END click events */
     /* END events wrap */
 
@@ -180,9 +161,8 @@ $(function() {
     function noSelect(e){
 
         var item = e.node;
-
-        item.children( '.k-state-selected' ).removeClass( 'k-state-selected' );
-        item.children( 'k-state-focused' ).removeClass( 'k-state-focused' );
+        item.children('.k-state-selected' ).removeClass( 'k-state-selected' );
+        item.children( '.k-state-focused' ).removeClass( 'k-state-focused' );
 
     }
 
@@ -229,7 +209,25 @@ $(function() {
 
     }
     /* END callback from animations  */
+    $( document ).on('click', '.delete-link', function( e ) {
 
+        var parent = $( this ).parents( '.group' );
+
+        e.preventDefault();
+        if ( parent.children( '.term' ).length == 1 && parent.attr( 'id' ) != 'group0' ){
+
+            $( this ).parents( '.k-treeview' ).fadeOut( 400, function(){ $( this ).parents( '.k-treeview' ).remove() } );
+            return;
+
+        }
+
+        $( this ).closest( '.k-item' ).remove();
+
+        if ( parent.attr( 'id' ) == 'group0' &&  parent.children( '.term' ).length == 0  )
+
+            parent.children( '#help' ).fadeIn();
+
+    });
 });
 
 /* END jquery ready in search page */
