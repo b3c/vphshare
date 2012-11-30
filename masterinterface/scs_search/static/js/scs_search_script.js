@@ -18,7 +18,7 @@ function automaticSearchCall ( )
         data : {input : input
         },
         success: function( results ) {
-            alert(results[0]['concept_uri']);
+            alert(results);
         },
         error: function (error) {
             alert(error);
@@ -38,7 +38,7 @@ function guidedSearchS1Call ( )
         data : {input : input
         },
         success: function( results ) {
-            alert(results[0]);
+            alert(results);
         },
         error: function (error) {
             alert(error);
@@ -58,7 +58,7 @@ function guidedSearchS2Call ( )
         data : {concept_uri_list : ''
         },
         success: function( results ) {
-            alert(results[0]['concept_uri']);
+            alert(results);
         },
         error: function (error) {
             alert(error);

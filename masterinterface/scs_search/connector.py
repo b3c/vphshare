@@ -2,8 +2,9 @@ __author__ = ""
 
 import requests
 from config import *
-from lxml import etree,html
+from lxml import etree
 from pysimplesoap.simplexml import *
+
 
 def automaticSearchConnector( free_text ):
     """
@@ -35,11 +36,8 @@ def automaticSearchConnector( free_text ):
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
             dataset[dataset_label] = [ num_metch, rdf_data ]
-            #dataset.append( {dataset_label: [ num_metch, rdf_data ]} )
 
         results[concept_uri] = dataset
-        #results.append( { concept_uri: dataset } )
-
 
     return results
 
@@ -55,38 +53,32 @@ def guidedSearchS1Connector( free_text ):
         Returns:
             dataset (list): list of concept/terms
     """
-    results = []
-    list_pages = []
-    dict_concepts = {}
+    results = OrderedDict()
 
     response = requests.get( GUIDED_SEARCH_S1_API % free_text )
     doc = etree.fromstring( response.text.encode() )
 
-    # Adding max_matches and num_results_total to results
     root_elem = doc
 
-    results.append( root_elem[0].text or None )
-    results.append( root_elem[0].text or None )
+    results['max_matches'] =  root_elem[0].text or None
+    results['num_results_total'] =root_elem[0].text or None
 
     page_elem = root_elem.xpath('page')
 
     for page in page_elem:
-        # Adding page_num and num_pages to list_pages
-        list_pages.append( page[0].text or None )
-        list_pages.append( page[1].text or None )
+        concepts = OrderedDict()
+        page_num =  page[0].text or None
+        results['num_pages'] = page[1].text or None
 
         concept_list = page[2][0].xpath('concept')
 
         for concept_elem in concept_list:
-            dict_concepts['uri_concept'] = concept_elem.findtext('uri_concept')
-            dict_concepts['score'] = concept_elem.findtext('score')
-            dict_concepts['name_concept'] = concept_elem.findtext('name_concept')
-            dict_concepts['ontology_name'] = concept_elem.findtext('ontology_name')
+            uri_concept = concept_elem[0].text
+            name_concept = concept_elem[2].text
+            ontology_name = concept_elem[3].text
+            concepts[ uri_concept ] = [ name_concept, ontology_name ]
 
-            list_pages.append( dict_concepts )
-            dict_concepts = {}
-
-        results.append( list_pages )
+        results[ page_num ] = concepts
 
     return results
 
@@ -103,12 +95,8 @@ def guidedSearchS2Connector( concept_uri_list ):
         Returns:
             dataset (list): list of dataset grouped by concept
     """
-    results = []
-    dataset = []
-    dict_concept = {}
-    dict_dataset = {}
+    results = OrderedDict()
 
-    #response = urllib2.urlopen( AUTOMATIC_SEARCH_API % free_text )
     response = requests.get( GUIDED_SEARCH_S2_API % concept_uri_list )
 
     doc = etree.fromstring( response.text.encode() )
@@ -116,19 +104,15 @@ def guidedSearchS2Connector( concept_uri_list ):
     concept_list = doc
 
     for concept_elem in concept_list:
-
-        dict_concept['concept_uri'] = concept_elem.attrib['uri']
+        dataset = OrderedDict()
+        concept_uri = concept_elem.attrib['uri']
 
         for dataset_elem in concept_elem:
-            dict_dataset['dataset_label'] = dataset_elem.attrib['label']
-            dict_dataset['num_matches'] = dataset_elem[0].text
-            dict_dataset['rdf_data'] = dataset_elem[1].text
-            dataset.append( dict_dataset )
-            dict_dataset = {}
+            dataset_label = dataset_elem.attrib[ 'label' ]
+            num_metch = dataset_elem[0].text
+            rdf_data = dataset_elem[1].text
+            dataset[dataset_label] = [ num_metch, rdf_data ]
 
-        results.append( dict_concept )
-        results.append( dataset )
-        dataset = []
-        dict_concept = {}
+        results[concept_uri] = dataset
 
     return results
