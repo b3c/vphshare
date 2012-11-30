@@ -115,79 +115,34 @@
     <div id="results"   style="display:none;">
 
         <div class="row-fluid" >
-            <button id="backToQuery" type="button" class="btn btn-primary" style="opacity: 60px;">Query</button>
+            <button id="backToQuery" type="button" class="btn btn-primary" style="opacity: 60px;">Back to Search</button>
         </div>
 
-        <div id="resultsBlock" class="container-fluid" >
+        <div id="resultsBlock" class="row-fluid" >
 
             <ul class="media-list">
 
                 <!-- START concept_uri result -->
-                <li class="media result-item">
+                <li id="concept-base" class="concept-item media result-item" style="display:none">
                     <a class="pull-left" href="#">
-                        <img class="media-object" src="http://placehold.it/64x64">
+                        <img class="media-object" src="/static/img/concept_uri.png" style="width: 50px;height: 50px;">
                     </a>
+                    <div class=" media-body">
 
-                    <div class="media-body">
-
-                        <h4 class="media-heading">Term1</h4>
-                        <p>Description</p>
+                        <h4  class="concept-label media-heading"></h4>
+                        <p class="concept-description"></p>
 
                         <!-- START dataset list -->
-                        <div class="media">
+                        <div class="dataset-item media" style="display:none" >
                             <a class="pull-left" href="#">
-                                <img class="media-object" src="http://placehold.it/64x64">
+                                <img class="media-object" src="/static/img/dataresource.png" style="width: 50px;height: 50px;">
                             </a>
                             <div class="media-body">
-                                <h4 class="media-heading">Dataset1</h4>
-                                <p>Description</p>
+                                <div class="span10"><h4 class="dataset-label media-heading"></h4>
+                                <p class="dataset-description" ></p></div><div class="span1"><a class="link-to-data btn btn-primary" style="color:#fff">Visualize data</a></div>
                             </div>
                         </div>
 
-                        <div class="media">
-                            <a class="pull-left" href="#">
-                                <img class="media-object" src="http://placehold.it/64x64">
-                            </a>
-                            <div class="media-body">
-                                <h4 class="media-heading">Dataset2</h4>
-                                <p>Description</p>
-                            </div>
-                        </div>
-                        <!-- END dataset list -->
-
-                    </div>
-                </li>
-                <!-- END concept_uri result -->
-
-                <!-- START concept_uri result -->
-                <li class="media result-item">
-                    <a class="pull-left" href="#">
-                        <img class="media-object" src="http://placehold.it/64x64">
-                    </a>
-                    <div class="media-body">
-
-                        <h4 class="media-heading">Term2</h4>
-                        <p>Description</p>
-
-                        <!-- START dataset list -->
-                        <div class="media">
-                            <a class="pull-left" href="#">
-                                <img class="media-object" src="http://placehold.it/64x64">
-                            </a>
-                            <div class="media-body">
-                                <h4 class="media-heading">Dataset1</h4>
-                                <p>Description</p>
-                            </div>
-                        </div>
-                        <div class="media">
-                            <a class="pull-left" href="#">
-                                <img class="media-object" src="http://placehold.it/64x64">
-                            </a>
-                            <div class="media-body">
-                                <h4 class="media-heading">Dataset2</h4>
-                                <p>Description</p>
-                            </div>
-                        </div>
                         <!-- END dataset list -->
 
                     </div>
