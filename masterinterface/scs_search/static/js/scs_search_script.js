@@ -85,14 +85,15 @@ function guidedSearchS1CallBack( results )
 
 
             $("#termsList").append($term);
-
+            var i = 0;
             for ( var concept in results[elem] )
             {
                 var concept_name = results[elem][concept][0];
                 var concept_uri = concept;
                 var $addTerm = $term.clone();
 
-                $addTerm.attr('id',concept_uri);
+                $addTerm.attr('id','concept'+i);
+                i++;
 
                 $addTerm.append(concept_name);
 
@@ -289,9 +290,19 @@ $(function () {
 
     function newGroup( $item , $dropTarget  ) {
 
-        var $item_cloned = $item.clone().hide();
         var $group = $dropTarget.clone();
         var n_group = $groups.length;
+
+        if ($item.parents('.group').length > 0){
+
+            var $item_cloned = $item;
+
+        }else{
+
+            var $item_cloned = $item.clone().hide();
+            $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+
+        }
 
 
         $group.attr( 'id', "group"+n_group );
@@ -316,17 +327,51 @@ $(function () {
 
         } );
 
-        $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
         $item_cloned.appendTo($group).delay( 200 ).fadeIn( 200 );
+        $item_cloned.draggable( {
+
+            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+            revert: "invalid", // when not dropped, the item will revert back to its initial position
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
+
+        } );
 
     }
 
     function dropTerm( $item , $dropTarget  ) {
 
-        var $item_cloned = $item.clone().hide();
-        $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+        if ( $dropTarget.find( '#'+$item.attr( 'id' ) ).length > 0 )
+            return ;
+
+        if ($item.parents('.group').length > 0){
+
+            var $item_cloned = $item;
+
+        }else{
+
+            var $item_cloned = $item.clone().hide();
+            $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+
+        }
+
         $dropTarget.find( '#help' ).fadeOut( 200 );
+
+
         $item_cloned.appendTo( $dropTarget ).delay( 200 ).fadeIn( 200 );
+
+
+        $item_cloned.draggable( {
+
+            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+            revert: "invalid", // when not dropped, the item will revert back to its initial position
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
+
+        } );
+
 
     }
     /* END callback from animations  */
