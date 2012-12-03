@@ -6,6 +6,45 @@
  */
 
 
+/* START AJAX callback */
+function resultsCallback( results ){
+    var concept_uri;
+    var dataset;
+    var dataset_label;
+    var num_match;
+    var rdf_link;
+    var $concept_item_base = $( '#concept-base').clone();
+    $( '.media-list').html($concept_item_base);
+
+    for ( concept_uri in results ) {
+
+        var $concept_item = $concept_item_base.clone();
+        $concept_item.attr('id','concept_uri');
+        $concept_item.find('.concept-label').text(concept_uri);
+
+        dataset = results[concept_uri]
+        for ( dataset_label  in dataset ){
+
+            num_match = dataset[dataset_label][0];
+            rdf_link = dataset[dataset_label][1];
+            $concept_item.find('.dataset-item').show();
+            $concept_item.find('.dataset-label').text(dataset_label);
+            $concept_item.find('.dataset-description').text('Match : '+num_match);
+            $concept_item.find('.link-to-data').attr('href',rdf_link);
+
+        }
+
+        $concept_item.appendTo('.media-list');
+        $concept_item.show();
+    }
+    $( '#search' ).toggle( 'slide', {direction:'left'}, 400 );
+    $( '#results' ).delay(500).effect( 'slide', {direction:'right'}, 500 );
+
+}
+
+/* END AJAX callback */
+
+/* START AJAX call  */
 function automaticSearchCall ( )
 {
     var form = $( "#automaticSearchForm" );
@@ -18,7 +57,7 @@ function automaticSearchCall ( )
         data : {input : input
         },
         success: function( results ) {
-            alert(results);
+            resultsCallback(results);
         },
         error: function (error) {
             alert(error);
@@ -100,6 +139,7 @@ function guidedSearchS2Call ( )
         data : {concept_uri_list : concept_uri_list.join(",")
         },
         success: function( results ) {
+            alert(results);
         },
         error: function (error) {
             alert(error);
