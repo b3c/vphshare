@@ -33,7 +33,7 @@ body {
 }
 
 #wrapper{
-    width: 966px;
+    width: 1024px;
     margin: auto;
     background: rgba(255, 255, 255, 0.6);
     min-height: 410px;
@@ -436,8 +436,8 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 
 #page-content{
     float: left;
-    width: 906px;
-    margin-left: 30px;
+    width: 1024px;
+    /*margin-left: 30px;*/
 }
 
 /* PORTFOLIO --------------------------------------------------------*/

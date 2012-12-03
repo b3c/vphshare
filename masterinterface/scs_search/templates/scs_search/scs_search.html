@@ -66,18 +66,20 @@
             <!-- START Guided search block -->
             <div id="guideSearchContentBlock" class="row-fluid ">
 
-                <div id="termListBlock" class="span4 k-header" style="min-height: 200px">
+                <div id="termListBlock" class="span5 k-header" style="min-height: 200px">
 
                     <!-- START terms list -->
-                    <ul id="termsList" class="ui-state-default" >
-
+                    <ul id="termsListBase" class="ui-state-default" style="display: none" >
+                        <li id="term_base" class="term" style="display: none">
+                            <span class="k-sprite folder"></span>
+                        </li>
                     </ul>
 
                     <!-- START terms list -->
 
                 </div>
 
-                <div id="groupsContent" class="span7 k-header" style="min-height: 200px" >
+                <div id="groupsContent" class="span6 k-header" style="min-height: 200px" >
 
                     <form id="queryForm">
                     <!-- START groups list -->
@@ -95,9 +97,9 @@
 
                 </div>
 
-                <div class="span1" style="margin-left: 10px;">
+                <div class="span1" style="magin-left:19px">
 
-                    <button id="querySubmit" type="button" class="btn btn-primary" style="height: 200px;opacity: 60px;">Query</button>
+                    <button id="querySubmit" type="button" class="btn btn-primary" style="height: 200px;">Query</button>
 
                 </div>
             </div>

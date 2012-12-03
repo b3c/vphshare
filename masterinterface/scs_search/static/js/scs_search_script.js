@@ -75,19 +75,35 @@ function guidedSearchS1CallBack( results )
     {
         if (elem != 'num_pages' && elem != 'max_matches' && elem != 'num_results_total' )
         {
+
+
+            var $term = $("#termsListBase > .term").clone();
+            var $termList = $("#termsListBase").clone();
+            $("#termList").remove();
+            $("#termListBlock").append($termList);
+            $termList.attr('id','termList');
+
+
+            $("#termsList").append($term);
+
             for ( var concept in results[elem] )
             {
                 var concept_name = results[elem][concept][0];
-                var concept_uri = concept
-                var $term = $('<li class="term"></li>');
-                $("#termsList").append($term);
+                var concept_uri = concept;
+                var $addTerm = $term.clone();
 
-                $term.append('<span class="k-in"><span class="k-sprite folder"></span>' + concept_name + '</span>')
+                $addTerm.attr('id',concept_uri);
 
-                $term.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ')
+                $addTerm.append(concept_name);
 
-                $('#termsList').css('overflow-x','scroll');
-                $term.draggable( {
+                $addTerm.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ');
+
+                $termList.append($addTerm);
+
+                $addTerm.show();
+
+
+                $addTerm.draggable( {
 
                     cancel: "a.ui-icon", // clicking an icon won't initiate dragging
                     revert: "invalid", // when not dropped, the item will revert back to its initial position
@@ -96,7 +112,15 @@ function guidedSearchS1CallBack( results )
                     cursor: "move"
 
                 } );
+
+
             }
+
+            $termList.kendoTreeView( {
+
+                select:  noSelect
+
+            } );
         }
     }
 
@@ -139,7 +163,7 @@ function guidedSearchS2Call ( )
         data : {concept_uri_list : concept_uri_list.join(",")
         },
         success: function( results ) {
-            alert(results);
+            resultsCallback(results);
         },
         error: function (error) {
             alert(error);
@@ -165,11 +189,11 @@ $(function () {
         delay: { show: 100, hide: 50 }
     } );*/
 
-    $( '#termsList' ).kendoTreeView( {
+    /*$( '#termsList' ).kendoTreeView( {
 
         select:  noSelect
 
-    } );
+    } );*/
 
     $( '.group' ).kendoTreeView( {
 
@@ -181,7 +205,7 @@ $(function () {
     /* START event wrap */
 
     /** START drang & drop events */
-    $term.draggable( {
+    /*$term.draggable( {
 
         cancel: "a.ui-icon", // clicking an icon won't initiate dragging
         revert: "invalid", // when not dropped, the item will revert back to its initial position
@@ -189,7 +213,7 @@ $(function () {
         helper: "clone",
         cursor: "move"
 
-    } );
+    } );*/
 
     $groups[0].droppable( {
 
@@ -242,12 +266,12 @@ $(function () {
 
     } );
 
-    $('#querySubmit').click( function(){
+    /*$('#querySubmit').click( function(){
 
         $( '#search' ).toggle( 'slide', {direction:'left'}, 400 );
         $( '#results' ).delay(500).effect( 'slide', {direction:'right'}, 500 );
 
-    } );
+    } );*/
 
     $( '#backToQuery' ).click( function(){
 
@@ -261,13 +285,7 @@ $(function () {
 
 
     /* START callback from animations  */
-    function noSelect(e){
 
-        var item = e.node;
-        item.children('.k-state-selected' ).removeClass( 'k-state-selected' );
-        item.children( '.k-state-focused' ).removeClass( 'k-state-focused' );
-
-    }
 
     function newGroup( $item , $dropTarget  ) {
 
@@ -319,7 +337,8 @@ $(function () {
         e.preventDefault();
         if ( parent.children( '.term' ).length == 1 && parent.attr( 'id' ) != 'group0' ){
 
-            $( this ).parents( '.k-treeview' ).fadeOut( 400, function(){ $( this ).parents( '.k-treeview' ).remove() } );
+            $( this ).parents( '.k-treeview' ).fadeOut( 400, function(){ $( this ).parents( '.k-treeview' ).remove(); } );
+            $( this ).parents( '.k-treeview' ).remove();
             return;
 
         }
@@ -333,4 +352,11 @@ $(function () {
     });
 });
 
+function noSelect(e){
+
+    var item = e.node;
+    item.children('.k-state-selected' ).removeClass( 'k-state-selected' );
+    item.children( '.k-state-focused' ).removeClass( 'k-state-focused' );
+
+}
 /* END jquery ready in search page */
