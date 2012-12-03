@@ -296,7 +296,7 @@ $(function () {
 
         $group.attr( 'id', "group"+n_group );
         $group.find( '#help' ).hide();
-        $group.insertAfter( $groups[n_group-1].parent() );
+        $group.insertBefore( $dropTarget.parents( '.k-treeview'));
         $group.hide();
         $groups[n_group] = $group;
         $group.kendoTreeView( {
