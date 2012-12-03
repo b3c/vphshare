@@ -42,6 +42,7 @@
 
 {% block content %}
 
+
     <div id="search" class="container-fluid">
         <div id="searchBlock"  class="row-fluid">
 
@@ -65,40 +66,36 @@
             <!-- START Guided search block -->
             <div id="guideSearchContentBlock" class="row-fluid ">
 
-                <div id="termListBlock" class="span2 k-header " style="min-height: 200px">
+                <div id="termListBlock" class="span4 k-header" style="min-height: 200px">
 
                     <!-- START terms list -->
                     <ul id="termsList" class="ui-state-default" >
-                        <li class="term">
-                            <span class="k-sprite folder"></span>Term 1
-                        </li>
-                        <li class="term">
-                            <span class="k-sprite folder"></span>Term 2
-                        </li>
-                        <li class="term">
-                            <span class="k-sprite folder"></span>Term 3
-                        </li>
+
                     </ul>
+
                     <!-- START terms list -->
 
                 </div>
 
-                <div id="groupsContent" class="span9 k-header" style="min-height: 200px" >
+                <div id="groupsContent" class="span7 k-header" style="min-height: 200px" >
 
+                    <form id="queryForm">
                     <!-- START groups list -->
 
-                    <ul id="group0" class="group ui-widget-content ui-state-default" style="min-height: 50px;">
-                        <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN OR</div></div>
-                    </ul>
+                        <ul id="group0" class="group ui-widget-content ui-state-default" style="min-height: 50px;">
+                            <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN OR</div></div>
+                        </ul>
 
-                    <ul id="new-group" class="group ui-widget-content ui-state-default" style="min-height: 50px;">
-                        <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN AND</div></div>
-                    </ul>
+                        <ul id="new-group" class="group ui-widget-content ui-state-default" style="min-height: 50px;">
+                            <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN AND</div></div>
+                        </ul>
+
+                    </form>
                     <!-- START groups list -->
 
                 </div>
 
-                <div class="span1">
+                <div class="span1" style="margin-left: 10px;">
 
                     <button id="querySubmit" type="button" class="btn btn-primary" style="height: 200px;opacity: 60px;">Query</button>
 

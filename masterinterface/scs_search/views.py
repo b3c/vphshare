@@ -31,7 +31,6 @@ def guidedSearchView( request ):
 class AutomaticSearchService( BaseHandler ):
     """
     """
-
     allowed_methods = ('POST', 'GET')
 
     def create(self, request):
@@ -62,7 +61,6 @@ class AutomaticSearchService( BaseHandler ):
 class GuidedSearchS1Service( BaseHandler ):
     """
     """
-
     allowed_methods = ('POST', 'GET')
 
     def create(self, request):
@@ -86,7 +84,6 @@ class GuidedSearchS1Service( BaseHandler ):
 class GuidedSearchS2Service( BaseHandler ):
     """
     """
-
     allowed_methods = ('POST', 'GET')
 
     def create(self, request):
@@ -95,8 +92,7 @@ class GuidedSearchS2Service( BaseHandler ):
         """
         if request.method == "POST":
 
-            #concept_uri_list = request.POST['concept_uri_list']
-            concept_uri_list = "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl%23Patient"
+            concept_uri_list = request.POST['concept_uri_list']
             connector = guidedSearchS2Connector( concept_uri_list )
 
             return connector

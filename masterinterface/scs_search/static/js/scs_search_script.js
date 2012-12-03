@@ -26,6 +26,43 @@ function automaticSearchCall ( )
     });
 }
 
+function guidedSearchS1CallBack( results )
+{
+    var max_matches = results['max_matches'];
+    var num_pages = results['num_pages'];
+    var num_results_total = results['num_results_total'];
+
+    for ( var elem in results )
+    {
+        if (elem != 'num_pages' && elem != 'max_matches' && elem != 'num_results_total' )
+        {
+            for ( var concept in results[elem] )
+            {
+                var concept_name = results[elem][concept][0];
+                var concept_uri = concept
+                var $term = $('<li class="term"></li>');
+                $("#termsList").append($term);
+
+                $term.append('<span class="k-in"><span class="k-sprite folder"></span>' + concept_name + '</span>')
+
+                $term.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ')
+
+                $('#termsList').css('overflow-x','scroll');
+                $term.draggable( {
+
+                    cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+                    revert: "invalid", // when not dropped, the item will revert back to its initial position
+                    containment: "document",
+                    helper: "clone",
+                    cursor: "move"
+
+                } );
+            }
+        }
+    }
+
+}
+
 function guidedSearchS1Call ( )
 {
     var form = $( "#automaticSearchForm" );
@@ -37,10 +74,10 @@ function guidedSearchS1Call ( )
         url : url,
         data : {input : input
         },
-        success: function( results ) {
-            alert(results);
+        success:function ( results ) {
+            guidedSearchS1CallBack( results )
         },
-        error: function (error) {
+        error: function ( error ) {
             alert(error);
         }
     });
@@ -48,17 +85,21 @@ function guidedSearchS1Call ( )
 
 function guidedSearchS2Call ( )
 {
-    var form = $( "#automaticSearchForm" );
-    var input = form.find( 'input[name="freeText"]' ).val();
     var url = '/guided_search_s2/'
+    var concept_uri_list = [];
+
+    $("form#queryForm :input").each(function(){
+        var input = $(this).val();
+        concept_uri_list.push(input);
+    });
+
 
     $.ajax({
         type : 'POST',
         url : url,
-        data : {concept_uri_list : ''
+        data : {concept_uri_list : concept_uri_list.join(",")
         },
         success: function( results ) {
-            alert(results);
         },
         error: function (error) {
             alert(error);
@@ -70,7 +111,7 @@ function guidedSearchS2Call ( )
 
 
 /* START jquery ready in search page */
-$(function() {
+$(function () {
 
     var $term = $( '.term'), $groups = [], $new_group = $( '#new-group' );
 
@@ -137,7 +178,7 @@ $(function() {
 
     /** START click events */
 
-    $( '#querySubmit' ).bind( "click", function(){ guidedSearchS2Call(); } );
+    $( '#querySubmit' ).bind( "click", function(){ guidedSearchS2Call( ); } );
 
     $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
 
