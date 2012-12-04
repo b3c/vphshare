@@ -1,10 +1,11 @@
 __author__ = ""
 
 import requests
+import json
 from config import *
 from lxml import etree
-from pysimplesoap.simplexml import *
-
+from ordereddict import OrderedDict
+#from pysimplesoap.simplexml import *
 
 def automaticSearchConnector( free_text ):
     """
@@ -39,7 +40,9 @@ def automaticSearchConnector( free_text ):
 
         results[concept_uri] = dataset
 
-    return results
+    json_results = json.dumps( results, sort_keys=False )
+
+    return json_results
 
 
 def guidedSearchS1Connector( free_text ):
@@ -80,7 +83,9 @@ def guidedSearchS1Connector( free_text ):
 
         results[ page_num ] = concepts
 
-    return results
+    json_results = json.dumps( results, sort_keys=False )
+
+    return json_results
 
 
 
@@ -115,4 +120,6 @@ def guidedSearchS2Connector( concept_uri_list ):
 
         results[concept_uri] = dataset
 
-    return results
+    json_results = json.dumps( results, sort_keys=False )
+
+    return json_results
