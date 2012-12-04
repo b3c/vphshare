@@ -37,7 +37,25 @@ function resultsCallback( results ){
         $concept_item.appendTo('.media-list');
         $concept_item.show();
     }
-    $( '#search' ).toggle( 'slide', {direction:'left'}, 400 );
+
+
+
+}
+
+function automaticSearchCallback( results ) {
+
+    resultsCallback( results );
+    $( '#results' ).effect( 'slide', {direction:'right'}, 500 );
+
+}
+
+function guidedSearchS2Callback( results ) {
+
+    resultsCallback( results );
+    $( '#automaticSearchForm').hide();
+    $( '#querySubmit').hide();
+    $( '#backToQuery').fadeIn();
+    $( '#searchContent' ).toggle( 'slide', {direction:'left'}, 400 );
     $( '#results' ).delay(500).effect( 'slide', {direction:'right'}, 500 );
 
 }
@@ -57,7 +75,7 @@ function automaticSearchCall ( )
         data : {input : input
         },
         success: function( results ) {
-            resultsCallback(results);
+            automaticSearchCallback(results);
         },
         error: function (error) {
             alert(error);
@@ -70,32 +88,33 @@ function guidedSearchS1CallBack( results )
     var max_matches = results['max_matches'];
     var num_pages = results['num_pages'];
     var num_results_total = results['num_results_total'];
+    var elem;
+    var concept;
+    var $terms = [];
+    var $term = $("#termsListBase > .term").clone();
+    var $termList = $("#termsListBase").clone();
 
-    for ( var elem in results )
+    $("#termList").remove();
+    $("#termListBlock").append($termList);
+    $termList.attr('id','termList');
+
+
+    $("#termsList").append($term);
+
+    for (  elem in results )
     {
         if (elem != 'num_pages' && elem != 'max_matches' && elem != 'num_results_total' )
         {
 
-
-            var $term = $("#termsListBase > .term").clone();
-            var $termList = $("#termsListBase").clone();
-            $("#termList").remove();
-            $("#termListBlock").append($termList);
-            $termList.attr('id','termList');
-
-
-            $("#termsList").append($term);
-            var i = 0;
-            for ( var concept in results[elem] )
+            for ( concept in results[elem] )
             {
-                var concept_name = results[elem][concept][0];
+                var term_name = results[elem][concept][0];
+                var concept_name = results[elem][concept][1];
                 var concept_uri = concept;
                 var $addTerm = $term.clone();
+                var id = concept_name + term_name;
 
-                $addTerm.attr('id','concept'+i);
-                i++;
-
-                $addTerm.append(concept_name);
+                $addTerm.append(term_name);
 
                 $addTerm.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ');
 
@@ -164,7 +183,7 @@ function guidedSearchS2Call ( )
         data : {concept_uri_list : concept_uri_list.join(",")
         },
         success: function( results ) {
-            resultsCallback(results);
+            guidedSearchS2Callback(results);
         },
         error: function (error) {
             alert(error);
@@ -190,11 +209,7 @@ $(function () {
         delay: { show: 100, hide: 50 }
     } );*/
 
-    /*$( '#termsList' ).kendoTreeView( {
-
-        select:  noSelect
-
-    } );*/
+    $( '#guidedSearchCheckBox').removeAttr('checked');
 
     $( '.group' ).kendoTreeView( {
 
@@ -206,15 +221,7 @@ $(function () {
     /* START event wrap */
 
     /** START drang & drop events */
-    /*$term.draggable( {
 
-        cancel: "a.ui-icon", // clicking an icon won't initiate dragging
-        revert: "invalid", // when not dropped, the item will revert back to its initial position
-        containment: "document",
-        helper: "clone",
-        cursor: "move"
-
-    } );*/
 
     $groups[0].droppable( {
 
@@ -253,31 +260,30 @@ $(function () {
 
         if ( $( '#guidedSearchCheckBox' ).attr( 'checked' ) ) {
 
+            $( '#results').hide();
+            $( '#querySubmit').fadeIn();
             $( '#searchButton' ).bind( "click", function(){ guidedSearchS1Call(); } );
             $( '#searchContent' ).fadeIn();
-            $( '#freeText' ).attr( 'placeholder', 'Search Terms' )
+            $( '#freeText' ).attr( 'placeholder', 'Search Terms' );
 
         }else{
 
             $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
             $( '#searchContent' ).fadeOut();
-            $( '#freeText' ).attr( 'placeholder', 'Search Dataset' )
+            $( '#freeText' ).attr( 'placeholder', 'Search Dataset' );
+            $( '#querySubmit').fadeOut();
 
         }
 
     } );
 
-    /*$('#querySubmit').click( function(){
-
-        $( '#search' ).toggle( 'slide', {direction:'left'}, 400 );
-        $( '#results' ).delay(500).effect( 'slide', {direction:'right'}, 500 );
-
-    } );*/
-
     $( '#backToQuery' ).click( function(){
 
+        $( '#backToQuery' ).hide();
+        $( '#automaticSearchForm' ).show();
+        $( '#querySubmit').show();
         $('#results').toggle( 'slide', {direction:'rigth'}, 400);
-        $('#search').delay(500).effect( 'slide', {direction:'left'}, 500 );
+        $('#searchContent').delay(500).effect( 'slide', {direction:'left'}, 500 );
 
     } );
 
@@ -295,12 +301,14 @@ $(function () {
 
         if ($item.parents('.group').length > 0){
 
+            groupCheckContent($item.parents( '.group' ), 2);
             var $item_cloned = $item;
 
         }else{
 
             var $item_cloned = $item.clone().hide();
             $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+            $item_cloned.attr('id',$item.attr('data-uid'));
 
         }
 
@@ -309,13 +317,12 @@ $(function () {
         $group.find( '#help' ).hide();
         $group.insertBefore( $dropTarget.parents( '.k-treeview'));
         $group.hide();
-        $groups[n_group] = $group;
         $group.kendoTreeView( {
 
             select: noSelect
 
         } ).fadeIn();
-        $groups[n_group].droppable( {
+        $group.droppable( {
 
             accept: ".term",
             activeClass: "drop-in",
@@ -342,17 +349,20 @@ $(function () {
 
     function dropTerm( $item , $dropTarget  ) {
 
-        if ( $dropTarget.find( '#'+$item.attr( 'id' ) ).length > 0 )
+        if ( $dropTarget.find( '#'+$item.attr( 'data-uid' ) ).length > 0 )
             return ;
 
         if ($item.parents('.group').length > 0){
 
+            groupCheckContent($item.parents( '.group' ), 2);
             var $item_cloned = $item;
+
 
         }else{
 
             var $item_cloned = $item.clone().hide();
             $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+            $item_cloned.attr('id',$item.attr('data-uid'));
 
         }
 
@@ -374,25 +384,37 @@ $(function () {
 
 
     }
+
+    function groupCheckContent( parent , minLength ){
+
+        if(typeof(minLength)==='undefined') minLength = 1;
+
+        if ( parent.children( '.term' ).length == minLength && parent.attr( 'id' ) != 'group0' ){
+
+            parent.parents( '.k-treeview' ).fadeOut( 400, function(){ $( this ).parents( '.k-treeview' ).remove(); } );
+            parent.parents( '.k-treeview' ).remove();
+            return;
+
+        }
+
+
+        if ( parent.attr( 'id' ) == 'group0' &&  parent.children( '.term' ).length == minLength  )
+
+            parent.children( '#help' ).fadeIn();
+
+    }
+
     /* END callback from animations  */
     $( document ).on('click', '.delete-link', function( e ) {
 
         var parent = $( this ).parents( '.group' );
 
         e.preventDefault();
-        if ( parent.children( '.term' ).length == 1 && parent.attr( 'id' ) != 'group0' ){
 
-            $( this ).parents( '.k-treeview' ).fadeOut( 400, function(){ $( this ).parents( '.k-treeview' ).remove(); } );
-            $( this ).parents( '.k-treeview' ).remove();
-            return;
-
-        }
-
+        groupCheckContent(parent);
         $( this ).closest( '.k-item' ).remove();
 
-        if ( parent.attr( 'id' ) == 'group0' &&  parent.children( '.term' ).length == 0  )
 
-            parent.children( '#help' ).fadeIn();
 
     });
 });

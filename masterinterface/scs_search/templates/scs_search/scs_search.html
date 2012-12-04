@@ -48,15 +48,19 @@
 
             <!-- START search tools bar -->
             <div class="navbar">
-                <div class="navbar-inner">
+                <div class="navbar-inner" style="min-height: 65px;">
                     <form id="automaticSearchForm" class="navbar-form pull-left">
                         <input type="text" class="input-medium search-query" name="freeText" id="freeText" placeholder="Search dataset">
                         <button id="searchButton" type="button" class="btn" >Search</button>
-                        <label class="checkbox"> <input id="guidedSearchCheckBox" type="checkbox"> Guided Search</label>
+                        <div><input id="guidedSearchCheckBox" type="checkbox"  > Guided Search</div>
                     </form>
+                    <button id="backToQuery" type="button" class="btn" style="display: none;">Back to Search</button>
+                    <button id="querySubmit" type="button" class="btn pull-right" style="display: none;">Query</button>
                 </div>
+
             </div>
             <!-- END search tools bar -->
+
 
         </div>
 
@@ -66,7 +70,7 @@
             <!-- START Guided search block -->
             <div id="guideSearchContentBlock" class="row-fluid ">
 
-                <div id="termListBlock" class="span5 k-header" style="min-height: 200px">
+                <div id="termListBlock" class="span6 k-header" style="min-height: 200px">
 
                     <!-- START terms list -->
                     <ul id="termsListBase" class="ui-state-default" style="display: none" >
@@ -97,62 +101,54 @@
 
                 </div>
 
-                <div class="span1" style="margin-left:19px">
-
-                    <button id="querySubmit" type="button" class="btn btn-primary" style="height: 200px;">Query</button>
-
-                </div>
             </div>
             <!-- END guidedSearch block -->
 
         </div>
 
+        <!-- START results block -->
+        <div id="results"  class="row-fluid" style="display:none;">
 
-    </div>
+            <div id="resultsBlock" class="span12" >
 
-    <!-- START results block -->
-    <div id="results"   style="display:none;">
+                <ul class="media-list">
 
-        <div class="row-fluid" >
-            <button id="backToQuery" type="button" class="btn btn-primary" style="opacity: 60px;">Back to Search</button>
-        </div>
+                    <!-- START concept_uri result -->
+                    <li id="concept-base" class="concept-item media result-item" style="display:none">
+                        <a class="pull-left" href="#">
+                            <img class="media-object" src="/static/img/concept_uri.png" style="width: 50px;height: 50px;">
+                        </a>
+                        <div class=" media-body">
 
-        <div id="resultsBlock" class="row-fluid" >
+                            <h4  class="concept-label media-heading"></h4>
+                            <p class="concept-description"></p>
 
-            <ul class="media-list">
-
-                <!-- START concept_uri result -->
-                <li id="concept-base" class="concept-item media result-item" style="display:none">
-                    <a class="pull-left" href="#">
-                        <img class="media-object" src="/static/img/concept_uri.png" style="width: 50px;height: 50px;">
-                    </a>
-                    <div class=" media-body">
-
-                        <h4  class="concept-label media-heading"></h4>
-                        <p class="concept-description"></p>
-
-                        <!-- START dataset list -->
-                        <div class="dataset-item media" style="display:none" >
-                            <a class="pull-left" href="#">
-                                <img class="media-object" src="/static/img/dataresource.png" style="width: 50px;height: 50px;">
-                            </a>
-                            <div class="media-body">
-                                <div class="span10"><h4 class="dataset-label media-heading"></h4>
-                                <p class="dataset-description" ></p></div><div class="span1"><a class="link-to-data btn btn-primary" style="color:#fff" target="_blank">Visualize data</a></div>
+                            <!-- START dataset list -->
+                            <div class="dataset-item media" style="display:none" >
+                                <a class="pull-left" href="#">
+                                    <img class="media-object" src="/static/img/dataresource.png" style="width: 50px;height: 50px;">
+                                </a>
+                                <div class="media-body">
+                                    <div class="span10"><h4 class="dataset-label media-heading"></h4>
+                                        <p class="dataset-description" ></p></div><div class="span1"><a class="link-to-data btn btn-primary" style="color:#fff" target="_blank">Visualize data</a></div>
+                                </div>
                             </div>
+
+                            <!-- END dataset list -->
+
                         </div>
+                    </li>
+                    <!-- END concept_uri result -->
 
-                        <!-- END dataset list -->
+                </ul>
+            </div>
 
-                    </div>
-                </li>
-                <!-- END concept_uri result -->
-
-            </ul>
         </div>
         <!-- END results block -->
 
+
     </div>
+
 
 
 {% endblock %}
