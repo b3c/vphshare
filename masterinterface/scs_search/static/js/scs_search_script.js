@@ -117,14 +117,28 @@ function guidedSearchS1CallBack( results )
                 var $addTerm = $term.clone();
                 var id = concept_name + term_name;
 
-                $addTerm.append(term_name);
+                if (term_name.length > 50){
+
+                    $addTerm.append(term_name.substr(0,50)+"...");
+
+                }else{
+
+                    $addTerm.append(term_name);
+
+                }
 
                 $addTerm.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ');
 
                 $termList.append($addTerm);
 
                 $addTerm.show();
-
+                $addTerm.popover({
+                    title : concept_name,
+                    content: term_name,
+                    trigger : 'hover',
+                    placement : 'right',
+                    delay : { show: 500, hide: 100 }
+                });
 
                 $addTerm.draggable( {
 
@@ -279,6 +293,18 @@ $(function () {
             $( '#searchButton' ).bind( "click", function(){ guidedSearchS1Call(); } );
             $( '#searchContent' ).fadeIn();
             $( '#freeText' ).attr( 'placeholder', 'Search Terms' );
+
+            /*** START Reset Term List ***/
+            var $term = $("#termsListBase > .term").clone();
+            var $termList = $("#termsListBase").clone();
+            $("#termList").remove();
+            $("#termListBlock").append($termList);
+            $termList.attr('id','termList');
+            $("#termsList").append($term);
+            /*** END Reset Term List ***/
+
+
+
 
         }else{
 

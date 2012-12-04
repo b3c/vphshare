@@ -81,3 +81,8 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
     margin-top: 130px;
 
 }
+
+.popover-content {
+
+    white-space: normal !important;
+}
