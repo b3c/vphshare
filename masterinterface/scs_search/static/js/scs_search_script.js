@@ -68,6 +68,7 @@ function automaticSearchCall ( )
     var form = $( "#automaticSearchForm" );
     var input = form.find( 'input[name="freeText"]' ).val();
     var url = '/automatic_search/'
+    $( '#wait' ).fadeIn();
 
     $.ajax({
         type : 'POST',
@@ -75,10 +76,13 @@ function automaticSearchCall ( )
         data : {input : input
         },
         success: function( results ) {
+            $( '#wait').fadeOut();
             automaticSearchCallback(results);
         },
         error: function (error) {
-            alert(error);
+
+            $( '#wait' ).fadeOut();
+
         }
     });
 }
@@ -90,7 +94,6 @@ function guidedSearchS1CallBack( results )
     var num_results_total = results['num_results_total'];
     var elem;
     var concept;
-    var $terms = [];
     var $term = $("#termsListBase > .term").clone();
     var $termList = $("#termsListBase").clone();
 
@@ -151,6 +154,7 @@ function guidedSearchS1Call ( )
     var form = $( "#automaticSearchForm" );
     var input = form.find( 'input[name="freeText"]' ).val();
     var url = '/guided_search_s1/'
+    $( '#wait' ).fadeIn();
 
     $.ajax({
         type : 'POST',
@@ -158,10 +162,15 @@ function guidedSearchS1Call ( )
         data : {input : input
         },
         success:function ( results ) {
+
+            $( '#wait' ).fadeOut();
             guidedSearchS1CallBack( results )
+
         },
         error: function ( error ) {
-            alert(error);
+
+            $( '#wait' ).fadeOut();
+
         }
     });
 }
@@ -170,6 +179,7 @@ function guidedSearchS2Call ( )
 {
     var url = '/guided_search_s2/'
     var concept_uri_list = [];
+    $( '#wait').fadeIn();
 
     $("form#queryForm :input").each(function(){
         var input = $(this).val();
@@ -183,15 +193,19 @@ function guidedSearchS2Call ( )
         data : {concept_uri_list : concept_uri_list.join(",")
         },
         success: function( results ) {
+
+            $( '#wait').fadeOut();
             guidedSearchS2Callback(results);
+
         },
         error: function (error) {
-            alert(error);
+
+            $( '#wait').fadeOut();
+
         }
     });
 }
 /* END AJAX call  */
-
 
 
 /* START jquery ready in search page */
@@ -312,7 +326,7 @@ $(function () {
 
         }
 
-
+        $groups[n_group] = $group
         $group.attr( 'id', "group"+n_group );
         $group.find( '#help' ).hide();
         $group.insertBefore( $dropTarget.parents( '.k-treeview'));
