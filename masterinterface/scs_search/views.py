@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 #from piston.handler import BaseHandler
+from urllib import quote
 from connector import automaticSearchConnector
 from connector import guidedSearchS1Connector
 from connector import guidedSearchS2Connector
@@ -36,7 +37,7 @@ def automaticSearchService( request ):
     if request.method == "POST":
 
         free_text = request.POST['input']
-        connector = automaticSearchConnector( free_text )
+        connector = automaticSearchConnector( quote( free_text ) )
 
         response = HttpResponse(content=connector, content_type="application/json")
         return response
@@ -54,7 +55,7 @@ def guidedSearchS1Service( request ):
     if request.method == "POST":
 
         free_text = request.POST['input']
-        connector = guidedSearchS1Connector( free_text )
+        connector = guidedSearchS1Connector( quote( free_text ) )
 
         response = HttpResponse(content=connector, content_type="application/json")
 
@@ -73,8 +74,8 @@ def guidedSearchS2Service( request ):
     if request.method == "POST":
 
         concept_uri_list = request.POST['concept_uri_list']
-        connector = guidedSearchS2Connector( concept_uri_list )
-
+        connector = guidedSearchS2Connector( quote( concept_uri_list ) )
+        a = quote( concept_uri_list )
         response = HttpResponse(content=connector, content_type="application/json")
         response._is_string = False
 
