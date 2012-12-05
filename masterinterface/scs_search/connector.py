@@ -5,7 +5,6 @@ import json
 from config import *
 from lxml import etree
 from ordereddict import OrderedDict
-#from pysimplesoap.simplexml import *
 
 def automaticSearchConnector( free_text ):
     """
@@ -21,7 +20,6 @@ def automaticSearchConnector( free_text ):
     """
     results = OrderedDict()
 
-    #response = urllib2.urlopen( AUTOMATIC_SEARCH_API % free_text )
     response = requests.get( AUTOMATIC_SEARCH_API % free_text )
 
     doc = etree.fromstring( response.text.encode() )
