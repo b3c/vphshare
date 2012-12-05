@@ -86,3 +86,10 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 
     white-space: normal !important;
 }
+
+#exclude {
+    position: relative;
+    top:0;
+    float: right;
+    margin: 5px;
+}
