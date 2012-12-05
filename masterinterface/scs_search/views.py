@@ -75,7 +75,7 @@ def guidedSearchS2Service( request ):
 
         concept_uri_list = request.POST['concept_uri_list']
         connector = guidedSearchS2Connector( quote( concept_uri_list ) )
-        a = quote( concept_uri_list )
+
         response = HttpResponse(content=connector, content_type="application/json")
         response._is_string = False
 
