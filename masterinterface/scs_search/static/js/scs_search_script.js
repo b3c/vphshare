@@ -92,10 +92,17 @@ function guidedSearchS1CallBack( results )
     var max_matches = results['max_matches'];
     var num_pages = results['num_pages'];
     var num_results_total = results['num_results_total'];
-    var elem;
-    var concept;
+    var pagenum = parseInt(results[ 'page_num' ]);
+
+    var item;
     var $term = $("#termsListBase > .term").clone();
     var $termList = $("#termsListBase").clone();
+
+    $("#termListBlock").children( '#termsPagination').remove();
+
+    var termsPagination = $("#termListBlock").children( '#termsPaginationBase' ).clone().attr( 'id', 'termsPagination' );
+
+
 
     $("#termList").remove();
     $("#termListBlock").append($termList);
@@ -104,86 +111,124 @@ function guidedSearchS1CallBack( results )
 
     $("#termsList").append($term);
 
-    for (  elem in results )
+    var termsResults = results[pagenum];
+
+    for ( item in termsResults )
     {
-        if (elem != 'num_pages' && elem != 'max_matches' && elem != 'num_results_total' )
-        {
 
-            for ( concept in results[elem] )
-            {
-                var term_name = results[elem][concept][0];
-                var concept_name = results[elem][concept][1];
-                var concept_uri = concept;
-                var $addTerm = $term.clone();
-                var id = concept_name + term_name;
+        var term_name = termsResults[item][0];
+        var concept_name = termsResults[item][1];
+        var concept_uri = item;
+        var $addTerm = $term.clone();
+        var id = concept_name + term_name;
 
-                if (term_name.length > 50){
+        if (term_name.length > 50){
 
-                    $addTerm.append(term_name.substr(0,50)+"...");
+            $addTerm.append(term_name.substr(0,50)+"...");
 
-                }else{
+        }else{
 
-                    $addTerm.append(term_name);
+            $addTerm.append(term_name);
 
-                }
+        }
 
-                $addTerm.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ');
+        $addTerm.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ');
 
-                $termList.append($addTerm);
+        $termList.append($addTerm);
 
-                $addTerm.show();
-                $addTerm.popover({
-                    title : concept_name,
-                    content: term_name,
-                    trigger : 'hover',
-                    placement : 'right',
-                    delay : { show: 500, hide: 100 }
-                });
+        $addTerm.show();
+        $addTerm.popover({
+            title : concept_name,
+            content: term_name,
+            trigger : 'hover',
+            placement : 'right',
+            delay : { show: 500, hide: 100 }
+        });
 
-                $addTerm.draggable( {
+        $addTerm.draggable( {
 
-                    cancel: "a.ui-icon", // clicking an icon won't initiate dragging
-                    revert: "invalid", // when not dropped, the item will revert back to its initial position
-                    containment: "document",
-                    helper: "clone",
-                    cursor: "move"
+            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+            revert: "invalid", // when not dropped, the item will revert back to its initial position
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
 
-                } );
+        } );
 
+
+    }
+
+    if (num_pages > 1){
+
+        for ( var i=1;i<=num_pages; i++){
+
+            var page = termsPagination.find('#prev').clone();
+            page.attr( 'id', 'pg'+i).attr( 'page' , i).children('a').text(i);
+
+            if ( i == pagenum )
+                page.attr( 'class', 'active' );
+
+            if (i == 1){
+
+                page.insertAfter(termsPagination.find('#prev'));
+
+            }else{
+
+                page.insertAfter(termsPagination.find('#pg'+(i-1)));
 
             }
 
-            $termList.kendoTreeView( {
-
-                select:  noSelect
-
-            } );
         }
+
+        if (pagenum == 1)
+            termsPagination.find( '#prev' ).addClass( 'disabled' ).removeClass( 'page' );
+
+        if (pagenum == num_pages)
+            termsPagination.find('#next').addClass('disabled').removeClass( 'page' );
+
+        termsPagination.show();
+        termsPagination.appendTo( "#termListBlock" );
+
     }
 
+    $termList.kendoTreeView( {
+
+        select:  noSelect
+
+    } );
+
+    search = true;
 }
 
 function guidedSearchS1Call ( )
 {
-    var form = $( "#automaticSearchForm" );
-    var input = form.find( 'input[name="freeText"]' ).val();
-    var url = '/guided_search_s1/'
-    $( '#wait' ).fadeIn();
+    var form = $( "#automaticSearchForm"),
+    input = form.find( 'input[name="freeText"]' ).val(),
+    url = '/guided_search_s1/',
+    nummaxhits = $( '#nummaxhits').val() ,
+    pagenum = $( '#pagenum').val();
 
+    if (search == false){
+
+        $( '#pagenum').val(1);
+        pagenum = 1;
+
+    }
+
+    $( '#waitTerms' ).fadeIn();
     $.ajax({
         type : 'POST',
         url : url,
-        data : {input : input
-        },
+        data : {input : input, nummaxhits: nummaxhits , pagenum: pagenum},
         success:function ( results ) {
 
-            $( '#wait' ).fadeOut();
+            $( '#waitTerms' ).fadeOut();
             guidedSearchS1CallBack( results )
 
         },
         error: function ( error ) {
 
-            $( '#wait' ).fadeOut();
+            $( '#waitTerms' ).fadeOut();
 
         }
     });
@@ -220,22 +265,53 @@ function guidedSearchS2Call ( )
     });
 }
 /* END AJAX call  */
-
+var search = false;
 
 /* START jquery ready in search page */
 $(function () {
 
     var $term = $( '.term'), $groups = [], $new_group = $( '#new-group' );
 
+
+    /** START define new event 'remove' **/
+    var ev = new $.Event('remove'),
+        orig = $.fn.remove;
+    $.fn.remove = function() {
+        $(this).trigger(ev);
+        return orig.apply(this, arguments);
+    }
+    /** END define new event 'remove' **/
+
+
     $groups[0] = $( '#group0' ) ;
 
-    /* START graphic wrap */
-    /*$( '#guidedSearchCheckBox' ).popover( {
-        trigger : "click",
-        title : 'Guide Search',
-        content : 'enable this form to guide search.',
-        delay: { show: 100, hide: 50 }
-    } );*/
+
+
+    $( "#slider-range-min" ).slider({
+        range: "min",
+        value: 20,
+        min: 20,
+        max: 100,
+        slide : function( event, ui ) {
+
+            $( "#nummaxhits").val( ui.value );
+            $( "#max_terms" ).html( ui.value );
+
+        },
+        stop : function( event, ui ) {
+
+            $( "#nummaxhits").val( ui.value );
+            $( "#max_terms" ).html( ui.value );
+
+            if ($( '#pagenum').val() > Math.ceil(($( "#nummaxhits").val()/20)))
+                $( '#pagenum').val(Math.ceil(($( "#nummaxhits").val()/20)));
+            if (search)
+                guidedSearchS1Call();
+
+        }
+    });
+    $( "#amount" ).val( "$" + $( "#slider-range-min" ).slider( "value" ) );
+
 
     $( '#guidedSearchCheckBox').removeAttr('checked');
 
@@ -278,6 +354,8 @@ $(function () {
 
     /** START click events */
 
+    $( '#freeText').change(function() { search = false; });
+
     $( '#querySubmit' ).bind( "click", function(){ guidedSearchS2Call( ); } );
 
     $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
@@ -290,8 +368,8 @@ $(function () {
 
             $( '#results').hide();
             $( '#querySubmit').fadeIn();
-            $( '#searchButton' ).bind( "click", function(){ guidedSearchS1Call(); } );
             $( '#searchContent' ).fadeIn();
+            $( '#searchButton' ).bind( "click", function(){ guidedSearchS1Call(); } );
             $( '#freeText' ).attr( 'placeholder', 'Search Terms' );
 
             /*** START Reset Term List ***/
@@ -301,10 +379,25 @@ $(function () {
             $("#termListBlock").append($termList);
             $termList.attr('id','termList');
             $("#termsList").append($term);
+            $( "#nummaxhits" ).val(20);
+            $( "#max_terms" ).text(20);
+            $( "#pagenum").val(1);
+            $( "#slider-range-min" ).slider( 'value','20' );
+            $( "#termsPagination" ).remove();
+
+            $( '.group > .term' ).bind('remove', function( e ) {
+
+                var parent = $( this ).parents( '.group' );
+
+                e.preventDefault();
+
+                groupCheckContent(parent);
+
+            });
+
+            $( ".group > .term").remove();
+            search=false;
             /*** END Reset Term List ***/
-
-
-
 
         }else{
 
@@ -445,6 +538,7 @@ $(function () {
     }
 
     /* END callback from animations  */
+
     $( document ).on('click', '.delete-link', function( e ) {
 
         var parent = $( this ).parents( '.group' );
@@ -454,6 +548,35 @@ $(function () {
         groupCheckContent(parent);
         $( this ).closest( '.k-item' ).remove();
 
+
+
+    });
+
+    $( document ).on('click', '.page', function( e ) {
+
+        var page = $( this );
+        var id = page.attr('id');
+        var newpage = 1 ;
+
+        if ( id == 'prev' && !page.hasClass('disabled')) {
+
+            newpage = parseInt($( '#pagenum').val())-1;
+
+
+        }else if ( id == 'next' && !page.hasClass('disabled')){
+
+            newpage = parseInt($( '#pagenum').val())+1;
+
+        }else {
+
+            newpage= page.attr('page');
+
+        }
+
+        $( '#pagenum').val(newpage);
+        e.preventDefault();
+
+        guidedSearchS1Call();
 
 
     });

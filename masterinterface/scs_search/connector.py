@@ -43,7 +43,7 @@ def automaticSearchConnector( free_text ):
     return json_results
 
 
-def guidedSearchS1Connector( free_text ):
+def guidedSearchS1Connector( free_text, nummaxhits , pagenum ):
     """
         guidedSearchS1Connector: Call the guidedSearchS1 API
         and extract the result from XML.
@@ -56,7 +56,7 @@ def guidedSearchS1Connector( free_text ):
     """
     results = OrderedDict()
 
-    response = requests.get( GUIDED_SEARCH_S1_API % free_text )
+    response = requests.get( GUIDED_SEARCH_S1_API % (free_text, nummaxhits, PAGE_SIZE, pagenum) )
     doc = etree.fromstring( response.text.encode() )
 
     root_elem = doc
@@ -68,10 +68,11 @@ def guidedSearchS1Connector( free_text ):
 
     for page in page_elem:
         concepts = OrderedDict()
-        page_num =  page[0].text or None
-        results['num_pages'] = page[1].text or None
+        page_num =  page[1].text or None
+        results['page_num'] = page[1].text or None
+        results['num_pages'] = page[2].text or None
 
-        concept_list = page[2][0].xpath('concept')
+        concept_list = page[3][0].xpath('concept')
 
         for concept_elem in concept_list:
             uri_concept = concept_elem[0].text

@@ -55,7 +55,10 @@ def guidedSearchS1Service( request ):
     if request.method == "POST":
 
         free_text = request.POST['input']
-        connector = guidedSearchS1Connector( quote( free_text ) )
+        nummaxhits = request.POST['nummaxhits']
+        pagenum = request.POST['pagenum']
+
+        connector = guidedSearchS1Connector( quote( free_text ), nummaxhits,  pagenum )
 
         response = HttpResponse(content=connector, content_type="application/json")
 
