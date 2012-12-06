@@ -15,4 +15,5 @@ urlpatterns = patterns(
     url( r'^automatic_search/', automaticSearchService, name='AutomaticSearchService' ) ,
     url( r'^guided_search_s1/', guidedSearchS1Service, name='guidedSearchS1Service' ) ,
     url( r'^guided_search_s2/', guidedSearchS2Service, name='guidedSearchS2Service' ) ,
+    url( r'^guided_search_complex_query/', guidedSearchComplexQueryService, name='guidedSearchComplexQueryService' ) ,
     )

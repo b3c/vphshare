@@ -93,3 +93,12 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
     float: right;
     margin: 5px;
 }
+#exclude .btn.active, #exclude .btn:active {
+    background-color: red;
+}
+
+#termListBlock{
+
+    min-height: 500px ;
+
+}

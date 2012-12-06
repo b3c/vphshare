@@ -86,10 +86,9 @@ def guidedSearchS1Connector( free_text ):
     return json_results
 
 
-
 def guidedSearchS2Connector( concept_uri_list ):
     """
-        guidedSearchS2Connector: Call the guidedSearchS1 API
+        guidedSearchS2Connector: Call the guidedSearchS2 API
         and extract the result from XML.
 
         Arguments:
@@ -101,6 +100,42 @@ def guidedSearchS2Connector( concept_uri_list ):
     results = OrderedDict()
 
     response = requests.get( GUIDED_SEARCH_S2_API % concept_uri_list )
+
+    doc = etree.fromstring( response.text.encode() )
+
+    concept_list = doc
+
+    for concept_elem in concept_list:
+        dataset = OrderedDict()
+        concept_uri = concept_elem.attrib['uri']
+
+        for dataset_elem in concept_elem:
+            dataset_label = dataset_elem.attrib[ 'label' ]
+            num_metch = dataset_elem[0].text
+            rdf_data = dataset_elem[1].text
+            dataset[dataset_label] = [ num_metch, rdf_data ]
+
+        results[concept_uri] = dataset
+
+    json_results = json.dumps( results, sort_keys=False )
+
+    return json_results
+
+
+def guidedSearchComplexQueryConnector( concept_uri_list ):
+    """
+        guidedSearchComplexQueryConnector: Call the guidedSearchComplexQuery API
+        and extract the result from XML.
+
+        Arguments:
+            freeText (string): concept_uri list
+
+        Returns:
+            dataset (list): list of dataset grouped by concept
+    """
+    results = OrderedDict()
+
+    response = requests.get( GUIDED_SEARCH_COMPLEX_QUERY_API % concept_uri_list )
 
     doc = etree.fromstring( response.text.encode() )
 

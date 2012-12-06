@@ -195,11 +195,10 @@ function guidedSearchS2Call ( )
     var concept_uri_list = [];
     $( '#wait').fadeIn();
 
-    $("form#queryForm :input").each(function(){
+    $("form#queryForm :input[name=inputConceptUri]").each(function(){
         var input = $(this).val();
         concept_uri_list.push(input);
     });
-
 
     $.ajax({
         type : 'POST',
@@ -219,6 +218,67 @@ function guidedSearchS2Call ( )
         }
     });
 }
+
+function guidedSearchComplexQueryCall ( )
+{
+    var groups_list = []
+    var groups_query = []
+    var url = '/guided_search_complex_query/'
+
+    $( '#wait').fadeIn();
+
+    $( '.group' ).each(function() {
+        groups_list.push(this.id)
+    });
+
+    for( var i=0; i<(groups_list.length-1); i++ ) {
+
+        var concept_uri_list = [];
+        var id_group = groups_list[ i ];
+
+
+        $( "ul#" + id_group + " :input[name=inputConceptUri]" ).each( function(){
+
+            var input = $(this).val();
+
+            if ($("#" + id_group + ' > #exclude').children().hasClass ('active')) {
+                groups_query.push( ['NOT'+input ] )
+            }
+            else {
+                concept_uri_list.push( input );
+            }
+
+        });
+
+        if ( concept_uri_list.length != 0 ) {
+            groups_query.push( concept_uri_list );
+        }
+
+    }
+
+    // multidimensional array with JSON
+    var stringJSON = JSON.stringify( groups_query );
+
+    $.ajax({
+        type : 'POST',
+        url : url,
+        data : { groups_query: stringJSON },
+        success: function( results ) {
+
+            $( '#wait').fadeOut();
+            guidedSearchS2Callback(results);
+
+        },
+        error: function (error) {
+
+            $( '#wait').fadeOut();
+
+        }
+    });
+
+}
+
+
 /* END AJAX call  */
 
 
@@ -278,7 +338,12 @@ $(function () {
 
     /** START click events */
 
+    /* Temporarily replaced with guidedSearchComplexQueryCall()
     $( '#querySubmit' ).bind( "click", function(){ guidedSearchS2Call( ); } );
+    */
+
+    $( '#querySubmit' ).bind( "click", function(){ guidedSearchS2Call(); } );
+//    $( '#querySubmit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
 
     $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
 
