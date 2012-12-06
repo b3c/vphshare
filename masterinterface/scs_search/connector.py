@@ -62,7 +62,7 @@ def guidedSearchS1Connector( free_text, nummaxhits , pagenum ):
     root_elem = doc
 
     results['max_matches'] =  root_elem[0].text or None
-    results['num_results_total'] =root_elem[0].text or None
+    results['num_results_total'] =root_elem[1].text or None
 
     page_elem = root_elem.xpath('page')
 

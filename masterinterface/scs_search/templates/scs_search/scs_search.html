@@ -42,7 +42,7 @@
 
 {% block content %}
 
-    <div id="wait" class="wait" ><div class="img"></div> <div class="info">Wait please...</div></div>
+    <div id="wait" class="wait" ><div class="img"></div> <div class="info"></div></div>
     <div id="search" class="container-fluid">
 
 
@@ -75,9 +75,10 @@
             <div id="guideSearchContentBlock" class="row-fluid ">
 
                 <div id="termListBlock" class="span6 k-header">
-                    <div id="waitTerms" class="wait" ><div class="img"></div> <div class="info">Wait please...</div></div>
+                    <div id="waitTerms" class="wait" ><div class="img"></div> <div class="info"></div></div>
                     <div class="terms-tools" >
                         <span class="label label-info">Max Terms:<span id="max_terms">20</span></span>
+                        <span class="label label-info" style="display:none;float: right;" ><span id="num-terms">20</span> terms find</span>
                         <div id="slider-range-min"></div>
                     </div>
                     <!-- START terms list -->

@@ -191,6 +191,8 @@ function guidedSearchS1CallBack( results )
 
     }
 
+    $( "#num-terms").text(num_results_total).parent().show();
+
     $termList.kendoTreeView( {
 
         select:  noSelect
@@ -362,7 +364,6 @@ $(function () {
 
             $( "#nummaxhits").val( ui.value );
             $( "#max_terms" ).html( ui.value );
-
             if ($( '#pagenum').val() > Math.ceil(($( "#nummaxhits").val()/20)))
                 $( '#pagenum').val(Math.ceil(($( "#nummaxhits").val()/20)));
             if (search)
@@ -443,6 +444,7 @@ $(function () {
             $("#termsList").append($term);
             $( "#nummaxhits" ).val(20);
             $( "#max_terms" ).text(20);
+            $( "#num-terms").text('').parent().hide();
             $( "#pagenum").val(1);
             $( "#slider-range-min" ).slider( 'value','20' );
             $( "#termsPagination" ).remove();
