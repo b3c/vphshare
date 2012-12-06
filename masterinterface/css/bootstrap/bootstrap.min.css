@@ -783,7 +783,7 @@ a.label:hover,a.badge:hover{color:#ffffff;text-decoration:none;cursor:pointer;}
 .label-warning[href],.badge-warning[href]{background-color:#aa4200;}
 .label-success,.badge-success{background-color:#669533;}
 .label-success[href],.badge-success[href]{background-color:#4c6f26;}
-.label-info,.badge-info{background-color:#817b58;}
+.label-info,.badge-info{background-color:#3a87ad;}
 .label-info[href],.badge-info[href]{background-color:#625e43;}
 .label-inverse,.badge-inverse{background-color:#333333;}
 .label-inverse[href],.badge-inverse[href]{background-color:#1a1a1a;}

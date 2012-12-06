@@ -46,10 +46,10 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
     border-radius: 4px;
 }
 
-#wait{
+.wait{
     background-color: #a9a9a9;
     opacity: 0.6;
-    margin: : 5px;
+    margin : 0px;
     position: absolute;
     z-index: 999;
     width: 100%;
@@ -59,9 +59,9 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 }
 
 
-#wait {display: none;}
+.wait {display: none;}
 
-#wait .img{
+.wait .img{
 
     background-image: url('/static/img/loading.gif');
     width: 80px;
@@ -72,7 +72,7 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 
 }
 
-#wait .info{
+.wait .info{
 
     display: inline-block;
     vertical-align: top;
@@ -100,5 +100,19 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 #termListBlock{
 
     min-height: 500px ;
+
+}
+
+.terms-tools{
+
+    margin: 10px;
+
+}
+
+.terms-tools .label {
+
+    margin-top: 3px;
+    font-size: 16px;
+    margin-bottom: 10px;
 
 }

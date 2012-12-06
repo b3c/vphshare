@@ -42,7 +42,7 @@
 
 {% block content %}
 
-    <div id="wait" ><div class="img"></div> <div class="info">Wait please...</div></div>
+    <div id="wait" class="wait" ><div class="img"></div> <div class="info">Wait please...</div></div>
     <div id="search" class="container-fluid">
 
 
@@ -54,7 +54,9 @@
                     <form id="automaticSearchForm" class="navbar-form pull-left">
                         <input type="text" class="input-medium search-query" name="freeText" id="freeText" placeholder="Search dataset">
                         <button id="searchButton" type="button" class="btn" >Search</button>
-                        <div><input id="guidedSearchCheckBox" type="checkbox"  > Guided Search</div>
+                        <div><input id="guidedSearchCheckBox" type="checkbox"  > Guided Search
+                            <input id="nummaxhits" type="hidden" value="40" >
+                            <input id="pagenum" type="hidden"  value="1" ></div>
                     </form>
                     <button id="backToQuery" type="button" class="btn" style="display: none;">Back to Search</button>
                     <button id="querySubmit" type="button" class="btn pull-right" style="display: none;">Query</button>
@@ -72,8 +74,12 @@
             <!-- START Guided search block -->
             <div id="guideSearchContentBlock" class="row-fluid ">
 
-                <div id="termListBlock" class="span6 k-header">
-
+                <div id="termListBlock" class="span6 k-header" style=" position: relative;">
+                    <div id="waitTerms" class="wait" ><div class="img"></div> <div class="info">Wait please...</div></div>
+                    <div class="terms-tools" >
+                        <span class="label label-info">Max Terms:<span id="max_terms">20</span></span>
+                        <div id="slider-range-min"></div>
+                    </div>
                     <!-- START terms list -->
                     <ul id="termsListBase" class="ui-state-default" style="display: none" >
 
@@ -81,8 +87,14 @@
                             <span class="k-sprite folder"></span>
                         </li>
                     </ul>
-
                     <!-- START terms list -->
+
+                    <div id="termsPaginationBase" class="pagination pagination-centered" style="display : none;" >
+                        <ul>
+                            <li id="prev" class="page" page="prev"><a>«</a></li>
+                            <li id="next" class="page" page="next"><a>»</a></li>
+                        </ul>
+                    </div>
 
                 </div>
 
