@@ -13,8 +13,10 @@
 
 import sys, os
 
-sys.path.append( '/home/asaglimbeni/PycharmProjects/vphshare/masterinterface/' )
-sys.path.append( '/home/asaglimbeni/PycharmProjects/vphshare/' )
+PROJECT_ROOT = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir)
+
+sys.path.append( PROJECT_ROOT )
+sys.path.append( os.path.join(PROJECT_ROOT, os.path.pardir ) )
 os.environ['DJANGO_SETTINGS_MODULE'] = 'masterinterface.settings'
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -150,7 +152,7 @@ html_static_path = ['_static']
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 #html_show_sphinx = True
