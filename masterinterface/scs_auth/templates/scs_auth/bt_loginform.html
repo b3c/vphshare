@@ -2,6 +2,19 @@
 
     <head>
         <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
+        <script src="/static/jquery-1.8.2.js"></script>
+        <script type="text/javascript">
+            function checkCookie(){
+
+                if( ! $("#cookie-ok").attr("checked") ) {
+                    $("#cookie-question").addClass("warning");
+                    return;
+                }
+
+                $("#login-form-bt").submit();
+
+            }
+        </script>
         <style type="text/css">
 
             body {
@@ -64,7 +77,15 @@
 
             #info span {border-bottom: 2px solid #df0019;}
 
-            
+            .ue-cookie{
+                margin-top: 50px;
+                border: 1px solid #CCCCCC;
+                padding: 20px;
+            }
+
+            .warning{
+                border-bottom: 2px solid red;
+            }
 
         </style>
     </head>
@@ -73,14 +94,20 @@
     {% if info %}
         <p id="info"><span>{{info}}</span></p>
     {% endif %}
-        <form action="{% url socialauth_begin "biomedtown" %}" method="post">
+        <form id="login-form-bt" action="{% url socialauth_begin "biomedtown" %}" method="post">
             {% csrf_token %}
             <div>
                 <label for="openid_identifier">Enter your BiomedTown username</label>
                 <input id="openid_identifier" type="text" value="" name="openid_identifier" />
-                <input type="submit" value="Login" />
+                <input type="submit" value="Login" onclick="event.preventDefault();checkCookie();"/>
             </div>
         </form>
+        <div class="ue-cookie">
+            <p>This site uses cookies to store information on your computer.</p>
+            <p>By using our site you accept the terms of our <a href="/" target="_blank">Privacy Policy</a>.</p>
+            <h4><input type="checkbox" id="cookie-ok" /> <span id="cookie-question">I do agree</span></h4>
+        </div>
+
     </body>
 
 </html>
