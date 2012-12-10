@@ -122,9 +122,9 @@ function guidedSearchS1CallBack( results )
         var $addTerm = $term.clone();
         var id = concept_name + term_name;
 
-        if (term_name.length > 50){
+        if (term_name.length > 40){
 
-            $addTerm.append(term_name.substr(0,50)+"...");
+            $addTerm.append(term_name.substr(0,40)+"...");
 
         }else{
 
@@ -348,6 +348,7 @@ $(function () {
     $groups[0] = $( '#group0' ) ;
 
 
+    $( "#exclude").tooltip({title:"Exclude"});
 
     $( "#slider-range-min" ).slider({
         range: "min",
@@ -444,7 +445,8 @@ $(function () {
             $( '#searchContent' ).fadeIn();
             $( '#searchButton' ).bind( "click", function(){ guidedSearchS1Call(); } );
             $( '#freeText' ).attr( 'placeholder', 'Search Terms' );
-            $( "div[id=exclude]" ).fadeOut( 200 ) ;
+
+
 
             /*** START Reset Term List ***/
             var $term = $("#termsListBase > .term").clone();
@@ -523,7 +525,8 @@ $(function () {
         $groups[n_group] = $group
         $group.attr( 'id', "group"+n_group );
         $group.find( '#help' ).hide();
-        $group.find( '#exclude').delay( 300 ).fadeIn( 200 );
+        $group.find( '#and' ).show();
+        $group.find( '#exclude').tooltip({title:"Exclude"}).delay( 300 ).fadeIn( 200 );
         $group.insertBefore( $dropTarget.parents( '.k-treeview'));
         $group.hide();
         $group.kendoTreeView( {

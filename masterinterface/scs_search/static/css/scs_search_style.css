@@ -89,7 +89,8 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 }
 
 #exclude {
-    position: relative;
+
+    display:none;
     top:0;
     float: right;
     margin: 5px;
@@ -116,5 +117,22 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
     margin-top: 3px;
     font-size: 16px;
     margin-bottom: 10px;
+
+}
+
+#and {
+
+    display : none;
+    position: absolute;
+    top: -24px;
+    margin-left: 5px;
+    opacity: 1;
+    background-color: #6dbeec;
+
+}
+
+.group {
+
+    padding: 8px 0 17px 0 !important;
 
 }
