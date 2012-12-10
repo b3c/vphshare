@@ -141,7 +141,7 @@ function guidedSearchS1CallBack( results )
             title : concept_name,
             content: term_name,
             trigger : 'hover',
-            placement : 'right',
+            placement : 'left',
             delay : { show: 500, hide: 100 }
         });
 
@@ -163,7 +163,7 @@ function guidedSearchS1CallBack( results )
         for ( var i=1;i<=num_pages; i++){
 
             var page = termsPagination.find('#prev').clone();
-            page.attr( 'id', 'pg'+i).attr( 'page' , i).children('a').text(i);
+            page.attr( 'id', 'pg'+i).attr( 'page' , i).children('a').attr("href","#").text(i);
 
             if ( i == pagenum )
                 page.attr( 'class', 'active' );
@@ -421,6 +421,17 @@ $(function () {
 //    $( '#querySubmit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
 
     $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
+    $( '#automaticSearchForm' ).bind(
+        "submit",
+        function(){
+            if ( $( '#guidedSearchCheckBox' ).attr( 'checked' ) ){
+                guidedSearchS1Call();
+            } else {
+                automaticSearchCall();
+            }
+            return false;
+        }
+    );
 
     $( '#guidedSearchCheckBox' ).click( function(){
 

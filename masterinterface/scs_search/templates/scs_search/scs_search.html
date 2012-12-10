@@ -3,12 +3,6 @@
 
 {% block extrahead %}
 
-    <!-- START bootstrap  -->
-
-    <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.css" type="text/css" media="screen" />
-    <script src="/static/bootstrap.min.js" type="text/javascript"></script>
-
     <!-- END bootstrap  -->
 
     <!-- START kendo ui  -->
@@ -42,7 +36,7 @@
 
 {% block content %}
 
-    <div id="wait" class="wait" ><div class="img"></div> <div class="info"></div></div>
+    <div id="wait" class="wait span9" ><div class="img"></div> <div class="info"></div></div>
     <div id="search" class="container-fluid">
 
 
@@ -50,9 +44,9 @@
 
             <!-- START search tools bar -->
             <div class="navbar">
-                <div class="navbar-inner" style="min-height: 65px;">
+                <div class="navbar-inner" style="min-height: 65px;" onsubmit="return false;">
                     <form id="automaticSearchForm" class="navbar-form pull-left">
-                        <input type="text" class="input-medium search-query" name="freeText" id="freeText" placeholder="Search dataset">
+                        <input type="text" on class="input-medium search-query" name="freeText" id="freeText" placeholder="Search dataset">
                         <button id="searchButton" type="button" class="btn" >Search</button>
                         <div><input id="guidedSearchCheckBox" type="checkbox"  > Guided Search
                             <input id="nummaxhits" type="hidden" value="40" >
@@ -77,8 +71,8 @@
                 <div id="termListBlock" class="span6 k-header">
                     <div id="waitTerms" class="wait" ><div class="img"></div> <div class="info"></div></div>
                     <div class="terms-tools" >
-                        <span class="label label-info">Max Terms:<span id="max_terms">20</span></span>
-                        <span class="label label-info" style="display:none;float: right;" ><span id="num-terms">20</span> terms find</span>
+                        <span class="label label-info">Max number of Terms:<span id="max_terms">20</span></span>
+                        <span class="label label-info" style="display:none;float: right;" ><span id="num-terms">20</span> terms found</span>
                         <div id="slider-range-min"></div>
                     </div>
                     <!-- START terms list -->
@@ -109,10 +103,12 @@
                             <div id="exclude"><button type="button" class="btn" data-toggle="button">Exclude</button></div>
                         </ul>
 
+                        <div class="pagination pagination-centered"><div class="btn btn-primary disabled">AND</div></div>
                         <ul id="new-group" class="group ui-widget-content ui-state-default" style="min-height: 50px;">
-                            <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN AND</div></div>
+                            <div id="help" class="pagination pagination-centered"><div class="btn btn-large btn-primary disabled" >TERMS IN OR</div></div>
                             <div id="exclude"><button type="button" class="btn" data-toggle="button">Exclude</button></div>
                         </ul>
+
 
                     </form>
                     <!-- START groups list -->
