@@ -148,6 +148,7 @@ header #login a img{
     position: absolute;
     top: 0px;
     left: 0px;
+    z-index: 15;
 }
 #logo-right{
     position: absolute;
@@ -163,13 +164,12 @@ header #login a img{
     background-color: #0072af;
 }
 #page-title{
-    margin: auto;
-    width: 100%;
+    width: auto;
     background-color: #0072af;
     overflow: hidden;
     text-align: right;
     position:relative;
-    left: 560px;
+    padding-left: 520px;
 }
 
 #page-title .title{
