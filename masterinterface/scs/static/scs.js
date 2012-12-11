@@ -12,16 +12,42 @@ function defaultAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
 $(document).ready(
     function(){
 
+        $( "#search-menu-link" ).click(function() {
+            var effect = "blind";
+            var options = {};
+
+            if ($(this).parent().hasClass("active")){
+                $( '#search-submenu').fadeOut( 500  );
+                $(this).parent().removeClass("active");
+                return false;
+            }
+            else {
+                $( "#search-submenu" ).show( effect, options, 500 );
+                $(this).parents( ".list-parent" ).addClass("active");
+                $("#navhome").removeClass("active");
+                return false;
+            }
+        });
+
         // highlight current section
         var thereIsASection = false;
-        $('#main-nav li[id!="navhome"] a').each(
+        $('#main-nav li[id!="navhome"]').find('a').each(
             function(){
                 if ( document.URL.match($(this).attr("href")) ){
-                    $(this).parent().toggleClass("active");
+                    $(this).parents( ".list-parent" ).addClass("active");
                     thereIsASection = true;
                 }
+
+                if ( document.URL.match("/search/") ){
+                    $( "#search-submenu" ).show( "blind", {} , 500 );
+                }
+                else {
+                    $( '#search-submenu').hide();
+                }
+
             }
         );
+
         if (thereIsASection){ $("#navhome").removeClass("active");}
 
         //create if not exist overlay div

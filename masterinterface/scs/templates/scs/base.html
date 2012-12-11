@@ -84,10 +84,19 @@
 
                             {% if request.user.is_authenticated %}
                                 {% if request.user.is_staff %}
-                                    <li><a href="/search/"><i class="icon-search icon-white"></i>Search</a></li>
-                                    <li><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
-                                    <li><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
-                                    <li><a href="/cyfronet/datamanager/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
+                                    <li class="list-parent">
+                                        <div>
+                                            <div id="search-menu-link"><i class="icon-search icon-white"></i>Search</div>
+                                            <ul id="search-submenu" >
+                                                <li><a id="automatic-search" href="/search/"><i class="icon-search icon-white"></i>Automatic</a>
+                                                <li><a id="guided-search" href="/search/"><i class="icon-search icon-white"></i>Guided</a>
+                                                <li><a id="complex-query-search" href="/search/"><i class="icon-search icon-white"></i>Complex Query</a>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="list-parent"><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
+                                    <li class="list-parent"><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
+                                    <li class="list-parent"><a href="/cyfronet/datamanager/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
                                 {% endif %}
                                 <li><a href="/scs/workflows/"><i class="icon-tasks icon-white"></i>Workflows</a></li>
                             {% endif %}

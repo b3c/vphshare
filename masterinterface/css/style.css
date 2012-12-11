@@ -860,7 +860,8 @@ tr.odd {
     margin-bottom: 4px;
 }
 
-#main-nav.nav-tabs.nav-stacked > li > a {
+#main-nav.nav-tabs.nav-stacked > li > a,
+#main-nav.nav-tabs.nav-stacked > li > div{
     padding: 10px 8px;
     font-size: 12px;
     font-weight: 600;
@@ -882,6 +883,7 @@ tr.odd {
 }
 
 #main-nav.nav-tabs.nav-stacked > li.active > a,
+#main-nav.nav-tabs.nav-stacked > li.active > div,
 #main-nav.nav-tabs.nav-stacked > li > a:hover {
 
     color: #0072AF;
@@ -917,3 +919,4 @@ tr.odd {
     position: relative;
     top: 2px;
 }
+

@@ -334,7 +334,6 @@ $(function () {
 
     var $term = $( '.term'), $groups = [], $new_group = $( '#new-group' );
 
-
     /** START define new event 'remove' **/
     var ev = new $.Event('remove'),
         orig = $.fn.remove;
