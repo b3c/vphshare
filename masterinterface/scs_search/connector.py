@@ -1,4 +1,7 @@
-__author__ = ""
+"""
+    scs_search: connector.py Module
+"""
+__author__ = ''
 
 import requests
 import json
@@ -6,73 +9,75 @@ from config import *
 from lxml import etree
 from ordereddict import OrderedDict
 
-def automaticSearchConnector( free_text ):
+
+def automatic_search_connector( free_text ):
     """
-        automaticSearchConnector: Call the automaticSearch API
+        automatic_search_connector: Call the automatic search API
         and extract the result from XML.
 
         Arguments:
             free-text (string): input text
 
         Returns:
-            dataset (list): list of dataset grouped by concept_uri
+            json_results (obj): object JSON format
 
     """
+
     results = OrderedDict()
 
     response = requests.get( AUTOMATIC_SEARCH_API % free_text )
 
-    doc = etree.fromstring( response.text.encode() )
-
-    concept_list = doc
+    concept_list = etree.fromstring( response.text.encode() )
 
     for concept_elem in concept_list:
-        dataset = OrderedDict()
-        concept_uri = concept_elem.attrib['uri']
+        dataset_dict = OrderedDict()
+        concept_uri = concept_elem.attrib[ 'uri' ]
 
         for dataset_elem in concept_elem:
             dataset_label = dataset_elem.attrib[ 'label' ]
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
-            dataset[dataset_label] = [ num_metch, rdf_data ]
+            dataset_dict[ dataset_label ] = [ num_metch, rdf_data ]
 
-        results[concept_uri] = dataset
+        results[ concept_uri ] = dataset_dict
 
-    json_results = json.dumps( results, sort_keys=False )
+    json_results = json.dumps( results, sort_keys = False )
 
     return json_results
 
 
-def guidedSearchS1Connector( free_text, nummaxhits , pagenum ):
+def guided_search_s1_connector( free_text, num_max_hits, page_num ):
     """
-        guidedSearchS1Connector: Call the guidedSearchS1 API
+        guided_search_S1_Connector: Call the guided Search step1 API
         and extract the result from XML.
 
         Arguments:
-            free-text (string): input text
+            freeText (string): input text
+            num_max_hits (integer): number oh results
+            page_num (integer): page number
 
         Returns:
-            dataset (list): list of concept/terms
+            json_results (obj): object JSON format
     """
+
     results = OrderedDict()
 
-    response = requests.get( GUIDED_SEARCH_S1_API % (free_text, nummaxhits, PAGE_SIZE, pagenum) )
-    doc = etree.fromstring( response.text.encode() )
+    response = requests.get( GUIDED_SEARCH_S1_API % ( free_text,
+                            num_max_hits, PAGE_SIZE, page_num ) )
+    root_elem = etree.fromstring( response.text.encode() )
 
-    root_elem = doc
+    results[ 'max_matches' ] = root_elem[0].text or None
+    results[ 'num_results_total' ] = root_elem[1].text or None
 
-    results['max_matches'] =  root_elem[0].text or None
-    results['num_results_total'] =root_elem[1].text or None
-
-    page_elem = root_elem.xpath('page')
+    page_elem = root_elem.xpath( 'page' )
 
     for page in page_elem:
         concepts = OrderedDict()
-        page_num =  page[1].text or None
-        results['page_num'] = page[1].text or None
-        results['num_pages'] = page[2].text or None
+        page_num = page[1].text or None
+        results[ 'page_num' ] = page[1].text or None
+        results[ 'num_pages' ] = page[2].text or None
 
-        concept_list = page[3][0].xpath('concept')
+        concept_list = page[3][0].xpath( 'concept' )
 
         for concept_elem in concept_list:
             uri_concept = concept_elem[0].text
@@ -82,78 +87,79 @@ def guidedSearchS1Connector( free_text, nummaxhits , pagenum ):
 
         results[ page_num ] = concepts
 
-    json_results = json.dumps( results, sort_keys=False )
+    json_results = json.dumps( results, sort_keys = False )
 
     return json_results
 
 
-def guidedSearchS2Connector( concept_uri_list ):
+def guided_search_s2_connector( concept_uri_list ):
     """
-        guidedSearchS2Connector: Call the guidedSearchS2 API
+        guided_search_S2_connector: Call the guided search step2 API
         and extract the result from XML.
 
         Arguments:
-            free-text (string): concept_uri list
+            concept_uri_list (string): concept_uri list
 
         Returns:
-            dataset (list): list of dataset grouped by concept
+            json_results (obj): object JSON format
     """
+
     results = OrderedDict()
 
     response = requests.get( GUIDED_SEARCH_S2_API % concept_uri_list )
 
-    doc = etree.fromstring( response.text.encode() )
-
-    concept_list = doc
+    concept_list = etree.fromstring( response.text.encode() )
 
     for concept_elem in concept_list:
         dataset = OrderedDict()
-        concept_uri = concept_elem.attrib['uri']
+        concept_uri = concept_elem.attrib[ 'uri' ]
 
         for dataset_elem in concept_elem:
             dataset_label = dataset_elem.attrib[ 'label' ]
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
-            dataset[dataset_label] = [ num_metch, rdf_data ]
+            dataset[ dataset_label ] = [ num_metch, rdf_data ]
 
-        results[concept_uri] = dataset
+        results[ concept_uri ] = dataset
 
-    json_results = json.dumps( results, sort_keys=False )
+    json_results = json.dumps( results, sort_keys = False )
 
     return json_results
 
 
-def guidedSearchComplexQueryConnector( concept_uri_list ):
+def complex_query_connector( concept_uri_list ):
     """
-        guidedSearchComplexQueryConnector: Call the guidedSearchComplexQuery API
+        guided_search_complex_query_connector: Call the guided search ComplexQuery API
         and extract the result from XML.
 
         Arguments:
-            free-text (string): concept_uri list
+            concept_uri_list (string): concept_uri list
 
         Returns:
-            dataset (list): list of dataset grouped by concept
+            json_results (obj): object JSON format
     """
+
     results = OrderedDict()
 
-    response = requests.get( GUIDED_SEARCH_COMPLEX_QUERY_API % concept_uri_list )
+    response = requests.get( GUIDED_SEARCH_COMPLEX_QUERY_API
+                            % concept_uri_list )
 
-    doc = etree.fromstring( response.text.encode() )
-
-    concept_list = doc
+    concept_list = etree.fromstring( response.text.encode() )
 
     for concept_elem in concept_list:
         dataset = OrderedDict()
-        concept_uri = concept_elem.attrib['uri']
+        concept_uri = concept_elem.attrib[ 'uri' ]
 
         for dataset_elem in concept_elem:
-            dataset_label = dataset_elem.attrib[ 'label' ]
+            dataset_label = dataset_elem.attrib['label']
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
-            dataset[dataset_label] = [ num_metch, rdf_data ]
+            dataset[ dataset_label ] = [ num_metch, rdf_data ]
 
-        results[concept_uri] = dataset
+        results[ concept_uri ] = dataset
 
-    json_results = json.dumps( results, sort_keys=False )
+    json_results = json.dumps( results, sort_keys = False )
 
     return json_results
+
+
