@@ -12,7 +12,7 @@ def automaticSearchConnector( free_text ):
         and extract the result from XML.
 
         Arguments:
-            freeText (string): input text
+            free-text (string): input text
 
         Returns:
             dataset (list): list of dataset grouped by concept_uri
@@ -49,7 +49,7 @@ def guidedSearchS1Connector( free_text, nummaxhits , pagenum ):
         and extract the result from XML.
 
         Arguments:
-            freeText (string): input text
+            free-text (string): input text
 
         Returns:
             dataset (list): list of concept/terms
@@ -93,7 +93,7 @@ def guidedSearchS2Connector( concept_uri_list ):
         and extract the result from XML.
 
         Arguments:
-            freeText (string): concept_uri list
+            free-text (string): concept_uri list
 
         Returns:
             dataset (list): list of dataset grouped by concept
@@ -129,7 +129,7 @@ def guidedSearchComplexQueryConnector( concept_uri_list ):
         and extract the result from XML.
 
         Arguments:
-            freeText (string): concept_uri list
+            free-text (string): concept_uri list
 
         Returns:
             dataset (list): list of dataset grouped by concept

@@ -5,147 +5,155 @@
  * To change this template use File | Settings | File Templates.
  */
 
-
+var search = false;
 /* START AJAX callback */
-function resultsCallback( results ){
-    var concept_uri;
+function resultsCallback( results ) {
+
+    "use strict";
+    var conceptUri;
     var dataset;
-    var dataset_label;
-    var num_match;
-    var rdf_link;
-    var $concept_item_base = $( '#concept-base').clone();
-    $( '.media-list').html($concept_item_base);
+    var datasetLabel;
+    var numMatch;
+    var rdfLink;
+    var conceptItem;
+    var conceptItemBase = $( '#concept-base' ).clone();
+    $( '.media-list' ).html( conceptItemBase );
 
-    for ( concept_uri in results ) {
+    for ( conceptUri in results ) {
+        if ( results.hasOwnProperty( conceptUri ) ) {
 
-        var $concept_item = $concept_item_base.clone();
-        $concept_item.attr('id','concept_uri');
-        $concept_item.find('.concept-label').text(concept_uri);
+            conceptItem = conceptItemBase.clone();
+            conceptItem.attr( 'id', 'concept-uri' );
+            conceptItem.find( '.concept-label' ).text( conceptUri );
+            dataset = results[conceptUri];
+            for ( datasetLabel  in dataset ) {
 
-        dataset = results[concept_uri]
-        for ( dataset_label  in dataset ){
+                if ( dataset.hasOwnProperty( datasetLabel ) ) {
 
-            num_match = dataset[dataset_label][0];
-            rdf_link = dataset[dataset_label][1];
-            $concept_item.find('.dataset-item').show();
-            $concept_item.find('.dataset-label').text(dataset_label);
-            $concept_item.find('.dataset-description').text('Match : '+num_match);
-            $concept_item.find('.link-to-data').attr('href',rdf_link);
+                    numMatch = dataset[datasetLabel][0];
+                    rdfLink = dataset[datasetLabel][1];
+                    conceptItem.find( '.dataset-item' ).show();
+                    conceptItem.find( '.dataset-label' ).text( datasetLabel );
+                    conceptItem.find( '.dataset-description' ).text( 'Match : ' + numMatch );
+                    conceptItem.find( '.link-to-data' ).attr( 'href', rdfLink );
 
+                }
+
+            }
+
+            conceptItem.appendTo( '.media-list' );
+            conceptItem.show();
         }
-
-        $concept_item.appendTo('.media-list');
-        $concept_item.show();
     }
-
 
 
 }
 
 function automaticSearchCallback( results ) {
 
+    "use strict";
     resultsCallback( results );
-    $( '#results' ).effect( 'slide', {direction:'right'}, 500 );
+    $( '#results' ).effect( 'slide', {direction: 'right'}, 500 );
 
 }
 
 function guidedSearchS2Callback( results ) {
 
+    "use strict";
     resultsCallback( results );
-    $( '#automaticSearchForm').hide();
-    $( '#querySubmit').hide();
-    $( '#backToQuery').fadeIn();
-    $( '#searchContent' ).toggle( 'slide', {direction:'left'}, 400 );
-    $( '#results' ).delay(500).effect( 'slide', {direction:'right'}, 500 );
+    $( '#automatic-search-form' ).hide();
+    $( '#query-submit' ).hide();
+    $( '#back-to-query' ).fadeIn();
+    $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
+    $( '#results' ).delay( 500 ).effect( 'slide', {direction: 'right'}, 500 );
 
 }
 
 /* END AJAX callback */
 
 /* START AJAX call  */
-function automaticSearchCall ( )
-{
-    var form = $( "#automaticSearchForm" );
-    var input = form.find( 'input[name="freeText"]' ).val();
-    var url = '/automatic_search/'
+function automaticSearchCall() {
+
+    "use strict";
+    var form;
+    var url;
+    var input;
+
+    form = $( "#automatic-search-form" );
+    input = form.find( 'input[name="free-text"]' ).val();
+    url = '/automatic_search/';
     $( '#wait' ).fadeIn();
 
-    $.ajax({
-        type : 'POST',
-        url : url,
-        data : {input : input
-        },
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: {input: input},
         success: function( results ) {
-            $( '#wait').fadeOut();
-            automaticSearchCallback(results);
+            $( '#wait' ).fadeOut();
+            automaticSearchCallback( results );
         },
-        error: function (error) {
+        error: function( error ) {
 
             $( '#wait' ).fadeOut();
 
         }
-    });
+    } );
 }
 
-function guidedSearchS1CallBack( results )
-{
-    var max_matches = results['max_matches'];
-    var num_pages = results['num_pages'];
-    var num_results_total = results['num_results_total'];
-    var pagenum = parseInt(results[ 'page_num' ]);
+function guidedSearchS1CallBack( results ) {
+
+    "use strict";
+    var maxMatches = results.max_matches;
+    var numPages = results.num_pages;
+    var numResultsTotal = results.num_results_total;
+    var pagenum = parseInt( results.page_num, 10 );
 
     var item;
-    var $term = $("#termsListBase > .term").clone();
-    var $termList = $("#termsListBase").clone();
+    var term = $( "#terms-list-base > .term" ).clone();
+    var termList = $( "#terms-list-base" ).clone();
 
-    $("#termListBlock").children( '#termsPagination').remove();
+    $( "#term-list-block" ).children( '#terms-pagination' ).remove();
 
-    var termsPagination = $("#termListBlock").children( '#termsPaginationBase' ).clone().attr( 'id', 'termsPagination' );
-
-
-
-    $("#termList").remove();
-    $("#termListBlock").append($termList);
-    $termList.attr('id','termList');
+    var termsPagination = $( "#term-list-block" ).children( '#terms-pagination-base' ).clone().attr( 'id', 'terms-pagination' );
 
 
-    $("#termsList").append($term);
+    $( "#term-list" ).remove();
+    $( "#term-list-block" ).append( termList );
+    termList.attr( 'id', 'term-list' );
 
     var termsResults = results[pagenum];
 
-    for ( item in termsResults )
-    {
+    for ( item in termsResults ) {
 
-        var term_name = termsResults[item][0];
-        var concept_name = termsResults[item][1];
-        var concept_uri = item;
-        var $addTerm = $term.clone();
-        var id = concept_name + term_name;
+        var termName = termsResults[item][0];
+        var conceptName = termsResults[item][1];
+        var addTerm = term.clone();
+        var id = conceptName + termName;
 
-        if (term_name.length > 40){
+        if ( termName.length > 40 ) {
 
-            $addTerm.append(term_name.substr(0,40)+"...");
+            addTerm.append( termName.substr( 0, 40 ) + "..." );
 
-        }else{
+        } else {
 
-            $addTerm.append(term_name);
+            addTerm.append( termName );
 
         }
 
-        $addTerm.append('<input name="inputConceptUri" type="hidden" value="' + concept_uri + '" /> ');
+        addTerm.append( '<input name="inputConceptUri" type="hidden" value="' + item + '" /> ' );
 
-        $termList.append($addTerm);
+        termList.append( addTerm );
 
-        $addTerm.show();
-        $addTerm.popover({
-            title : concept_name,
-            content: term_name,
-            trigger : 'hover',
-            placement : 'left',
-            delay : { show: 500, hide: 100 }
-        });
+        addTerm.show();
+        addTerm.popover( {
+            title: conceptName,
+            content: termName,
+            trigger: 'hover',
+            placement: 'left',
+            delay: { show: 500, hide: 100 }
+        } );
 
-        $addTerm.draggable( {
+        addTerm.draggable( {
 
             cancel: "a.ui-icon", // clicking an icon won't initiate dragging
             revert: "invalid", // when not dropped, the item will revert back to its initial position
@@ -158,223 +166,228 @@ function guidedSearchS1CallBack( results )
 
     }
 
-    if (num_pages > 1){
+    if ( numPages > 1 ) {
 
-        for ( var i=1;i<=num_pages; i++){
+        for ( var i = 1; i <= numPages; i++ ) {
 
-            var page = termsPagination.find('#prev').clone();
-            page.attr( 'id', 'pg'+i).attr( 'page' , i).children('a').attr("href","#").text(i);
+            var page = termsPagination.find( '#prev' ).clone();
+            page.attr( 'id', 'pg' + i ).attr( 'page', i ).children( 'a' ).attr( "href", "#" ).text( i );
 
-            if ( i == pagenum )
+            if ( i === pagenum )
                 page.attr( 'class', 'active' );
 
-            if (i == 1){
+            if ( i === 1 ) {
 
-                page.insertAfter(termsPagination.find('#prev'));
+                page.insertAfter( termsPagination.find( '#prev' ) );
 
-            }else{
+            } else {
 
-                page.insertAfter(termsPagination.find('#pg'+(i-1)));
+                page.insertAfter( termsPagination.find( '#pg' + (i - 1) ) );
 
             }
 
         }
 
-        if (pagenum == 1)
+        if ( pagenum === 1 )
             termsPagination.find( '#prev' ).addClass( 'disabled' ).removeClass( 'page' );
 
-        if (pagenum == num_pages)
-            termsPagination.find('#next').addClass('disabled').removeClass( 'page' );
+        if ( pagenum === numPages )
+            termsPagination.find( '#next' ).addClass( 'disabled' ).removeClass( 'page' );
 
         termsPagination.show();
-        termsPagination.appendTo( "#termListBlock" );
+        termsPagination.appendTo( "#term-list-block" );
 
     }
 
-    $( "#num-terms").text(num_results_total).parent().show();
+    $( "#num-terms" ).text( numResultsTotal ).parent().show();
 
-    $termList.kendoTreeView( {
+    termList.kendoTreeView( {
 
-        select:  noSelect
+        select: noSelect
 
     } );
 
     search = true;
 }
 
-function guidedSearchS1Call ( )
-{
-    var form = $( "#automaticSearchForm"),
-    input = form.find( 'input[name="freeText"]' ).val(),
-    url = '/guided_search_s1/',
-    nummaxhits = $( '#nummaxhits').val() ,
-    pagenum = $( '#pagenum').val();
+function guidedSearchS1Call() {
 
-    if (search == false){
+    "use strict";
+    var form = $( "#automatic-search-form" ),
+        input = form.find( 'input[name="free-text"]' ).val(),
+        url = '/guided_search_s1/',
+        numMaxHits = $( '#num-max-hits' ).val(),
+        pageNum = $( '#page-num' ).val();
 
-        $( '#pagenum').val(1);
-        pagenum = 1;
+    if ( search === false ) {
+
+        $( '#page-num' ).val( 1 );
+        pageNum = 1;
 
     }
 
-    $( '#waitTerms' ).fadeIn();
-    $.ajax({
-        type : 'POST',
-        url : url,
-        data : {input : input, nummaxhits: nummaxhits , pagenum: pagenum},
-        success:function ( results ) {
+    $( '#wait-terms' ).fadeIn();
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: {input: input, nummaxhits: numMaxHits, pagenum: pageNum},
+        success: function( results ) {
 
-            $( '#waitTerms' ).fadeOut();
-            guidedSearchS1CallBack( results )
+            $( '#wait-terms' ).fadeOut();
+            guidedSearchS1CallBack( results );
 
         },
-        error: function ( error ) {
+        error: function( error ) {
 
-            $( '#waitTerms' ).fadeOut();
+            $( '#wait-terms' ).fadeOut();
 
         }
-    });
+    } );
 }
 
-function guidedSearchS2Call ( )
-{
-    var url = '/guided_search_s2/'
-    var concept_uri_list = [];
-    $( '#wait').fadeIn();
+function guidedSearchS2Call() {
 
-    $("form#queryForm :input[name=inputConceptUri]").each(function(){
-        var input = $(this).val();
-        concept_uri_list.push(input);
-    });
+    "use strict";
+    var url = '/guided_search_s2/';
+    var conceptUriList = [];
+    $( '#wait' ).fadeIn();
 
-    $.ajax({
-        type : 'POST',
-        url : url,
-        data : {concept_uri_list : concept_uri_list.join(",")
+    $( "form#query-form :input[name=inputConceptUri]" ).each( function() {
+        var input = $( this ).val();
+        conceptUriList.push( input );
+    } );
+
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: {concept_uri_list: conceptUriList.join( "," )
         },
         success: function( results ) {
 
-            $( '#wait').fadeOut();
-            guidedSearchS2Callback(results);
+            $( '#wait' ).fadeOut();
+            guidedSearchS2Callback( results );
 
         },
-        error: function (error) {
+        error: function( error ) {
 
-            $( '#wait').fadeOut();
+            $( '#wait' ).fadeOut();
 
         }
-    });
+    } );
 }
 
-function guidedSearchComplexQueryCall ( )
-{
-    var groups_list = []
-    var groups_query = []
-    var url = '/guided_search_complex_query/'
+function guidedSearchComplexQueryCall() {
 
-    $( '#wait').fadeIn();
+    "use strict";
+    var groupsList = [];
+    var groupsQuery = [];
+    var url = '/guided_search_complex_query/';
 
-    $( '.group' ).each(function() {
-        groups_list.push(this.id)
-    });
+    $( '#wait' ).fadeIn();
 
-    for( var i=0; i<(groups_list.length-1); i++ ) {
+    $( '.group' ).each( function() {
+        groupsList.push( this.id );
+    } );
 
-        var concept_uri_list = [];
-        var id_group = groups_list[ i ];
+    for ( var i = 0; i < (groupsList.length - 1); i++ ) {
+
+        var conceptUriList = [];
+        var id_group = groupsList[ i ];
 
 
-        $( "ul#" + id_group + " :input[name=inputConceptUri]" ).each( function(){
+        $( "ul#" + id_group + " :input[name=inputConceptUri]" ).each( function() {
 
-            var input = $(this).val();
+            var input = $( this ).val();
 
-            if ($("#" + id_group + ' > #exclude').children().hasClass ('active')) {
-                groups_query.push( ['NOT'+input ] )
+            if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
+                groupsQuery.push( ['NOT' + input ] );
             }
             else {
-                concept_uri_list.push( input );
+                conceptUriList.push( input );
             }
 
-        });
+        } );
 
-        if ( concept_uri_list.length != 0 ) {
-            groups_query.push( concept_uri_list );
+        if ( conceptUriList.length !== 0 ) {
+            groupsQuery.push( conceptUriList );
         }
 
     }
 
     // multidimensional array with JSON
-    var stringJSON = JSON.stringify( groups_query );
+    var stringJSON = JSON.stringify( groupsQuery );
 
-    $.ajax({
-        type : 'POST',
-        url : url,
-        data : { groups_query: stringJSON },
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: { groups_query: stringJSON },
         success: function( results ) {
 
-            $( '#wait').fadeOut();
-            guidedSearchS2Callback(results);
+            $( '#wait' ).fadeOut();
+            guidedSearchS2Callback( results );
 
         },
-        error: function (error) {
+        error: function( error ) {
 
-            $( '#wait').fadeOut();
+            $( '#wait' ).fadeOut();
 
         }
-    });
+    } );
 
 }
 
 
 /* END AJAX call  */
-var search = false;
 
 /* START jquery ready in search page */
-$(function () {
+$( function() {
 
-    var $term = $( '.term'), $groups = [], $new_group = $( '#new-group' );
+    "use strict";
+    var term = $( '.term' ), groups = [], newGroup = $( '#new-group' );
 
     /** START define new event 'remove' **/
-    var ev = new $.Event('remove'),
+    var ev = new $.Event( 'remove' ),
         orig = $.fn.remove;
     $.fn.remove = function() {
-        $(this).trigger(ev);
-        return orig.apply(this, arguments);
-    }
+        $( this ).trigger( ev );
+        return orig.apply( this, arguments );
+    };
     /** END define new event 'remove' **/
 
 
-    $groups[0] = $( '#group0' ) ;
+    groups[0] = $( '#group0' );
 
 
-    $( "#exclude").tooltip({title:"Exclude"});
+    $( ".exclude" ).tooltip( {title: "Exclude"} );
 
-    $( "#slider-range-min" ).slider({
+    $( "#slider-range-min" ).slider( {
         range: "min",
         value: 20,
         min: 20,
         max: 100,
-        slide : function( event, ui ) {
+        slide: function( event, ui ) {
 
-            $( "#nummaxhits").val( ui.value );
-            $( "#max_terms" ).html( ui.value );
+            $( "#num-max-hits" ).val( ui.value );
+            $( "#max-terms" ).html( ui.value );
 
         },
-        stop : function( event, ui ) {
+        stop: function( event, ui ) {
 
-            $( "#nummaxhits").val( ui.value );
-            $( "#max_terms" ).html( ui.value );
-            if ($( '#pagenum').val() > Math.ceil(($( "#nummaxhits").val()/20)))
-                $( '#pagenum').val(Math.ceil(($( "#nummaxhits").val()/20)));
-            if (search)
+            $( "#num-max-hits" ).val( ui.value );
+            $( "#max-terms" ).html( ui.value );
+            if ( $( '#page-num' ).val() > Math.ceil( ($( "#num-max-hits" ).val() / 20) ) ) {
+                $( '#page-num' ).val( Math.ceil( ($( "#num-max-hits" ).val() / 20) ) );
+            }
+            if ( search ) {
                 guidedSearchS1Call();
+            }
 
         }
-    });
+    } );
     $( "#amount" ).val( "$" + $( "#slider-range-min" ).slider( "value" ) );
 
 
-    $( '#guidedSearchCheckBox').removeAttr('checked');
+    $( '#guided-search-check-box' ).removeAttr( 'checked' );
 
     $( '.group' ).kendoTreeView( {
 
@@ -388,25 +401,25 @@ $(function () {
     /** START drang & drop events */
 
 
-    $groups[0].droppable( {
+    groups[0].droppable( {
 
         accept: ".term",
         activeClass: "drop-in",
         drop: function( event, ui ) {
 
-            dropTerm( ui.draggable ,$(this) );
+            dropTerm( ui.draggable, $( this ) );
 
         }
 
     } );
 
-    $new_group.droppable( {
+    newGroup.droppable( {
 
         accept: ".term",
         activeClass: "drop-in",
         drop: function( event, ui ) {
 
-            newGroup( ui.draggable ,$(this) );
+            createNewGroup( ui.draggable, $( this ) );
 
         }
 
@@ -415,16 +428,22 @@ $(function () {
 
     /** START click events */
 
-    $( '#freeText').change(function() { search = false; });
+    $( '#free-text' ).change( function() {
+        search = false;
+    } );
 
-    $( '#querySubmit' ).bind( "click", function(){ guidedSearchS2Call(); } );
-//    $( '#querySubmit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
+    $( '#query-submit' ).bind( "click", function() {
+        guidedSearchS2Call();
+    } );
+//    $( '#query-submit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
 
-    $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
-    $( '#automaticSearchForm' ).bind(
+    $( '#search-button' ).bind( "click", function() {
+        automaticSearchCall();
+    } );
+    $( '#automatic-search-form' ).bind(
         "submit",
-        function(){
-            if ( $( '#guidedSearchCheckBox' ).attr( 'checked' ) ){
+        function() {
+            if ( $( '#guided-search-check-box' ).attr( 'checked' ) ) {
                 guidedSearchS1Call();
             } else {
                 automaticSearchCall();
@@ -433,66 +452,68 @@ $(function () {
         }
     );
 
-    $( '#guidedSearchCheckBox' ).click( function(){
+    $( '#guided-search-check-box' ).click( function() {
 
-        $( '#searchButton' ).unbind('click');
+        $( '#search-button' ).unbind( 'click' );
 
-        if ( $( '#guidedSearchCheckBox' ).attr( 'checked' ) ) {
+        if ( $( '#guided-search-check-box' ).attr( 'checked' ) ) {
 
-            $( '#results').hide();
-            $( '#querySubmit').fadeIn();
-            $( '#searchContent' ).fadeIn();
-            $( '#searchButton' ).bind( "click", function(){ guidedSearchS1Call(); } );
-            $( '#freeText' ).attr( 'placeholder', 'Search Terms' );
-
+            $( '#results' ).hide();
+            $( '#query-submit' ).fadeIn();
+            $( '#search-content' ).fadeIn();
+            $( '#search-button' ).bind( "click", function() {
+                guidedSearchS1Call();
+            } );
+            $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
 
 
             /*** START Reset Term List ***/
-            var $term = $("#termsListBase > .term").clone();
-            var $termList = $("#termsListBase").clone();
-            $("#termList").remove();
-            $("#termListBlock").append($termList);
-            $termList.attr('id','termList');
-            $("#termsList").append($term);
-            $( "#nummaxhits" ).val(20);
-            $( "#max_terms" ).text(20);
-            $( "#num-terms").text('').parent().hide();
-            $( "#pagenum").val(1);
-            $( "#slider-range-min" ).slider( 'value','20' );
+            var term = $( "#terms-list-base > .term" ).clone();
+            var termList = $( "#terms-list-base" ).clone();
+            $( "#term-list" ).remove();
+            $( "#term-list-block" ).append( termList );
+            termList.attr( 'id', 'term-list' );
+            $( "#num-max-hits" ).val( 20 );
+            $( "#max-terms" ).text( 20 );
+            $( "#num-terms" ).text( '' ).parent().hide();
+            $( "#page-num" ).val( 1 );
+            $( "#slider-range-min" ).slider( 'value', '20' );
             $( "#termsPagination" ).remove();
 
-            $( '.group > .term' ).bind('remove', function( e ) {
+            $( '.group > .term' ).bind( 'remove', function( e ) {
 
                 var parent = $( this ).parents( '.group' );
 
                 e.preventDefault();
 
-                groupCheckContent(parent);
+                groupCheckContent( parent, 1 );
 
-            });
+            } );
 
-            $( ".group > .term").remove();
-            search=false;
+            $( '.group > .term' ).remove();
+            search = false;
             /*** END Reset Term List ***/
 
-        }else{
+        } else {
 
-            $( '#searchButton' ).bind( "click", function(){ automaticSearchCall(); } );
-            $( '#searchContent' ).fadeOut();
-            $( '#freeText' ).attr( 'placeholder', 'Search Dataset' );
-            $( '#querySubmit').fadeOut();
+            $( '#search-button' ).bind( "click", function() {
+                automaticSearchCall();
+            } );
+            $( '#search-content' ).fadeOut();
+            $( '#free-text' ).attr( 'placeholder', 'Search Dataset' );
+            $( '#query-submit' ).fadeOut();
 
         }
 
     } );
 
-    $( '#backToQuery' ).click( function(){
+    $( '#back-to-query' ).click( function() {
 
-        $( '#backToQuery' ).hide();
-        $( '#automaticSearchForm' ).show();
-        $( '#querySubmit').show();
-        $('#results').toggle( 'slide', {direction:'rigth'}, 400);
-        $('#searchContent').delay(500).effect( 'slide', {direction:'left'}, 500 );
+        $( '#back-to-query' ).hide();
+        $( '#automatic-search-form' ).show();
+        $( '#query-submit' ).show();
+        $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
+        $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
 
     } );
 
@@ -503,50 +524,51 @@ $(function () {
     /* START callback from animations  */
 
 
-    function newGroup( $item , $dropTarget  ) {
+    function createNewGroup( item, dropTarget ) {
 
-        var $group = $dropTarget.clone();
-        var n_group = $groups.length;
+        var group = dropTarget.clone();
+        var nGroup = groups.length;
+        var itemCloned;
 
-        if ($item.parents('.group').length > 0){
+        if ( item.parents( '.group' ).length > 0 ) {
 
-            groupCheckContent($item.parents( '.group' ), 2);
-            var $item_cloned = $item;
+            groupCheckContent( item.parents( '.group' ), 2 );
+            itemCloned = item;
 
-        }else{
+        } else {
 
-            var $item_cloned = $item.clone().hide();
-            $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
-            $item_cloned.attr('id',$item.attr('data-uid'));
+            itemCloned = item.clone().hide();
+            itemCloned.children().children().append( '<a class="delete-link" href="#"></a>' );
+            itemCloned.attr( 'id', item.attr( 'data-uid' ) );
 
         }
 
-        $groups[n_group] = $group
-        $group.attr( 'id', "group"+n_group );
-        $group.find( '#help' ).hide();
-        $group.find( '#and' ).show();
-        $group.find( '#exclude').tooltip({title:"Exclude"}).delay( 300 ).fadeIn( 200 );
-        $group.insertBefore( $dropTarget.parents( '.k-treeview'));
-        $group.hide();
-        $group.kendoTreeView( {
+        groups[nGroup] = group;
+        group.attr( 'id', "group" + nGroup );
+        group.find( '.help' ).hide();
+        group.find( '#and' ).show();
+        group.find( '.exclude' ).tooltip( {title: "Exclude"} ).delay( 300 ).fadeIn( 200 );
+        group.insertBefore( dropTarget.parents( '.k-treeview' ) );
+        group.hide();
+        group.kendoTreeView( {
 
             select: noSelect
 
         } ).fadeIn();
-        $group.droppable( {
+        group.droppable( {
 
             accept: ".term",
             activeClass: "drop-in",
             drop: function( event, ui ) {
 
-                dropTerm( ui.draggable ,$( this ) );
+                dropTerm( ui.draggable, $( this ) );
 
             }
 
         } );
 
-        $item_cloned.appendTo($group).delay( 200 ).fadeIn( 200 );
-        $item_cloned.draggable( {
+        itemCloned.appendTo( group ).delay( 200 ).fadeIn( 200 );
+        itemCloned.draggable( {
 
             cancel: "a.ui-icon", // clicking an icon won't initiate dragging
             revert: "invalid", // when not dropped, the item will revert back to its initial position
@@ -558,115 +580,116 @@ $(function () {
 
     }
 
-    function dropTerm( $item , $dropTarget  ) {
+    function dropTerm( item, dropTarget ) {
 
-        if ( $dropTarget.find( '#'+$item.attr( 'data-uid' ) ).length > 0 )
-            return ;
+        var itemCloned;
 
-        if ($item.parents('.group').length > 0){
+        if ( dropTarget.find( '#' + item.attr( 'data-uid' ) ).length > 0 ) {
 
-            groupCheckContent($item.parents( '.group' ), 2);
-            var $item_cloned = $item;
-
-
-        }else{
-
-            var $item_cloned = $item.clone().hide();
-            $item_cloned.children().children().append( "<a class='delete-link' href='#'></a>" );
-            $item_cloned.attr('id',$item.attr('data-uid'));
-
-        }
-
-        $dropTarget.find( '#help' ).fadeOut( 200 );
-        $dropTarget.find( '#exclude').delay( 300 ).fadeIn( 200 );
-
-
-        $item_cloned.appendTo( $dropTarget ).delay( 200 ).fadeIn( 200 );
-
-
-        $item_cloned.draggable( {
-
-            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
-            revert: "invalid", // when not dropped, the item will revert back to its initial position
-            containment: "document",
-            helper: "clone",
-            cursor: "move"
-
-        } );
-
-
-    }
-
-    function groupCheckContent( parent , minLength ){
-
-        if(typeof(minLength)==='undefined') minLength = 1;
-
-        if ( parent.children( '.term' ).length == minLength && parent.attr( 'id' ) != 'group0' ){
-
-            parent.parents( '.k-treeview' ).fadeOut( 400, function(){ $( this ).parents( '.k-treeview' ).remove(); } );
-            parent.parents( '.k-treeview' ).remove();
             return;
 
         }
 
+        if ( item.parents( '.group' ).length > 0 ) {
 
-        if ( parent.attr( 'id' ) == 'group0' &&  parent.children( '.term' ).length == minLength  ){
+            groupCheckContent( item.parents( '.group' ), 2 );
+            itemCloned = item;
 
-            parent.children( '#help' ).delay(400).fadeIn(200);
-            parent.children( '#exclude').fadeOut();
+
+        } else {
+
+            itemCloned = item.clone().hide();
+            itemCloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+            itemCloned.attr( 'id', item.attr( 'data-uid' ) );
+
+        }
+
+        dropTarget.find( '.help' ).fadeOut( 200 );
+        dropTarget.find( '.exclude' ).delay( 300 ).fadeIn( 200 );
+
+
+        itemCloned.appendTo( dropTarget ).delay( 200 ).fadeIn( 200 );
+
+
+        itemCloned.draggable( {
+
+            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+            revert: "invalid", // when not dropped, the item will revert back to its initial position
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
+
+        } );
+
+
+    }
+
+    function groupCheckContent( parent, minLength ) {
+
+        if ( parent.children( '.term' ).length === minLength && parent.attr( 'id' ) !== 'group0' ) {
+
+            parent.parents( '.k-treeview' ).fadeOut( 400, function() {
+                $( this ).parents( '.k-treeview' ).remove();
+            } );
+            parent.parents( '.k-treeview' ).remove();
+
+        }else if ( parent.attr( 'id' ) === 'group0' && parent.children( '.term' ).length === minLength ) {
+
+            parent.children( '.help' ).delay( 400 ).fadeIn( 200 );
+            parent.children( '.exclude' ).fadeOut();
 
         }
     }
 
     /* END callback from animations  */
 
-    $( document ).on('click', '.delete-link', function( e ) {
+    $( document ).on( 'click', '.delete-link', function( e ) {
 
         var parent = $( this ).parents( '.group' );
 
         e.preventDefault();
 
-        groupCheckContent(parent);
+        groupCheckContent( parent, 1 );
         $( this ).closest( '.k-item' ).remove();
 
 
+    } );
 
-    });
-
-    $( document ).on('click', '.page', function( e ) {
+    $( document ).on( 'click', '.page', function( e ) {
 
         var page = $( this );
-        var id = page.attr('id');
-        var newpage = 1 ;
+        var id = page.attr( 'id' );
+        var newpage = 1;
 
-        if ( id == 'prev' && !page.hasClass('disabled')) {
+        if ( id === 'prev' && !page.hasClass( 'disabled' ) ) {
 
-            newpage = parseInt($( '#pagenum').val())-1;
+            newpage = parseInt( $( '#page-num' ).val(), 10 ) - 1;
 
 
-        }else if ( id == 'next' && !page.hasClass('disabled')){
+        } else if ( id === 'next' && !page.hasClass( 'disabled' ) ) {
 
-            newpage = parseInt($( '#pagenum').val())+1;
+            newpage = parseInt( $( '#page-num' ).val(), 10 ) + 1;
 
-        }else {
+        } else {
 
-            newpage= page.attr('page');
+            newpage = page.attr( 'page' );
 
         }
 
-        $( '#pagenum').val(newpage);
+        $( '#page-num' ).val( newpage );
         e.preventDefault();
 
         guidedSearchS1Call();
 
 
-    });
-});
+    } );
+} );
 
-function noSelect(e){
+function noSelect( e ) {
 
+    "use strict";
     var item = e.node;
-    item.children('.k-state-selected' ).removeClass( 'k-state-selected' );
+    item.children( '.k-state-selected' ).removeClass( 'k-state-selected' );
     item.children( '.k-state-focused' ).removeClass( 'k-state-focused' );
 
 }

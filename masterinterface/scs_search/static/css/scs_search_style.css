@@ -1,3 +1,4 @@
+/* START overwrite of kendo class */
 .k-sprite {
     background-image: url("/static/BlueOpal/coloricons-sprite.png");
 }
@@ -25,22 +26,42 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
     border-radius: 5px;
 }
 
+.media-object {
+
+    width: 50px;height: 50px;
+
+}
+
+/* END overwrite of kendo class */
+
+/* START overwrite of bootstrap class */
+
+.popover-content {
+
+    white-space: normal !important;
+}
+
 .drop-in {
     border: 1px solid #fed22f;
     background: #ffe45c url(images/ui-bg_highlight-soft_75_ffe45c_1x100.png) 50% top repeat-x !important;
     color: #363636;
 }
 
+/* END overwrite of bootstrap class */
+
+
+/* START custom classes */
+
 .result-item {
     padding: 8px 15px;
     margin: 0 0 20px;
     list-style: none;
     background-color: #daecf4;
-    background-image: url('/static/kendo/textures/highlight.png');
+    background-image: url("/static/kendo/textures/highlight.png");
     background-image: none,-webkit-linear-gradient(top,#eaf4f9 0,#dbecf4 100%);
     background-image: none,-moz-linear-gradient(top,#eaf4f9 0,#dbecf4 100%);
     background-image: none,-o-linear-gradient(top,#eaf4f9 0,#dbecf4 100%);
-    background-image: none,linear-gradient(to bottom,#eaf4f9 0,#dbecf4 100%);
+    background-image: none,linear-gradient(to bottom, #eaf4f9 0%,#dbecf4 100%);
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
@@ -83,23 +104,22 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 
 }
 
-.popover-content {
 
-    white-space: normal !important;
-}
-
-#exclude {
+.exclude {
 
     display:none;
     top:0;
     float: right;
     margin: 5px;
 }
-#exclude .btn.active, #exclude .btn:active {
-    background-color: red;
+.exclude .btn.active, .exclude .btn:active {
+
+    background-color: #ff0000;
+
 }
 
-#termListBlock{
+
+#term-list-block{
 
     min-height: 585px ;
     position: relative;
@@ -134,5 +154,37 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 .group {
 
     padding: 8px 0 17px 0 !important;
+    min-height: 50px;
 
 }
+
+#groups-content{
+
+    min-height: 200px;
+
+}
+
+.link-to-data{
+
+    color:#fff !important;
+
+}
+
+.block-hide {
+
+    display:none;
+
+}
+
+/* END custom classes */
+
+/* START overwrite jquery-ui classes */
+
+.navbar-inner{
+
+    min-height: 65px;
+
+}
+
+/* END overwrite jquery-ui classes */
+
