@@ -19,7 +19,7 @@ def automatic_search_connector( free_text ):
             freeText (string): input text
 
         Returns:
-            json_results (onj): object JSON format
+            json_results (obj): object JSON format
 
     """
 
@@ -57,7 +57,7 @@ def guided_search_s1_connector( free_text, num_max_hits, page_num ):
             page_num (integer): page number
 
         Returns:
-            json_results (onj): object JSON format
+            json_results (obj): object JSON format
     """
 
     results = OrderedDict()
@@ -101,7 +101,7 @@ def guided_search_s2_connector( concept_uri_list ):
             concept_uri_list (string): concept_uri list
 
         Returns:
-            json_results (onj): object JSON format
+            json_results (obj): object JSON format
     """
 
     results = OrderedDict()
@@ -136,7 +136,7 @@ def complex_query_connector( concept_uri_list ):
             concept_uri_list (string): concept_uri list
 
         Returns:
-            json_results (onj): object JSON format
+            json_results (obj): object JSON format
     """
 
     results = OrderedDict()

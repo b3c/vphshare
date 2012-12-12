@@ -19,15 +19,15 @@ urlpatterns = patterns(
     url(r'^search/$', automatic_search_view, name='automaticSearchView'),
 
     url(r'^automatic_search/', automatic_search_service,
-        name='AutomaticSearchService'),
+        name='automatic_search_service'),
 
     url(r'^guided_search_s1/', guided_search_s1_service,
-        name='guidedSearchS1Service'),
+        name='guided_search_s1_service'),
 
     url(r'^guided_search_s2/', guided_search_s2_service,
-        name='guidedSearchS2Service'),
+        name='guided_search_s2_service'),
 
     url(r'^guided_search_complex_query/',
         complex_query_service,
-        name='guidedSearchComplexQueryService'),
+        name='complex_query_service'),
     )
