@@ -29,7 +29,8 @@ urlpatterns = patterns('',
     url(r'', include('masterinterface.scs.urls')),
     url(r'^scs/', include('masterinterface.scs.urls')),
     url(r'', include('masterinterface.scs_auth.urls')),
-    url(r'scs_auth/', include('masterinterface.scs_auth.urls'))
+    url(r'scs_auth/', include('masterinterface.scs_auth.urls')),
+    url(r'', include('masterinterface.scs_search.urls'))
 
     ##NEW_URL
 )

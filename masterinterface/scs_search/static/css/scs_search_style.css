@@ -1,0 +1,138 @@
+.k-sprite {
+    background-image: url("/static/BlueOpal/coloricons-sprite.png");
+}
+
+.rootfolder { background-position: 0 0; }
+.folder { background-position: 0 -16px; padding: 0px;}
+.k-item {padding: 0px !important ; z-index: 1000 !important;}
+div.k-treeview {overflow: inherit !important;  margin:10px;}
+.pdf { background-position: 0 -32px; }
+.html { background-position: 0 -48px; }
+.image { background-position: 0 -64px; }
+
+.delete-link {
+    width: 12px;
+    height: 12px;
+    background: transparent url("/static/BlueOpal/close.png") no-repeat 50% 50%;
+    overflow: hidden;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0;
+    vertical-align: top;
+    margin: 2px 0 0 3px;
+    -webkit-border-radius: 5px;
+    -mox-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.drop-in {
+    border: 1px solid #fed22f;
+    background: #ffe45c url(images/ui-bg_highlight-soft_75_ffe45c_1x100.png) 50% top repeat-x !important;
+    color: #363636;
+}
+
+.result-item {
+    padding: 8px 15px;
+    margin: 0 0 20px;
+    list-style: none;
+    background-color: #daecf4;
+    background-image: url('/static/kendo/textures/highlight.png');
+    background-image: none,-webkit-linear-gradient(top,#eaf4f9 0,#dbecf4 100%);
+    background-image: none,-moz-linear-gradient(top,#eaf4f9 0,#dbecf4 100%);
+    background-image: none,-o-linear-gradient(top,#eaf4f9 0,#dbecf4 100%);
+    background-image: none,linear-gradient(to bottom,#eaf4f9 0,#dbecf4 100%);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.wait{
+    background-color: #EAF4F9;
+    opacity: 0.6;
+    margin : 0px;
+    position: absolute;
+    z-index: 999;
+    -webkit-border-radius: 5px;
+    -mox-border-radius: 5px;
+    border-radius: 5px;
+    height: 100%;
+    width: 100%;
+}
+
+
+.wait {display: none;}
+
+.wait .img{
+
+    background-image: url('/static/img/loading.gif');
+    width: 80px;
+    height: 80px;
+    margin-left: 40%;
+    margin-top: 100px;
+    display: inline-block;
+
+}
+
+.wait .info{
+
+    display: inline-block;
+    vertical-align: top;
+    color: black;
+    font-size: 20px;
+    margin-top: 130px;
+
+}
+
+.popover-content {
+
+    white-space: normal !important;
+}
+
+#exclude {
+
+    display:none;
+    top:0;
+    float: right;
+    margin: 5px;
+}
+#exclude .btn.active, #exclude .btn:active {
+    background-color: red;
+}
+
+#termListBlock{
+
+    min-height: 585px ;
+    position: relative;
+
+}
+
+.terms-tools{
+
+    margin: 10px;
+
+}
+
+.terms-tools .label {
+
+    margin-top: 3px;
+    font-size: 16px;
+    margin-bottom: 10px;
+
+}
+
+#and {
+
+    display : none;
+    position: absolute;
+    top: -24px;
+    margin-left: 5px;
+    opacity: 1;
+    background-color: #6dbeec;
+
+}
+
+.group {
+
+    padding: 8px 0 17px 0 !important;
+
+}

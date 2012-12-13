@@ -14,15 +14,15 @@ $(document).ready(
 
         // highlight current section
         var thereIsASection = false;
-        $('nav li[id!="navhome"] a').each(
+        $('#main-nav li[id!="navhome"] a').each(
             function(){
                 if ( document.URL.match($(this).attr("href")) ){
-                    $(this).parent().toggleClass("current-menu-item");
+                    $(this).parent().toggleClass("active");
                     thereIsASection = true;
                 }
             }
         );
-        if (thereIsASection){ $("#navhome").removeClass("current-menu-item");}
+        if (thereIsASection){ $("#navhome").removeClass("active");}
 
         //create if not exist overlay div
         if ( $("#overlay").length == 0 ) {
