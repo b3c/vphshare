@@ -4,8 +4,7 @@
 __author__ = ''
 
 from django.conf.urls import patterns, url
-from views import automatic_search_view, automatic_search_service, \
-    guided_search_s1_service, guided_search_s2_service, complex_query_service
+from views import *
 
 
 # EXAMPLE USE WITH DJANGO-PISTON
@@ -16,7 +15,7 @@ from views import automatic_search_view, automatic_search_service, \
 urlpatterns = patterns(
     'scs_search.views',
 
-    url(r'^search/$', automatic_search_view, name='automaticSearchView'),
+    url(r'^search/', automatic_search_view, name='automaticSearchView'),
 
     url(r'^automatic_search/', automatic_search_service,
         name='automatic_search_service'),
@@ -30,4 +29,6 @@ urlpatterns = patterns(
     url(r'^guided_search_complex_query/',
         complex_query_service,
         name='complex_query_service'),
+
+    url(r'^search/$', search_permalink, name="searchPermalink")
     )
