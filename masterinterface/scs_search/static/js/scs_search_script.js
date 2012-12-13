@@ -5,7 +5,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var search = false;
+var SEARCH = false; // define if guidedsearchS1 search is a new search or the same.
 /* START AJAX callback */
 function resultsCallback( results ) {
 
@@ -207,7 +207,7 @@ function guidedSearchS1CallBack( results ) {
 
     } );
 
-    search = true;
+    SEARCH = true;
 }
 
 function guidedSearchS1Call() {
@@ -219,7 +219,7 @@ function guidedSearchS1Call() {
         numMaxHits = $( '#num-max-hits' ).val(),
         pageNum = $( '#page-num' ).val();
 
-    if ( search === false ) {
+    if ( SEARCH === false ) {
 
         $( '#page-num' ).val( 1 );
         pageNum = 1;
@@ -339,13 +339,16 @@ function guidedSearchComplexQueryCall() {
 
 /* END AJAX call  */
 
-/* START jquery ready in search page */
+/* START jquery ready in SEARCH page */
 $( function() {
 
     "use strict";
-    var term = $( '.term' ), groups = [], newGroup = $( '#new-group' );
+    var groups = [];                   //groups array content block
+    var newGroup = $( '#new-group' );  //is "IN AND TERMS" group that call new group event
 
     /** START define new event 'remove' **/
+
+    /** define remove event**/
     var ev = new $.Event( 'remove' ),
         orig = $.fn.remove;
     $.fn.remove = function() {
@@ -354,9 +357,8 @@ $( function() {
     };
     /** END define new event 'remove' **/
 
-
-    groups[0] = $( '#group0' );
-
+    /* START graphic wrap */
+    groups[0] = $( '#group0' ); //load first group (IN OR TERMS)
 
     $( ".exclude" ).tooltip( {title: "Exclude"} );
 
@@ -378,14 +380,14 @@ $( function() {
             if ( $( '#page-num' ).val() > Math.ceil( ($( "#num-max-hits" ).val() / 20) ) ) {
                 $( '#page-num' ).val( Math.ceil( ($( "#num-max-hits" ).val() / 20) ) );
             }
-            if ( search ) {
+            if ( SEARCH ) {
                 guidedSearchS1Call();
             }
 
         }
     } );
-    $( "#amount" ).val( "$" + $( "#slider-range-min" ).slider( "value" ) );
 
+    $( "#amount" ).val( "$" + $( "#slider-range-min" ).slider( "value" ) );
 
     $( '#guided-search-check-box' ).removeAttr( 'checked' );
 
@@ -399,8 +401,6 @@ $( function() {
     /* START event wrap */
 
     /** START drang & drop events */
-
-
     groups[0].droppable( {
 
         accept: ".term",
@@ -426,104 +426,12 @@ $( function() {
     } );
     /** END drang & drop events */
 
-    /** START click events */
-
-    $( '#free-text' ).change( function() {
-        search = false;
-    } );
-
-    $( '#query-submit' ).bind( "click", function() {
-        guidedSearchS2Call();
-    } );
-//    $( '#query-submit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
-
-    $( '#search-button' ).bind( "click", function() {
-        automaticSearchCall();
-    } );
-    $( '#automatic-search-form' ).bind(
-        "submit",
-        function() {
-            if ( $( '#guided-search-check-box' ).attr( 'checked' ) ) {
-                guidedSearchS1Call();
-            } else {
-                automaticSearchCall();
-            }
-            return false;
-        }
-    );
-
-    $( '#guided-search-check-box' ).click( function() {
-
-        $( '#search-button' ).unbind( 'click' );
-
-        if ( $( '#guided-search-check-box' ).attr( 'checked' ) ) {
-
-            $( '#results' ).hide();
-            $( '#query-submit' ).fadeIn();
-            $( '#search-content' ).fadeIn();
-            $( '#search-button' ).bind( "click", function() {
-                guidedSearchS1Call();
-            } );
-            $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
-
-
-            /*** START Reset Term List ***/
-            var term = $( "#terms-list-base > .term" ).clone();
-            var termList = $( "#terms-list-base" ).clone();
-            $( "#term-list" ).remove();
-            $( "#term-list-block" ).append( termList );
-            termList.attr( 'id', 'term-list' );
-            $( "#num-max-hits" ).val( 20 );
-            $( "#max-terms" ).text( 20 );
-            $( "#num-terms" ).text( '' ).parent().hide();
-            $( "#page-num" ).val( 1 );
-            $( "#slider-range-min" ).slider( 'value', '20' );
-            $( "#termsPagination" ).remove();
-
-            $( '.group > .term' ).bind( 'remove', function( e ) {
-
-                var parent = $( this ).parents( '.group' );
-
-                e.preventDefault();
-
-                groupCheckContent( parent, 1 );
-
-            } );
-
-            $( '.group > .term' ).remove();
-            search = false;
-            /*** END Reset Term List ***/
-
-        } else {
-
-            $( '#search-button' ).bind( "click", function() {
-                automaticSearchCall();
-            } );
-            $( '#search-content' ).fadeOut();
-            $( '#free-text' ).attr( 'placeholder', 'Search Dataset' );
-            $( '#query-submit' ).fadeOut();
-
-        }
-
-    } );
-
-    $( '#back-to-query' ).click( function() {
-
-        $( '#back-to-query' ).hide();
-        $( '#automatic-search-form' ).show();
-        $( '#query-submit' ).show();
-        $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
-        $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
-
-    } );
-
-    /** END click events */
     /* END events wrap */
 
 
     /* START callback from animations  */
 
-
+    /* Create new group when term is dropped in AND group*/
     function createNewGroup( item, dropTarget ) {
 
         var group = dropTarget.clone();
@@ -580,50 +488,47 @@ $( function() {
 
     }
 
+    /* Create new group when term is dropped in OR group*/
     function dropTerm( item, dropTarget ) {
 
         var itemCloned;
 
-        if ( dropTarget.find( '#' + item.attr( 'data-uid' ) ).length > 0 ) {
+        //if term dropped is not present in group , it can be dropped
+        if ( (dropTarget.find( '#' + item.attr( 'data-uid' ) ).length === 0 )) {
 
-            return;
+            //if term came from other groups or from term-list search results
+            if ( item.parents( '.group' ).length > 0 ) {
 
+                groupCheckContent( item.parents( '.group' ), 2 );
+                itemCloned = item;
+
+
+            } else {
+
+                itemCloned = item.clone().hide();
+                itemCloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+                itemCloned.attr( 'id', item.attr( 'data-uid' ) );
+
+            }
+
+            dropTarget.find( '.help' ).fadeOut( 200 );
+            dropTarget.find( '.exclude' ).delay( 300 ).fadeIn( 200 );
+
+            itemCloned.appendTo( dropTarget ).delay( 200 ).fadeIn( 200 );
+
+            itemCloned.draggable( {
+
+                cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+                revert: "invalid", // when not dropped, the item will revert back to its initial position
+                containment: "document",
+                helper: "clone",
+                cursor: "move"
+
+            } );
         }
-
-        if ( item.parents( '.group' ).length > 0 ) {
-
-            groupCheckContent( item.parents( '.group' ), 2 );
-            itemCloned = item;
-
-
-        } else {
-
-            itemCloned = item.clone().hide();
-            itemCloned.children().children().append( "<a class='delete-link' href='#'></a>" );
-            itemCloned.attr( 'id', item.attr( 'data-uid' ) );
-
-        }
-
-        dropTarget.find( '.help' ).fadeOut( 200 );
-        dropTarget.find( '.exclude' ).delay( 300 ).fadeIn( 200 );
-
-
-        itemCloned.appendTo( dropTarget ).delay( 200 ).fadeIn( 200 );
-
-
-        itemCloned.draggable( {
-
-            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
-            revert: "invalid", // when not dropped, the item will revert back to its initial position
-            containment: "document",
-            helper: "clone",
-            cursor: "move"
-
-        } );
-
-
     }
 
+    //verify if group have to be delete (no more terms inside it)
     function groupCheckContent( parent, minLength ) {
 
         if ( parent.children( '.term' ).length === minLength && parent.attr( 'id' ) !== 'group0' ) {
@@ -635,6 +540,7 @@ $( function() {
 
         }else if ( parent.attr( 'id' ) === 'group0' && parent.children( '.term' ).length === minLength ) {
 
+            //if group is group0 return to intial view.
             parent.children( '.help' ).delay( 400 ).fadeIn( 200 );
             parent.children( '.exclude' ).fadeOut();
 
@@ -643,6 +549,99 @@ $( function() {
 
     /* END callback from animations  */
 
+    /* START click event */
+
+    $( '#free-text' ).change( function() {
+        SEARCH = false;
+    } );
+
+    $( '#query-submit' ).bind( "click", function() {
+        guidedSearchS2Call();
+    } );
+    //$( '#query-submit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
+
+    $( '#search-button' ).bind( "click", function() {
+        automaticSearchCall();
+    } );
+    $( '#automatic-search-form' ).bind(
+        "submit",
+        function() {
+            if ( $( '#guided-search-check-box' ).attr( 'checked' ) ) {
+                guidedSearchS1Call();
+            } else {
+                automaticSearchCall();
+            }
+            return false;
+        }
+    );
+
+    /** reset of guidedSearch S1 area**/
+    $( '#guided-search-check-box' ).click( function() {
+
+        $( '#search-button' ).unbind( 'click' );
+
+        if ( $( '#guided-search-check-box' ).attr( 'checked' ) ) {
+
+            $( '#results' ).hide();
+            $( '#query-submit' ).fadeIn();
+            $( '#search-content' ).fadeIn();
+            $( '#search-button' ).bind( "click", function() {
+                guidedSearchS1Call();
+            } );
+            $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
+
+
+            /*** START Reset Term List ***/
+            var term = $( "#terms-list-base > .term" ).clone();
+            var termList = $( "#terms-list-base" ).clone();
+            $( "#term-list" ).remove();
+            $( "#term-list-block" ).append( termList );
+            termList.attr( 'id', 'term-list' );
+            $( "#num-max-hits" ).val( 20 );
+            $( "#max-terms" ).text( 20 );
+            $( "#num-terms" ).text( '' ).parent().hide();
+            $( "#page-num" ).val( 1 );
+            $( "#slider-range-min" ).slider( 'value', '20' );
+            $( "#termsPagination" ).remove();
+
+            $( '.group > .term' ).bind( 'remove', function( e ) {
+
+                var parent = $( this ).parents( '.group' );
+
+                e.preventDefault();
+
+                groupCheckContent( parent, 1 );
+
+            } );
+
+            $( '.group > .term' ).remove();
+            SEARCH = false;
+            /*** END Reset Term List ***/
+
+        } else {
+
+            $( '#search-button' ).bind( "click", function() {
+                automaticSearchCall();
+            } );
+            $( '#search-content' ).fadeOut();
+            $( '#free-text' ).attr( 'placeholder', 'Search Dataset' );
+            $( '#query-submit' ).fadeOut();
+
+        }
+
+    } );
+
+    $( '#back-to-query' ).click( function() {
+
+        $( '#back-to-query' ).hide();
+        $( '#automatic-search-form' ).show();
+        $( '#query-submit' ).show();
+        $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
+        $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
+
+    } );
+
+    /** event to delete term from group **/
     $( document ).on( 'click', '.delete-link', function( e ) {
 
         var parent = $( this ).parents( '.group' );
@@ -655,6 +654,7 @@ $( function() {
 
     } );
 
+    /** event to change page of terms-list **/
     $( document ).on( 'click', '.page', function( e ) {
 
         var page = $( this );
@@ -683,8 +683,13 @@ $( function() {
 
 
     } );
+    /* END click event */
 } );
 
+/*
+noSelect hide the selection event
+from term in kendo treeview ***MAYBE SOME BUG HERE***
+*/
 function noSelect( e ) {
 
     "use strict";
