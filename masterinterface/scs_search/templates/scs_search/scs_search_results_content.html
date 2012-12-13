@@ -1,1 +1,37 @@
-{% extends 'scs_search/scs_search.html' %}
+<div id="results"  class="row-fluid hide" >
+
+    <div id="results-block" class="span12" >
+
+        <ul class="media-list">
+
+            <!-- START concept_uri result -->
+            <li id="concept-base" class="concept-item media result-item hide" >
+                <a class="pull-left" href="#">
+                    <img class="media-object" src="/static/img/concept_uri.png" >
+                </a>
+                <div class=" media-body">
+
+                    <h4  class="concept-label media-heading"></h4>
+                    <p class="concept-description"></p>
+
+                    <!-- START dataset list -->
+                    <div class="dataset-item media hide "  >
+                        <a class="pull-left" href="#">
+                            <img class="media-object" src="/static/img/dataresource.png" >
+                        </a>
+                        <div class="media-body">
+                            <div class="span10"><h4 class="dataset-label media-heading"></h4>
+                                <p class="dataset-description" ></p></div><div class="span1"><a class="link-to-data btn btn-primary"  target="_blank">Visualize data</a></div>
+                        </div>
+                    </div>
+
+                    <!-- END dataset list -->
+
+                </div>
+            </li>
+            <!-- END concept_uri result -->
+
+        </ul>
+    </div>
+
+</div>
