@@ -121,20 +121,20 @@ def complex_query_service( request ):
                 if len( group ) > 1:
                     for ( i, concept ) in enumerate( group ):
                         if i < len( group ) - 1:
-                            terms = terms + '(' + concept + ' OR '
+                            terms = terms + ' ( ' + concept + ' OR '
                         else:
-                            terms = terms + concept + ')'
+                            terms = terms + concept + ' ) '
                 else:
-                    terms = terms + '(' + group[0] + ')'
+                    terms = terms + ' ( ' + group[0] + ' ) '
             else:
                 if len( group ) > 1:
                     for ( i, concept ) in enumerate( group ):
                         if i < len(group) - 1:
-                            terms = terms + ' AND (' + concept + ' OR '
+                            terms = terms + 'AND ( ' + concept + ' OR '
                         else:
-                            terms = terms + concept + ')'
+                            terms = terms + concept + ' ) '
                 else:
-                    terms = terms + ' AND (' + group[0] + ')'
+                    terms = terms + 'AND ( ' + group[0] + ' ) '
 
         connector = complex_query_connector( quote( terms ) )
 

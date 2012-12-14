@@ -300,7 +300,7 @@ function guidedSearchComplexQueryCall() {
             var input = $( this ).val();
 
             if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
-                groupsQuery.push( ['NOT' + input ] );
+                groupsQuery.push( ['NOT ' + input ] );
             }
             else {
                 conceptUriList.push( input );
@@ -556,7 +556,9 @@ $( function() {
     } );
 
     $( '#query-submit' ).bind( "click", function() {
-        guidedSearchS2Call();
+        //guidedSearchS2Call();
+        guidedSearchComplexQueryCall()
+
     } );
     //$( '#query-submit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
 

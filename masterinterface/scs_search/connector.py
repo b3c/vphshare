@@ -148,7 +148,7 @@ def complex_query_connector( concept_uri_list ):
 
     for concept_elem in concept_list:
         dataset = OrderedDict()
-        concept_uri = concept_elem.attrib[ 'uri' ]
+        concept_uri = concept_elem.attrib[ 'logicalExpression' ]
 
         for dataset_elem in concept_elem:
             dataset_label = dataset_elem.attrib['label']
