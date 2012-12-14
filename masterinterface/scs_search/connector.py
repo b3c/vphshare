@@ -41,9 +41,7 @@ def automatic_search_connector( free_text ):
 
         results[ concept_uri ] = dataset_dict
 
-    json_results = json.dumps( results, sort_keys = False )
-
-    return json_results
+    return results
 
 
 def guided_search_s1_connector( free_text, num_max_hits, page_num ):
@@ -158,8 +156,6 @@ def complex_query_connector( concept_uri_list ):
 
         results[ concept_uri ] = dataset
 
-    json_results = json.dumps( results, sort_keys = False )
-
-    return json_results
+    return results
 
 

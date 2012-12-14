@@ -1,7 +1,41 @@
+{% if results == "" %}
 <div id="results"  class="row-fluid hide" >
-
+{% else %}
+<div id="results"  class="row-fluid" >
+{% endif %}
     <div id="results-block" class="span12" >
+        {% for concept, dataset in results.items %}
+            <ul class="media-list">
 
+                <!-- START concept_uri result -->
+                <li id="concept-uri" class="concept-item media result-item" >
+                    <a class="pull-left" href="#">
+                        <img class="media-object" src="/static/img/concept_uri.png" >
+                    </a>
+                    <div class=" media-body">
+
+                        <h4  class="concept-label media-heading">{{ concept }}</h4>
+                        <p class="concept-description"></p>
+                        {% for dataset_name, data in dataset.items %}
+                        <!-- START dataset list -->
+                        <div class="dataset-item media "  >
+                            <a class="pull-left" href="#">
+                                <img class="media-object" src="/static/img/dataresource.png" >
+                            </a>
+                            <div class="media-body">
+                                <div class="span10"><h4 class="dataset-label media-heading">{{ dataset_name }}</h4>
+                                    <p class="dataset-description" >Match : {{ data.0 }}</p></div><div class="span1"><a class="link-to-data btn btn-primary" href="{{ data.1 }}" target="_blank">Visualize data</a></div>
+                            </div>
+                        </div>
+
+                        <!-- END dataset list -->
+                        {% endfor %}
+                    </div>
+                </li>
+                <!-- END concept_uri result -->
+
+            </ul>
+        {% endfor %}
         <ul class="media-list">
 
             <!-- START concept_uri result -->

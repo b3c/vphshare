@@ -79,9 +79,9 @@
                                         <div>
                                             <div id="search-menu-link"><i class="icon-search icon-white"></i>Search</div>
                                             <ul id="search-submenu" >
-                                                <li><a id="automatic-search" href="/search/"><i class="icon-search icon-white"></i>Automatic</a>
-                                                <li><a id="guided-search" href="/search/"><i class="icon-search icon-white"></i>Guided</a>
-                                                <li><a id="complex-query-search" href="/search/"><i class="icon-search icon-white"></i>Complex Query</a>
+                                                <li><a id="automatic-search" href="/search/free-text/"><i class="icon-search icon-white"></i>Automatic</a>
+                                                <li><a id="guided-search" href="/search/guided/"><i class="icon-search icon-white"></i>Guided</a>
+                                                <li><a id="complex-query-search" href="/search/complex/"><i class="icon-search icon-white"></i>Complex Query</a>
                                             </ul>
                                         </div>
                                     </li>
@@ -99,7 +99,7 @@
                             <li>
                                 {% block login %}
                                     {% if not request.user.is_authenticated %}
-                                        <a class="popup" id="btlogin" rel="#overlay" href="/scs_auth/bt_login" onclick="event.preventDefault();$('#overlay').load();">
+                                        <a class="popup" id="btlogin" rel="#overlay" href="/scs_auth/bt_login" onclick="event.preventDefault();$("#overlay").load();">
                                             <span>Login with <img style="position:relative; top:-3px" src="/static/biomedtown_24.png" alt="bt" title="login with your BiomedTown identity"/> </span>
                                         </a>
 

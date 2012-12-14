@@ -15,7 +15,11 @@ from views import *
 urlpatterns = patterns(
     'scs_search.views',
 
-    url(r'^search/', automatic_search_view, name='automaticSearchView'),
+    url(r'^search/free-text/', automatic_search_view, name='automaticSearchView'),
+
+    url(r'^search/complex/', complex_search_view, name='complexQueryView'),
+
+    url(r'^search/guided/', guided_search_view, name='guidedQueryView'),
 
     url(r'^automatic_search/', automatic_search_service,
         name='automatic_search_service'),
