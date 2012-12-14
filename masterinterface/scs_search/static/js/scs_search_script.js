@@ -40,7 +40,9 @@ function resultsCallback( results ) {
                 }
 
             }
-
+            if ( !datasetLabel ){
+                conceptItem.find( '.concept-description' ).text('No results matching');
+            }
             conceptItem.appendTo( '.media-list' );
             conceptItem.show();
         }

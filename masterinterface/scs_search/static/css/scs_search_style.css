@@ -28,7 +28,7 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 
 .media-object {
 
-    width: 50px;height: 50px;
+    width: 30px;height: 30px;
 
 }
 
@@ -188,3 +188,10 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 
 /* END overwrite jquery-ui classes */
 
+.concept-label {
+    color:#868686;
+}
+
+.concept-description {
+    color: #317EAC;
+}
