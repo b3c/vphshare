@@ -1,9 +1,7 @@
-{% load scs_extras %}
-
-<!DOCTYPE html>
+{% load scs_extras %}<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"/>
 
     <title>
         {%  block title %}
@@ -12,7 +10,7 @@
     </title>
 
    	<link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'/>
-    <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel='stylesheet' type='text/css'/>
 
    	{% block stylesheets %}
     {% endblock %}
@@ -20,7 +18,7 @@
     <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
 
 
-    <link href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+    <link href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet"/>
     <script src="/static/jquery-1.8.3.js"></script>
     <script src="/static/jquery-ui-1.9.2.custom.min.js"></script>
     <script src="/static/jquery.tools.min.js"></script>
@@ -31,28 +29,23 @@
     <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.css" type="text/css" media="screen" />
     <script src="/static/bootstrap.min.js" type="text/javascript"></script>
-
     <!-- END bootstrap  -->
 
     <style type="text/css">
         body{
-            font-family: 'Ubuntu',sans-serif;
+            font-family: 'Ubuntu','sans-serif';
         }
     </style>
-
-
     {% block javascripts %} {% endblock %}
 
     {% block extrahead %} {% endblock %}
-
 </head>
 <body>
-
     {% if not request.is_ajax %}
 
         {% block header %}
             <header id="header">
-                <img id="logo-left" src="/static/logo-web5.png"/>
+                <img id="logo-left" src="/static/logo-web.png"/>
                 <div id="page-title-wrapper">
                     <div id="page-title">
                         {% block page-title %} {% endblock %}
@@ -61,17 +54,15 @@
 
                 <div id="breadcrumbs-wrapper">
                     <ul id="breadcrumbs" class="breadcrumb">
-                        <li>You are here: <a href="/" title="Home">Home</a> <span class="divider">/</li>
+                        <li>You are here: <a href="/" title="Home">Home</a> <span class="divider">/</span></li>
                         {%  for crumb in request.path|breadcrumbs %}
-                            <li {% if cycle.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a><span class="divider">/</li>
+                            <li {% if cycle.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a><span class="divider">/</span></li>
                         {% endfor %}
-                    </div>
+                    </ul>
                 </div>
             </header>
         {% endblock %}
-
     {% endif %}
-
     <div id="content">
         <div class="container">
             <div class="row">
@@ -108,7 +99,7 @@
                             <li>
                                 {% block login %}
                                     {% if not request.user.is_authenticated %}
-                                        <a class="popup" id="btlogin" rel="#overlay" href="/scs_auth/bt_login" onclick="event.preventDefault();$("#overlay").load();">
+                                        <a class="popup" id="btlogin" rel="#overlay" href="/scs_auth/bt_login" onclick="event.preventDefault();$('#overlay').load();">
                                             <span>Login with <img style="position:relative; top:-3px" src="/static/biomedtown_24.png" alt="bt" title="login with your BiomedTown identity"/> </span>
                                         </a>
 
@@ -145,8 +136,6 @@
             </footer>
         {% endblock %}
     {% endif %}
-
-
 </body>
 </html>
 

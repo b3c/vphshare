@@ -148,3 +148,13 @@ def complex_query_service( request ):
     response._is_string = True
 
     return response
+
+
+
+def search_permalink( request ):
+
+    if request.method == 'GET':
+
+        return HttpResponse( status = 200 );
+
+    return HttpResponse( status = 403 )
