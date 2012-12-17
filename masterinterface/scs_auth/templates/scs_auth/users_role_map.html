@@ -7,7 +7,7 @@
     <form  method="POST" id ="users_remove_role" >{% csrf_token %} </form>
     <form method="POST" id ="users_update_role_map" action="{%   url users_update_role_map %}{% if getmail %}?getmail={{ getmail }}{% endif %}">
         {% csrf_token %}
-        <table class="table table-hover table-bordered">
+        <table  class="tableuserlits table table-hover table-bordered">
             <thead>
             <tr><th>Username</th><th>Email</th>
                 {% for role in Roles %}

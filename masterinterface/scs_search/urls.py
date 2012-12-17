@@ -1,19 +1,38 @@
-__author__ = ""
+"""
+    scs_search: urls.py Module
+"""
+__author__ = ''
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 from views import *
-#from piston.resource import Resource
 
-#automatic_search_entries = Resource( handler=AutomaticSearchService)
-#guided_search_s1_entries = Resource( handler=GuidedSearchS1Service)
-#guided_search_s2_entries = Resource( handler=GuidedSearchS2Service)
+
+# EXAMPLE USE WITH DJANGO-PISTON
+# from piston.resource import Resource
+# automatic_search_entries = Resource( handler=AutomaticSearchService)
+
 
 urlpatterns = patterns(
-
     'scs_search.views',
-    url( r'^search/$', automaticSearchView , name='automaticSearchView' ),
-    url( r'^automatic_search/', automaticSearchService, name='AutomaticSearchService' ) ,
-    url( r'^guided_search_s1/', guidedSearchS1Service, name='guidedSearchS1Service' ) ,
-    url( r'^guided_search_s2/', guidedSearchS2Service, name='guidedSearchS2Service' ) ,
-    url( r'^guided_search_complex_query/', guidedSearchComplexQueryService, name='guidedSearchComplexQueryService' ) ,
+
+    url(r'^search/free-text/', automatic_search_view, name='automaticSearchView'),
+
+    url(r'^search/complex/', complex_search_view, name='complexQueryView'),
+
+    url(r'^search/guided/', guided_search_view, name='guidedQueryView'),
+
+    url(r'^automatic_search/', automatic_search_service,
+        name='automatic_search_service'),
+
+    url(r'^guided_search_s1/', guided_search_s1_service,
+        name='guided_search_s1_service'),
+
+    url(r'^guided_search_s2/', guided_search_s2_service,
+        name='guided_search_s2_service'),
+
+    url(r'^guided_search_complex_query/',
+        complex_query_service,
+        name='complex_query_service'),
+
+    url(r'^search/$', search_permalink, name="searchPermalink")
     )

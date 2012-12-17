@@ -1,9 +1,7 @@
-{% load scs_extras %}
-
-<!DOCTYPE html>
+{% load scs_extras %}<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"/>
 
     <title>
         {%  block title %}
@@ -12,7 +10,7 @@
     </title>
 
    	<link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'/>
-    <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel='stylesheet' type='text/css'/>
 
    	{% block stylesheets %}
     {% endblock %}
@@ -20,7 +18,7 @@
     <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
 
 
-    <link href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+    <link href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet"/>
     <script src="/static/jquery-1.8.3.js"></script>
     <script src="/static/jquery-ui-1.9.2.custom.min.js"></script>
     <script src="/static/jquery.tools.min.js"></script>
@@ -31,28 +29,23 @@
     <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.css" type="text/css" media="screen" />
     <script src="/static/bootstrap.min.js" type="text/javascript"></script>
-
     <!-- END bootstrap  -->
 
     <style type="text/css">
         body{
-            font-family: 'Ubuntu',sans-serif;
+            font-family: 'Ubuntu','sans-serif';
         }
     </style>
-
-
     {% block javascripts %} {% endblock %}
 
     {% block extrahead %} {% endblock %}
-
 </head>
 <body>
-
     {% if not request.is_ajax %}
 
         {% block header %}
             <header id="header">
-                <img id="logo-left" src="/static/logo-web5.png"/>
+                <img id="logo-left" src="/static/logo-web.png"/>
                 <div id="page-title-wrapper">
                     <div id="page-title">
                         {% block page-title %} {% endblock %}
@@ -61,17 +54,15 @@
 
                 <div id="breadcrumbs-wrapper">
                     <ul id="breadcrumbs" class="breadcrumb">
-                        <li>You are here: <a href="/" title="Home">Home</a> <span class="divider">/</li>
+                        <li>You are here: <a href="/" title="Home">Home</a> <span class="divider">/</span></li>
                         {%  for crumb in request.path|breadcrumbs %}
-                            <li {% if cycle.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a><span class="divider">/</li>
+                            <li {% if cycle.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a><span class="divider">/</span></li>
                         {% endfor %}
-                    </div>
+                    </ul>
                 </div>
             </header>
         {% endblock %}
-
     {% endif %}
-
     <div id="content">
         <div class="container">
             <div class="row">
@@ -84,16 +75,25 @@
 
                             {% if request.user.is_authenticated %}
                                 {% if request.user.is_staff %}
-                                    <li><a href="/search/"><i class="icon-search icon-white"></i>Search</a></li>
-                                    <li><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
-                                    <li><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
-                                    <li><a href="/cyfronet/datamanager/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
+                                    <li class="list-parent">
+                                        <div>
+                                            <div id="search-menu-link"><i class="icon-search icon-white"></i>Search</div>
+                                            <ul id="search-submenu" >
+                                                <li class="list-parent"><a id="automatic-search" href="/search/free-text/"><i class="icon-play icon-white"></i>Free text</a>
+                                                <li class="list-parent"><a id="guided-search" href="/search/guided/"><i class="icon-play icon-white"></i>Guided</a>
+                                                <li class="list-parent"><a id="complex-query-search" href="/search/complex/"><i class="icon-play icon-white"></i>Complex Query</a>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="list-parent"><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
+                                    <li class="list-parent"><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
+                                    <li class="list-parent"><a href="/cyfronet/datamanager/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
                                 {% endif %}
-                                <li><a href="/scs/workflows/"><i class="icon-tasks icon-white"></i>Workflows</a></li>
+                                <li class="list-parent"><a href="/scs/workflows/"><i class="icon-tasks icon-white"></i>Workflows</a></li>
                             {% endif %}
 
-                            <li><a href="/scs/contacts"><i class="icon-envelope icon-white"></i>Contact</a></li>
-                            <li><a href="/scs/help"><i class="icon-info-sign icon-white"></i>Help</a></li>
+                            <li class="list-parent"><a href="/scs/contacts/"><i class="icon-envelope icon-white"></i>Contact</a></li>
+                            <li class="list-parent"><a href="/scs/help/"><i class="icon-info-sign icon-white"></i>Help</a></li>
                         </ul>
                         <ul class="nav nav-pills nav-stacked">
                             <li>
@@ -136,8 +136,6 @@
             </footer>
         {% endblock %}
     {% endif %}
-
-
 </body>
 </html>
 
