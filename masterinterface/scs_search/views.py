@@ -13,6 +13,7 @@ from connector import automatic_search_connector
 from connector import guided_search_s1_connector
 from connector import guided_search_s2_connector
 from connector import complex_query_connector
+from models import *
 
 
 def automatic_search_view( request ):
@@ -120,8 +121,10 @@ def complex_query_service( request ):
             if j == 0:
                 if len( group ) > 1:
                     for ( i, concept ) in enumerate( group ):
-                        if i < len( group ) - 1:
+                        if i < len( group ) - 1 and i == 0:
                             terms = terms + ' ( ' + concept + ' OR '
+                        elif i < len( group ) - 1:
+                            terms = terms + ' ' + concept + ' OR '
                         else:
                             terms = terms + concept + ' ) '
                 else:
@@ -149,6 +152,15 @@ def complex_query_service( request ):
 
     return response
 
+
+@csrf_exempt
+def store_complex_query ( request ):
+    """
+    """
+
+    if request.method == 'POST':
+
+        query = Query.objects.add()
 
 
 def search_permalink( request ):
