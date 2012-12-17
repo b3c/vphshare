@@ -377,6 +377,26 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
     -webkit-border-radius: 0px 0px 10px 10px;
 }
 
+#search-submenu a{
+
+    color: #2fa4e7;
+    text-decoration: none;
+
+}
+
+#search-submenu a:hover {
+
+    color: #0072AF;
+
+}
+
+#search-submenu li.active a{
+
+    color: #0072AF;
+    cursor: default;
+
+}
+
 /* FILTER --------------------------------------------------------*/
 
 #content .filter{
