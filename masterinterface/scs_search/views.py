@@ -163,8 +163,10 @@ def complex_query_service( request ):
             if j == 0:
                 if len( group ) > 1:
                     for ( i, concept ) in enumerate( group ):
-                        if i < len( group ) - 1:
+                        if i < len( group ) - 1 and i == 0:
                             terms = terms + ' ( ' + concept + ' OR '
+                        elif i < len( group ) - 1:
+                            terms = terms + ' ' + concept + ' OR '
                         else:
                             terms = terms + concept + ' ) '
                 else:
