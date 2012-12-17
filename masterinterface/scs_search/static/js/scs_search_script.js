@@ -59,48 +59,6 @@ function automaticSearchCallback( results ) {
 
 }
 
-function guidedSearchS2Callback( results ) {
-
-    "use strict";
-    resultsCallback( results );
-    $( '#automatic-search-form' ).hide();
-    $( '#query-submit' ).hide();
-    $( '#back-to-query' ).fadeIn();
-    $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
-    $( '#results' ).delay( 500 ).effect( 'slide', {direction: 'right'}, 500 );
-
-}
-
-/* END AJAX callback */
-
-/* START AJAX call  */
-function automaticSearchCall() {
-
-    "use strict";
-    var form;
-    var url;
-    var input;
-
-    form = $( "#automatic-search-form" );
-    input = form.find( 'input[name="free-text"]' ).val();
-    url = '/automatic_search/';
-    $( '#wait' ).fadeIn();
-    $.address.state($.address.baseURL().split('?')[0]).value('?input='+input);
-    $.ajax( {
-        type: 'POST',
-        url: url,
-        data: {input: input},
-        success: function( results ) {
-            $( '#wait' ).fadeOut();
-            automaticSearchCallback( results );
-        },
-        error: function( error ) {
-
-            $( '#wait' ).fadeOut();
-
-        }
-    } );
-}
 
 function guidedSearchS1CallBack( results ) {
 
@@ -147,6 +105,7 @@ function guidedSearchS1CallBack( results ) {
     }
 
     $( "#terms-table-block").show();
+    $( "#query-form").show();
 
     SEARCH = true;
 }
@@ -172,7 +131,15 @@ function complexSearchS1CallBack( results ) {
     $( "#term-list-block" ).append( termList );
     termList.attr( 'id', 'term-list' );
 
+    $( "#num-terms" ).text( numResultsTotal ).parent().show();
+
     var termsResults = results[pagenum];
+
+    if ( termsResults.length === 0 ) {
+
+        return;
+
+    }
 
     for ( item in termsResults ) {
 
@@ -250,8 +217,6 @@ function complexSearchS1CallBack( results ) {
 
     }
 
-    $( "#num-terms" ).text( numResultsTotal ).parent().show();
-
     termList.kendoTreeView( {
 
         select: noSelect
@@ -261,6 +226,49 @@ function complexSearchS1CallBack( results ) {
     SEARCH = true;
 }
 
+
+function guidedSearchS2Callback( results ) {
+
+    "use strict";
+    resultsCallback( results );
+    $( '#automatic-search-form' ).hide();
+    $( '#query-submit' ).hide();
+    $( '#back-to-query' ).fadeIn();
+    $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
+    $( '#results' ).delay( 500 ).effect( 'slide', {direction: 'right'}, 500 );
+
+}
+
+/* END AJAX callback */
+
+/* START AJAX call  */
+function automaticSearchCall() {
+
+    "use strict";
+    var form;
+    var url;
+    var input;
+
+    form = $( "#automatic-search-form" );
+    input = form.find( 'input[name="free-text"]' ).val();
+    url = '/automatic_search/';
+    $( '#wait' ).fadeIn();
+    $.address.state($.address.baseURL().split('?')[0]).value('?input='+input);
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: {input: input},
+        success: function( results ) {
+            $( '#wait' ).fadeOut();
+            automaticSearchCallback( results );
+        },
+        error: function( error ) {
+
+            $( '#wait' ).fadeOut();
+
+        }
+    } );
+}
 
 function guidedSearchS1Call() {
 
@@ -644,7 +652,7 @@ $( function() {
 
     $( '#query-submit' ).bind( "click", function() {
         //guidedSearchS2Call();
-        guidedSearchComplexQueryCall()
+        guidedSearchComplexQueryCall();
 
     } );
     //$( '#query-submit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
@@ -678,7 +686,7 @@ $( function() {
             $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
 
 
-            //* START Reset Term List //
+            // START Reset Term List //
             var term = $( "#terms-list-base > .term" ).clone();
             var termList = $( "#terms-list-base" ).clone();
             $( "#term-list" ).remove();
@@ -703,7 +711,7 @@ $( function() {
 
             $( '.group > .term' ).remove();
             SEARCH = false;
-            /*** END Reset Term List /
+            / END Reset Term List /
 
         } else {
 
@@ -723,16 +731,7 @@ $( function() {
 
     */
 
-    $(document).on( 'click', '#back-to-query', function() {
 
-        $( '#back-to-query' ).hide();
-        $( '#automatic-search-form' ).show();
-        $( '#query-submit' ).show();
-        $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
-        $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
-        $.address.state($.address.baseURL().split('?')[0]).value('');
-
-    } );
 
     /** event to delete term from group **/
     $( document ).on( 'click', '.delete-link', function( e ) {
@@ -779,6 +778,18 @@ $( function() {
     /* END click event */
 } );
 
+$(document).on( 'click', '#back-to-query', function() {
+
+    "use strict";
+    $( '#back-to-query' ).hide();
+    $( '#automatic-search-form' ).show();
+    $( '#query-submit' ).show();
+    $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
+    $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
+    $.address.state($.address.baseURL().split('?')[0]).value('?');
+
+} );
+
 /*
 noSelect hide the selection event
 from term in kendo treeview ***MAYBE SOME BUG HERE***
@@ -794,6 +805,7 @@ function noSelect( e ) {
 
 function complexSearchReady(  ) {
 
+    "use strict";
     $( '#search-button' ).unbind( 'click' );
     $( '#automatic-search-form' ).unbind(  'submit' );
     $( '#query-submit').unbind('click');
@@ -806,7 +818,7 @@ function complexSearchReady(  ) {
     } );
     $( '#automatic-search-form' ).bind( "submit", function() {
         complexSearchS1Call();
-        return false
+        return false;
     });
     $( '#query-submit' ).bind( "click", function() {
         guidedSearchComplexQueryCall();
@@ -844,6 +856,7 @@ function complexSearchReady(  ) {
 
 function guidedSearchReady(){
 
+    "use strict";
     $( '#search-button' ).unbind( 'click' );
     $( '#automatic-search-form' ).unbind(  'submit' );
     $( '#query-submit').unbind('click');
