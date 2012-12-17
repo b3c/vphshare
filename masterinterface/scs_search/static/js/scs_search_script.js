@@ -286,20 +286,20 @@ function guidedSearchS1Call() {
 
     }
 
-    $( '#wait-terms' ).fadeIn();
+    $( '#wait' ).fadeIn();
     $.ajax( {
         type: 'POST',
         url: url,
         data: {input: input, nummaxhits: numMaxHits, pagenum: pageNum},
         success: function( results ) {
 
-            $( '#wait-terms' ).fadeOut();
+            $( '#wait' ).fadeOut();
             guidedSearchS1CallBack( results );
 
         },
         error: function( error ) {
 
-            $( '#wait-terms' ).fadeOut();
+            $( '#wait' ).fadeOut();
 
         }
     } );
@@ -787,6 +787,24 @@ $(document).on( 'click', '#back-to-query', function() {
     $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
     $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
     $.address.state($.address.baseURL().split('?')[0]).value('?');
+
+} );
+
+
+
+$(document).on( 'click', 'tbody > .term', function() {
+
+    "use strict";
+
+    if ( $( this).find( 'input[name=inputConceptUri]' ).attr( 'checked' ) ){
+
+        $( this).find( 'input[name=inputConceptUri]' ).attr('checked',false);
+
+    }else{
+
+        $( this).find( 'input[name=inputConceptUri]' ).attr('checked',true);
+
+    }
 
 } );
 
