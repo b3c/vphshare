@@ -14,6 +14,6 @@ class Query( models.Model ):
     date = models.DateField( auto_now = True )
     name = models.CharField( max_length = 100, default = "" )
     user = models.ManyToManyField( User )
-    query = models.CharField( max_length = 1000 )
+    query = models.TextField()
 
 

@@ -119,25 +119,26 @@ def complex_query_service( request ):
 
         for ( j, group ) in enumerate( load_groups ):
             if j == 0:
+                g = len(group)
                 if len( group ) > 1:
                     for ( i, concept ) in enumerate( group ):
                         if i < len( group ) - 1 and i == 0:
-                            terms = terms + ' ( ' + concept + ' OR '
+                            terms = terms + ' ( ' + concept[0] + ' OR '
                         elif i < len( group ) - 1:
-                            terms = terms + ' ' + concept + ' OR '
+                            terms = terms + ' ' + concept[0] + ' OR '
                         else:
-                            terms = terms + concept + ' ) '
+                            terms = terms + concept[0] + ' ) '
                 else:
                     terms = terms + ' ( ' + group[0] + ' ) '
             else:
                 if len( group ) > 1:
                     for ( i, concept ) in enumerate( group ):
                         if i < len(group) - 1:
-                            terms = terms + 'AND ( ' + concept + ' OR '
+                            terms = terms + 'AND ( ' + concept[0] + ' OR '
                         else:
-                            terms = terms + concept + ' ) '
+                            terms = terms + concept[0] + ' ) '
                 else:
-                    terms = terms + 'AND ( ' + group[0] + ' ) '
+                    terms = terms + 'AND ( ' + group[0][0] + ' ) '
 
         connector = complex_query_connector( quote( terms ) )
 

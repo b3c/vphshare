@@ -26,8 +26,7 @@ urlpatterns = patterns(
     url(r'^guided_search_s2/', guided_search_s2_service,
         name='guided_search_s2_service'),
 
-    url(r'^guided_search_complex_query/',
-        complex_query_service,
+    url(r'^guided_search_complex_query/', complex_query_service,
         name='complex_query_service'),
 
     url(r'^search/$', search_permalink, name="searchPermalink")
