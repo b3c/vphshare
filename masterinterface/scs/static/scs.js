@@ -2,6 +2,7 @@
 
 
 function defaultAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
+
     alert(responseText);
     alert(jqform);
     var div = $(jqform).attr("rel");
@@ -12,19 +13,20 @@ function defaultAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
 $(document).ready(
     function(){
 
+        "use strict";
         $( "#search-menu-link" ).click(function() {
             var effect = "blind";
             var options = {};
 
-            if ($(this).parent().hasClass("active")){
-                $( '#search-submenu').fadeOut( 500  );
-                $(this).parent().removeClass("active");
+            if ($(this).parents( 'li' ).hasClass("active")){
+                $( '#search-submenu').hide( effect, options, 200 );
+                $(this).parents( 'li' ).removeClass("active");
                 return false;
             }
             else {
                 $( "#search-submenu" ).show( effect, options, 500 );
+                $(".active").removeClass("active");
                 $(this).parents( ".list-parent" ).addClass("active");
-                $("#navhome").removeClass("active");
                 return false;
             }
         });
@@ -39,7 +41,7 @@ $(document).ready(
                 }
 
                 if ( document.URL.match("/search/") ){
-                    $( "#search-submenu" ).show( "blind", {} , 500 );
+                    $( "#search-submenu" ).show();
                 }
                 else {
                     $( '#search-submenu').hide();
