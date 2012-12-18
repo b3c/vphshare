@@ -398,6 +398,13 @@ function guidedSearchComplexQueryCall() {
 
         $( "ul#" + id_group ).each( function() {
 
+            if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
+                conceptUriList.push ('NOT')
+            }
+            else {
+                conceptUriList.push ('')
+            }
+
             $(this).find('.fieldsetTerm').each( function() {
 
                 var singleTerm = [];
@@ -408,22 +415,29 @@ function guidedSearchComplexQueryCall() {
 
 
                 if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
-                    singleTerm.push( ['NOT ' + conceptUri, termName, conceptName ] );
-                    groupsQuery.push ( singleTerm );
-                }
-                else {
+
                     singleTerm.push( conceptUri );
                     singleTerm.push( termName );
                     singleTerm.push( conceptName );
+
+                    conceptUriList.push ( singleTerm );
+                }
+                else {
+
+                    singleTerm.push( conceptUri );
+                    singleTerm.push( termName );
+                    singleTerm.push( conceptName );
+
                     conceptUriList.push( singleTerm );
                 }
 
             });
+            if ( conceptUriList.length !== 0 ) {
+                groupsQuery.push( conceptUriList );
+            }
         });
 
-        if ( conceptUriList.length !== 0 ) {
-            groupsQuery.push( conceptUriList );
-        }
+
 
     }
 
