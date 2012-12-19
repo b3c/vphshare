@@ -3,13 +3,14 @@
     <div class="navbar-inner">
         <form id="automatic-search-form" class="navbar-form pull-left">
             <input type="text" class="input-medium search-query" name="free-text" id="free-text" placeholder="Search dataset" {% if request.GET.input %} value="{{ request.GET.input  }}"{% endif %}>
-            <button id="search-button" type="button" class="btn" >Search</button>
+            <button id="search-button" type="button" class="btn btn-small" >Search</button>
             <div><!--<input id="guided-search-check-box" type="checkbox"  > Guided Search -->
                 <input id="num-max-hits" type="hidden" value="40" >
                 <input id="page-num" type="hidden"  value="1" ></div>
         </form>
-        <button id="back-to-query" type="button" class="btn hide" >Back to Search</button>
-        <button id="query-submit" type="button" class="btn pull-right hide" >Query</button>
+        <button id="back-to-query" type="button" class="btn btn-small hide" >Back to Search</button>
+        <button id="query-submit" type="button" class="btn btn-small pull-right hide" >Query</button>
+        <button id="query-save" type="button" class="btn btn-small pull-right hide" >Save</button>
     </div>
 
 </div>

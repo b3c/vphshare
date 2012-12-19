@@ -33,5 +33,8 @@ urlpatterns = patterns(
     url(r'^guided_search_complex_query/', complex_query_service,
         name='complex_query_service'),
 
+    url(r'^save_complex_query/', save_complex_query,
+        name='save_complex_query'),
+
     url(r'^search/$', search_permalink, name="searchPermalink")
     )
