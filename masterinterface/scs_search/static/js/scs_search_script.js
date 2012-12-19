@@ -240,6 +240,7 @@ function guidedSearchS2Callback( results ) {
     $( '#automatic-search-form' ).hide();
     $( '#query-submit' ).hide();
     $( '#back-to-query' ).fadeIn();
+    $( '#query-save' ).fadeIn();
     $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
     $( '#results' ).delay( 500 ).effect( 'slide', {direction: 'right'}, 500 );
 
@@ -377,7 +378,7 @@ function guidedSearchS2Call() {
     } );
 }
 
-function guidedSearchComplexQueryCall() {
+function guidedSearchComplexQueryCall( saveToken ) {
 
     "use strict";
     var groupsList = [];
@@ -443,24 +444,54 @@ function guidedSearchComplexQueryCall() {
 
     // multidimensional array with JSON
     var stringJSON = JSON.stringify( groupsQuery );
-    $.address.state($.address.baseURL().split('?')[0]).value('?groups_query='+encodeURIComponent(stringJSON));
+
+    if (saveToken === 'True') {
+        return stringJSON;
+    }
+    else {
+
+        $.address.state($.address.baseURL().split('?')[0]).value('?groups_query='+encodeURIComponent(stringJSON));
+
+        $.ajax( {
+            type: 'POST',
+            url: url,
+            data: { groups_query: stringJSON },
+            success: function( results ) {
+
+                $( '#wait' ).fadeOut();
+                guidedSearchS2Callback( results );
+
+            },
+            error: function( error ) {
+
+                $( '#wait' ).fadeOut();
+
+            }
+        } );
+    }
+}
+
+function save_complex_query() {
+
+    "use strict";
+    var url = '/save_complex_query/';
+    var query;
+    query = guidedSearchComplexQueryCall ( 'True' )
+
     $.ajax( {
         type: 'POST',
         url: url,
-        data: { groups_query: stringJSON },
+        data: { groups_query: query },
         success: function( results ) {
-
             $( '#wait' ).fadeOut();
-            guidedSearchS2Callback( results );
-
+            alert("Very Nice");
         },
         error: function( error ) {
-
             $( '#wait' ).fadeOut();
+            alert("NO nice");
 
         }
     } );
-
 }
 
 /* END AJAX call  */
@@ -683,7 +714,7 @@ $( function() {
 
     $( '#query-submit' ).bind( "click", function() {
         //guidedSearchS2Call();
-        guidedSearchComplexQueryCall();
+        guidedSearchComplexQueryCall( 'False' );
 
     } );
     //$( '#query-submit' ).bind( "click", function(){ guidedSearchComplexQueryCall( ); } );
@@ -693,6 +724,11 @@ $( function() {
     } );
     $( '#automatic-search-form' ).bind( "submit", function() {
         automaticSearchCall();
+        return false;
+    });
+
+    $( '#query-save' ).bind( "click", function() {
+        save_complex_query();
         return false;
     });
 
@@ -813,6 +849,7 @@ $(document).on( 'click', '#back-to-query', function() {
 
     "use strict";
     $( '#back-to-query' ).hide();
+    $( '#query-save' ).hide();
     $( '#automatic-search-form' ).show();
     $( '#query-submit' ).show();
     $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
@@ -870,7 +907,7 @@ function complexSearchReady(  ) {
         return false;
     });
     $( '#query-submit' ).bind( "click", function() {
-        guidedSearchComplexQueryCall();
+        guidedSearchComplexQueryCall( 'False' );
     } );
     $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
 

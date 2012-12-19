@@ -13,7 +13,7 @@ from connector import automatic_search_connector
 from connector import guided_search_s1_connector
 from connector import guided_search_s2_connector
 from connector import complex_query_connector
-from models import *
+from models import Query
 import json
 
 
@@ -132,12 +132,13 @@ def complex_query_service( request ):
         Complex Query Service
     """
 
-    terms = ''
-
     if request.method == 'POST':
 
         groups_query = request.POST[ 'groups_query' ]
         load_groups = simplejson.loads( groups_query )
+
+        # Save History
+        #save_complex_query( request )
 
         connector = json.dumps( complex_query_connector( load_groups ), sort_keys = False )
 
@@ -154,16 +155,44 @@ def complex_query_service( request ):
 
 
 @csrf_exempt
-def store_complex_query ( request ):
+def save_complex_query( request ):
     """
     """
 
     if request.method == 'POST':
 
-        query = Query.objects.add()
+        save_query = request.POST[ 'groups_query' ]
+        user = request.user
+
+        try:
+            query_obj = Query( name="test", query=save_query )
+            query_obj.save()
+            query_obj.user.add( user )
+            return
+
+        except Exception, e:
+            return
+
+
+def get_latest_query( request ):
+    """
+    """
+    if request.method == 'POST':
+
+        user = request.user
+
+        try:
+            latest_query = Query.objects.filter( user = user ).order_by('date')[:5]
+
+            return latest_query
+
+        except Exception, e:
+            return
 
 
 def search_permalink( request ):
+    """
+    """
 
     if request.method == 'GET':
 

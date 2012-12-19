@@ -16,7 +16,8 @@ class Query( models.Model ):
     user = models.ManyToManyField( User )
     query = models.TextField()
 
-    def save_query( self, name, user, query ):
-        """
-        """
+
+    def __unicode__(self):
+        return self.name
+
 
