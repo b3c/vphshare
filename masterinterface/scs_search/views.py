@@ -13,6 +13,7 @@ from connector import automatic_search_connector
 from connector import guided_search_s1_connector
 from connector import guided_search_s2_connector
 from connector import complex_query_connector
+from models import *
 import json
 
 
@@ -38,29 +39,8 @@ def complex_search_view( request) :
 
         groups_query = unquote(request.GET[ 'groups_query' ])
         load_groups = simplejson.loads( groups_query )
-        terms = ''
 
-        for ( j, group ) in enumerate( load_groups ):
-            if j == 0:
-                if len( group ) > 1:
-                    for ( i, concept ) in enumerate( group ):
-                        if i < len( group ) - 1:
-                            terms = terms + ' ( ' + concept + ' OR '
-                        else:
-                            terms = terms + concept + ' ) '
-                else:
-                    terms = terms + ' ( ' + group[0] + ' ) '
-            else:
-                if len( group ) > 1:
-                    for ( i, concept ) in enumerate( group ):
-                        if i < len(group) - 1:
-                            terms = terms + 'AND ( ' + concept + ' OR '
-                        else:
-                            terms = terms + concept + ' ) '
-                else:
-                    terms = terms + 'AND ( ' + group[0] + ' ) '
-
-        results = complex_query_connector( quote( terms ) )
+        results = complex_query_connector( load_groups )
     else:
         results = ""
 
@@ -159,29 +139,7 @@ def complex_query_service( request ):
         groups_query = request.POST[ 'groups_query' ]
         load_groups = simplejson.loads( groups_query )
 
-        for ( j, group ) in enumerate( load_groups ):
-            if j == 0:
-                if len( group ) > 1:
-                    for ( i, concept ) in enumerate( group ):
-                        if i < len( group ) - 1 and i == 0:
-                            terms = terms + ' ( ' + concept + ' OR '
-                        elif i < len( group ) - 1:
-                            terms = terms + ' ' + concept + ' OR '
-                        else:
-                            terms = terms + concept + ' ) '
-                else:
-                    terms = terms + ' ( ' + group[0] + ' ) '
-            else:
-                if len( group ) > 1:
-                    for ( i, concept ) in enumerate( group ):
-                        if i < len(group) - 1:
-                            terms = terms + 'AND ( ' + concept + ' OR '
-                        else:
-                            terms = terms + concept + ' ) '
-                else:
-                    terms = terms + 'AND ( ' + group[0] + ' ) '
-
-        connector = json.dumps( complex_query_connector( quote( terms ) ), sort_keys = False )
+        connector = json.dumps( complex_query_connector( load_groups ), sort_keys = False )
 
         response = HttpResponse( content = connector,
                                 content_type = 'application/json ')
@@ -194,6 +152,15 @@ def complex_query_service( request ):
 
     return response
 
+
+@csrf_exempt
+def store_complex_query ( request ):
+    """
+    """
+
+    if request.method == 'POST':
+
+        query = Query.objects.add()
 
 
 def search_permalink( request ):

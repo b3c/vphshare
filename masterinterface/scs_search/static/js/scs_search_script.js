@@ -7,6 +7,7 @@
 
 var SEARCH = false; // define if guidedsearchS1 search is a new search or the same.
 /* START AJAX callback */
+
 function resultsCallback( results ) {
 
     "use strict";
@@ -158,7 +159,12 @@ function complexSearchS1CallBack( results ) {
 
         }
 
-        addTerm.append( '<input name="inputConceptUri" type="hidden" value="' + item + '" /> ' );
+        var fieldset = $('<fieldset class="fieldsetTerm hide"></fieldset>');
+        fieldset.append( '<input name="inputConceptUri" type="hidden" value="' + item + '" /> ' );
+        fieldset.append( '<input name="inputTermName" type="hidden" value="' + termName + '" /> ' );
+        fieldset.append( '<input name="inputConceptName" type="hidden" value="' + conceptName + '" /> ' );
+
+        addTerm.append(fieldset);
 
         termList.append( addTerm );
 
@@ -390,22 +396,48 @@ function guidedSearchComplexQueryCall() {
         var id_group = groupsList[ i ];
 
 
-        $( "ul#" + id_group + " :input[name=inputConceptUri]" ).each( function() {
-
-            var input = $( this ).val();
+        $( "ul#" + id_group ).each( function() {
 
             if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
-                groupsQuery.push( ['NOT ' + input ] );
+                conceptUriList.push ('NOT')
             }
             else {
-                conceptUriList.push( input );
+                conceptUriList.push ('')
             }
 
-        } );
+            $(this).find('.fieldsetTerm').each( function() {
 
-        if ( conceptUriList.length !== 0 ) {
-            groupsQuery.push( conceptUriList );
-        }
+                var singleTerm = [];
+
+                var conceptUri = $(this).find("input[name=inputConceptUri]").val()
+                var termName =  $(this).find("input[name=inputTermName]").val()
+                var conceptName =  $(this).find("input[name=inputConceptName]").val()
+
+
+                if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
+
+                    singleTerm.push( conceptUri );
+                    singleTerm.push( termName );
+                    singleTerm.push( conceptName );
+
+                    conceptUriList.push ( singleTerm );
+                }
+                else {
+
+                    singleTerm.push( conceptUri );
+                    singleTerm.push( termName );
+                    singleTerm.push( conceptName );
+
+                    conceptUriList.push( singleTerm );
+                }
+
+            });
+            if ( conceptUriList.length !== 0 ) {
+                groupsQuery.push( conceptUriList );
+            }
+        });
+
+
 
     }
 
@@ -430,7 +462,6 @@ function guidedSearchComplexQueryCall() {
     } );
 
 }
-
 
 /* END AJAX call  */
 

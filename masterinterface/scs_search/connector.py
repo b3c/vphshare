@@ -8,6 +8,7 @@ import json
 from config import *
 from lxml import etree
 from ordereddict import OrderedDict
+from urllib import quote
 
 
 def automatic_search_connector( free_text ):
@@ -125,7 +126,7 @@ def guided_search_s2_connector( concept_uri_list ):
     return json_results
 
 
-def complex_query_connector( concept_uri_list ):
+def complex_query_connector( load_groups ):
     """
         guided_search_complex_query_connector: Call the guided search ComplexQuery API
         and extract the result from XML.
@@ -138,9 +139,61 @@ def complex_query_connector( concept_uri_list ):
     """
 
     results = OrderedDict()
+    terms = ""
+
+    for ( j, group ) in enumerate( load_groups ):
+
+        if j == 0:
+            if group[0] == "NOT":
+                if ( len( group ) - 1 )  > 1:
+                    for ( i, concept ) in enumerate( group ):
+                        if concept != "NOT":
+                            if i < ( len( group ) - 1 ) and i == 1:
+                                terms = terms + ' ( NOT ' + concept[0] + ' ) AND '
+                            elif i < ( len( group ) - 1 ):
+                                terms = terms + '( NOT ' + concept[0] + ' ) AND '
+                            else:
+                                terms = terms + '( NOT ' + concept[0] + ' ) '
+            else:
+                if ( len( group ) - 1 )  > 1:
+                    for ( i, concept ) in enumerate( group ):
+                        if concept != "":
+                            if i < ( len( group ) - 1 ) and i == 1:
+                                terms = terms + ' ( ' + concept[0] + ' OR '
+                            elif i < ( len( group ) - 1 ):
+                                terms = terms + concept[0] + ' OR '
+                            else:
+                                terms = terms + concept[0] + ' ) '
+                else:
+                    terms = terms + ' ( ' + group[0] + ' ) '
+
+        else:
+            if group[0] == "NOT":
+                if ( len( group ) - 1 )  > 1:
+                    for ( i, concept ) in enumerate( group ):
+                        if concept != "NOT":
+                            if i < ( len( group ) - 1 ) and i == 1:
+                                terms = terms + 'AND ( NOT ' + concept[0] + ' ) AND '
+                            elif i < ( len( group ) - 1 ):
+                                terms = terms + '( NOT ' + concept[0] + ' ) AND '
+                            else:
+                                terms = terms + '( NOT ' + concept[0] + ' ) '
+            else:
+                if ( len( group ) - 1 )  > 1:
+                    for ( i, concept ) in enumerate( group ):
+                        if concept != "":
+                            if i < ( len( group ) - 1 ) and i == 1:
+                                terms = terms + 'AND ( ' + concept[0] + ' OR '
+                            elif i < ( len( group ) - 1 ):
+                                terms = terms + concept[0] + ' OR '
+                            else:
+                                terms = terms + concept[0] + ' ) '
+                else:
+                    terms = terms + ' ( ' + group[0] + ' ) '
+
 
     response = requests.get( GUIDED_SEARCH_COMPLEX_QUERY_API
-                            % concept_uri_list )
+                            % quote(terms) )
 
     concept_list = etree.fromstring( response.text.encode() )
 
