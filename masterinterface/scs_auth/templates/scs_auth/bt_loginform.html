@@ -23,7 +23,7 @@
                 font-size:  90%;
                 font-family: 'Inder', sans-serif;
             }
-            #content {                
+            #content {
                 padding: 2px;
             }
             .documentContent{
@@ -92,27 +92,26 @@
         </style>
     </head>
 
-    <body>
-    {% if info %}
-        <p class="alert alert-error"><span>{{info}}</span></p>
-    {% endif %}
-        <form id="login-form-bt" action="{% url socialauth_begin "biomedtown" %}" method="post">
-            {% csrf_token %}
-                <fieldset>
-                    <legend>Enter your BiomedTown username</legend>
-                    <div class="input-append">
-                        <input id="openid_identifier" class="span2" type="text" name="openid_identifier" />
-                        <button type="submit" class="btn btn-primary" type="button" onclick="event.preventDefault();checkCookie();">login</button>
-                    </div>
-                </fieldset>
+    <body style="height: 300px">
 
-        </form>
-        <div class="well">
-            <p>This site uses cookies to store information on your computer.</p>
-            <p>By using our site you accept the terms of our <a href="/" target="_blank">Privacy Policy</a>.</p>
-            <div id="cookie-question" class="alert"><label class="checkbox"><input type="checkbox" id="cookie-ok" /> I agree</label></div>
-        </div>
+        {% if info %}
+            <p class="alert alert-error"><span>{{info}}</span></p>
+        {% endif %}
 
+        <p>
+            <form id="login-form-bt" action="{% url socialauth_begin "biomedtown" %}" method="post">
+                {% csrf_token %}
+                <div class="input-append">
+                    <input id="openid_identifier" class="span2" type="text" name="openid_identifier" />
+                    <button type="submit" class="btn btn-primary" type="button" onclick="event.preventDefault();checkCookie();">login</button>
+                </div>
+            </form>
+            <div class="well">
+                <p>This site uses cookies to store information on your computer.</p>
+                <p>By using our site you accept the terms of our <a href="/" target="_blank">Privacy Policy</a>.</p>
+                <div id="cookie-question" class="alert"><label class="checkbox"><input type="checkbox" id="cookie-ok" /> I agree</label></div>
+            </div>
+        </p>
     </body>
 
 </html>
