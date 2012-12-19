@@ -240,7 +240,7 @@ function guidedSearchS2Callback( results ) {
     $( '#automatic-search-form' ).hide();
     $( '#query-submit' ).hide();
     $( '#back-to-query' ).fadeIn();
-    $( '#query-save' ).fadeIn();
+    $( '#query-save-button' ).fadeIn();
     $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
     $( '#results' ).delay( 500 ).effect( 'slide', {direction: 'right'}, 500 );
 
@@ -475,20 +475,24 @@ function save_complex_query() {
 
     "use strict";
     var url = '/save_complex_query/';
+    var form = $( "#saveQueryForm" );
+    var input = form.find( 'input[id="nameQuery"]' ).val();
+
     var query;
-    query = guidedSearchComplexQueryCall ( 'True' )
+    query = guidedSearchComplexQueryCall ( 'True' );
 
     $.ajax( {
         type: 'POST',
         url: url,
-        data: { groups_query: query },
+        data: { groups_query: query,
+            name: input
+        },
         success: function( results ) {
             $( '#wait' ).fadeOut();
             alert("Very Nice");
         },
         error: function( error ) {
             $( '#wait' ).fadeOut();
-            alert("NO nice");
 
         }
     } );
@@ -849,7 +853,7 @@ $(document).on( 'click', '#back-to-query', function() {
 
     "use strict";
     $( '#back-to-query' ).hide();
-    $( '#query-save' ).hide();
+    $( '#query-save-button' ).hide();
     $( '#automatic-search-form' ).show();
     $( '#query-submit' ).show();
     $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );

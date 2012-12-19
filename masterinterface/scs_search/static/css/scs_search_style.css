@@ -195,3 +195,9 @@ div.k-treeview {overflow: inherit !important;  margin:10px;}
 .concept-description {
     color: #317EAC;
 }
+
+
+#query-save-button {
+    color: #333;
+    text-decoration: none;
+}

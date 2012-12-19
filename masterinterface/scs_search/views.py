@@ -161,11 +161,12 @@ def save_complex_query( request ):
 
     if request.method == 'POST':
 
-        save_query = request.POST[ 'groups_query' ]
+        query = request.POST[ 'groups_query' ]
+        name = request.POST[ 'name' ]
         user = request.user
 
         try:
-            query_obj = Query( name="test", query=save_query )
+            query_obj = Query( name=name, query=query )
             query_obj.save()
             query_obj.user.add( user )
             return
