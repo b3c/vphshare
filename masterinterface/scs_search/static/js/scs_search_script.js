@@ -246,7 +246,7 @@ function guidedSearchS2Callback( results ) {
     $( '#saveMessage').hide();
     $( '#saveQueryForm' ).show();
     $( '#query-save').show();
-    $( '#nameQuery' ).val('');
+    $( '#nameQuery' ).attr( 'placeholder', 'Query Name' ).val('');
 
 }
 

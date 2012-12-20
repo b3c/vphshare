@@ -9,6 +9,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from urllib import quote, unquote
+from datetime import datetime
 from connector import automatic_search_connector
 from connector import guided_search_s1_connector
 from connector import guided_search_s2_connector
@@ -137,8 +138,16 @@ def complex_query_service( request ):
         groups_query = request.POST[ 'groups_query' ]
         load_groups = simplejson.loads( groups_query )
 
-        # Save History
-        #save_complex_query( request )
+        ####### Save History #######
+        user = request.user
+        name = 'query-' + datetime.now().strftime("%Y-%m-%d-%H:%M")
+        try:
+            query_obj = Query( name=name, query=groups_query )
+            query_obj.save()
+            query_obj.user.add( user )
+        except Exception, e:
+            return
+        ############################
 
         connector = json.dumps( complex_query_connector( load_groups ), sort_keys = False )
 
@@ -169,7 +178,7 @@ def save_complex_query( request ):
             query_obj = Query( name=name, query=query )
             query_obj.save()
             query_obj.user.add( user )
-            
+
             response = HttpResponse()
             response._is_string = False
 
