@@ -178,8 +178,8 @@ def save_complex_query( request ):
             query_obj = Query( name=name, query=query )
             query_obj.save()
             query_obj.user.add( user )
-
-            response = HttpResponse()
+            
+            response = HttpResponse(status=200, content_type = 'application/json ')
             response._is_string = False
 
             return response
