@@ -154,6 +154,8 @@ def complex_query_connector( load_groups ):
                                 terms = terms + '( NOT ' + concept[0] + ' ) AND '
                             else:
                                 terms = terms + '( NOT ' + concept[0] + ' ) '
+                else:
+                    terms = terms + ' ( NOT ' + group[1][0] + ' ) '
             else:
                 if ( len( group ) - 1 )  > 1:
                     for ( i, concept ) in enumerate( group ):
@@ -165,7 +167,7 @@ def complex_query_connector( load_groups ):
                             else:
                                 terms = terms + concept[0] + ' ) '
                 else:
-                    terms = terms + ' ( ' + group[0] + ' ) '
+                    terms = terms + ' ( ' + group[1][0] + ' ) '
 
         else:
             if group[0] == "NOT":
@@ -178,6 +180,8 @@ def complex_query_connector( load_groups ):
                                 terms = terms + '( NOT ' + concept[0] + ' ) AND '
                             else:
                                 terms = terms + '( NOT ' + concept[0] + ' ) '
+                else:
+                    terms = terms + 'AND ( NOT ' + group[1][0] + ' ) '
             else:
                 if ( len( group ) - 1 )  > 1:
                     for ( i, concept ) in enumerate( group ):
@@ -189,11 +193,11 @@ def complex_query_connector( load_groups ):
                             else:
                                 terms = terms + concept[0] + ' ) '
                 else:
-                    terms = terms + ' ( ' + group[0] + ' ) '
+                    terms = terms + 'AND ( ' + group[1][0] + ' ) '
 
 
     response = requests.get( GUIDED_SEARCH_COMPLEX_QUERY_API
-                            % quote(terms) )
+    % quote(terms) )
 
     concept_list = etree.fromstring( response.text.encode() )
 
