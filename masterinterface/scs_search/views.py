@@ -169,7 +169,11 @@ def save_complex_query( request ):
             query_obj = Query( name=name, query=query )
             query_obj.save()
             query_obj.user.add( user )
-            return
+            
+            response = HttpResponse()
+            response._is_string = False
+
+            return response
 
         except Exception, e:
             return
@@ -178,6 +182,7 @@ def save_complex_query( request ):
 def get_latest_query( request ):
     """
     """
+
     if request.method == 'POST':
 
         user = request.user

@@ -243,6 +243,10 @@ function guidedSearchS2Callback( results ) {
     $( '#query-save-button' ).fadeIn();
     $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
     $( '#results' ).delay( 500 ).effect( 'slide', {direction: 'right'}, 500 );
+    $( '#saveMessage').hide();
+    $( '#saveQueryForm' ).show();
+    $( '#query-save').show();
+    $( '#nameQuery' ).val('');
 
 }
 
@@ -474,6 +478,7 @@ function guidedSearchComplexQueryCall( saveToken ) {
 function save_complex_query() {
 
     "use strict";
+
     var url = '/save_complex_query/';
     var form = $( "#saveQueryForm" );
     var input = form.find( 'input[id="nameQuery"]' ).val();
@@ -489,7 +494,10 @@ function save_complex_query() {
         },
         success: function( results ) {
             $( '#wait' ).fadeOut();
-            alert("Very Nice");
+            $( '#saveQueryForm' ).hide();
+            $( '#saveMessage').show();
+            $( '#query-save-button' ).hide();
+            $( '#query-save' ).hide();
         },
         error: function( error ) {
             $( '#wait' ).fadeOut();
@@ -735,6 +743,7 @@ $( function() {
         save_complex_query();
         return false;
     });
+
 
     /** reset of guidedSearch S1 area**/
     /*
