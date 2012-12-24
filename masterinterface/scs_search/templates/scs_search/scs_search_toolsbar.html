@@ -11,8 +11,21 @@
         </form>
 
         <button id="back-to-query" type="button" class="btn btn-small hide" >Back to Search</button>
-        <button id="query-submit" type="button" class="btn btn-small pull-right hide" >Query</button>
+        <!--<button id="query-submit" type="button" class="btn btn-small pull-right hide" >Query</button>-->
+        <div id="query-group" class="btn-group hide pull-right ">
+            <button id="query-submit" class="btn btn-small ">Query</button>
+            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li class="disabled"><a href="#">Latest Queries</a></li>
+                <li class="divider"></li>
+
+            </ul>
+        </div>
+
         <div id="query-save-button" href="#saveQueryModal" role="button" class="btn btn-small pull-right hide" data-toggle="modal">Save</div>
+
 
     </div>
 

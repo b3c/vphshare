@@ -238,7 +238,7 @@ function guidedSearchS2Callback( results ) {
     "use strict";
     resultsCallback( results );
     $( '#automatic-search-form' ).hide();
-    $( '#query-submit' ).hide();
+    $( '#query-group' ).hide();
     $( '#back-to-query' ).fadeIn();
     $( '#query-save-button' ).fadeIn();
     $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
@@ -524,6 +524,7 @@ $( function() {
         $( this ).trigger( ev );
         return orig.apply( this, arguments );
     };
+
     /** END define new event 'remove' **/
 
     /* START graphic wrap */
@@ -858,13 +859,63 @@ $( function() {
     /* END click event */
 } );
 
+$(document).on( 'click', '.history_query > a', function() {
+
+    "use strict";
+    var query;
+
+    query = $.parseJSON($(this).attr('query'));
+
+
+} );
+
+function loadLatestQuery() {
+
+    "use strict";
+
+    var url;
+    url = '/search/complex/latest/';
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: {},
+        success: function( results ) {
+
+            var id;
+            var name;
+            var query;
+
+            if ($( '.history_query' ) != undefined )
+                $( '.history_query' ).remove()
+
+            for ( var i=0; i < results.length; i++ ) {
+
+                id = results[i][0];
+                name = results[i][1];
+                query = results[i][2];
+
+                $( '#query-group > .dropdown-menu' ).append( '<li class="history_query"><a href="?groups_query='+encodeURIComponent(query)+'" >'+name+'</a></li>' );
+
+            }
+
+        },
+        error: function( error ) {
+
+
+
+        }
+    } );
+
+}
+
 $(document).on( 'click', '#back-to-query', function() {
 
     "use strict";
     $( '#back-to-query' ).hide();
     $( '#query-save-button' ).hide();
     $( '#automatic-search-form' ).show();
-    $( '#query-submit' ).show();
+    loadLatestQuery();
+    $( '#query-group' ).show();
     $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
     $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
     $.address.state($.address.baseURL().split('?')[0]).value('?');
@@ -910,7 +961,7 @@ function complexSearchReady(  ) {
     $( '#query-submit').unbind('click');
 
     $( '#results' ).hide();
-    $( '#query-submit' ).fadeIn();
+    $( '#query-group' ).fadeIn(function(){loadLatestQuery()});
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         complexSearchS1Call();
@@ -961,7 +1012,7 @@ function guidedSearchReady(){
     $( '#query-submit').unbind('click');
 
     $( '#results' ).hide();
-    $( '#query-submit' ).fadeIn();
+    $( '#query-group' ).fadeIn(function(){loadLatestQuery()});
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         guidedSearchS1Call();

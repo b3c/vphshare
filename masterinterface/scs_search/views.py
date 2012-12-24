@@ -16,6 +16,7 @@ from connector import guided_search_s2_connector
 from connector import complex_query_connector
 from models import Query
 import json
+from ordereddict import OrderedDict
 
 
 def automatic_search_view( request ):
@@ -140,7 +141,7 @@ def complex_query_service( request ):
 
         ####### Save History #######
         user = request.user
-        name = 'query-' + datetime.now().strftime("%Y-%m-%d-%H:%M")
+        name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
         try:
             query_obj = Query( name=name, query=groups_query )
             query_obj.save()
@@ -187,7 +188,7 @@ def save_complex_query( request ):
         except Exception, e:
             return
 
-
+@csrf_exempt
 def get_latest_query( request ):
     """
     """
@@ -197,9 +198,16 @@ def get_latest_query( request ):
         user = request.user
 
         try:
-            latest_query = Query.objects.filter( user = user ).order_by('date')[:5]
+            latest_query = Query.objects.filter( user = user ).order_by( '-date' )[:5]
+            latest_query_dict = []
+            for query in latest_query:
+                latest_query_dict.append( [ query.id, query.name, query.query ] )
 
-            return latest_query
+            response = HttpResponse( content = json.dumps(latest_query_dict), content_type = 'application/json ')
+
+            response._is_string = False
+
+            return response
 
         except Exception, e:
             return

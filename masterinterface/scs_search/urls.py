@@ -17,6 +17,8 @@ urlpatterns = patterns(
 
     url(r'^search/free-text/', automatic_search_view, name='automaticSearchView'),
 
+    url(r'^search/complex/latest/', get_latest_query, name='getLatestQuery'),
+
     url(r'^search/complex/', complex_search_view, name='complexQueryView'),
 
     url(r'^search/guided/', guided_search_view, name='guidedQueryView'),
