@@ -246,7 +246,7 @@ function guidedSearchS2Callback( results ) {
     $( '#saveMessage').hide();
     $( '#saveQueryForm' ).show();
     $( '#query-save').show();
-    $( '#nameQuery' ).attr( 'placeholder', 'Query Name' ).val('');
+    //$( '#nameQuery' ).val('');
 
 }
 
@@ -395,6 +395,7 @@ function guidedSearchComplexQueryCall( saveToken ) {
         groupsList.push( this.id );
     } );
 
+
     for ( var i = 0; i < (groupsList.length - 1); i++ ) {
 
         var conceptUriList = [];
@@ -454,12 +455,24 @@ function guidedSearchComplexQueryCall( saveToken ) {
     }
     else {
 
-        $.address.state($.address.baseURL().split('?')[0]).value('?groups_query='+encodeURIComponent(stringJSON));
+        var queryUrl;
+        var id = $( '#queryID' ).val();
+        if ( id  != undefined && id != "" ) {
+
+            queryUrl = '?id='+id;
+
+        }else{
+
+            queryUrl = '?groups_query='+encodeURIComponent(stringJSON);
+
+        }
+
+        $.address.state($.address.baseURL().split('?')[0]).value(queryUrl);
 
         $.ajax( {
             type: 'POST',
             url: url,
-            data: { groups_query: stringJSON },
+            data: { groups_query: stringJSON, id: id },
             success: function( results ) {
 
                 $( '#wait' ).fadeOut();
@@ -482,6 +495,7 @@ function save_complex_query() {
     var url = '/save_complex_query/';
     var form = $( "#saveQueryForm" );
     var input = form.find( 'input[id="nameQuery"]' ).val();
+    var id = form.find( 'input[id="queryID"]' ).val();
 
     var query;
     query = guidedSearchComplexQueryCall ( 'True' );
@@ -490,7 +504,8 @@ function save_complex_query() {
         type: 'POST',
         url: url,
         data: { groups_query: query,
-            name: input
+            name: input,
+            id: id
         },
         success: function( results ) {
             $( '#wait' ).fadeOut();
@@ -658,13 +673,37 @@ $( function() {
 
     }
 
+    function checkDuplicate( item, group ){
+
+        var duplicate = false;
+        var cURI = item.find( 'input[name=inputConceptUri]').attr('value');
+        var termName = item.find( 'input[name=inputTermName]').attr('value');
+        var cName = item.find( 'input[name=inputConceptName]').attr('value');
+
+        group.find( '.term').each(function(){
+            var itemLocal = $( this );
+            var cURILocal = itemLocal.find( 'input[name=inputConceptUri]').attr('value');
+            var termNameLocal = itemLocal.find( 'input[name=inputTermName]').attr('value');
+            var cNameLocal = itemLocal.find( 'input[name=inputConceptName]').attr('value');
+
+            if (cURILocal ===cURI && termNameLocal === termName && cNameLocal === cName){
+                duplicate = true;
+                return duplicate;
+            }
+
+        });
+
+        return duplicate;
+
+    }
+
     /* Create new group when term is dropped in OR group*/
     function dropTerm( item, dropTarget ) {
 
         var itemCloned;
 
         //if term dropped is not present in group , it can be dropped
-        if ( (dropTarget.find( '#' + item.attr( 'data-uid' ) ).length === 0 )) {
+        if ( !checkDuplicate(item, dropTarget ) ) {
 
             //if term came from other groups or from term-list search results
             if ( item.parents( '.group' ).length > 0 ) {
@@ -745,75 +784,6 @@ $( function() {
         return false;
     });
 
-
-    /** reset of guidedSearch S1 area**/
-    /*
-    $( '#guided-search-check-box' ).click( function() {
-
-        $( '#search-button' ).unbind( 'click' );
-        $( '#automatic-search-form' ).unbind(  'submit' );
-
-        if ( $( '#guided-search-check-box' ).attr( 'checked' ) ) {
-
-            $( '#results' ).hide();
-            $( '#query-submit' ).fadeIn();
-            $( '#search-content' ).fadeIn();
-            $( '#search-button' ).bind( "click", function() {
-                complexSearchS1Call();
-            } );
-            $( '#automatic-search-form' ).bind( "submit", function() {
-                complexSearchS1Call();
-            });
-            $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
-
-
-            // START Reset Term List //
-            var term = $( "#terms-list-base > .term" ).clone();
-            var termList = $( "#terms-list-base" ).clone();
-            $( "#term-list" ).remove();
-            $( "#term-list-block" ).append( termList );
-            termList.attr( 'id', 'term-list' );
-            $( "#num-max-hits" ).val( 20 );
-            $( "#max-terms" ).text( 20 );
-            $( "#num-terms" ).text( '' ).parent().hide();
-            $( "#page-num" ).val( 1 );
-            $( "#slider-range-min" ).slider( 'value', '20' );
-            $( "#termsPagination" ).remove();
-
-            $( '.group > .term' ).bind( 'remove', function( e ) {
-
-                var parent = $( this ).parents( '.group' );
-
-                e.preventDefault();
-
-                groupCheckContent( parent, 1 );
-
-            } );
-
-            $( '.group > .term' ).remove();
-            SEARCH = false;
-            / END Reset Term List /
-
-        } else {
-
-            $( '#search-button' ).bind( "click", function() {
-                automaticSearchCall();
-            } );
-            $( '#automatic-search-form' ).bind( "submit", function() {
-                automaticSearchCall();
-            });
-            $( '#search-content' ).fadeOut();
-            $( '#free-text' ).attr( 'placeholder', 'Search Dataset' );
-            $( '#query-submit' ).fadeOut();
-
-        }
-
-    } );
-
-    */
-
-
-
     /** event to delete term from group **/
     $( document ).on( 'click', '.delete-link', function( e ) {
 
@@ -856,17 +826,60 @@ $( function() {
 
 
     } );
+
+    $(document).on( 'click', '.history_query > a', function() {
+
+        "use strict";
+        var query;
+
+        query = $.parseJSON( decodeURIComponent( $( this ).attr( 'query' ) ) );
+        $( '.group > .term' ).remove();
+        $( '#queryID' ).attr( 'value', $( this ).attr('id') );
+        $( '#nameQuery' ).val( $( this ).text() );
+        $( '#nameQuery' ).attr( 'placeholder', $( this ).text() );
+
+        for ( var i=0; i < query.length; i++ ) {
+
+            for (var j=1; j<query[i].length; j++) {
+
+                var item = $( '<li  class="term ui-draggable k-item" style="" data-original-title=""  role="treeitem"><div class="k-mid"><span class="k-in"><span class="k-sprite folder"></span>'+query[i][j][1]+'<fieldset class="fieldsetTerm hide"><input name="inputConceptUri" type="hidden" value="'+query[i][j][0]+'"> <input name="inputTermName" type="hidden" value="'+query[i][j][1]+'"> <input name="inputConceptName" type="hidden" value="'+query[i][j][2]+'"> </fieldset></span></div></li>' );
+                if ($( '#group'+i).length === 0) {
+
+                    createNewGroup( item , $( '#new-group' ) );
+
+                }else {
+
+                    dropTerm( item, $( '#group'+i ) );
+
+                }
+                var exclude = $( '#group'+i ).find( '.exclude > .btn ');
+                if ( query[i][0] === "NOT" ) {
+
+                    if ( !exclude.hasClass( 'active' ) )
+                        exclude.addClass( 'active' );
+
+                }else{
+
+                    exclude.removeClass( 'active' );
+
+                }
+
+            }
+
+
+        }
+
+        $( '.group' ).each( function() {
+
+            var group = $( this );
+            if (group.attr('id') != "new-group")
+                groupCheckContent( group, 0 );
+
+        } );
+
+    } );
+
     /* END click event */
-} );
-
-$(document).on( 'click', '.history_query > a', function() {
-
-    "use strict";
-    var query;
-
-    query = $.parseJSON($(this).attr('query'));
-
-
 } );
 
 function loadLatestQuery() {
@@ -894,7 +907,7 @@ function loadLatestQuery() {
                 name = results[i][1];
                 query = results[i][2];
 
-                $( '#query-group > .dropdown-menu' ).append( '<li class="history_query"><a href="?groups_query='+encodeURIComponent(query)+'" >'+name+'</a></li>' );
+                $( '#query-group > .dropdown-menu' ).append( '<li class="history_query"><a id="'+id+'" href="#" query="'+encodeURIComponent(query)+'">'+name+'</a></li>' );
 
             }
 

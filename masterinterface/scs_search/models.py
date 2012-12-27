@@ -15,6 +15,7 @@ class Query( models.Model ):
     name = models.CharField( max_length = 100, default = "" )
     user = models.ManyToManyField( User )
     query = models.TextField()
+    saved = models.BooleanField(default = False)
 
 
     def __unicode__(self):

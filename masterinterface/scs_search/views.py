@@ -16,7 +16,6 @@ from connector import guided_search_s2_connector
 from connector import complex_query_connector
 from models import Query
 import json
-from ordereddict import OrderedDict
 
 
 def automatic_search_view( request ):
@@ -137,13 +136,22 @@ def complex_query_service( request ):
     if request.method == 'POST':
 
         groups_query = request.POST[ 'groups_query' ]
+        id = request.POST.get('id',"")
         load_groups = simplejson.loads( groups_query )
 
         ####### Save History #######
         user = request.user
         name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
+
         try:
-            query_obj = Query( name=name, query=groups_query )
+            if id == "" :
+                query_obj = Query( name=name, query=groups_query )
+            else:
+                query_obj = Query.objects.get(id=id)
+                if not query_obj.saved:
+                    query_obj.name = name
+                query_obj.query = groups_query
+                query_obj.date = datetime.utcnow()
             query_obj.save()
             query_obj.user.add( user )
         except Exception, e:
@@ -173,12 +181,24 @@ def save_complex_query( request ):
 
         query = request.POST[ 'groups_query' ]
         name = request.POST[ 'name' ]
+        id = request.POST[ 'id' ]
         user = request.user
 
         try:
-            query_obj = Query( name=name, query=query )
+            if id != '':
+
+                query_obj = Query.objects.get(id=id)
+                query_obj.name = name
+                query_obj.query = query
+                query_obj.saved = True
+
+            else:
+                query_obj = Query( name=name, query=query , saved = True )
+
+
             query_obj.save()
             query_obj.user.add( user )
+
             
             response = HttpResponse(status=200, content_type = 'application/json ')
             response._is_string = False
@@ -198,10 +218,13 @@ def get_latest_query( request ):
         user = request.user
 
         try:
-            latest_query = Query.objects.filter( user = user ).order_by( '-date' )[:5]
+            latest_query = Query.objects.filter( user = user  ).order_by( '-date' )
             latest_query_dict = []
-            for query in latest_query:
+            for query in latest_query[:5]:
                 latest_query_dict.append( [ query.id, query.name, query.query ] )
+            for query in latest_query[5:]:
+                if query.saved:
+                    latest_query_dict.append( [ query.id, query.name, query.query ] )
 
             response = HttpResponse( content = json.dumps(latest_query_dict), content_type = 'application/json ')
 
@@ -219,6 +242,6 @@ def search_permalink( request ):
 
     if request.method == 'GET':
 
-        return HttpResponse( status = 200 );
+        return HttpResponse( status = 200 )
 
     return HttpResponse( status = 403 )
