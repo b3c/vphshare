@@ -42,7 +42,16 @@ def complex_search_view( request) :
         load_groups = simplejson.loads( groups_query )
 
         results = complex_query_connector( load_groups )
+    elif request.GET.get('id',None) is not None:
+
+        query_obj = Query.objects.get( id = request.GET[ 'id' ] )
+        groups_query = unquote(query_obj.query)
+        load_groups = simplejson.loads( groups_query )
+
+        results = complex_query_connector( load_groups )
+
     else:
+
         results = ""
 
     return render_to_response( 'scs_search/scs_search.html', {'search':'complex', 'results':results},
