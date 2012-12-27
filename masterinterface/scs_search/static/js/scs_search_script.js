@@ -834,6 +834,11 @@ $( function() {
 
         query = $.parseJSON( decodeURIComponent( $( this ).attr( 'query' ) ) );
         $( '.group > .term' ).remove();
+
+        var group0 = groups[0];
+        groups = [];
+        groups[0] = group0;
+
         $( '#queryID' ).attr( 'value', $( this ).attr('id') );
         $( '#nameQuery' ).val( $( this ).text() );
         $( '#nameQuery' ).attr( 'placeholder', $( this ).text() );
@@ -874,8 +879,8 @@ $( function() {
             var group = $( this );
             if (group.attr('id') != "new-group")
                 groupCheckContent( group, 0 );
-
         } );
+
 
     } );
 
