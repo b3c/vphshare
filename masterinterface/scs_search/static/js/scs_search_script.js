@@ -239,6 +239,7 @@ function guidedSearchS2Callback( results ) {
     resultsCallback( results );
     $( '#automatic-search-form' ).hide();
     $( '#query-group' ).hide();
+    $( '#reset-groups' ).hide();
     $( '#back-to-query' ).fadeIn();
     $( '#query-save-button' ).fadeIn();
     $( '#search-content' ).toggle( 'slide', {direction: 'left'}, 400 );
@@ -405,19 +406,19 @@ function guidedSearchComplexQueryCall( saveToken ) {
         $( "ul#" + id_group ).each( function() {
 
             if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
-                conceptUriList.push ('NOT')
+                conceptUriList.push ( 'NOT' );
             }
             else {
-                conceptUriList.push ('')
+                conceptUriList.push ( '' );
             }
 
             $(this).find('.fieldsetTerm').each( function() {
 
                 var singleTerm = [];
 
-                var conceptUri = $(this).find("input[name=inputConceptUri]").val()
-                var termName =  $(this).find("input[name=inputTermName]").val()
-                var conceptName =  $(this).find("input[name=inputConceptName]").val()
+                var conceptUri = $(this).find("input[name=inputConceptUri]").val();
+                var termName =  $(this).find("input[name=inputTermName]").val();
+                var conceptName =  $(this).find("input[name=inputConceptName]").val();
 
 
                 if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
@@ -456,8 +457,8 @@ function guidedSearchComplexQueryCall( saveToken ) {
     else {
 
         var queryUrl;
-        var id = $( '#queryID' ).val();
-        if ( id  != undefined && id != "" ) {
+        var id = "";//$( '#queryID' ).val();
+        if ( id  !== undefined && id !== "" ) {
 
             queryUrl = '?id='+id;
 
@@ -740,18 +741,32 @@ $( function() {
     //verify if group have to be delete (no more terms inside it)
     function groupCheckContent( parent, minLength ) {
 
-        if ( parent.children( '.term' ).length === minLength && parent.attr( 'id' ) !== 'group0' ) {
+        if ( parent.children( '.term' ).length === minLength ) {
+
+            if ( parent.attr( 'id' ) === 'group0' ){
+
+                if ( $( '.group' ).length === 2 ){
+
+                    //if group is group0 return to intial view.
+                    parent.children( '.help' ).delay( 400 ).fadeIn( 200 );
+                    parent.children( '.exclude' ).fadeOut();
+                    return;
+
+                }else{
+
+                    var newGroup0 = $('.group' )[1];
+                    newGroup0.id = 'group0';
+                    $(newGroup0).children('#and' ).remove();
+
+                }
+
+            }
 
             parent.parents( '.k-treeview' ).fadeOut( 400, function() {
                 $( this ).parents( '.k-treeview' ).remove();
             } );
             parent.parents( '.k-treeview' ).remove();
 
-        }else if ( parent.attr( 'id' ) === 'group0' && parent.children( '.term' ).length === minLength ) {
-
-            //if group is group0 return to intial view.
-            parent.children( '.help' ).delay( 400 ).fadeIn( 200 );
-            parent.children( '.exclude' ).fadeOut();
 
         }
     }
@@ -797,6 +812,7 @@ $( function() {
 
     } );
 
+
     /** event to change page of terms-list **/
     $( document ).on( 'click', '.page', function( e ) {
 
@@ -829,7 +845,6 @@ $( function() {
 
     $(document).on( 'click', '.history_query > a', function() {
 
-        "use strict";
         var query;
 
         query = $.parseJSON( decodeURIComponent( $( this ).attr( 'query' ) ) );
@@ -839,9 +854,9 @@ $( function() {
         groups = [];
         groups[0] = group0;
 
-        $( '#queryID' ).attr( 'value', $( this ).attr('id') );
-        $( '#nameQuery' ).val( $( this ).text() );
-        $( '#nameQuery' ).attr( 'placeholder', $( this ).text() );
+        //$( '#queryID' ).attr( 'value', $( this ).attr('id') );
+        //$( '#nameQuery' ).val( $( this ).text() );
+        //$( '#nameQuery' ).attr( 'placeholder', $( this ).text() );
 
         for ( var i=0; i < query.length; i++ ) {
 
@@ -873,14 +888,30 @@ $( function() {
 
 
         }
-
         $( '.group' ).each( function() {
 
             var group = $( this );
-            if (group.attr('id') != "new-group")
+            if (group.attr('id') !== "new-group")
                 groupCheckContent( group, 0 );
         } );
 
+    } );
+
+    /** event to reset groups area from all terms**/
+    $(document).on( 'click', '#reset-groups', function() {
+
+        $( '.group > .term' ).remove();
+
+        var group0 = groups[0];
+        groups = [];
+        groups[0] = group0;
+        $( '#queryID' ).removeAttr( 'value' );
+        $( '.group' ).each( function() {
+
+            var group = $( this );
+            if (group.attr('id') !== "new-group")
+                groupCheckContent( group, 0 );
+        } );
 
     } );
 
@@ -903,8 +934,8 @@ function loadLatestQuery() {
             var name;
             var query;
 
-            if ($( '.history_query' ) != undefined )
-                $( '.history_query' ).remove()
+            if ($( '.history_query' ) !== undefined )
+                $( '.history_query' ).remove();
 
             for ( var i=0; i < results.length; i++ ) {
 
@@ -926,6 +957,8 @@ function loadLatestQuery() {
 
 }
 
+
+
 $(document).on( 'click', '#back-to-query', function() {
 
     "use strict";
@@ -934,6 +967,7 @@ $(document).on( 'click', '#back-to-query', function() {
     $( '#automatic-search-form' ).show();
     loadLatestQuery();
     $( '#query-group' ).show();
+    $( '#reset-groups' ).show();
     $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
     $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
     $.address.state($.address.baseURL().split('?')[0]).value('?');
@@ -979,7 +1013,8 @@ function complexSearchReady(  ) {
     $( '#query-submit').unbind('click');
 
     $( '#results' ).hide();
-    $( '#query-group' ).fadeIn(function(){loadLatestQuery()});
+    $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
+    $( '#reset-groups' ).show();
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         complexSearchS1Call();
@@ -1030,7 +1065,8 @@ function guidedSearchReady(){
     $( '#query-submit').unbind('click');
 
     $( '#results' ).hide();
-    $( '#query-group' ).fadeIn(function(){loadLatestQuery()});
+    $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
+    $( '#reset-groups' ).show();
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         guidedSearchS1Call();
