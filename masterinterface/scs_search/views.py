@@ -35,11 +35,17 @@ def complex_search_view( request) :
     """
         Guided Search view
     """
-
+    user = request.user
+    name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
     if request.GET.get('groups_query',None) is not None:
 
         groups_query = unquote(request.GET[ 'groups_query' ])
         load_groups = simplejson.loads( groups_query )
+
+        ####### Save History #######
+        query_obj = Query( name=name, query=groups_query )
+        query_obj.save()
+        query_obj.user.add( user )
 
         results = complex_query_connector( load_groups )
     elif request.GET.get('id',None) is not None:
@@ -48,11 +54,22 @@ def complex_search_view( request) :
         groups_query = unquote(query_obj.query)
         load_groups = simplejson.loads( groups_query )
 
+        ####### Save History #######
+        query_obj = Query.objects.get(id=id)
+        if not query_obj.saved:
+            query_obj.name = name
+        query_obj.query = groups_query
+        query_obj.date = datetime.utcnow()
+        query_obj.save()
+        query_obj.user.add( user )
+
+
         results = complex_query_connector( load_groups )
 
     else:
 
         results = ""
+
 
     return render_to_response( 'scs_search/scs_search.html', {'search':'complex', 'results':results},
                               RequestContext( request ) )

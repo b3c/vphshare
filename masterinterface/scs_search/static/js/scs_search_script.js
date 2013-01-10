@@ -1014,7 +1014,7 @@ function complexSearchReady(  ) {
 
     $( '#results' ).hide();
     $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
-    $( '#reset-groups' ).show();
+    $( '#reset-groups' ).fadeIn();
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         complexSearchS1Call();
@@ -1066,7 +1066,7 @@ function guidedSearchReady(){
 
     $( '#results' ).hide();
     $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
-    $( '#reset-groups' ).show();
+    $( '#reset-groups' ).fadeIn();
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         guidedSearchS1Call();
