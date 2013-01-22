@@ -17,6 +17,8 @@ urlpatterns = patterns(
 
     url(r'^search/free-text/', automatic_search_view, name='automaticSearchView'),
 
+    url(r'^search/complex/latest/', get_latest_query, name='getLatestQuery'),
+
     url(r'^search/complex/', complex_search_view, name='complexQueryView'),
 
     url(r'^search/guided/', guided_search_view, name='guidedQueryView'),
@@ -32,6 +34,9 @@ urlpatterns = patterns(
 
     url(r'^guided_search_complex_query/', complex_query_service,
         name='complex_query_service'),
+
+    url(r'^save_complex_query/', save_complex_query,
+        name='save_complex_query'),
 
     url(r'^search/$', search_permalink, name="searchPermalink")
     )

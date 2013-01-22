@@ -3,14 +3,58 @@
     <div class="navbar-inner">
         <form id="automatic-search-form" class="navbar-form pull-left">
             <input type="text" class="input-medium search-query" name="free-text" id="free-text" placeholder="Search dataset" {% if request.GET.input %} value="{{ request.GET.input  }}"{% endif %}>
-            <button id="search-button" type="button" class="btn" >Search</button>
-            <div><!--<input id="guided-search-check-box" type="checkbox"  > Guided Search -->
+            <button id="search-button" type="button" class="btn btn-small" >Search</button>
+            <div>
+                <!--<input id="guided-search-check-box" type="checkbox"  > Guided Search -->
                 <input id="num-max-hits" type="hidden" value="40" >
                 <input id="page-num" type="hidden"  value="1" ></div>
         </form>
-        <button id="back-to-query" type="button" class="btn hide" >Back to Search</button>
-        <button id="query-submit" type="button" class="btn pull-right hide" >Query</button>
+
+        <button id="back-to-query" type="button" class="btn btn-small hide" >Back to Search</button>
+        <!--<button id="query-submit" type="button" class="btn btn-small pull-right hide" >Query</button>-->
+
+        <div id="query-group" class="btn-group hide pull-right ">
+            <button id="query-submit" class="btn btn-small ">Query</button>
+            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li class="disabled"><a href="#">Latest Queries</a></li>
+                <li class="divider"></li>
+
+            </ul>
+        </div>
+        <button id="reset-groups" class="btn btn-small hide pull-right " style="margin-right: 5px;" >Reset</button>
+
+        <div id="query-save-button" href="#saveQueryModal" role="button" class="btn btn-small pull-right hide" data-toggle="modal">Save</div>
+
+
     </div>
 
 </div>
 <!-- END search tools bar -->
+
+<!-- START Save Form -->
+
+<div id="saveQueryModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Saving...</h3>
+    </div>
+    <div class="modal-body">
+        <form id="saveQueryForm">
+            <p>Enter the query name that will be saved in your dashboard.</p>
+            <input type="text" class="input-large search-query" id="nameQuery" placeholder="Query Name" />
+            <input type="hidden" class="input-large search-query" id="queryID" />
+        </form>
+        <div id="saveMessage" class="hide">
+            <p>Query Saved!</p>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="query-save" class="btn btn-primary">Save</button>
+    </div>
+</div>
+<!-- END Save Form -->

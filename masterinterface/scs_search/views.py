@@ -9,11 +9,12 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from urllib import quote, unquote
+from datetime import datetime
 from connector import automatic_search_connector
 from connector import guided_search_s1_connector
 from connector import guided_search_s2_connector
 from connector import complex_query_connector
-from models import *
+from models import Query
 import json
 
 
@@ -34,15 +35,41 @@ def complex_search_view( request) :
     """
         Guided Search view
     """
-
+    user = request.user
+    name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
     if request.GET.get('groups_query',None) is not None:
 
         groups_query = unquote(request.GET[ 'groups_query' ])
         load_groups = simplejson.loads( groups_query )
 
+        ####### Save History #######
+        query_obj = Query( name=name, query=groups_query )
+        query_obj.save()
+        query_obj.user.add( user )
+
         results = complex_query_connector( load_groups )
+    elif request.GET.get('id',None) is not None:
+
+        query_obj = Query.objects.get( id = request.GET[ 'id' ] )
+        groups_query = unquote(query_obj.query)
+        load_groups = simplejson.loads( groups_query )
+
+        ####### Save History #######
+        query_obj = Query.objects.get(id=id)
+        if not query_obj.saved:
+            query_obj.name = name
+        query_obj.query = groups_query
+        query_obj.date = datetime.utcnow()
+        query_obj.save()
+        query_obj.user.add( user )
+
+
+        results = complex_query_connector( load_groups )
+
     else:
+
         results = ""
+
 
     return render_to_response( 'scs_search/scs_search.html', {'search':'complex', 'results':results},
                               RequestContext( request ) )
@@ -132,12 +159,30 @@ def complex_query_service( request ):
         Complex Query Service
     """
 
-    terms = ''
-
     if request.method == 'POST':
 
         groups_query = request.POST[ 'groups_query' ]
+        id = request.POST.get('id',"")
         load_groups = simplejson.loads( groups_query )
+
+        ####### Save History #######
+        user = request.user
+        name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
+
+        try:
+            if id == "" :
+                query_obj = Query( name=name, query=groups_query )
+            else:
+                query_obj = Query.objects.get(id=id)
+                if not query_obj.saved:
+                    query_obj.name = name
+                query_obj.query = groups_query
+                query_obj.date = datetime.utcnow()
+            query_obj.save()
+            query_obj.user.add( user )
+        except Exception, e:
+            return
+        ############################
 
         connector = json.dumps( complex_query_connector( load_groups ), sort_keys = False )
 
@@ -154,19 +199,75 @@ def complex_query_service( request ):
 
 
 @csrf_exempt
-def store_complex_query ( request ):
+def save_complex_query( request ):
     """
     """
 
     if request.method == 'POST':
 
-        query = Query.objects.add()
+        query = request.POST[ 'groups_query' ]
+        name = request.POST[ 'name' ]
+        id = request.POST[ 'id' ]
+        user = request.user
+
+        try:
+            if id != '':
+
+                query_obj = Query.objects.get(id=id)
+                query_obj.name = name
+                query_obj.query = query
+                query_obj.saved = True
+
+            else:
+                query_obj = Query( name=name, query=query , saved = True )
+
+
+            query_obj.save()
+            query_obj.user.add( user )
+
+            
+            response = HttpResponse(status=200, content_type = 'application/json ')
+            response._is_string = False
+
+            return response
+
+        except Exception, e:
+            return
+
+@csrf_exempt
+def get_latest_query( request ):
+    """
+    """
+
+    if request.method == 'POST':
+
+        user = request.user
+
+        try:
+            latest_query = Query.objects.filter( user = user  ).order_by( '-date' )
+            latest_query_dict = []
+            for query in latest_query[:5]:
+                latest_query_dict.append( [ query.id, query.name, query.query ] )
+            for query in latest_query[5:]:
+                if query.saved:
+                    latest_query_dict.append( [ query.id, query.name, query.query ] )
+
+            response = HttpResponse( content = json.dumps(latest_query_dict), content_type = 'application/json ')
+
+            response._is_string = False
+
+            return response
+
+        except Exception, e:
+            return
 
 
 def search_permalink( request ):
+    """
+    """
 
     if request.method == 'GET':
 
-        return HttpResponse( status = 200 );
+        return HttpResponse( status = 200 )
 
     return HttpResponse( status = 403 )
