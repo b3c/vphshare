@@ -197,7 +197,7 @@ def complex_query_connector( load_groups ):
 
 
     response = requests.get( GUIDED_SEARCH_COMPLEX_QUERY_API
-                            % quote(terms) )
+    % quote(terms) )
 
     concept_list = etree.fromstring( response.text.encode() )
 

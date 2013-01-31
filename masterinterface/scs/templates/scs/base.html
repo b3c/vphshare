@@ -74,7 +74,6 @@
                             <li class="active" id="navhome"><a href="/"><i class="icon-home icon-white"></i>Home</a></li>
 
                             {% if request.user.is_authenticated %}
-                                {% if request.user.is_staff %}
                                     <li class="list-parent">
                                         <div>
                                             <div id="search-menu-link"><i class="icon-search icon-white"></i>Search</div>
@@ -85,6 +84,7 @@
                                             </ul>
                                         </div>
                                     </li>
+                                {% if request.user.is_staff %}
                                     <li class="list-parent"><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
                                     <li class="list-parent"><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
                                     <li class="list-parent"><a href="/cyfronet/datamanager/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
