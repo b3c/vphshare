@@ -120,7 +120,7 @@ Extension Library for scs_auth.
 
 Cyfronet
 ================
-Cyfronet application provide a basic integration of cyfronet services into masterinterface. It work over iframe.
+Cyfronet application provide a basic integration of cyfronet services into masterinterface. It works over iframe.
 
 Views
 --------------

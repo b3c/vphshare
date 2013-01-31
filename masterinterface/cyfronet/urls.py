@@ -7,6 +7,7 @@ urlpatterns = patterns(
     'cyfronet.views',
     url(r'^cloudmanager/$', 'cloudmanager'),
     url(r'^datamanager/$', 'datamanager'),
+    url(r'^policymanager/$', 'policymanager'),
 
     # default rollback to cloudmanager
     url(r'', 'index'),

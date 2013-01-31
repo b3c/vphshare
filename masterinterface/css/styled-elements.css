@@ -14,7 +14,7 @@
 }
 
 /* TABLE ------------------------------------------------------------*/
-
+/*
 table, td, th {
     vertical-align:middle;
 }
@@ -32,7 +32,6 @@ th{
     border-top:5px solid #555555;
     color: #ffffff;
     padding:10px;
-    /*text-transform:uppercase;*/
     background-color: #49494b;
 }
 
@@ -41,5 +40,5 @@ td{
 }
 
 td, th{
-    /*border-bottom: 1px solid #1f1f1f;*/
-}
+    /*border-bottom: 1px solid #1f1f1f;
+}*/

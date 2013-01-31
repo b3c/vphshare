@@ -22,39 +22,41 @@
 
 body {
     line-height: 1;
-    color: #696969;
-    background: #f1f1f1 url(/static/obl-1x1.png);
+    background: url('/static/bg.png') no-repeat top right fixed white;
     font-size:  100%;
     margin: 0 0 1px;
     height: 100%;
-    font-family: 'Inder', sans-serif;
+    /*font-family: 'Inder',sans-serif;*/
+    min-height: 768px;
+
 }
 
 #wrapper{
-    width: 966px;
-    margin: 30px auto;
-    background: #363636;
-    min-height: 700px;
+    /*width: 1024px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.6);
+    min-height: 410px;
     font-size: 14px;
     line-height: 1.5em;
     border-radius: 10px;
+    padding: 10px;
     -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
+    -webkit-border-radius: 10px;*/
 }
 
 
 #main{
-    background: #ffffff;
+    /*background: #ffffff;
     position: relative;
     border-radius: 10px;
     -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
+    -webkit-border-radius: 10px;*/
 }
 
 #content{
-    min-height: 400px;
+    /*min-height: 400px;
     overflow: hidden;
-    margin-bottom: 40px;
+    margin-bottom: 40px;*/
 }
 
 footer{
@@ -72,10 +74,13 @@ footer{
 
 /* header --------------------------------------------------------*/
 header{
-    height: 215px;
+    height: 130px;
     z-index: 10;
     display: block;
     position:relative;
+    top:0px;
+    left:0px;
+    width: 100%;
 }
 
 header #headline{
@@ -90,32 +95,39 @@ header #headline{
 
 #headline a{
     text-decoration: none;
-    color: #FFD800;
+    color: #0072af;
 }
 
+#breadcrumbs-wrapper{
+    font-size: 26px;
+    width:100%;
+    height: 25px;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.45);
+}
 
-header #breadcrumbs{
-    position: absolute;
-    bottom: 11px;
-    left: 30px;
-    font-style: italic;
-    color: #999;
+#breadcrumbs{
+    margin:auto;
+    width:1170px;
+    clear:both;
     font-size: 12px;
+    background-color: transparent;
 }
 
-header #breadcrumbs a{
-    color: #bfbdbd;
+#breadcrumbs a{
+    /*color: white;
     text-decoration: none;
     background: url(/static/breadcrumb-slash.png) no-repeat top right;
-    padding-right: 14px;
+    padding-right: 14px;*/
 }
 
 header #login {
-    position: absolute;
-    bottom: 11px;
-    right: 30px;
-    color: #f5f5f5;
+    position: relative;
+    bottom: 30px;
+    float:right;
+    color: #0072af;
     font-size: 12px;
+    margin-right: 40px;
 }
 
 header #login a{
@@ -124,6 +136,8 @@ header #login a{
     font-weight: bold;
     text-decoration: none;
     cursor:pointer;
+    position:relative;
+    top:10px;
 }
 
 header #login a img{
@@ -132,21 +146,30 @@ header #login a img{
 
 #logo-left{
     position: absolute;
-    top: 10px;
-    left: 25px;
+    top: 0px;
+    left: 0px;
+    z-index: 15;
 }
 #logo-right{
     position: absolute;
-    top: 10px;
-    right: 25px;
+    top: 0px;
+    right: 0px;
 }
 
 /* TITLE --------------------------------------------------------*/
 
+#page-title-wrapper{
+    width: 100%;
+    /*background: url('/static/logo-web.png') no-repeat top right #0072af;*/
+    background-color: #0072af;
+}
 #page-title{
+    width: auto;
+    background-color: #0072af;
     overflow: hidden;
-    margin-bottom: 30px;
-    background: #f2f1f1;
+    text-align: right;
+    position:relative;
+    padding-left: 520px;
 }
 
 #page-title .title{
@@ -156,6 +179,7 @@ header #login a img{
     line-height: 80px;
     margin-left: 30px;
     text-shadow: 0 1px rgba(255, 255, 255, 1);
+    color:white;
 }
 
 #page-title .subtitle{
@@ -165,6 +189,7 @@ header #login a img{
     line-height: 90px;
     color: #929191;
     font-style: italic;
+    color: white;
 }
 
 
@@ -277,23 +302,21 @@ h6{ font-size: 20px; }
 }
 /* NAVIGATION --------------------------------------------------------*/
 
-
+#nav-wrapper{
+    background: rgba(51, 153, 204, 0.19);
+    width: 100%;    ;
+}
 nav{
     display: block;
-    position: absolute;
-    top: 108px;
-    left: 30px;
-    height: 46px;
-    width: 906px;
-    background: white url(/static/gloss.png);
-    border-radius: 10px;
+    height: 35px;
+    width: 920px;
+    margin:auto;
 }
 
 nav>li{
     display: block;
     float: left;
     margin-left: 5px;
-    margin-top: 12px;
 }
 
 nav>li:first-child{
@@ -301,18 +324,19 @@ nav>li:first-child{
 }
 
 nav>li>a{
+    padding-top: 10px;
     font-size: 12px;
-    color: #363636;
+    color: #0072af;
     text-decoration: none;
     padding: 7px 10px 6px 10px;
-    border-radius: 10px;
 }
 
 nav>li>a:hover,
 nav>li.current-menu-item>a{
     color: #fff;
-    background: #363636;
+    background: #0072af;
     text-shadow: none;
+    border-radius: 2px;
 }
 
 /* sub navigation */
@@ -320,7 +344,7 @@ nav>li.current-menu-item>a{
 nav>li ul{
     display: block;
     margin-top: -1px;
-    background: #ffd800;
+    background: #0072af;
     border-radius: 0px 0px 10px 10px;
     -moz-border-radius: 0px 0px 10px 10px;
     -webkit-border-radius: 0px 0px 10px 10px;
@@ -351,6 +375,36 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
     border-radius: 0px 0px 10px 10px;
     -moz-border-radius: 0px 0px 10px 10px;
     -webkit-border-radius: 0px 0px 10px 10px;
+}
+
+#search-menu-link a{
+
+    color: #2fa4e7;
+    text-decoration: none;
+
+}
+
+
+
+
+#search-submenu a{
+
+    color: #2fa4e7 ;
+    text-decoration: none;
+
+}
+
+#search-submenu a:hover {
+
+    color: #0072AF;
+
+}
+
+#search-submenu li.active a{
+
+    color: #0072AF;
+    cursor: default;
+
 }
 
 /* FILTER --------------------------------------------------------*/
@@ -407,9 +461,13 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 /* PAGES --------------------------------------------------------*/
 
 #page-content{
-    float: left;
-    width: 906px;
-    margin-left: 30px;
+    /*float: left;
+    width: 1024px;
+    /*margin-left: 30px;*/
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    min-height: 400px;
+    position: relative;
 }
 
 /* PORTFOLIO --------------------------------------------------------*/
@@ -613,12 +671,20 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 
 /* FOOTER - COLS ------------------------------------------------------------*/
 
+footer{
+    position:fixed;
+    width:100%;
+    bottom:0px;
+    left:0px;
+
+}
+
 #footer-cols{
     display: block;
     overflow: hidden;
     color: #bbbaba;
     line-height: 1.5em;
-    margin-top: 40px;
+    margin-top: 10px;
 }
 
 #footer-cols li.col{
@@ -663,31 +729,31 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 
 /* FOOTER BOTTOM --------------------------------------------------------*/
 
-#footer #bottom{
+footer #bottom{
     position: relative;
     width: 100%;
     font-size: 12px;
-    line-height: 80px;
+    line-height: 45px;
     text-align: center;
+    height: 40px;
     color: #868686;
-    background: url(/static/bottom-shadow.png) repeat-x;
+    background-color: rgba(51, 153, 204, 0.19);
 }
 
-#footer #bottom span{
+footer #bottom span{
     margin-right: 10px;
 }
 
-#footer #bottom a{
-    color: #ffd800;
+footer #bottom a{
+    color: #0072af;
     text-decoration: none;
 }
 
-#footer #bottom #to-top{
+footer #bottom #to-top{
     position: absolute;
     right: 30px;
     top: 26px;
     width: 33px;
-    height: 33px;
     cursor: pointer;
 }
 
@@ -713,17 +779,17 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 }
 
 div.contentWrap {
-    overflow-y:auto;
+    overflow-y:hidden;
 }
 
 .overlay {
     display:none;
     background-color: white;
-    width:720px;
-    height: 420px;
+    width:600px;
+    height: 450px;
     z-index: 9999;
     padding:10px;
-    border: 1px solid black;
+    border: 0 solid black;
     border-radius: 10px;
     box-shadow: 0 0 50px #222;
 }
@@ -818,3 +884,70 @@ tr.odd {
 .invisible {
     display: none;
 }
+
+
+#main-nav.nav-tabs.nav-stacked > li {
+    margin-bottom: 4px;
+}
+
+#main-nav.nav-tabs.nav-stacked > li > a,
+#main-nav.nav-tabs.nav-stacked > li > div{
+    padding: 10px 8px;
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #FFF !important;
+    background: #0072AF;
+    background:-moz-linear-gradient(top, #008aca 0%, ##0072AF 100%); /* FF3.6+ */
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#008ACA), color-stop(100%,#0072AF)); /* Chrome,Safari4+ */
+    background:-webkit-linear-gradient(top, #008ACA 0%,#0072AF 100%); /* Chrome10+,Safari5.1+ */
+    background:-o-linear-gradient(top, #008ACA 0%,#0072AF 100%); /* Opera11.10+ */
+    background:-ms-linear-gradient(top, #008ACA 0%,#0072AF 100%); /* IE10+ */
+    background:linear-gradient(top, #008ACA 0%,#0072AF 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#008ACA', endColorstr='#0072AF');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#008ACA', endColorstr='#0072AF')";
+
+    border: 1px solid #D5D5D5;
+    border-radius: 4px;
+}
+
+#main-nav.nav-tabs.nav-stacked > li.active > a,
+#main-nav.nav-tabs.nav-stacked > li.active > div,
+#main-nav.nav-tabs.nav-stacked > li > div:hover,
+#main-nav.nav-tabs.nav-stacked > li > a:hover {
+
+    color: #0072AF !important;
+    background:-moz-linear-gradient(top, #EAF4F9  0%, #DBECF4 100%); /* FF3.6+ */
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#EAF4F9 ), color-stop(100%,#DBECF4)); /* Chrome,Safari4+ */
+    background:-webkit-linear-gradient(top, #EAF4F9  0%,#DBECF4 100%); /* Chrome10+,Safari5.1+ */
+    background:-o-linear-gradient(top, #EAF4F9  0%,#DBECF4 100%); /* Opera11.10+ */
+    background:-ms-linear-gradient(top, #EAF4F9  0%,#DBECF4 100%); /* IE10+ */
+    background:linear-gradient(top, #EAF4F9  0%,#DBECF4 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EAF4F9 ', endColorstr='#DBECF4');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#EAF4F9 ', endColorstr='#DBECF4')";
+
+    border-color: white;
+    cursor: pointer;
+
+}
+
+#main-nav.nav-tabs.nav-stacked > li:first-child > a,
+#main-nav.nav-tabs.nav-stacked > li:last-child > a {
+    border-radius: 5px;
+}
+
+#main-nav.nav-tabs.nav-stacked li [class^="icon-"],
+#main-nav.nav-tabs.nav-stacked li [class*=" icon-"] {
+    position: relative;
+    top: 1px;
+
+    margin-right: .35em;
+
+    font-size: 15px;
+}
+
+#main-nav.nav-tabs.nav-stacked li .label {
+    position: relative;
+    top: 2px;
+}
+

@@ -2,6 +2,7 @@
 
 
 function defaultAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
+
     alert(responseText);
     alert(jqform);
     var div = $(jqform).attr("rel");
@@ -12,17 +13,44 @@ function defaultAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
 $(document).ready(
     function(){
 
+        "use strict";
+        $( "#search-menu-link" ).click(function() {
+            var effect = "blind";
+            var options = {};
+
+            if ($(this).parents( 'li' ).hasClass("active")){
+                $( '#search-submenu').hide( effect, options, 200 );
+                $(this).parents( 'li' ).removeClass("active");
+                return false;
+            }
+            else {
+                $( "#search-submenu" ).show( effect, options, 500 );
+                $(".active").removeClass("active");
+                $(this).parents( ".list-parent" ).addClass("active");
+                return false;
+            }
+        });
+
         // highlight current section
         var thereIsASection = false;
-        $('nav li[id!="navhome"] a').each(
+        $('#main-nav li[id!="navhome"]').find('a').each(
             function(){
                 if ( document.URL.match($(this).attr("href")) ){
-                    $(this).parent().toggleClass("current-menu-item");
+                    $(this).parents( ".list-parent" ).addClass("active");
                     thereIsASection = true;
                 }
+
+                if ( document.URL.match("/search/") ){
+                    $( "#search-submenu" ).show();
+                }
+                else {
+                    $( '#search-submenu').hide();
+                }
+
             }
         );
-        if (thereIsASection){ $("#navhome").removeClass("current-menu-item");}
+
+        if (thereIsASection){ $("#navhome").removeClass("active");}
 
         //create if not exist overlay div
         if ( $("#overlay").length == 0 ) {
