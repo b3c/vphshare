@@ -1,6 +1,10 @@
 {% extends "scs/base.html" %}
 
-{% block title %}Logged in!{% endblock %}
+{% block title %}Your VPH-Share profile{% endblock %}
+{% block page-title %}
+    <span class="title">Your VPH-Share profile</span>
+    <span class="subtitle">&nbsp;</span>
+{% endblock%}
 {% block javascripts  %}
     <script type="text/javascript" src="/static/jquery.zclip.min.js"></script>
     <script type="text/javascript">
@@ -11,9 +15,8 @@
             path:'/static/ZeroClipboard.swf',
             copy:$('div#copy').text(),
             afterCopy:function(){
-                $('div#copy').html('COPIED!');
+                $('#copied-message').removeClass("invisible");
                 $(this).preventDefault();
-                $('div#copy').css('background','green');
             }
         });
 
@@ -22,8 +25,8 @@
 
 {% endblock %}
 {% block content %}
-<div>
-  <h3>Your personal data:</h3>
+<fieldset class="span6">
+  <legend>Your personal data:</legend>
   <ul>
     <li><strong>Id:</strong> <span>{{ request.user.id }}</span></li>
     <li><strong>Username:</strong> <span>{{ request.user.username }}</span></li>
@@ -33,12 +36,10 @@
     <li><strong>Country:</strong> <span>{{ request.user.userprofile.country }}</span></li>
     <li><strong>PostCode:</strong> <span>{{ request.user.userprofile.postcode }}</span></li>
     <li><strong>Last login time:</strong> <span>{{ request.user.last_login }}</span></li>
-
-      <br />
-     <li><strong>Your Authentication Ticket (base64)</strong> <br /> <span><div id="copy">{{ tkt64 }}</div></span></li>
-     <a id="copy-description" href="#copied">Copy Ticket to Clipboard</a>
+    <li><a class="btn" id="copy-description" href="#copied">Copy your Authentication Ticket to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
   </ul>
-</div>
+    <span class="invisible"><div id="copy" class="invisible">{{ tkt64 }}</div></span></li>
+</fieldset>
 
 
 

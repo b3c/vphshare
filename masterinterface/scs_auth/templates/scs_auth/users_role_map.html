@@ -1,15 +1,14 @@
 
-<div class="windowcontainer" style="overflow-x: scroll;">
-    <div class="windowcontainerTitle">Assign Roles to users</div>
+<fieldset style="overflow-x: scroll;">
+    <legend>Assign Roles to users</legend>
     {% if not resultUsers  %}
         <p>No User find.</p>
     {% else %}
     <form  method="POST" id ="users_remove_role" >{% csrf_token %} </form>
     <form method="POST" id ="users_update_role_map" action="{%   url users_update_role_map %}{% if getmail %}?getmail={{ getmail }}{% endif %}">
         {% csrf_token %}
-        <table class="tableuserlits">
+        <table  class="tableuserlits table table-hover table-bordered">
             <thead>
-
             <tr><th>Username</th><th>Email</th>
                 {% for role in Roles %}
                         {% if request.user.is_superuser %}
@@ -18,10 +17,11 @@
                             <th >{{role.roleName}}<img style="position: absolute;padding-left:4px;float: right;" class="invisible" src="/static/delete.png" id="{{role.roleName}}DELETE"></th>
                         {% endif  %}
                 {%  endfor %}
+            </tr>
             </thead>
             <tbody>
             {% for username , userInfo in resultUsers.items   %}
-                <tr class="{% cycle 'odd' 'even' %}">
+                <tr>
                     <td>{{  username }}</td><td>{{  userInfo.email }}</td>
                     {% for role in Roles %}
                         {% if role.roleName in userInfo.roles %}
@@ -30,10 +30,11 @@
                         <td><input  name="{{  role.roleName}}!{{ username }}!{{  userInfo.email }}" type="checkbox" ></td>
                         {% endif %}
                     {%  endfor %}
+                </tr>
             {% endfor %}
             </tbody>
         </table>
-        <button onclick="users_update_role_map();" type="button">Update Role Map</button>
+        <button onclick="users_update_role_map();" type="button" class="btn">Update Role Map</button>
     </form>
     {% endif %}
-</div>
+</fieldset>
