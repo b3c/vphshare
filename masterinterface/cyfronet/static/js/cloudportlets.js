@@ -7,5 +7,9 @@ $(document).ready(function() {
 		if($('#datamanagerframe')) {
 			$('#datamanagerframe').css('height', data['size'] + 'px');
 		}
+		
+		if($('#policymanagerframe')) {
+			$('#policymanagerframe').css('height', data['size'] + 'px');
+		}
 	});
 });
