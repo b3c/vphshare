@@ -1,6 +1,6 @@
 <!-- START search tools bar -->
 <div class="navbar">
-    <div class="navbar-inner">
+    <div class="navbar-inner span6" style="min-height: 60px;">
         <form id="automatic-search-form" class="navbar-form pull-left">
             <input type="text" class="input-medium search-query" name="free-text" id="free-text" placeholder="Search dataset" {% if request.GET.input %} value="{{ request.GET.input  }}"{% endif %}>
             <button id="search-button" type="button" class="btn btn-small" >Search</button>
@@ -12,22 +12,23 @@
 
         <button id="back-to-query" type="button" class="btn btn-small hide" >Back to Search</button>
         <!--<button id="query-submit" type="button" class="btn btn-small pull-right hide" >Query</button>-->
+    </div>
+    <div class="navbar-inner span6" style="min-height: 60px;">
 
         <div id="query-group" class="btn-group hide pull-right ">
-            <button id="query-submit" class="btn btn-small ">Query</button>
-            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+            <button id="reset-groups" class="btn btn-small hide " >Reset</button>
+            <button class="btn  btn-small " data-toggle="dropdown" >
+                History
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 <li class="disabled"><a href="#">Latest Queries</a></li>
                 <li class="divider"></li>
-
             </ul>
+            <button id="query-submit" class="btn btn-small ">Search Dataset <i class="icon-search"></i></button>
         </div>
-        <button id="reset-groups" class="btn btn-small hide pull-right " style="margin-right: 5px;" >Reset</button>
 
         <div id="query-save-button" href="#saveQueryModal" role="button" class="btn btn-small pull-right hide" data-toggle="modal">Save</div>
-
 
     </div>
 
