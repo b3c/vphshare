@@ -623,17 +623,17 @@ $( function() {
         var group = dropTarget.clone();
         var nGroup = groups.length;
         var itemCloned;
-
+        itemCloned = item;
         if ( item.parents( '.group' ).length > 0 ) {
 
             groupCheckContent( item.parents( '.group' ), 2 );
-            itemCloned = item;
+            //itemCloned = item;
 
         } else {
 
-            itemCloned = item.clone().hide();
-            itemCloned.children().children().append( '<a class="delete-link" href="#"></a>' );
-            itemCloned.attr( 'id', item.attr( 'data-uid' ) );
+            //itemCloned = item.clone().hide();
+            //itemCloned.children().children().append( '<a class="delete-link" href="#"></a>' );
+            //itemCloned.attr( 'id', item.attr( 'data-uid' ) );
 
         }
 
@@ -661,7 +661,8 @@ $( function() {
 
         } );
 
-        itemCloned.appendTo( group ).delay( 200 ).fadeIn( 200 );
+        dropTerm( itemCloned, group);
+        /*itemCloned.appendTo( group ).delay( 200 ).fadeIn( 200 );
         itemCloned.draggable( {
 
             cancel: "a.ui-icon", // clicking an icon won't initiate dragging
@@ -670,7 +671,7 @@ $( function() {
             helper: "clone",
             cursor: "move"
 
-        } );
+        } );*/
 
     }
 
@@ -698,13 +699,58 @@ $( function() {
 
     }
 
+    $( '#set-annotation-cancel' ).click(function(){
+
+        $( '#annotation-value' ).val('');
+
+    });
+
+    function editTermValue( item ) {
+
+        var datasetValue = $( '#dataset-value' ).val();
+        var itemFormValue =  $( '#annotation-value' ).val();
+        var itemValue = item.find( ".term-value" );
+
+        if (datasetValue !== '' && itemFormValue === '') {
+
+            $( '#save-annotation-value' ).unbind( 'click' );
+            $( '#annotation-value' ).val( itemValue.val() );
+            $( '#set-annotation-value' ).modal('show');
+            $( '#save-annotation-value' ).on( 'click', function(){
+                editTermValue( item );
+            });
+
+            return;
+
+        }
+
+        itemValue.val( itemFormValue );
+        $( '#annotation-value' ).val( '' );
+        $( '#set-annotation-value' ).modal('hide');
+
+    }
+
     /* Create new group when term is dropped in OR group*/
     function dropTerm( item, dropTarget ) {
 
         var itemCloned;
-
+        var datasetValue = $( '#dataset-value' ).val();
+        var itemValue =  $( '#annotation-value' ).val();
+        var itemSetvalue = item.find( ".term-value" ).val();
         //if term dropped is not present in group , it can be dropped
-        if ( !checkDuplicate(item, dropTarget ) ) {
+        if ( !checkDuplicate( item, dropTarget ) ) {
+
+            if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined ) {
+
+                $( '#save-annotation-value' ).unbind( 'click' );
+                $( '#set-annotation-value' ).modal('show');
+                $( '#save-annotation-value' ).on( 'click', function(){
+                    dropTerm( item, dropTarget );
+                });
+
+                return;
+
+            }
 
             //if term came from other groups or from term-list search results
             if ( item.parents( '.group' ).length > 0 ) {
@@ -716,7 +762,22 @@ $( function() {
             } else {
 
                 itemCloned = item.clone().hide();
-                itemCloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+
+                if ( itemValue !== '' ) {
+
+                    var edit = $("<a class='icon-pencil' href='#'></a>");
+                    edit.click(function(){
+                       editTermValue(itemCloned);
+                    });
+                    itemCloned.children().children().append( edit );
+
+                    itemCloned.children().children().append( "<input type='hidden' class='term-value' value='"+itemValue+"'/>" );
+                    $( '#annotation-value' ).val( '' );
+                    $( '#set-annotation-value' ).modal('hide');
+
+                }
+
+                itemCloned.children().children().append( "<a id='delete-link' class='icon-remove-sign' href='#'></a>" );
                 itemCloned.attr( 'id', item.attr( 'data-uid' ) );
 
             }
@@ -800,7 +861,7 @@ $( function() {
     });
 
     /** event to delete term from group **/
-    $( document ).on( 'click', '.delete-link', function( e ) {
+    $( document ).on( 'click', '#delete-link', function( e ) {
 
         var parent = $( this ).parents( '.group' );
 
@@ -1077,6 +1138,66 @@ function guidedSearchReady(){
     });
     $( '#query-submit' ).bind( "click", function() {
         guidedSearchS2Call();
+    } );
+    $( '#terms-table').show();
+    $( '#guided-search-content-block').hide();
+    $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
+
+    /*** START Reset Term List ***/
+    var termList = $( "#terms-list-base" ).clone();
+    $( "#term-list" ).remove();
+    $( "#term-list-block" ).append( termList );
+    termList.attr( 'id', 'term-list' );
+    $( "#num-max-hits" ).val( 20 );
+    $( "#max-terms" ).text( 20 );
+    $( "#num-terms" ).text( '' ).parent().hide();
+    $( "#page-num" ).val( 1 );
+    $( "#slider-range-min" ).slider( 'value', '20' );
+    $( "#termsPagination" ).remove();
+
+    $( '.group > .term' ).bind( 'remove', function( e ) {
+
+        var parent = $( this ).parents( '.group' );
+
+        e.preventDefault();
+
+        groupCheckContent( parent, 1 );
+
+    } );
+
+    $( '.group > .term' ).remove();
+    SEARCH = false;
+    /*** END Reset Term List ***/
+
+}
+
+
+function datasetSearchReady( dataset ) {
+
+    "use strict";
+    //remember the selected dataset from guideserachS2 results
+    $( '#dataset-value' ).val( dataset );
+    //reset events's button
+    $( '#search-button' ).unbind( 'click' );
+    $( '#automatic-search-form' ).unbind(  'submit' );
+    $( '#query-submit').unbind('click');
+
+    //return to the search view
+    $( '#results' ).hide();
+    $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
+    $( '#reset-groups' ).fadeIn();
+    $( '#search-content' ).fadeIn();
+
+    //set the corresponding events
+    $( '#search-button' ).bind( "click", function() {
+        //annotationSearch();
+    } );
+    $( '#automatic-search-form' ).bind( "submit", function() {
+        //annotationSearch();
+        return false;
+    });
+    $( '#query-submit' ).bind( "click", function() {
+        return;
     } );
     $( '#terms-table').show();
     $( '#guided-search-content-block').hide();

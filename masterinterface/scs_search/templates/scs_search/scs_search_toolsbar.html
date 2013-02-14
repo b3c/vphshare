@@ -59,3 +59,24 @@
     </div>
 </div>
 <!-- END Save Form -->
+<!-- START Save Form -->
+<div id="set-annotation-value" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="set-annotation-value-label">Set Value...</h3>
+    </div>
+    <div class="modal-body">
+        <form id="set-annotation-value-form">
+            <p>Set the value for selected term:</p>
+            <input type="text" class="input-large search-query" id="annotation-value" placeholder="Term Value" />
+            <input type="hidden" class="input-large search-query" id="set-annotation-value-id" />
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button id="set-annotation-cancel"class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="save-annotation-value" class="btn btn-primary">Set</button>
+        <input type="hidden" id="dataset-value" value=""/>
+    </div>
+</div>
+<!-- END Save Form -->
