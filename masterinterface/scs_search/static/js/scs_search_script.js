@@ -215,7 +215,7 @@ function complexSearchS1CallBack( results ) {
         if ( pagenum === 1 )
             termsPagination.find( '#prev' ).addClass( 'disabled' ).removeClass( 'page' );
 
-        if ( pagenum === numPages )
+        if ( pagenum == numPages )
             termsPagination.find( '#next' ).addClass( 'disabled' ).removeClass( 'page' );
 
         termsPagination.show();
@@ -777,7 +777,7 @@ $( function() {
 
                 }
 
-                itemCloned.children().children().append( "<a id='delete-link' class='icon-remove-sign' href='#'></a>" );
+                itemCloned.children().children().append( "<a id='delete-link' class='icon-remove' href='#'></a>" );
                 itemCloned.attr( 'id', item.attr( 'data-uid' ) );
 
             }
