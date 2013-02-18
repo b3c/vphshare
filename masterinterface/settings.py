@@ -4,7 +4,7 @@ import os
 from mod_auth import SignedTicket, Ticket
 
 DEBUG = True
-DEVEL = False
+DEVEL = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -19,23 +19,23 @@ MANAGERS = ADMINS
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if not DEVEL:
 # Default Database
-	DEFAULT_DB = {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
-    'USER': 'vph',                      # Not used with sqlite3.
-    'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
-    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-	}
+    DEFAULT_DB = {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
+        'USER': 'vph',                      # Not used with sqlite3.
+        'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
 else:
-	DEFAULT_DB = {
-   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
-    'USER': '',                      # Not used with sqlite3.
-    'PASSWORD': '',                  # Not used with sqlite3.
-    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-	}
+    DEFAULT_DB = {
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
 
 #DEFAULT_DB = {
 #   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -164,10 +164,13 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'social_auth',
+    'permissions',
+    'workflows',
     'masterinterface.scs',
     'masterinterface.scs_auth',
     'masterinterface.cyfronet',
     'masterinterface.scs_search',
+    'masterinterface.scs_groups',
     'south'
     
     ##NEW_APP
