@@ -13,11 +13,11 @@
         <button id="back-to-query" type="button" class="btn btn-small hide" >Back to Search</button>
         <!--<button id="query-submit" type="button" class="btn btn-small pull-right hide" >Query</button>-->
     </div>
-    <div class="navbar-inner span6" style="min-height: 60px;">
+    <div id="right-nav-search" class="navbar-inner span6 hide" style="min-height: 60px;">
 
         <div id="query-group" class="btn-group hide pull-right ">
             <button id="reset-groups" class="btn btn-small hide " >Reset</button>
-            <button class="btn  btn-small " data-toggle="dropdown" >
+            <button id="history-button" class="btn  btn-small " data-toggle="dropdown" >
                 History
                 <span class="caret"></span>
             </button>
@@ -68,7 +68,7 @@
     <div class="modal-body">
         <form id="set-annotation-value-form">
             <p>Set the value for selected term:</p>
-            <input type="text" class="input-large search-query" id="annotation-value" placeholder="Term Value" />
+            <input type="text" class="input-large search-query" id="annotation-value" placeholder="Term Value" value=""/>
             <input type="hidden" class="input-large search-query" id="set-annotation-value-id" />
         </form>
     </div>
@@ -76,7 +76,7 @@
     <div class="modal-footer">
         <button id="set-annotation-cancel"class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
         <button id="save-annotation-value" class="btn btn-primary">Set</button>
-        <input type="hidden" id="dataset-value" value=""/>
+        <input type="hidden" id="dataset-value" value="{{ dataset }}"/>
     </div>
 </div>
 <!-- END Save Form -->

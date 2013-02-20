@@ -19,6 +19,7 @@ function resultsCallback( results ) {
     var conceptItem;
     var conceptItemBase = $( '#concept-base' ).clone();
     $( '.media-list' ).html( conceptItemBase );
+    $( '#legend-step2' ).removeClass('muted' ).addClass('selected');
 
     for ( conceptUri in results ) {
         if ( results.hasOwnProperty( conceptUri ) ) {
@@ -36,7 +37,8 @@ function resultsCallback( results ) {
                     conceptItem.find( '.dataset-item' ).show();
                     conceptItem.find( '.dataset-label' ).text( datasetLabel );
                     conceptItem.find( '.dataset-description' ).text( 'Match : ' + numMatch );
-                    conceptItem.find( '.link-to-data' ).attr( 'href', rdfLink );
+                    //conceptItem.find( '.link-to-data' ).attr( 'onclick', "datasetSearchReady( '"+rdfLink+"', '"+datasetLabel+"' );" );
+                    conceptItem.find( '.link-to-data' ).attr( 'href', "/search/complex/?dataset="+encodeURIComponent(rdfLink)+"&datasetLabel="+encodeURIComponent(datasetLabel) );
 
                 }
 
@@ -232,6 +234,135 @@ function complexSearchS1CallBack( results ) {
     SEARCH = true;
 }
 
+function annotationSearchCallBack( results ) {
+
+    "use strict";
+    var maxMatches = results.max_matches;
+    var numPages = results.num_pages;
+    var numResultsTotal = results.num_results_total;
+    var pagenum = parseInt( results.page_num, 10 );
+
+    var item;
+    var term = $( "#terms-list-base > .term" ).clone();
+    var termList = $( "#terms-list-base" ).clone();
+
+    $( "#term-list-block" ).children( '#terms-pagination' ).remove();
+
+    var termsPagination = $( "#term-list-block" ).children( '#terms-pagination-base' ).clone().attr( 'id', 'terms-pagination' );
+
+
+    $( "#term-list" ).remove();
+    $( "#term-list-block" ).append( termList );
+    termList.attr( 'id', 'term-list' );
+
+    $( "#num-terms" ).text( numResultsTotal ).parent().show();
+
+    var termsResults = results[pagenum];
+
+    if ( termsResults.length === 0 ) {
+
+        return;
+
+    }
+
+    for ( item in termsResults ) {
+
+        var annotationUri = termsResults[item][0];
+        var annotationDisplayText = termsResults[item][1];
+        var parentInternalName = termsResults[item][2];
+        var addTerm = term.clone();
+        var id = item;
+        var termName;
+        if (annotationDisplayText != '') {
+            termName = parentInternalName + ' > ' + annotationDisplayText;
+        }else{
+
+            termName = parentInternalName + ' > ' + item;
+
+        }
+
+        if ( termName.length > 40 ) {
+
+            addTerm.append( termName.substr( 0, 40 ) + "..." );
+
+        } else {
+
+            addTerm.append( termName );
+
+        }
+
+        var fieldset = $('<fieldset class="fieldsetTerm hide"></fieldset>');
+        fieldset.append( '<input name="inputConceptUri" type="hidden" value="' + item + '" /> ' );
+        fieldset.append( '<input name="inputTermName" type="hidden" value="' + termName + '" /> ' );
+        fieldset.append( '<input name="inputConceptName" type="hidden" value="' + parentInternalName + '" /> ' );
+
+        addTerm.append(fieldset);
+
+        termList.append( addTerm );
+
+        addTerm.show();
+        addTerm.popover( {
+            title: parentInternalName,
+            content: termName,
+            trigger: 'hover',
+            placement: 'left',
+            delay: { show: 500, hide: 100 }
+        } );
+
+        addTerm.draggable( {
+
+            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+            revert: "invalid", // when not dropped, the item will revert back to its initial position
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
+
+        } );
+
+
+    }
+
+    if ( numPages > 1 ) {
+
+        for ( var i = 1; i <= numPages; i++ ) {
+
+            var page = termsPagination.find( '#prev' ).clone();
+            page.attr( 'id', 'pg' + i ).attr( 'page', i ).children( 'a' ).attr( "href", "#" ).text( i );
+
+            if ( i === pagenum )
+                page.attr( 'class', 'active' );
+
+            if ( i === 1 ) {
+
+                page.insertAfter( termsPagination.find( '#prev' ) );
+
+            } else {
+
+                page.insertAfter( termsPagination.find( '#pg' + (i - 1) ) );
+
+            }
+
+        }
+
+        if ( pagenum === 1 )
+            termsPagination.find( '#prev' ).addClass( 'disabled' ).removeClass( 'page' );
+
+        if ( pagenum == numPages )
+            termsPagination.find( '#next' ).addClass( 'disabled' ).removeClass( 'page' );
+
+        termsPagination.show();
+        termsPagination.appendTo( "#term-list-block" );
+
+    }
+
+    termList.kendoTreeView( {
+
+        select: noSelect
+
+    } );
+
+    SEARCH = true;
+}
 
 function guidedSearchS2Callback( results ) {
 
@@ -489,6 +620,42 @@ function guidedSearchComplexQueryCall( saveToken ) {
     }
 }
 
+function annotationSearchCall() {
+
+    "use strict";
+    var form = $( "#automatic-search-form" ),
+        input = form.find( 'input[name="free-text"]' ).val(),
+        url = '/annotation_search/',
+        numMaxHits = $( '#num-max-hits' ).val(),
+        pageNum = $( '#page-num' ).val();
+
+    if ( SEARCH === false ) {
+
+        $( '#page-num' ).val( 1 );
+        pageNum = 1;
+
+    }
+
+    $( '#wait-terms' ).fadeIn();
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: {input: input, nummaxhits: numMaxHits, pagenum: pageNum},
+        success: function( results ) {
+
+            $( '#wait-terms' ).fadeOut();
+            annotationSearchCallBack( results );
+
+        },
+        error: function( error ) {
+
+            $( '#wait-terms' ).fadeOut();
+
+        }
+    } );
+}
+
+
 function save_complex_query() {
 
     "use strict";
@@ -620,9 +787,26 @@ $( function() {
     /* Create new group when term is dropped in AND group*/
     function createNewGroup( item, dropTarget ) {
 
+        var datasetValue = $( '#dataset-value' ).val();
+        var itemValue =  $( '#annotation-value' ).val();
+        var itemSetvalue = item.find( ".term-value" ).val();
+
+        if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined ) {
+
+            $( '#save-annotation-value' ).unbind( 'click' );
+            $( '#set-annotation-value' ).modal('show');
+            $( '#save-annotation-value' ).on( 'click', function(){
+                createNewGroup( item, dropTarget );
+            });
+
+            return;
+
+        }
         var group = dropTarget.clone();
         var nGroup = groups.length;
         var itemCloned;
+
+
         itemCloned = item;
         if ( item.parents( '.group' ).length > 0 ) {
 
@@ -637,7 +821,7 @@ $( function() {
 
         }
 
-        groups[nGroup] = group;
+        groups[ nGroup ] = group;
         group.attr( 'id', "group" + nGroup );
         group.find( '.help' ).hide();
         group.find( '#and' ).show();
@@ -757,6 +941,9 @@ $( function() {
 
                 groupCheckContent( item.parents( '.group' ), 2 );
                 itemCloned = item;
+                /*itemCloned.find( '#edit-annotation' ).on( 'click', function(){
+                    editTermValue(itemCloned);
+                });*/
 
 
             } else {
@@ -765,10 +952,11 @@ $( function() {
 
                 if ( itemValue !== '' ) {
 
-                    var edit = $("<a class='icon-pencil' href='#'></a>");
-                    edit.click(function(){
-                       editTermValue(itemCloned);
-                    });
+                    var edit = $("<a id='edit-annotation' class='icon-pencil' href='#'></a>" );
+                        /*.on( 'click', function(){
+                        editTermValue(itemCloned);
+                    });*/
+
                     itemCloned.children().children().append( edit );
 
                     itemCloned.children().children().append( "<input type='hidden' class='term-value' value='"+itemValue+"'/>" );
@@ -872,6 +1060,15 @@ $( function() {
 
 
     } );
+
+    $( document ).on( 'click', '#edit-annotation', function( e ){
+
+        var item = $( this ).closest( '.k-item' );
+
+        e.preventDefault();
+        editTermValue( item );
+
+    });
 
 
     /** event to change page of terms-list **/
@@ -1032,7 +1229,7 @@ $(document).on( 'click', '#back-to-query', function() {
     $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
     $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
     $.address.state($.address.baseURL().split('?')[0]).value('?');
-
+    $( '#legend-step2' ).removeClass( 'selected' ).addClass( 'muted' );
 } );
 
 
@@ -1072,6 +1269,7 @@ function complexSearchReady(  ) {
     $( '#search-button' ).unbind( 'click' );
     $( '#automatic-search-form' ).unbind(  'submit' );
     $( '#query-submit').unbind('click');
+    $( '#right-nav-search' ).show();
 
     $( '#results' ).hide();
     $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
@@ -1124,10 +1322,12 @@ function guidedSearchReady(){
     $( '#search-button' ).unbind( 'click' );
     $( '#automatic-search-form' ).unbind(  'submit' );
     $( '#query-submit').unbind('click');
+    $( '#history-button' ).hide();
+    $( '#reset-groups' ).hide();
+    $( '#right-nav-search' ).show();
 
     $( '#results' ).hide();
     $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
-    $( '#reset-groups' ).fadeIn();
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         guidedSearchS1Call();
@@ -1142,7 +1342,8 @@ function guidedSearchReady(){
     $( '#terms-table').show();
     $( '#guided-search-content-block').hide();
     $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
-
+    $( '#free-text' ).val('');
+    $( '#annotation-value' ).val('');
     /*** START Reset Term List ***/
     var termList = $( "#terms-list-base" ).clone();
     $( "#term-list" ).remove();
@@ -1172,36 +1373,37 @@ function guidedSearchReady(){
 }
 
 
-function datasetSearchReady( dataset ) {
+function datasetSearchReady( dataset, datasetLabel) {
 
     "use strict";
     //remember the selected dataset from guideserachS2 results
     $( '#dataset-value' ).val( dataset );
-    //reset events's button
+    $( '#legend-step3' ).removeClass( 'muted' ).addClass( 'selected' );
+    $( '#legend-step3' ).after( "<div id='legend-dataset'>" + datasetLabel + "</div>" );
+    $( '#history-button' ).hide();
+    $( ".terms-tools" ).hide();
+    $( '#right-nav-search' ).show();
+
     $( '#search-button' ).unbind( 'click' );
     $( '#automatic-search-form' ).unbind(  'submit' );
     $( '#query-submit').unbind('click');
 
-    //return to the search view
     $( '#results' ).hide();
-    $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
     $( '#reset-groups' ).fadeIn();
     $( '#search-content' ).fadeIn();
-
-    //set the corresponding events
     $( '#search-button' ).bind( "click", function() {
-        //annotationSearch();
+        annotationSearchCall();
     } );
     $( '#automatic-search-form' ).bind( "submit", function() {
-        //annotationSearch();
+        annotationSearchCall();
         return false;
     });
     $( '#query-submit' ).bind( "click", function() {
         return;
     } );
-    $( '#terms-table').show();
-    $( '#guided-search-content-block').hide();
-    $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
+    $( '#free-text' ).attr( 'placeholder', 'Search Annotations' );
+    $( '#free-text' ).val('');
+    $( '#annotation-value' ).val('');
 
     /*** START Reset Term List ***/
     var termList = $( "#terms-list-base" ).clone();
@@ -1215,7 +1417,7 @@ function datasetSearchReady( dataset ) {
     $( "#slider-range-min" ).slider( 'value', '20' );
     $( "#termsPagination" ).remove();
 
-    $( '.group > .term' ).bind( 'remove', function( e ) {
+    /*$( '.group > .term' ).bind( 'remove', function( e ) {
 
         var parent = $( this ).parents( '.group' );
 
@@ -1223,11 +1425,15 @@ function datasetSearchReady( dataset ) {
 
         groupCheckContent( parent, 1 );
 
-    } );
-
+    } );*/
     $( '.group > .term' ).remove();
     SEARCH = false;
     /*** END Reset Term List ***/
+    $( '#back-to-query' ).hide();
+    $( '#query-save-button' ).hide();
+    $( '#automatic-search-form' ).show();
+    $.address.state($.address.baseURL().split('?')[0]).value('?dataset='+encodeURIComponent(dataset)+'&datasetLabel='+encodeURIComponent(datasetLabel));
 
 }
+
 /* END jquery ready in search page */

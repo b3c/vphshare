@@ -10,7 +10,14 @@
 
     <link rel="stylesheet" href="/static/css/scs_search_style.css" type="text/css" media="screen" />
     <script src="/static/js/scs_search_script.js" type="text/javascript"></script>
-    {% if search == 'complex' %}
+    {% if dataset != '' %}
+        <script  type="text/javascript">
+            $( function (){
+                complexSearchReady();
+                datasetSearchReady( "{{ dataset }}", "{{ datasetLabel }}");
+            });
+        </script>
+    {% elif search == 'complex' %}
     <script src="/static/js/scs_search_complex.js" type="text/javascript"></script>
         {% if results != '' %}
         <!-- show only results block -->
@@ -25,6 +32,7 @@
             });
         </script>
         {% endif %}
+
     {% elif search == 'guided' %}
     <script src="/static/js/scs_search_guided.js" type="text/javascript"></script>
     {% else %}
@@ -56,7 +64,8 @@
     </div>
 
     <div id="search" class="container-fluid">
-
+        <legend><div id="legend-step1" class="step selected">Search dataset</div> <div id="legend-step2" class="
+         {% if results == '' and dataset == '' %} muted {% else %}selected {% endif %} step" >> select dataset</div> <div id="legend-step3" class=" {% if dataset ==  '' %} muted {% else %}selected {% endif %}  step" >> query the dataset</div> </legend>
         <div id="search-block" class="row-fluid">
 
             {% include 'scs_search/scs_search_toolsbar.html' %}
