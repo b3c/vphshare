@@ -67,7 +67,6 @@ class Study(Group):
 
 class AuditLog(models.Model):
 
-    uid = models.AutoField(primary_key=True)
     date = models.DateField(auto_now=True, blank=False)
     log = models.CharField(max_length=512, blank=False)
 
@@ -77,7 +76,6 @@ class AuditLog(models.Model):
 
 class SubscriptionRequest(models.Model):
 
-    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, blank=False)
     group = models.ForeignKey(Group, blank=False)
     date = models.DateField(auto_now=True, blank=False)

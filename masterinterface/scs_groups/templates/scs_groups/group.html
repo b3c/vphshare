@@ -1,0 +1,85 @@
+{% load macros %}
+{% macro display_group group type %}
+    <strong>
+    {% if type == 'Institution' %}
+        <img src="/static/logo.png" class="img-polaroid" alt="logo">&nbsp;
+    {% endif %}
+        {{ group.name }}</strong>
+    {% if request.user in group.managers.all or request.user in group.principals.all%}
+        <div>
+            <a href="#{{ group.id }}-institution-subscribers-modal" role="button" class="btn btn-link" data-toggle="modal"><span class="icon-user"></span>{{ group.user_set.all|length }}</a>
+            <a href="#{{ group.id }}-institution-pending-modal" role="button" class="btn btn-link" data-toggle="modal"><span class="icon-question-sign"></span> {{ group.pending_subscriptions|length}}</a>
+        </div>
+        <div id="{{ group.id }}-institution-subscribers-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3>{{ group.name }} subscribers </h3>
+            </div>
+            <div class="modal-body">
+                {% if group.user_set.all %}
+                    <ul>
+                        {% for subscriber in group.user_set.all %}
+                            <li> <strong>{{ subscriber.first_name }} {{ subscriber.last_name }} </strong>
+                                <span class="muted">({{ subscriber.username }})</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>There are no subscribers</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+        <div id="{{ group.id }}-institution-pending-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3>{{ group.name }} pending subscriptions</h3>
+            </div>
+            <div class="modal-body">
+                {% if group.pending_subscriptions %}
+                    <ul>
+                        {% for subscription in group.pending_subscriptions %}
+                            <li>
+                                <span> {{ subscription.id }}</span>
+                                <strong>{{ subscription.user.last_name }} {{ subscription.user.first_name }}</strong>
+                                <span class="muted">({{ subscription.user.username }})</span>&nbsp;
+                                <span class="muted text-info">{{ subscription.date }}</span>
+                                <form class="form-inline" action="/groups/manage_subscription/" enctype="multipart/form-data" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="group" value="{{ group.name }}" />
+                                    <input type="hidden" name="user" value="{{ subscription.user.username }}" />
+                                    <button class="btn btn-success" type="submit" name="operation" value="accept">Accept</button>
+                                    <button class="btn btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>There are no subscribers</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    {% endif %}
+    {% if request.user.is_authenticated and request.user not in group.user_set.all %}
+        <ul>
+            {% if group.is_subscription_pending %}
+                <li><span class="icon-question-sign"></span>Your subscription request is pending</li>
+            {% elif group.is_subscription_refused %}
+                <li><span class="icon-remove-sign"></span>Your subscription request has been refused</li>
+            {% else %}
+                <li>
+                    <form action="/groups/subscribe/" enctype="multipart/form-data" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="group" value="{{ group.name }}" />
+                        <button class="btn btn-block" type="submit" title="Subscribe">Subscribe</button>
+                    </form>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+{% endmacro %}

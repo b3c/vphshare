@@ -61,7 +61,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'AuditLog'
         db.create_table('scs_groups_auditlog', (
-            ('uid', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('date', self.gf('django.db.models.fields.DateField')(auto_now=True, blank=True)),
             ('log', self.gf('django.db.models.fields.CharField')(max_length=512)),
         ))
@@ -137,8 +137,8 @@ class Migration(SchemaMigration):
         'scs_groups.auditlog': {
             'Meta': {'object_name': 'AuditLog'},
             'date': ('django.db.models.fields.DateField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'log': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
-            'uid': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'log': ('django.db.models.fields.CharField', [], {'max_length': '512'})
         },
         'scs_groups.institution': {
             'Meta': {'ordering': "['name']", 'object_name': 'Institution', '_ormbases': ['auth.Group']},

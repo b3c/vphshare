@@ -1,6 +1,8 @@
 {% extends 'scs_groups/base.html' %}
 
 {% load staticfiles %}
+{% load macros %}
+{% loadmacros 'scs_groups/group.html' %}
 
 {% block extrahead %}
     <script type="text/javascript">
@@ -25,97 +27,33 @@
         <h3>Your Institutions</h3>
         <ul class="thumbnails">
         {% for institution in user_institutions %}
-            <li class="well">
-                <img src="/static/logo.png" class="img-rounded" alt="logo">
-                <h6>{{ institution.name }}</h6>
-                {% if institution.is_manager %}
-                    <ul class="unstyled">
-                        <li><a href="#{{ institution.id }}-subscribers-modal" role="button" class="btn" data-toggle="modal"><span class="icon-user"></span>{{ institution.subscribers|length }}&nbsp; subscribers</a></li>
-                        <li><a href="#{{ institution.id }}-pending-modal" role="button" class="btn" data-toggle="modal"><span class="icon-check"></span> {{ institution.pending_subscriptions|length}}&nbsp; pending subscription</a></li>
+            <li class="thumbnail span3">
+                {% usemacro display_group institution 'Institution' %}
+                {% if institution.studies %}
+
+                    <h5>Institution Studies</h5>
+                    <ul>
+                    {% for study in institution.studies %}
+                        <li>{% usemacro display_group study 'Study' %}</li>
+                    {% endfor %}
                     </ul>
-                    <div id="{{ institution.id }}-subscribers-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h3>{{ institution.name }} subscribers </h3>
-                        </div>
-                        <div class="modal-body">
-                            {% if institution.subscribers %}
-                            <ul>
-                                {% for subscriber in institution.subscribers %}
-                                    <li> <strong>{{ subscriber.last_name }} {{ subscriber.first_name }}</strong>
-                                        <span class="muted">({{ subscriber.username }})</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                            {% else %}
-                                <p>There are no subscribers</p>
-                            {% endif %}
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                        </div>
-                    </div>
-                    <div id="{{ institution.id }}-pending-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h3>{{ institution.name }} pending subscriptions</h3>
-                        </div>
-                        <div class="modal-body">
-                            {% if institution.pending_subscriptions %}
-                                <ul>
-                                    {% for subscription in institution.pending_subscriptions %}
-                                        <li>
-                                            <strong>{{ subscription.user.last_name }} {{ subscription.user.first_name }}</strong>
-                                            <span class="muted">({{ subscription.user.username }})</span>&nbsp;
-                                            <span class="muted text-info">{{ subscription.date }}</span>
-                                            <form class="form-inline" action="/groups/manage_subscription/" enctype="multipart/form-data" method="post">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="institution" value="{{ institution.name }}" />
-                                                <input type="hidden" name="user" value="{{ subscription.user.username }}" />
-                                                <button class="btn btn-success" type="submit" name="operation" value="accept">Accept</button>
-                                                <button class="btn btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
-                                            </form>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>There are no subscribers</p>
-                            {% endif %}
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                        </div>
-                    </div>
-                    {% endif %}
-                </li>
+                {% endif %}
+                {% if request.user in institution.managers.all %}
+                    <br />
+                    <a href="/groups/create_study?institution={{ institution.pk }}"><strong class="btn btn-link btn-block">create a new study</strong></a>
+                {% endif %}
+
+            </li>
         {% endfor %}
         </ul>
     {% endif %}
 
     {% if other_institutions %}
-        <h3>Other Institutions</h3>
+        <h3>Institutions</h3>
         <ul class="thumbnails">
             {% for institution in other_institutions %}
-                <li class="well">
-                    <img src="/static/logo.png" class="img-rounded" alt="logo">
-                    <h6>{{ institution.name }}</h6>
-                    {% if request.user.is_authenticated %}
-                    <ul class="unstyled">
-                    {% if institution.is_subscription_pending %}
-                            <li><span class="icon-question-sign"></span>Your subscription request is pending</li>
-                    {% elif institution.is_subscription_refused %}
-                            <li><span class="icon-remove-sign"></span>Your subscription request has been refused</li>
-                    {% else %}
-                            <li>
-                                <form action="/groups/subscribe_to_institution/" enctype="multipart/form-data" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="institution" value="{{ institution.name }}" />
-                                    <button class="btn" type="submit" title="Subscribe">Subscribe</button>
-                                </form>
-                            </li>
-                    {% endif %}
-                    </ul>
-                    {% endif %}
+                <li class="span3">
+                    {% usemacro display_group institution 'Institution' %}
                 </li>
             {% endfor %}
         </ul>
