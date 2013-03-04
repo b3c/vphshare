@@ -8,7 +8,12 @@
     <script type="text/javascript">
         $('.modal').modal({
             keyboard: true
-        })
+        });
+
+        $(".collapse").collapse({
+            toggle: false
+        });
+
     </script>
 {% endblock %}
 
@@ -27,17 +32,20 @@
         <h3>Your Institutions</h3>
         <ul class="thumbnails">
         {% for institution in user_institutions %}
-            <li class="thumbnail span3">
+            <li class="thumbnail well span4">
                 {% usemacro display_group institution 'Institution' %}
-                {% if institution.studies %}
 
-                    <h5>Institution Studies</h5>
-                    <ul>
-                    {% for study in institution.studies %}
-                        <li>{% usemacro display_group study 'Study' %}</li>
-                    {% endfor %}
-                    </ul>
+                {% if institution.studies %}
+                    <div class="accordion" id="accordion2">
+                        <h5>Institution Studies</h5>
+                        <ul>
+                        {% for study in institution.studies %}
+                            <li>{% usemacro display_group study 'Study' %}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
                 {% endif %}
+
                 {% if request.user in institution.managers.all %}
                     <br />
                     <a href="/groups/create_study?institution={{ institution.pk }}"><strong class="btn btn-link btn-block">create a new study</strong></a>
@@ -52,7 +60,7 @@
         <h3>Institutions</h3>
         <ul class="thumbnails">
             {% for institution in other_institutions %}
-                <li class="span3">
+                <li class="thumbnail well span4">
                     {% usemacro display_group institution 'Institution' %}
                 </li>
             {% endfor %}
@@ -60,5 +68,25 @@
     {% endif %}
 
 
+    {% if request.user.is_authenticated %}
+        <a href="/groups/create_institution"><strong class="btn btn-link">request a new institution or group</strong></a>
+    {% endif %}
+
+    {% if request.user.is_superuser and pending_institutions%}
+        <h3>Institutions to be approved</h3>
+        <ul class="thumbnails">
+            {% for institution in pending_institutions %}
+                <li class="thumbnail span3">
+                    <strong>{{ institution.name }}</strong>
+                    <form class="form-inline" action="/groups/manage_group_request/" enctype="multipart/form-data" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="group" value="{{ institution.name }}" />
+                        <button class="btn btn-success" type="submit" name="operation" value="accept">Accept</button>
+                        <button class="btn btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
 {% endblock %}

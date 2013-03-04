@@ -1,7 +1,7 @@
 __author__ = 'Teo'
 
 from django import forms
-from models import Study
+from models import Study, Institution
 
 
 class StudyForm(forms.ModelForm):
@@ -12,3 +12,14 @@ class StudyForm(forms.ModelForm):
             'permissions': forms.HiddenInput(),
             'institution': forms.HiddenInput(),
         }
+
+
+class InstitutionForm(forms.ModelForm):
+
+    class Meta:
+        model = Institution
+
+        widgets = {
+            'permissions': forms.HiddenInput(),
+            # 'managers': forms.HiddenInput(),
+            }

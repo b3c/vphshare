@@ -5,9 +5,9 @@ from django.shortcuts import render_to_response, redirect
 from django.contrib.admin.models import User
 from workflows.utils import get_state, set_workflow, set_state, do_transition
 from permissions.utils import add_local_role
-from config import group_manager, SubscriptionRequestWorkflow, pending, accepted, refused, accept_subscription, refuse_subscription
+from config import *
 from models import SubscriptionRequest, Study, Institution, AuditLog
-from forms import StudyForm
+from forms import StudyForm, InstitutionForm
 
 
 def temp_fix_institution_managers():
@@ -52,9 +52,17 @@ def list_institutions(request):
 
     temp_fix_institution_managers()
 
-    institutions = Institution.objects.all()
+    institutions = []
     user_institutions = []
     other_institutions = []
+    pending_institutions = []
+
+    for institution in Institution.objects.all():
+        state = get_state(institution)
+        if state is None or state.name == 'Accepted':
+            institutions.append(institution)
+        else:
+            pending_institutions.append(institution)
 
     if not request.user.is_authenticated():
         other_institutions = institutions
@@ -72,6 +80,7 @@ def list_institutions(request):
     return render_to_response(
         'scs_groups/institutions.html',
         {'user_institutions': user_institutions,
+         'pending_institutions': pending_institutions,
          'other_institutions': other_institutions},
         RequestContext(request)
     )
@@ -79,7 +88,7 @@ def list_institutions(request):
 
 def manage_subscription(request):
     """
-        accept or refuse pending subscription
+        accept or refuse subscription_pending subscription
     """
 
     if request.method == 'POST':
@@ -93,17 +102,34 @@ def manage_subscription(request):
         subscription = SubscriptionRequest.objects.get(user=user, group=group)
 
         if request.POST['operation'] == 'accept':
-            if do_transition(subscription, accept_subscription, request.user):
+            if do_transition(subscription, subscription_accept_subscription, request.user):
                 group.user_set.add(user)
         else:
-            do_transition(subscription, refuse_subscription, request.user)
+            do_transition(subscription, subscription_refuse_subscription, request.user)
+
+    return redirect('/groups')
+
+
+def manage_group_request(request):
+    """
+        accept or refuse an instution request
+    """
+
+    if request.method == 'POST':
+        group_name = request.POST['group']
+        group = Institution.objects.get(name=group_name)
+
+        if request.POST['operation'] == 'accept':
+            do_transition(group, group_accept_subscription, request.user)
+        else:
+            do_transition(group, group_refuse_subscription, request.user)
 
     return redirect('/groups')
 
 
 def subscribe(request):
     """
-        create a pending subscription to an institution
+        create a subscription_pending subscription to an institution
     """
 
     if request.method == 'POST':
@@ -115,7 +141,7 @@ def subscribe(request):
         subscription = SubscriptionRequest(user=request.user, group=group)
         subscription.save()
         set_workflow(subscription, SubscriptionRequestWorkflow)
-        set_state(subscription, pending)
+        set_state(subscription, subscription_pending)
 
     return redirect('/groups')
 
@@ -154,3 +180,35 @@ def create_study(request):
              'institution': institution},
             RequestContext(request)
         )
+
+
+def create_institution(request):
+    """
+        submit a request to create an institution
+    """
+
+    if request.method == 'POST':
+        form = InstitutionForm(request.POST)
+
+        if form.is_valid():
+            group = form.save(commit=False)
+            group.save()
+            set_workflow(group, GroupRequestWorkflow)
+            set_state(group, group_pending)
+            return redirect('/groups')
+        else:
+            return render_to_response(
+                'scs_groups/createinstitution.html',
+                {'form': form},
+                RequestContext(request)
+            )
+    else:
+
+        form = InstitutionForm(initial={'managers': [request.user]})
+
+        return render_to_response(
+            'scs_groups/createinstitution.html',
+            {'form': form},
+            RequestContext(request)
+        )
+

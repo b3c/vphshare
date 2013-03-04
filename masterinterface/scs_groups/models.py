@@ -9,7 +9,7 @@ class Institution(Group):
     description = models.CharField(max_length=255, blank=False, help_text='Institution description')
     address = models.CharField(max_length=64, blank=False, help_text='Address')
     country = models.CharField(max_length=64, blank=False, help_text='Country')
-    logo = models.ImageField(blank=False, help_text='Institution logo image', upload_to='logos')
+    logo = models.ImageField(blank=True, help_text='Institution logo image', upload_to='logos')
 
     signed_dsa = models.BooleanField(blank=False, help_text='Indicating that has signed Data-Sharing Agreement introducing Institutional policies')
     policies_url = models.URLField(max_length=255, blank=True, help_text='Link to where Institutional Policy documents are available')
