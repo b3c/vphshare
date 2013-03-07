@@ -41,5 +41,8 @@ urlpatterns = patterns(
     url(r'^annotation_search/', annotation_search_service,
         name='annotation_search_service'),
 
+    url(r'^dataset_query/', dataset_query_service,
+        name='dataset_query'),
+
     url(r'^search/$', search_permalink, name="searchPermalink")
     )

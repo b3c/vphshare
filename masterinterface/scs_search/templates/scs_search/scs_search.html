@@ -84,8 +84,8 @@
                 {% include 'scs_search/scs_search_terms_content.html' %}
 
                 {% include 'scs_search/scs_search_groups_content.html' %}
-
             </div>
+            {% if dataset != '' %}{% include 'scs_search/scs_search_dataset_results.html' %}{% endif %}
             <!-- END Guided Search block -->
             {% endif %}
         </div>

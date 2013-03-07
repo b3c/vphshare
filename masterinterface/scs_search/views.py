@@ -10,8 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from urllib import quote, unquote
 from datetime import datetime
-from connector import automatic_search_connector, guided_search_s1_connector , guided_search_s2_connector, complex_query_connector, annotation_search_connector
+from connector import automatic_search_connector, guided_search_s1_connector , guided_search_s2_connector, complex_query_connector, annotation_search_connector, dataset_query_connector
 from models import Query
+from json2sparql import json2sparql
 import json
 
 
@@ -271,12 +272,45 @@ def annotation_search_service(request):
         free_text = request.POST[ 'input' ]
         num_max_hits = request.POST[ 'nummaxhits' ]
         page_num = request.POST[ 'pagenum' ]
+        dataset = request.POST[ 'dataset' ]
 
-        connector = annotation_search_connector( quote( free_text ),
+        connector = annotation_search_connector( quote( free_text ), dataset,
             num_max_hits, page_num )
 
         response = HttpResponse( content = connector,
             content_type = 'application/json' )
+
+        return response
+
+    response = HttpResponse( status = 403 )
+    response._is_string = True
+
+    return response
+
+
+@csrf_exempt
+def dataset_query_service( request ):
+    """
+        Complex Query Service
+    """
+
+    if request.method == 'POST':
+
+        query_request =  simplejson.loads(request.POST[ 'groups_query' ])
+        id = request.POST.get('id',"")
+        endpoint = request.POST.get('endpoint',"")
+
+        query_sparql = json2sparql(query_request)
+
+        import re
+        r = re.compile('sparqlEndpoint=(.*?)&')
+        endpoint_url = r.search(endpoint)
+
+        connector = json.dumps( dataset_query_connector( query_sparql ,endpoint_url), sort_keys = False )
+
+        response = HttpResponse( content = connector,
+            content_type = 'application/json ')
+        response._is_string = False
 
         return response
 
