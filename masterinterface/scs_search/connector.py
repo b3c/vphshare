@@ -290,7 +290,7 @@ def annotation_search_connector( free_text, dataset , num_max_hits , page_num ):
     return json_results
 
 
-def dataset_query_connector( query, endpoint ):
+def dataset_query_connector( query, endpoint_url ):
     """
         dataset_query_connector:
 
