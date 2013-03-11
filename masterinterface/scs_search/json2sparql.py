@@ -13,8 +13,9 @@ def json2sparql( query_request ):
       }
     }
     """
-    letters = ['a','b','c','d','e','f','g','h','i','l','m','n','q','r','t','u','v','z','aa','ab','ac','ad','ae','af']
-    concepts =' <%s> ?%s ;'
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l', 'm', 'n', 'q', 'r', 't', 'u', 'v', 'z', 'aa', 'ab',
+               'ac', 'ad', 'ae', 'af']
+    concepts = ' <%s> ?%s ;'
     values = ' ?%s rdf:value ?%s .'
     #filters = ' ?%s = "%s"^^xsd:string ||' TO  use when the user want word match
     filters = ' regex(?%s, "%s", "i") ||'

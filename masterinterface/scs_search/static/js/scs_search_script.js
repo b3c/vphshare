@@ -38,7 +38,7 @@ function resultsCallback( results ) {
                     conceptItem.find( '.dataset-label' ).text( datasetLabel );
                     conceptItem.find( '.dataset-description' ).text( 'Match : ' + numMatch );
                     //conceptItem.find( '.link-to-data' ).attr( 'onclick', "datasetSearchReady( '"+rdfLink+"', '"+datasetLabel+"' );" );
-                    conceptItem.find( '.link-to-data' ).attr( 'href', "/search/complex/?dataset="+encodeURIComponent(rdfLink)+"&datasetLabel="+encodeURIComponent(datasetLabel) );
+                    conceptItem.find( '.link-to-data' ).attr( 'href', "/search/guided/?dataset="+encodeURIComponent(rdfLink)+"&datasetLabel="+encodeURIComponent(datasetLabel) );
 
                 }
 
@@ -84,13 +84,13 @@ function guidedSearchS1CallBack( results ) {
     for ( item in termsResults ) {
 
         var termName = termsResults[item][0];
-        var conceptName = termsResults[item][1];
+        var conceptName = item;
         var addTerm = term.clone();
-        var id = conceptName + termName;
+        var id = item;
 
         if ( termName.length > 100 ) {
 
-            addTerm.children( '.term-name' ).append( termName.substr( 0, 40 ) + "..." );
+            addTerm.children( '.term-name' ).append( termName.substr( 0, 100 ) + "..." );
 
         } else {
 
@@ -99,7 +99,7 @@ function guidedSearchS1CallBack( results ) {
         }
 
         addTerm.children( '.select' ).append( '<input name="inputConceptUri" type="checkbox" value="' + item + '" /> ' );
-        addTerm.children( '.term-desc').append(conceptName);
+        addTerm.children( '.term-desc' ).append( conceptName );
 
         termList.append( addTerm );
 
@@ -449,7 +449,8 @@ function guidedSearchS1Call() {
         input = form.find( 'input[name="free-text"]' ).val(),
         url = '/guided_search_s1/',
         numMaxHits = $( '#num-max-hits' ).val(),
-        pageNum = $( '#page-num' ).val();
+        pageNum = $( '#page-num' ).val(),
+        dataset = $( '#dataset-value' ).val();
 
     if ( SEARCH === false ) {
 
@@ -462,7 +463,7 @@ function guidedSearchS1Call() {
     $.ajax( {
         type: 'POST',
         url: url,
-        data: {input: input, nummaxhits: numMaxHits, pagenum: pageNum},
+        data: {input: input, dataset: dataset, nummaxhits: numMaxHits, pagenum: pageNum},
         success: function( results ) {
 
             $( '#wait' ).fadeOut();
@@ -515,32 +516,19 @@ function complexSearchS1Call() {
 function guidedSearchS2Call() {
 
     "use strict";
-    var url = '/guided_search_s2/';
     var conceptUriList = [];
-    $( '#wait' ).fadeIn();
+
+    // raccogliere info dataset, datasetlabel, classe e creare la uri
+    var dataset = $("#dataset-uri" ).val(),
+        datasetLabel = $("#dataset-value" ).val();
+
 
     $( "form#query-form :input[name=inputConceptUri]:checked").each( function() {
         var input = $( this ).val();
         conceptUriList.push( input );
     } );
+    window.location.replace("/search/complex/?dataset="+encodeURIComponent(dataset)+"&datasetLabel="+encodeURIComponent(datasetLabel)+"&conceptClass="+encodeURIComponent(conceptUriList[0]));
 
-    $.ajax( {
-        type: 'POST',
-        url: url,
-        data: {concept_uri_list: conceptUriList.join( "," )
-        },
-        success: function( results ) {
-
-            $( '#wait' ).fadeOut();
-            guidedSearchS2Callback( results );
-
-        },
-        error: function( error ) {
-
-            $( '#wait' ).fadeOut();
-
-        }
-    } );
 }
 
 function guidedSearchComplexQueryCall( saveToken ) {
@@ -768,7 +756,9 @@ function annotationSearchCall() {
         url = '/annotation_search/',
         numMaxHits = $( '#num-max-hits' ).val(),
         pageNum = $( '#page-num' ).val(),
-        dataset = $( '#dataset-value' ).val();
+        dataset = $( '#dataset-value' ).val(),
+        classConcept = $( '#class-value' ).val();
+
     if ( SEARCH === false ) {
 
         $( '#page-num' ).val( 1 );
@@ -780,7 +770,7 @@ function annotationSearchCall() {
     $.ajax( {
         type: 'POST',
         url: url,
-        data: {input: input, dataset: dataset , nummaxhits: numMaxHits, pagenum: pageNum},
+        data: {input: input, dataset: dataset , classConcept: classConcept, nummaxhits: numMaxHits, pagenum: pageNum},
         success: function( results ) {
 
             $( '#wait-terms' ).fadeOut();
@@ -1575,22 +1565,13 @@ function datasetSearchReady( dataset, datasetLabel) {
     $( "#slider-range-min" ).slider( 'value', '20' );
     $( "#termsPagination" ).remove();
 
-    /*$( '.group > .term' ).bind( 'remove', function( e ) {
-
-        var parent = $( this ).parents( '.group' );
-
-        e.preventDefault();
-
-        groupCheckContent( parent, 1 );
-
-    } );*/
     $( '.group > .term' ).remove();
     SEARCH = false;
     /*** END Reset Term List ***/
     $( '#back-to-query' ).hide();
     $( '#query-save-button' ).hide();
     $( '#automatic-search-form' ).show();
-    $.address.state($.address.baseURL().split('?')[0]).value('?dataset='+encodeURIComponent(dataset)+'&datasetLabel='+encodeURIComponent(datasetLabel));
+    //$.address.state($.address.baseURL().split('?')[0]).value('?dataset='+encodeURIComponent(dataset)+'&datasetLabel='+encodeURIComponent(datasetLabel));
 
 }
 

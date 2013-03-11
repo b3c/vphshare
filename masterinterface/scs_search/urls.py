@@ -17,11 +17,13 @@ urlpatterns = patterns(
 
     url(r'^search/free-text/', automatic_search_view, name='automaticSearchView'),
 
-    url(r'^search/complex/latest/', get_latest_query, name='getLatestQuery'),
-
     url(r'^search/complex/', complex_search_view, name='complexQueryView'),
 
     url(r'^search/guided/', guided_search_view, name='guidedQueryView'),
+
+    ##url services##
+
+    url(r'^search/complex/latest/', get_latest_query, name='getLatestQuery'),
 
     url(r'^automatic_search/', automatic_search_service,
         name='automatic_search_service'),
@@ -38,6 +40,9 @@ urlpatterns = patterns(
     url(r'^save_complex_query/', save_complex_query,
         name='save_complex_query'),
 
+    url(r'^class_search/', annotation_search_service,
+        name='annotation_search_service'),
+
     url(r'^annotation_search/', annotation_search_service,
         name='annotation_search_service'),
 
@@ -45,4 +50,4 @@ urlpatterns = patterns(
         name='dataset_query'),
 
     url(r'^search/$', search_permalink, name="searchPermalink")
-    )
+)
