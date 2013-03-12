@@ -4,7 +4,7 @@ import os
 from mod_auth import SignedTicket, Ticket
 
 DEBUG = True
-DEVEL = False
+DEVEL = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -19,23 +19,23 @@ MANAGERS = ADMINS
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if not DEVEL:
 # Default Database
-	DEFAULT_DB = {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
-    'USER': 'vph',                      # Not used with sqlite3.
-    'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
-    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-	}
+    DEFAULT_DB = {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
+        'USER': 'vph',                      # Not used with sqlite3.
+        'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
 else:
-	DEFAULT_DB = {
-   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
-    'USER': '',                      # Not used with sqlite3.
-    'PASSWORD': '',                  # Not used with sqlite3.
-    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-	}
+    DEFAULT_DB = {
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
 
 #DEFAULT_DB = {
 #   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -48,13 +48,13 @@ else:
 
 # Cyfronet Database
 CYFRONET_DB = {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
-        'USER': 'vph',                      # Not used with sqlite3.
-        'PASSWORD': 'vph123',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-    }
+    'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
+    'USER': 'vph',                      # Not used with sqlite3.
+    'PASSWORD': 'vph123',                  # Not used with sqlite3.
+    'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+    'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+}
 
 
 DATABASES = {
@@ -112,10 +112,10 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT,'js'),
-    os.path.join(PROJECT_ROOT,'img'),
-    os.path.join(PROJECT_ROOT,'css'),
-    os.path.join(PROJECT_ROOT,'files'),
+    os.path.join(PROJECT_ROOT, 'js'),
+    os.path.join(PROJECT_ROOT, 'img'),
+    os.path.join(PROJECT_ROOT, 'css'),
+    os.path.join(PROJECT_ROOT, 'files'),
 )
 
 # List of finder classes that know how to find static files in
@@ -205,10 +205,6 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.CryptPasswordHasher',
     )
 
-
-
-
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
@@ -252,10 +248,10 @@ ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
 TICKET_TIMEOUT = 12*60*60  # 12 h
 
 #MOD_AUTH_TKT settings
-MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/pubkey_DSA.pem')
-MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/privkey_DSA.pem')
+MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT, 'scs_auth/keys/pubkey_DSA.pem')
+MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT, 'scs_auth/keys/privkey_DSA.pem')
 #MOD_AUTH_PUBTKY COOKIE STYLE
-TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
+TICKET = SignedTicket(MOD_AUTH_PUBTICKET, MOD_AUTH_PRIVTICKET)
 
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)

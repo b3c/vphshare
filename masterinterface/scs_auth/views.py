@@ -22,13 +22,13 @@ from M2Crypto import DSA
 
 from models import *
 
+
 def done(request):
     """ login complete view """
     ctx = {
         'version': version,
         'last_login': request.session.get('social_auth_last_login_backend')
     }
-
 
     # create ticket
 
@@ -37,8 +37,6 @@ def done(request):
         ctx,
         RequestContext(request)
     )
-
-
 
     return response
 
@@ -57,6 +55,8 @@ def bt_loginform(request):
             context,
         RequestContext(request)
     )
+
+
 def bt_login(request):
     """ return the biomedtown login page with and embedded login iframe"""
 
@@ -64,6 +64,7 @@ def bt_login(request):
             {'version': version},
         RequestContext(request)
     )
+
 
 def auth_loginform(request):
     """
@@ -276,7 +277,6 @@ def users_access_search(request):
 @is_staff()
 def users_create_role(request):
 
-
     try:
         if request.method == "POST":
             if request.POST['role_name'].lower() == "":
@@ -291,6 +291,7 @@ def users_create_role(request):
     except  Exception, e:
         return HttpResponse("FALSE")
     return HttpResponse("FALSE")
+
 
 @is_staff()
 def users_remove_role(request):
@@ -328,8 +329,6 @@ def users_update_role_map(request):
             return HttpResponse('TRUE')
     except Exception, e:
         return HttpResponse("FALSE")
-
-
 
     Roles = roles.objects.all()
     usersRole=User.objects.order_by('username').all()

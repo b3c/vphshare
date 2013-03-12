@@ -2,13 +2,14 @@ from django.contrib.auth import logout , login
 from auth import authenticate
 import binascii
 
+
 class masterInterfaceMiddleware:
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         """
         Proces_view work before view rendering. Verify usere's ticket (from cookie or ticket attribute)
         """
-        request.META['NEW_VPH_TKT_COOKIE']=False
+        request.META['NEW_VPH_TKT_COOKIE'] = False
 
         try:
             #FROM COOKIE
@@ -16,15 +17,15 @@ class masterInterfaceMiddleware:
             if  request.COOKIES.get('vph-tkt'):
                 try:
                     client_address = request.META['REMOTE_ADDR']
-                    user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'],cip=client_address)
-                except :
+                    user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'], cip=client_address)
+                except:
                     logout(request)
-                    request.META['VPH_TKT_COOKIE']=True
+                    request.META['VPH_TKT_COOKIE'] = True
                     return
 
                 if user is None:
                     logout(request)
-                    request.META['VPH_TKT_COOKIE']=True
+                    request.META['VPH_TKT_COOKIE'] = True
                     return
 
                 request.META['VPH_TKT_COOKIE'] = tkt64
@@ -33,7 +34,7 @@ class masterInterfaceMiddleware:
 
                 if request.user.is_authenticated() and not request.user.username == 'admin':
                     logout(request)
-                    request.META['VPH_TKT_COOKIE']=True
+                    request.META['VPH_TKT_COOKIE'] = True
                     return
 
             #FROM GET ATTRIBUTE
@@ -51,11 +52,8 @@ class masterInterfaceMiddleware:
             #        login(request,user)
             #        request.META['VPH_TKT_COOKIE'] = tkt64
 
-
         except KeyError:
-            pass # use default urlconf (settings.ROOT_URLCONF)
-
-
+            pass  # use default urlconf (settings.ROOT_URLCONF)
 
     def process_response(self, request, response):
         """
@@ -70,7 +68,7 @@ class masterInterfaceMiddleware:
             response.delete_cookie('vph-tkt')
             return response
 
-        response.set_cookie( 'vph-tkt', request.META['VPH_TKT_COOKIE'])
+        response.set_cookie('vph-tkt', request.META['VPH_TKT_COOKIE'])
 
         return response
 
