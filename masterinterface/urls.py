@@ -25,6 +25,9 @@ urlpatterns = patterns('',
     # cyfronet
     url(r'^cyfronet/', include('masterinterface.cyfronet.urls')),
 
+    # groups
+    url(r'^groups/', include('masterinterface.scs_groups.urls')),
+
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
     url(r'^scs/', include('masterinterface.scs.urls')),

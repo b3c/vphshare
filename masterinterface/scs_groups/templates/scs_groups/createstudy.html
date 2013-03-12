@@ -1,0 +1,35 @@
+{% extends 'scs_groups/base.html' %}
+
+{% block extrahead %}
+    <script type="text/javascript">
+        $(document).ready(
+            function() {
+                $("#id_start_date").datepicker({"dateFormat":"yy-mm-dd"});
+                $("#id_finish_date").datepicker({"dateFormat":"yy-mm-dd"});
+            }
+        );
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h3>Create a new study for {{ institution.name }}</h3>
+    <form class="form-horizontal" action="/groups/create_study/" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        {% for field in form.visible_fields %}
+            <div class="control-group{% if field.errors %}{% endif %}">
+                <label class="control-label" for="{{ field.id }}">
+               {{ field.label }} {% if field.errors %}<span class="badge badge-important" title="{{ field.errors|first }}">!</span>{% endif %}</label>
+                <div class="controls">
+                    {{ field }}
+                    <span class="help-inline">{{ field.help_text }}</span>
+                </div>
+
+            </div>
+        {% endfor %}
+        <input type="submit" class="btn btn-primary" value="create study" />
+    </form>
+{% endblock %}
