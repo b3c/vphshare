@@ -15,7 +15,8 @@ def json2sparql( query_request ):
     """
     letters = ['a','b','c','d','e','f','g','h','i','l','m','n','q','r','t','u','v','z','aa','ab','ac','ad','ae','af']
     concepts =' <%s> ?%s ;'
-    values = ' ?%s rdf:value "%s"^^xsd:string .'
+    values = ' ?%s rdf:value ?%s .'
+    filters = ' ?%s = "%s"^^xsd:string ||'
 
     globalConcepts = ""
     globalValues = ""
@@ -32,9 +33,9 @@ def json2sparql( query_request ):
             value = concepts_or[3]
             concept_var = letters.pop()
             value_var = letters.pop(len(letters)-1)
-            globalValues += values%(value_var, value)
+            globalValues += values%(concept_var, value_var)
             globalConcepts += concepts%(concept, concept_var)
-            globalFilter += " ?%s = ?%s ||"%(concept_var, value_var)
+            globalFilter += filters%(value_var, value)
         globalFilter = globalFilter[:-2]+ " ) && "
 
     globalFilter = globalFilter[:-3]
