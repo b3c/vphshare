@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'masterinterface.cyfronet',
     'masterinterface.scs_search',
     'masterinterface.scs_groups',
+    'masterinterface.scs_security',
     'south'
     
     ##NEW_APP
@@ -234,6 +235,7 @@ SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
 CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+CLOUDFACACE_URL = 'http://vph.cyfronet.pl/cloudfacade'
 
 #Atos service
 ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"

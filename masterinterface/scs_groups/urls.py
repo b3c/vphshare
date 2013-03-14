@@ -2,7 +2,7 @@ __author__ = 'Teo'
 
 from django.conf.urls import patterns, url
 
-from views import  *
+from views import *
 
 urlpatterns = patterns(
     'scs_groups.views',
