@@ -5,7 +5,7 @@ import requests
 from django.conf import settings
 
 
-def get_policies(username, ticket):
+def get_securitypolicies(username, ticket):
     """
         return a list of the available policies
     """
@@ -18,7 +18,7 @@ def get_policies(username, ticket):
     return r.json()
 
 
-def get_policy_file(username, ticket, policy_name):
+def get_securitypolicy_file(username, ticket, policy_name):
     """
         return the security policy file content
     """
@@ -31,7 +31,7 @@ def get_policy_file(username, ticket, policy_name):
     return r.text
 
 
-def set_policy_file(username, ticket, policy_name, policy_file):
+def set_securitypolicy_file(username, ticket, policy_name, policy_file):
     """
         set the security policy file
     """
@@ -48,9 +48,9 @@ def set_policy_file(username, ticket, policy_name, policy_file):
     return True
 
 
-def get_properties_file(username, ticket, endpoint):
+def get_securityproxy_configuration_file(username, ticket, endpoint):
     """
-        return the properties policy file content
+        return the security proxy configuration file content
     """
 
     r = requests.get(
@@ -64,17 +64,17 @@ def get_properties_file(username, ticket, endpoint):
     return r.text
 
 
-def set_properties_file(username, ticket, endpoint, property_name, properties_file):
+def set_securityproxy_configuration_file(username, ticket, endpoint, configuration_name, configuration_file):
     """
-        set the security policy file
+        set the security proxy configuration file
     """
 
     r = requests.post(
         "%s/as/configurations" % (settings.CLOUDFACACE_URL, endpoint),
         auth=(username, ticket),
         data = {
-            'name': property_name,
-            'payload': properties_file
+            'name': configuration_name,
+            'payload': configuration_file
         },
     )
 

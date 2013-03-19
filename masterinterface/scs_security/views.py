@@ -11,7 +11,7 @@ from datetime import datetime
 import json
 from forms import PropertyForm
 from politicizer import create_policy_file, extract_permission_map
-from propertizer import create_properties_file, extract_properties
+from configurationizer import create_configuration_file, extract_configurations
 from masterinterface.cyfronet import cloudfacade
 
 
@@ -40,7 +40,7 @@ def policy(request):
 
         endpoint = request.GET['endpoint']
         policy_name = request.GET['policy_name']
-        policy_file = cloudfacade.get_policy_file(request.user.username, request.COOKIES.get('vph-tkt'), policy_name)
+        policy_file = cloudfacade.get_securitypolicy_file(request.user.username, request.COOKIES.get('vph-tkt'), policy_name)
         permissions_map = extract_permission_map(policy_file)
 
         data['permissions_map'] = permissions_map
@@ -53,7 +53,7 @@ def policy(request):
         permissions_map = request.POST['permissions']
         policy_file = create_policy_file(permissions_map)
 
-        if cloudfacade.set_policy_file(request.username, request.COOKIES.get('vph-tkt'), policy_name, policy_file):
+        if cloudfacade.set_securitypolicy_file(request.username, request.COOKIES.get('vph-tkt'), policy_name, policy_file):
             data['statusmessage'] = "Policy file correctly created"
 
         else:
@@ -66,7 +66,7 @@ def policy(request):
     )
 
 
-def properties(request):
+def securityproxy_configuration(request):
     """
         get/set the properties file
     """
@@ -77,9 +77,9 @@ def properties(request):
 
         endpoint = request.GET['endpoint']
 
-        properties_file = cloudfacade.get_properties_file(request.user.username, request.COOKIES.get('vph-tkt'), endpoint)
-        values = extract_properties(properties_file)
-        values['properties_file'] = properties_file
+        configuration_file = cloudfacade.get_securityproxy_configuration_file(request.user.username, request.COOKIES.get('vph-tkt'), endpoint)
+        values = extract_configurations(configuration_file)
+        values['configuration_file'] = configuration_file
 
         data['form'] = PropertyForm(initial=values)
 
@@ -89,12 +89,12 @@ def properties(request):
 
         if form.is_valid():
 
-            endpoint = request.GET['policy_name']
-            property_name = request.POST['policy_name']
-            props = request.POST['properties']
-            properties_file = create_properties_file(props)
+            endpoint = request.GET['endpoint']
+            configuration_name = request.POST['configuration_name']
+            props = request.POST['configurations']
+            configuration_file = create_configuration_file(props)
 
-            if cloudfacade.set_properties_file(request.username, request.COOKIES.get('vph-tkt'), endpoint, property_name, properties_file):
+            if cloudfacade.set_securityproxy_configuration_file(request.username, request.COOKIES.get('vph-tkt'), endpoint, configuration_name, configuration_file):
                 data['statusmessage'] = "Property file correctly created"
 
             else:
