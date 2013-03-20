@@ -10,11 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from urllib import quote, unquote
 from datetime import datetime
-from connector import automatic_search_connector
-from connector import guided_search_s1_connector
-from connector import guided_search_s2_connector
-from connector import complex_query_connector
+from connector import automatic_search_connector, guided_search_s1_connector , guided_search_s2_connector, complex_query_connector, annotation_search_connector, dataset_query_connector
 from models import Query
+from json2sparql import json2sparql
 import json
 
 
@@ -25,9 +23,9 @@ def automatic_search_view( request ):
     if request.GET.get('input',None) is not None:
         results = automatic_search_connector( quote( request.GET['input'] ) )
     else:
-        results = ""
+        results = ''
 
-    return render_to_response( 'scs_search/scs_search.html', {'search':'automatic','results':results},
+    return render_to_response( 'scs_search/scs_search.html', {'search':'automatic','results':results, 'dataset': ''},
                               RequestContext( request ) )
 
 
@@ -35,8 +33,11 @@ def complex_search_view( request) :
     """
         Guided Search view
     """
+    dataset = ''
+    datasetLabel = ''
     user = request.user
     name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
+    results = ''
     if request.GET.get('groups_query',None) is not None:
 
         groups_query = unquote(request.GET[ 'groups_query' ])
@@ -65,13 +66,11 @@ def complex_search_view( request) :
 
 
         results = complex_query_connector( load_groups )
+    elif request.GET.get('dataset',None) is not None:
+        dataset = unquote(request.GET[ 'dataset' ])
+        datasetLabel = unquote(request.GET[ 'datasetLabel' ])
 
-    else:
-
-        results = ""
-
-
-    return render_to_response( 'scs_search/scs_search.html', {'search':'complex', 'results':results},
+    return render_to_response( 'scs_search/scs_search.html', {'search':'complex', 'results':results, 'dataset' : dataset, 'datasetLabel' : datasetLabel, },
                               RequestContext( request ) )
 
 def guided_search_view( request) :
@@ -79,7 +78,7 @@ def guided_search_view( request) :
         Guided Search view
     """
 
-    return render_to_response( 'scs_search/scs_search.html', {'search':'guided'},
+    return render_to_response( 'scs_search/scs_search.html', {'search':'guided', 'results': '', 'dataset': ''},
         RequestContext( request ) )
 
 
@@ -261,6 +260,64 @@ def get_latest_query( request ):
         except Exception, e:
             return
 
+
+@csrf_exempt
+def annotation_search_service(request):
+    """
+        Guided Search Step1 Service
+    """
+
+    if request.method == 'POST':
+
+        free_text = request.POST[ 'input' ]
+        num_max_hits = request.POST[ 'nummaxhits' ]
+        page_num = request.POST[ 'pagenum' ]
+        dataset = request.POST[ 'dataset' ]
+
+        connector = annotation_search_connector( quote( free_text ), dataset,
+            num_max_hits, page_num )
+
+        response = HttpResponse( content = connector,
+            content_type = 'application/json' )
+
+        return response
+
+    response = HttpResponse( status = 403 )
+    response._is_string = True
+
+    return response
+
+
+@csrf_exempt
+def dataset_query_service( request ):
+    """
+        Complex Query Service
+    """
+
+    if request.method == 'POST':
+
+        query_request =  simplejson.loads(request.POST[ 'groups_query' ])
+        id = request.POST.get('id',"")
+        endpoint = request.POST.get('endpoint',"")
+
+        query_sparql = json2sparql(query_request)
+
+        import re
+        r = re.compile('sparqlEndpoint=(.*?)&')
+        endpoint_url = r.search(endpoint)
+
+        connector = json.dumps( dataset_query_connector( query_sparql ,endpoint_url), sort_keys = False )
+
+        response = HttpResponse( content = connector,
+            content_type = 'application/json ')
+        response._is_string = False
+
+        return response
+
+    response = HttpResponse( status = 403 )
+    response._is_string = True
+
+    return response
 
 def search_permalink( request ):
     """

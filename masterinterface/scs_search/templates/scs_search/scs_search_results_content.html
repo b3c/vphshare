@@ -25,7 +25,7 @@
                             </a>
                             <div class="media-body">
                                 <div class="span10"><h4 class="dataset-label media-heading">{{ dataset_name }}</h4>
-                                    <p class="dataset-description" >Match : {{ data.0 }}</p></div><div class="span1"><a class="link-to-data btn btn-primary" href="{{ data.1 }}" target="_blank">Visualize data</a></div>
+                                    <p class="dataset-description" >Match : {{ data.0 }}</p></div><div class="span1"><a class="link-to-data btn btn-primary" href="/search/complex/?dataset={{ data.1|urlencode }}&datasetLabel={{ dataset_name|urlencode }}"  >Query dataset</a></div>
                             </div>
                         </div>
 
@@ -57,7 +57,7 @@
                         </a>
                         <div class="media-body">
                             <div class="span10"><h4 class="dataset-label media-heading"></h4>
-                                <p class="dataset-description" ></p></div><div class="span1"><a class="link-to-data btn btn-primary"  target="_blank">Visualize data</a></div>
+                                <p class="dataset-description" ></p></div><div class="span1"><a class="link-to-data btn btn-primary"  >Query dataset</a></div>
                         </div>
                     </div>
 

@@ -9,6 +9,8 @@ from config import *
 from lxml import etree
 from ordereddict import OrderedDict
 from urllib import quote
+import os
+from settings import PROJECT_ROOT
 
 
 def automatic_search_connector( free_text ):
@@ -216,3 +218,102 @@ def complex_query_connector( load_groups ):
     return results
 
 
+def annotation_search_connector( free_text, dataset , num_max_hits , page_num ):
+    """
+        annotation_search: Call the annotation_search API
+        and extract the result from XML.
+
+        Arguments:
+            freeText (string): input text
+            num_max_hits (integer): number oh results
+            page_num (integer): page number
+
+        Returns:
+            json_results (obj): object JSON format
+    """
+    results = OrderedDict()
+    serviceClassRangeBase = "http://vphshare.atosresearch.eu/crawling/rest/crawler/get/dataset/propertyRanges?datasetName=%s&conceptURI=%s"
+    #TODO still not use, because atos API is not ready.
+    #response = requests.get( GUIDED_SEARCH_S1_API % ( free_text,
+    #                                                  num_max_hits, PAGE_SIZE, page_num ) )
+    #root_elem = etree.fromstring( response.text.encode() )
+    response = open(os.path.join(PROJECT_ROOT, 'scs_search/pvp_schema.xml')).read()
+
+    responseTypes = open(os.path.join(PROJECT_ROOT, 'scs_search/pvp-schema_2.xml')).read()
+    root_types = etree.fromstring( responseTypes )
+
+    root_elem = etree.fromstring( response )
+
+
+    results[ 'max_matches' ] = num_max_hits
+    results[ 'page_num' ] = page_num
+
+    annotations = []
+    annotationList = OrderedDict()
+    num_results_total = 0
+    parentUri = ""
+    for field in root_elem.getiterator("field"):
+
+        if field.attrib['internalName'].lower().count(free_text.lower()):
+            attrib = field.attrib
+
+#           THE ATOS SERVICE IS TOO SLOW!!
+#            if parentUri != field.getparent().attrib[ 'annotationUri' ].encode():
+#                parentUri = field.getparent().attrib[ 'annotationUri' ].encode()
+#                serviceClassRange = serviceClassRangeBase%(quote(dataset), quote(parentUri))
+#                classRangeResponse = json.loads(requests.get(serviceClassRange).text.encode())
+#            termRange = None
+#            for term in classRangeResponse:
+#                if term['range']['value'] == attrib[ 'annotationUri' ]:
+#                    termRange = term['property']['value']
+            parentUri = field.getparent().attrib[ 'annotationUri' ].encode()
+            termRange = root_types.find(".//concept[@name='%s']"%parentUri).find(".//term[@name='%s'].."%attrib[ 'annotationUri' ]).find(".//property").attrib['name']
+
+            if termRange is None:
+                continue
+            annotationList[ attrib[ 'internalName' ] ] = [ termRange, attrib.get( 'annotationDisplayText', '' ), field.getparent().attrib[ 'internalName' ] ]
+            num_results_total+=1
+            if not (len(annotationList) % 20 ):
+                annotations.append(annotationList)
+                annotationList = OrderedDict()
+
+        if num_results_total >= num_max_hits:
+            break
+    if not len(annotations):
+        annotations.append(annotationList)
+    results[ 'num_pages' ] = len(annotations)
+    results[ 'num_results_total' ] = num_results_total+(int(page_num)-1)*20
+    results[ page_num ] = annotations[int(page_num)-1]
+
+    json_results = json.dumps( results, sort_keys = False )
+
+    return json_results
+
+
+def dataset_query_connector( query, endpoint_url ):
+    """
+        dataset_query_connector:
+
+        Arguments:
+            load_groups (dict): terms key value
+
+        Returns:
+            json_results (obj): object JSON format
+    """
+
+    results = []
+
+    print "query:\n"
+    print query
+    print "\nrequest:\n"
+    print endpoint_url.group(1) +"?query="+ quote(query)
+    try:
+        response = requests.get( endpoint_url.group(1) +"?query="+ quote(query) )
+        concept_list = etree.fromstring( response.text.encode().replace('xmlns="http://www.w3.org/2005/sparql-results#"','') )
+
+        for concept_elem in concept_list.getiterator('uri'):
+            results.append(concept_elem.text)
+
+    except Exception, e:
+        pass
+    return results

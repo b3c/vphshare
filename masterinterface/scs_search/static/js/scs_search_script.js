@@ -19,6 +19,7 @@ function resultsCallback( results ) {
     var conceptItem;
     var conceptItemBase = $( '#concept-base' ).clone();
     $( '.media-list' ).html( conceptItemBase );
+    $( '#legend-step2' ).removeClass('muted' ).addClass('selected');
 
     for ( conceptUri in results ) {
         if ( results.hasOwnProperty( conceptUri ) ) {
@@ -36,7 +37,8 @@ function resultsCallback( results ) {
                     conceptItem.find( '.dataset-item' ).show();
                     conceptItem.find( '.dataset-label' ).text( datasetLabel );
                     conceptItem.find( '.dataset-description' ).text( 'Match : ' + numMatch );
-                    conceptItem.find( '.link-to-data' ).attr( 'href', rdfLink );
+                    //conceptItem.find( '.link-to-data' ).attr( 'onclick', "datasetSearchReady( '"+rdfLink+"', '"+datasetLabel+"' );" );
+                    conceptItem.find( '.link-to-data' ).attr( 'href', "/search/complex/?dataset="+encodeURIComponent(rdfLink)+"&datasetLabel="+encodeURIComponent(datasetLabel) );
 
                 }
 
@@ -215,7 +217,7 @@ function complexSearchS1CallBack( results ) {
         if ( pagenum === 1 )
             termsPagination.find( '#prev' ).addClass( 'disabled' ).removeClass( 'page' );
 
-        if ( pagenum === numPages )
+        if ( pagenum == numPages )
             termsPagination.find( '#next' ).addClass( 'disabled' ).removeClass( 'page' );
 
         termsPagination.show();
@@ -232,6 +234,135 @@ function complexSearchS1CallBack( results ) {
     SEARCH = true;
 }
 
+function annotationSearchCallBack( results ) {
+
+    "use strict";
+    var maxMatches = results.max_matches;
+    var numPages = results.num_pages;
+    var numResultsTotal = results.num_results_total;
+    var pagenum = parseInt( results.page_num, 10 );
+
+    var item;
+    var term = $( "#terms-list-base > .term" ).clone();
+    var termList = $( "#terms-list-base" ).clone();
+
+    $( "#term-list-block" ).children( '#terms-pagination' ).remove();
+
+    var termsPagination = $( "#term-list-block" ).children( '#terms-pagination-base' ).clone().attr( 'id', 'terms-pagination' );
+
+
+    $( "#term-list" ).remove();
+    $( "#term-list-block" ).append( termList );
+    termList.attr( 'id', 'term-list' );
+
+    $( "#num-terms" ).text( numResultsTotal ).parent().show();
+
+    var termsResults = results[pagenum];
+
+    if ( termsResults.length === 0 ) {
+
+        return;
+
+    }
+
+    for ( item in termsResults ) {
+
+        var annotationUri = termsResults[item][0];
+        var annotationDisplayText = termsResults[item][1];
+        var parentInternalName = termsResults[item][2];
+        var addTerm = term.clone();
+        var id = item;
+        var termName;
+        if (annotationDisplayText != '') {
+            termName = parentInternalName + ' > ' + annotationDisplayText;
+        }else{
+
+            termName = parentInternalName + ' > ' + item;
+
+        }
+
+        if ( termName.length > 40 ) {
+
+            addTerm.append( termName.substr( 0, 40 ) + "..." );
+
+        } else {
+
+            addTerm.append( termName );
+
+        }
+
+        var fieldset = $('<fieldset class="fieldsetTerm hide"></fieldset>');
+        fieldset.append( '<input name="inputConceptUri" type="hidden" value="' + annotationUri + '" /> ' );
+        fieldset.append( '<input name="inputTermName" type="hidden" value="' + termName + '" /> ' );
+        fieldset.append( '<input name="inputConceptName" type="hidden" value="' + parentInternalName + '" /> ' );
+
+        addTerm.append(fieldset);
+
+        termList.append( addTerm );
+
+        addTerm.show();
+        addTerm.popover( {
+            title: parentInternalName,
+            content: termName,
+            trigger: 'hover',
+            placement: 'left',
+            delay: { show: 500, hide: 100 }
+        } );
+
+        addTerm.draggable( {
+
+            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+            revert: "invalid", // when not dropped, the item will revert back to its initial position
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
+
+        } );
+
+
+    }
+
+    if ( numPages > 1 ) {
+
+        for ( var i = 1; i <= numPages; i++ ) {
+
+            var page = termsPagination.find( '#prev' ).clone();
+            page.attr( 'id', 'pg' + i ).attr( 'page', i ).children( 'a' ).attr( "href", "#" ).text( i );
+
+            if ( i === pagenum )
+                page.attr( 'class', 'active' );
+
+            if ( i === 1 ) {
+
+                page.insertAfter( termsPagination.find( '#prev' ) );
+
+            } else {
+
+                page.insertAfter( termsPagination.find( '#pg' + (i - 1) ) );
+
+            }
+
+        }
+
+        if ( pagenum === 1 )
+            termsPagination.find( '#prev' ).addClass( 'disabled' ).removeClass( 'page' );
+
+        if ( pagenum == numPages )
+            termsPagination.find( '#next' ).addClass( 'disabled' ).removeClass( 'page' );
+
+        termsPagination.show();
+        termsPagination.appendTo( "#term-list-block" );
+
+    }
+
+    termList.kendoTreeView( {
+
+        select: noSelect
+
+    } );
+
+    SEARCH = true;
+}
 
 function guidedSearchS2Callback( results ) {
 
@@ -251,6 +382,35 @@ function guidedSearchS2Callback( results ) {
 
 }
 
+function datasetQueryCallback( results ) {
+
+    "use strict";
+
+    var item;
+    var term = $( "#dataset-table-base > .term" ).clone();
+    var termList = $( "#dataset-table-base" ).clone();
+
+    $( "#dataset-table" ).remove();
+    $( "#dataset-table-block" ).append( termList );
+    termList.attr( 'id', 'dataset-table' );
+
+
+    for ( item in results ) {
+
+        var addTerm = term.clone();
+        var id = results[item];
+
+        addTerm.children( '.dataset-value' ).append('<a target="_blank" href="'+id+'">'+id+'</a>' );
+        addTerm.show();
+        termList.append( addTerm );
+
+
+    }
+
+    $( "#dataset-table-block" ).show();
+    $( "#dataset-results").show();
+
+}
 /* END AJAX callback */
 
 /* START AJAX call  */
@@ -489,6 +649,153 @@ function guidedSearchComplexQueryCall( saveToken ) {
     }
 }
 
+function datasetQueryCall( saveToken ) {
+
+    "use strict";
+    var groupsList = [];
+    var groupsQuery = [];
+    var url = '/dataset_query/';
+
+    $( '#wait' ).fadeIn();
+
+    $( '.group' ).each( function() {
+        groupsList.push( this.id );
+    } );
+
+
+    for ( var i = 0; i < (groupsList.length - 1); i++ ) {
+
+        var conceptUriList = [];
+        var id_group = groupsList[ i ];
+
+
+        $( "ul#" + id_group ).each( function() {
+
+            if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
+                conceptUriList.push ( 'NOT' );
+            }
+            else {
+                conceptUriList.push ( '' );
+            }
+
+
+
+            $(this).find('.fieldsetTerm').each( function() {
+
+                var singleTerm = [];
+
+                var conceptUri = $(this).find("input[name=inputConceptUri]").val();
+                var termName =  $(this).find("input[name=inputTermName]").val();
+                var conceptName =  $(this).find("input[name=inputConceptName]").val();
+                var conceptValue = $(this).find("input[class=term-value]").val();
+
+
+                if ( $( "#" + id_group + ' > .exclude' ).children().hasClass( 'active' ) ) {
+
+                    singleTerm.push( conceptUri );
+                    singleTerm.push( termName );
+                    singleTerm.push( conceptName );
+                    singleTerm.push( conceptValue );
+
+                    conceptUriList.push ( singleTerm );
+                }
+                else {
+
+                    singleTerm.push( conceptUri );
+                    singleTerm.push( termName );
+                    singleTerm.push( conceptName );
+                    singleTerm.push( conceptValue );
+
+                    conceptUriList.push( singleTerm );
+                }
+
+            });
+            if ( conceptUriList.length !== 0 ) {
+                groupsQuery.push( conceptUriList );
+            }
+        });
+
+
+
+    }
+
+    // multidimensional array with JSON
+    var stringJSON = JSON.stringify( groupsQuery );
+
+    if (saveToken === 'True') {
+        return stringJSON;
+    }
+    else {
+        var datasetEndpoint = $( '#dataset-uri' ).val();
+        var queryUrl;
+        var id = "";//$( '#queryID' ).val();
+        if ( id  !== undefined && id !== "" ) {
+
+            queryUrl = '?id='+id;
+
+        }else{
+
+            queryUrl = '?dataset_query='+encodeURIComponent(stringJSON)+'&endpoint='+encodeURIComponent(datasetEndpoint);
+
+        }
+
+        $.address.state($.address.baseURL().split('?')[0]).value(queryUrl);
+
+        $.ajax( {
+            type: 'POST',
+            url: url,
+            data: { groups_query: stringJSON, id: id , endpoint : datasetEndpoint},
+            success: function( results ) {
+
+                $( '#wait' ).fadeOut();
+                datasetQueryCallback( results );
+
+            },
+            error: function( error ) {
+
+                $( '#wait' ).fadeOut();
+
+            }
+        } );
+    }
+}
+
+function annotationSearchCall() {
+
+    "use strict";
+    var form = $( "#automatic-search-form" ),
+        input = form.find( 'input[name="free-text"]' ).val(),
+        url = '/annotation_search/',
+        numMaxHits = $( '#num-max-hits' ).val(),
+        pageNum = $( '#page-num' ).val(),
+        dataset = $( '#dataset-value' ).val();
+    if ( SEARCH === false ) {
+
+        $( '#page-num' ).val( 1 );
+        pageNum = 1;
+
+    }
+
+    $( '#wait-terms' ).fadeIn();
+    $.ajax( {
+        type: 'POST',
+        url: url,
+        data: {input: input, dataset: dataset , nummaxhits: numMaxHits, pagenum: pageNum},
+        success: function( results ) {
+
+            $( '#wait-terms' ).fadeOut();
+            annotationSearchCallBack( results );
+
+        },
+        error: function( error ) {
+
+            $( '#wait-terms' ).fadeOut();
+
+        }
+    } );
+}
+
+
 function save_complex_query() {
 
     "use strict";
@@ -575,7 +882,6 @@ $( function() {
 
     $( "#amount" ).val( "$" + $( "#slider-range-min" ).slider( "value" ) );
 
-    /*$( '#guided-search-check-box' ).removeAttr( 'checked' );*/
 
     $( '.group' ).kendoTreeView( {
 
@@ -620,24 +926,46 @@ $( function() {
     /* Create new group when term is dropped in AND group*/
     function createNewGroup( item, dropTarget ) {
 
+        var datasetValue = $( '#dataset-value' ).val();
+        var itemValue =  $( '#annotation-value' ).val();
+        var itemSetvalue = item.find( ".term-value" ).val();
+
+        if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined ) {
+
+            $( '#save-annotation-value' ).unbind( 'click' );
+            $( '#set-annotation-value' ).modal('show');
+            $( '#save-annotation-value' ).on( 'click', function(){
+                createNewGroup( item, dropTarget );
+            });
+            $( '#set-annotation-value-form' ).unbind( 'submit' );
+            $( '#set-annotation-value-form' ).on( 'submit', function(){
+                createNewGroup( item, dropTarget );
+                return false;
+            });
+
+            return;
+
+        }
         var group = dropTarget.clone();
         var nGroup = groups.length;
         var itemCloned;
 
+
+        itemCloned = item;
         if ( item.parents( '.group' ).length > 0 ) {
 
             groupCheckContent( item.parents( '.group' ), 2 );
-            itemCloned = item;
+            //itemCloned = item;
 
         } else {
 
-            itemCloned = item.clone().hide();
-            itemCloned.children().children().append( '<a class="delete-link" href="#"></a>' );
-            itemCloned.attr( 'id', item.attr( 'data-uid' ) );
+            //itemCloned = item.clone().hide();
+            //itemCloned.children().children().append( '<a class="delete-link" href="#"></a>' );
+            //itemCloned.attr( 'id', item.attr( 'data-uid' ) );
 
         }
 
-        groups[nGroup] = group;
+        groups[ nGroup ] = group;
         group.attr( 'id', "group" + nGroup );
         group.find( '.help' ).hide();
         group.find( '#and' ).show();
@@ -661,7 +989,8 @@ $( function() {
 
         } );
 
-        itemCloned.appendTo( group ).delay( 200 ).fadeIn( 200 );
+        dropTerm( itemCloned, group);
+        /*itemCloned.appendTo( group ).delay( 200 ).fadeIn( 200 );
         itemCloned.draggable( {
 
             cancel: "a.ui-icon", // clicking an icon won't initiate dragging
@@ -670,7 +999,7 @@ $( function() {
             helper: "clone",
             cursor: "move"
 
-        } );
+        } );*/
 
     }
 
@@ -698,25 +1027,99 @@ $( function() {
 
     }
 
+    $( '#set-annotation-cancel' ).click(function(){
+
+        $( '#annotation-value' ).val('');
+
+    });
+
+    function editTermValue( item ) {
+
+        var datasetValue = $( '#dataset-value' ).val();
+        var itemFormValue =  $( '#annotation-value' ).val();
+        var itemValue = item.find( ".term-value" );
+
+        if (datasetValue !== '' && itemFormValue === '') {
+
+            $( '#save-annotation-value' ).unbind( 'click' );
+            $( '#annotation-value' ).val( itemValue.val() );
+            $( '#set-annotation-value' ).modal('show');
+            $( '#save-annotation-value' ).on( 'click', function(){
+                editTermValue( item );
+            });
+            $( '#set-annotation-value-form' ).unbind( 'submit' );
+            $( '#set-annotation-value-form' ).on( 'submit', function(){
+                editTermValue( item );
+                return false;
+            });
+
+            return;
+
+        }
+
+        itemValue.val( itemFormValue );
+        item.find( '#term-value-text' ).text('Value = '+itemFormValue);
+        $( '#annotation-value' ).val( '' );
+        $( '#set-annotation-value' ).modal('hide');
+
+    }
+
     /* Create new group when term is dropped in OR group*/
     function dropTerm( item, dropTarget ) {
 
         var itemCloned;
-
+        var datasetValue = $( '#dataset-value' ).val();
+        var itemValue =  $( '#annotation-value' ).val();
+        var itemSetvalue = item.find( ".term-value" ).val();
         //if term dropped is not present in group , it can be dropped
-        if ( !checkDuplicate(item, dropTarget ) ) {
+        if ( !checkDuplicate( item, dropTarget ) ) {
+
+            if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined ) {
+
+                $( '#save-annotation-value' ).unbind( 'click' );
+                $( '#set-annotation-value' ).modal('show');
+                $( '#save-annotation-value' ).on( 'click', function(){
+                    dropTerm( item, dropTarget );
+                });
+                $( '#set-annotation-value-form' ).unbind( 'submit' );
+                $( '#set-annotation-value-form' ).on( 'submit', function(){
+                    dropTerm( item, dropTarget );
+                    return false;
+                });
+
+                return;
+
+            }
 
             //if term came from other groups or from term-list search results
             if ( item.parents( '.group' ).length > 0 ) {
 
                 groupCheckContent( item.parents( '.group' ), 2 );
                 itemCloned = item;
+                /*itemCloned.find( '#edit-annotation' ).on( 'click', function(){
+                    editTermValue(itemCloned);
+                });*/
 
 
             } else {
 
                 itemCloned = item.clone().hide();
-                itemCloned.children().children().append( "<a class='delete-link' href='#'></a>" );
+                itemCloned.children().children().append( "<a id='delete-link' class='icon-remove' href='#' style='float: right;'></a>" );
+
+                if ( itemValue !== '' ) {
+
+                    var edit = $("<a id='edit-annotation' class='icon-pencil' href='#' style='float:right'></a>" );
+
+                    var value = $( "<div id='term-value-text' style='text-align:right;padding-right: 29px;'>Value = "+itemValue+"</div>" );
+
+                    itemCloned.children().children().append( edit );
+                    itemCloned.children().children().append( value );
+                    itemCloned.find('.fieldsetTerm').append( "<input type='hidden' class='term-value' value='"+itemValue+"'/>" );
+                    $( '#annotation-value' ).val( '' );
+                    $( '#set-annotation-value' ).modal('hide');
+
+                }
+
                 itemCloned.attr( 'id', item.attr( 'data-uid' ) );
 
             }
@@ -800,7 +1203,7 @@ $( function() {
     });
 
     /** event to delete term from group **/
-    $( document ).on( 'click', '.delete-link', function( e ) {
+    $( document ).on( 'click', '#delete-link', function( e ) {
 
         var parent = $( this ).parents( '.group' );
 
@@ -811,6 +1214,15 @@ $( function() {
 
 
     } );
+
+    $( document ).on( 'click', '#edit-annotation', function( e ){
+
+        var item = $( this ).closest( '.k-item' );
+
+        e.preventDefault();
+        editTermValue( item );
+
+    });
 
 
     /** event to change page of terms-list **/
@@ -971,7 +1383,7 @@ $(document).on( 'click', '#back-to-query', function() {
     $( '#results' ).toggle( 'slide', {direction: 'rigth'}, 400 );
     $( '#search-content' ).delay( 500 ).effect( 'slide', {direction: 'left'}, 500 );
     $.address.state($.address.baseURL().split('?')[0]).value('?');
-
+    $( '#legend-step2' ).removeClass( 'selected' ).addClass( 'muted' );
 } );
 
 
@@ -1011,6 +1423,7 @@ function complexSearchReady(  ) {
     $( '#search-button' ).unbind( 'click' );
     $( '#automatic-search-form' ).unbind(  'submit' );
     $( '#query-submit').unbind('click');
+    $( '#right-nav-search' ).show();
 
     $( '#results' ).hide();
     $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
@@ -1063,10 +1476,12 @@ function guidedSearchReady(){
     $( '#search-button' ).unbind( 'click' );
     $( '#automatic-search-form' ).unbind(  'submit' );
     $( '#query-submit').unbind('click');
+    $( '#history-button' ).hide();
+    $( '#reset-groups' ).hide();
+    $( '#right-nav-search' ).show();
 
     $( '#results' ).hide();
     $( '#query-group' ).fadeIn(function(){ loadLatestQuery(); });
-    $( '#reset-groups' ).fadeIn();
     $( '#search-content' ).fadeIn();
     $( '#search-button' ).bind( "click", function() {
         guidedSearchS1Call();
@@ -1081,7 +1496,8 @@ function guidedSearchReady(){
     $( '#terms-table').show();
     $( '#guided-search-content-block').hide();
     $( '#free-text' ).attr( 'placeholder', 'Search Terms' );
-
+    $( '#free-text' ).val('');
+    $( '#annotation-value' ).val('');
     /*** START Reset Term List ***/
     var termList = $( "#terms-list-base" ).clone();
     $( "#term-list" ).remove();
@@ -1109,4 +1525,73 @@ function guidedSearchReady(){
     /*** END Reset Term List ***/
 
 }
+
+
+function datasetSearchReady( dataset, datasetLabel) {
+
+    "use strict";
+    //remember the selected dataset from guideserachS2 results
+    $( '#dataset-uri' ).val( dataset );
+    $( '#dataset-value' ).val( datasetLabel );
+    $( '#legend-step3' ).removeClass( 'muted' ).addClass( 'selected' );
+    $( '#legend-step3' ).after( "<div id='legend-dataset'>" + datasetLabel + "</div>" );
+    $( '#history-button' ).hide();
+    $( ".terms-tools" ).hide();
+    $( '#right-nav-search' ).show();
+
+    $( '#search-button' ).unbind( 'click' );
+    $( '#automatic-search-form' ).unbind(  'submit' );
+    $( '#query-submit').unbind('click');
+
+    $( '#results' ).hide();
+    $( '#reset-groups' ).fadeIn();
+    $( '#search-content' ).fadeIn();
+    $( '#search-button' ).bind( "click", function() {
+        annotationSearchCall();
+    } );
+    $( '#automatic-search-form' ).bind( "submit", function() {
+        annotationSearchCall();
+        return false;
+    });
+
+
+    $( '#query-submit' ).bind( "click", function() {
+        datasetQueryCall( 'False' );
+        return;
+    } );
+    $( '#free-text' ).attr( 'placeholder', 'Search Annotations' );
+    $( '#free-text' ).val('');
+    $( '#annotation-value' ).val('');
+
+    /*** START Reset Term List ***/
+    var termList = $( "#terms-list-base" ).clone();
+    $( "#term-list" ).remove();
+    $( "#term-list-block" ).append( termList );
+    termList.attr( 'id', 'term-list' );
+    $( "#num-max-hits" ).val( 20 );
+    $( "#max-terms" ).text( 20 );
+    $( "#num-terms" ).text( '' ).parent().hide();
+    $( "#page-num" ).val( 1 );
+    $( "#slider-range-min" ).slider( 'value', '20' );
+    $( "#termsPagination" ).remove();
+
+    /*$( '.group > .term' ).bind( 'remove', function( e ) {
+
+        var parent = $( this ).parents( '.group' );
+
+        e.preventDefault();
+
+        groupCheckContent( parent, 1 );
+
+    } );*/
+    $( '.group > .term' ).remove();
+    SEARCH = false;
+    /*** END Reset Term List ***/
+    $( '#back-to-query' ).hide();
+    $( '#query-save-button' ).hide();
+    $( '#automatic-search-form' ).show();
+    $.address.state($.address.baseURL().split('?')[0]).value('?dataset='+encodeURIComponent(dataset)+'&datasetLabel='+encodeURIComponent(datasetLabel));
+
+}
+
 /* END jquery ready in search page */
