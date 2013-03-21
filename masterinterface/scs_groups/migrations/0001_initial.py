@@ -8,13 +8,28 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'VPHShareSmartGroup'
+        db.create_table('scs_groups_vphsharesmartgroup', (
+            ('group_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.Group'], unique=True, primary_key=True)),
+            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['auth.Group'])),
+        ))
+        db.send_create_signal('scs_groups', ['VPHShareSmartGroup'])
+
+        # Adding M2M table for field managers on 'VPHShareSmartGroup'
+        db.create_table('scs_groups_vphsharesmartgroup_managers', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('vphsharesmartgroup', models.ForeignKey(orm['scs_groups.vphsharesmartgroup'], null=False)),
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        ))
+        db.create_unique('scs_groups_vphsharesmartgroup_managers', ['vphsharesmartgroup_id', 'user_id'])
+
         # Adding model 'Institution'
         db.create_table('scs_groups_institution', (
             ('group_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.Group'], unique=True, primary_key=True)),
             ('description', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('address', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('country', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('logo', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
+            ('logo', self.gf('django.db.models.fields.files.ImageField')(max_length=100, blank=True)),
             ('signed_dsa', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('policies_url', self.gf('django.db.models.fields.URLField')(max_length=255, blank=True)),
             ('admin_fullname', self.gf('django.db.models.fields.CharField')(max_length=64)),
@@ -78,6 +93,12 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
+        # Deleting model 'VPHShareSmartGroup'
+        db.delete_table('scs_groups_vphsharesmartgroup')
+
+        # Removing M2M table for field managers on 'VPHShareSmartGroup'
+        db.delete_table('scs_groups_vphsharesmartgroup_managers')
+
         # Deleting model 'Institution'
         db.delete_table('scs_groups_institution')
 
@@ -158,7 +179,7 @@ class Migration(SchemaMigration):
             'formal_fullname': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'formal_phone': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'group_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.Group']", 'unique': 'True', 'primary_key': 'True'}),
-            'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
+            'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
             'managers': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
             'policies_url': ('django.db.models.fields.URLField', [], {'max_length': '255', 'blank': 'True'}),
             'signed_dsa': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
@@ -179,6 +200,12 @@ class Migration(SchemaMigration):
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.Group']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+        },
+        'scs_groups.vphsharesmartgroup': {
+            'Meta': {'ordering': "['name']", 'object_name': 'VPHShareSmartGroup', '_ormbases': ['auth.Group']},
+            'group_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.Group']", 'unique': 'True', 'primary_key': 'True'}),
+            'managers': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['auth.Group']"})
         }
     }
 

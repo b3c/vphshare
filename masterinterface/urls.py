@@ -27,6 +27,7 @@ urlpatterns = patterns('',
 
     # groups
     url(r'^groups/', include('masterinterface.scs_groups.urls')),
+    url(r'^api/', include('masterinterface.scs_groups.apiurls')),
 
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
