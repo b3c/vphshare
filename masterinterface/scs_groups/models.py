@@ -90,7 +90,7 @@ class AuditLog(models.Model):
     log = models.CharField(max_length=512, blank=False)
 
     def __unicode__(self):
-        return "%s - %s - %s" % (self.uid, self.date.toordinal(), self.log)
+        return "%s - %s - %s" % (self.id, self.date.toordinal(), self.log)
 
 
 class SubscriptionRequest(models.Model):

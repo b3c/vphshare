@@ -70,6 +70,9 @@ def socialtktGen(details, *args, **kwargs):
         for value in user.userprofile.roles.all().values():
             tokens.append(value['roleName'])
 
+        for group in user.groups.all():
+            tokens.append(group.name)
+
         #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
         #if details['nickname']=='mi_testuser':
         #    tokens=[]
@@ -103,7 +106,7 @@ def socialtktGen(details, *args, **kwargs):
 
         tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
-        return  {'ticket' : tkt64 }
+        return  {'ticket': tkt64}
 
 def calculate_sign(privkey, data):
     """Calculates and returns ticket's signature.
