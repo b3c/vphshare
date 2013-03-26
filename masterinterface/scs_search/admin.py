@@ -2,7 +2,9 @@
     scs_search: admin.py Module
 """
 
-from models import Query
 from django.contrib import admin
+
+from models import Query
+
 
 admin.site.register(Query)

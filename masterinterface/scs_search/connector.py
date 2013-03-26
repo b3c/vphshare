@@ -1,3 +1,4 @@
+# coding=utf-8
 """
     scs_search: connector.py Module
 """
@@ -300,7 +301,7 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
     annotations = []
     annotationList = OrderedDict()
     num_results_total = 0
-    for field in root_elem.findall(".//*[@annotationUri='%s']/field" % classConcept):
+    for field in root_elem.findall(".//*[@internalName='%s']/field" % classConcept):
 
         if field.attrib['internalName'].lower().count(free_text.lower()):
             attrib = field.attrib
@@ -314,14 +315,49 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
             #            for term in classRangeResponse:
             #                if term['range']['value'] == attrib[ 'annotationUri' ]:
             #                    termRange = term['property']['value']
-            parentUri = field.getparent().attrib['annotationUri'].encode()
-            termRange = root_types.find(".//concept[@name='%s']" % parentUri).find(
-                ".//term[@name='%s'].." % attrib['annotationUri']).find(".//property").attrib['name']
-
-            if termRange is None:
+            try:
+                parentUri = field.getparent().attrib['annotationUri'].encode()
+                termRange = root_types.find(".//concept[@name='%s']" % parentUri).find(
+                    ".//term[@name='%s'].." % attrib['annotationUri']).find(".//property").attrib['name']
+                if termRange is None:
+                    continue
+            except Exception, e:
                 continue
+            try:
+                termType = \
+                    root_types.find(".//concept[@name='%s']" % attrib['annotationUri']).attrib['type'].split('#')[1]
+                if termType not in ['string', 'short', 'int', 'float', 'boolean', 'date']:
+                    termType = 'string'
+                inputType = {
+                    'boolean': """<select class="operator">
+                             <option  value="=">=</option>
+                             </select>
+                             <select id="annotation-value">
+                             <option value="true">True</option><option value="false">False</option>
+                             </select>""",
+                    'integer': """<select class="operator">
+                             <option value="=">=</option><option value=">">></option><option value="<"><</option>
+                             </select>
+                             <input id="annotation-value" type="number" placeholder="Integer value" />""",
+                    'short': """<select class="operator">
+                             <option value="=">=</option><option value=">">></option><option value="<"><</option>
+                             </select>
+                             <input class="annotation-value" type="number" placeholder="Integer value" />""",
+                    'string': """<select class="operator">
+                             <option value="=">=</option><option value="regex">⊃</option>
+                             </select>
+                             <input id="annotation-value" type="text" placeholder="String value" />""",
+                    'date': """<select class="operator">
+                             <option  value="=">=</option><option value=">">></option><option value="<"><</option>
+                             </select>
+                             <input id="annotation-value" type="date" placeholder="Date:DD/MM/YY" />"""
+                }
+            except Exception, e:
+                continue
+
             annotationList[attrib['internalName']] = [termRange, attrib.get('annotationDisplayText', ''),
-                                                      field.getparent().attrib['internalName']]
+                                                      field.getparent().attrib['internalName'], inputType[termType],
+                                                      termType]
             num_results_total += 1
             if not (len(annotationList) % 20):
                 annotations.append(annotationList)

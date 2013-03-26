@@ -3,17 +3,20 @@
 """
 __author__ = ''
 
-from django.http import HttpResponse
+from urllib import quote, unquote
+from datetime import datetime
+import json
+
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
-from urllib import quote, unquote
-from datetime import datetime
+
 from connector import *
 from models import Query
 from json2sparql import json2sparql
-import json
 
 
 def automatic_search_view( request ):
@@ -21,43 +24,43 @@ def automatic_search_view( request ):
         Automatic Search view
     """
     breadcrum = [0, 0, 0]
-    if request.GET.get('input',None) is not None:
-        results = automatic_search_connector( quote( request.GET['input'] ) )
+    if request.GET.get('input', None) is not None:
+        results = automatic_search_connector(quote(request.GET['input']))
         breadcrum[0] = 1
     else:
         results = ''
 
     return render_to_response('scs_search/scs_search.html',
-                              {'search': 'automatic', 'results': results, 'dataset': '', 'class': '', 'breadcrum': breadcrum },
+                              {'search': 'automatic', 'results': results, 'dataset': '', 'class': '',
+                               'breadcrum': breadcrum},
                               RequestContext(request))
 
 
-def complex_search_view( request) :
-    """
-        Guided Search view
-    """
+def advance_search_view(request):
     dataset = ''
     datasetLabel = ''
     conceptClass = ''
     user = request.user
     name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
     results = ''
-    if request.GET.get('groups_query',None) is not None:
+    breadcrum = [0, 0, 0]
+    if request.GET.get('groups_query', None) is not None:
 
-        groups_query = unquote(request.GET[ 'groups_query' ])
-        load_groups = simplejson.loads( groups_query )
+        groups_query = unquote(request.GET['groups_query'])
+        load_groups = simplejson.loads(groups_query)
 
         ####### Save History #######
         query_obj = Query(name=name, query=groups_query)
         query_obj.save()
         query_obj.user.add(user)
 
-        results = complex_query_connector( load_groups )
+        results = complex_query_connector(load_groups)
+        breadcrum[0] = 1
     elif request.GET.get('id', None) is not None:
 
-        query_obj = Query.objects.get( id = request.GET[ 'id' ] )
+        query_obj = Query.objects.get(id=request.GET['id'])
         groups_query = unquote(query_obj.query)
-        load_groups = simplejson.loads( groups_query )
+        load_groups = simplejson.loads(groups_query)
 
         ####### Save History #######
         query_obj = Query.objects.get(id=id)
@@ -69,18 +72,15 @@ def complex_search_view( request) :
         query_obj.user.add(user)
 
         results = complex_query_connector(load_groups)
-    elif request.GET.get('dataset', None) is not None:
-        dataset = unquote(request.GET['dataset'])
-        datasetLabel = unquote(request.GET['datasetLabel'])
-        conceptClass = unquote(request.GET['conceptClass'])
+        breadcrum[0] = 1
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
-                               , 'class': conceptClass, 'breadcrum': [1,1,0]},
+                                  , 'class': conceptClass, 'breadcrum': breadcrum},
                               RequestContext(request))
 
 
-def guided_search_view(request):
+def class_search_view(request):
     """
         Guided Search view
     """
@@ -88,12 +88,65 @@ def guided_search_view(request):
     datasetLabel = ''
 
     if request.GET.get('dataset', None) is not None:
+
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
 
+    else:
+
+        return HttpResponseRedirect(reverse('automaticSearch'))
+
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'guided', 'results': '', 'dataset': dataset, 'datasetLabel': datasetLabel,
-                               'class': '', 'breadcrum': [1,1,1]},
+                               'class': '', 'breadcrum': [1, 1, 0]},
+                              RequestContext(request))
+
+
+def annotation_search_view(request):
+    """
+        annotation Search view
+    """
+    dataset = ''
+    datasetLabel = ''
+    conceptClass = ''
+    user = request.user
+    name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
+    results = ''
+    if request.GET.get('groups_query', None) is not None:
+
+        groups_query = unquote(request.GET['groups_query'])
+        load_groups = simplejson.loads(groups_query)
+
+        ####### Save History #######
+        query_obj = Query(name=name, query=groups_query)
+        query_obj.save()
+        query_obj.user.add(user)
+
+        results = complex_query_connector(load_groups)
+    elif request.GET.get('id', None) is not None:
+
+        query_obj = Query.objects.get(id=request.GET['id'])
+        groups_query = unquote(query_obj.query)
+        load_groups = simplejson.loads(groups_query)
+
+        ####### Save History #######
+        query_obj = Query.objects.get(id=id)
+        if not query_obj.saved:
+            query_obj.name = name
+        query_obj.query = groups_query
+        query_obj.date = datetime.utcnow()
+        query_obj.save()
+        query_obj.user.add(user)
+
+        results = complex_query_connector(load_groups)
+    if request.GET.get('dataset', None) is not None:
+        dataset = unquote(request.GET['dataset'])
+        datasetLabel = unquote(request.GET['datasetLabel'])
+        conceptClass = unquote(request.GET['conceptClass'])
+
+    return render_to_response('scs_search/scs_search.html',
+                              {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
+                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1]},
                               RequestContext(request))
 
 
@@ -104,15 +157,14 @@ def automatic_search_service( request ):
     """
 
     if request.method == 'POST':
+        free_text = request.POST['input']
+        connector = json.dumps(automatic_search_connector(quote(free_text)), sort_keys=False)
 
-        free_text = request.POST[ 'input' ]
-        connector = json.dumps(automatic_search_connector( quote( free_text ) ), sort_keys = False )
-
-        response = HttpResponse( content = connector,
-                                content_type = 'application/json' )
+        response = HttpResponse(content=connector,
+                                content_type='application/json')
         return response
 
-    response = HttpResponse( status = 403 )
+    response = HttpResponse(status=403)
     response._is_string = True
 
     return response
@@ -125,20 +177,19 @@ def guided_search_s1_service(request):
     """
 
     if request.method == 'POST':
+        free_text = request.POST['input']
+        num_max_hits = request.POST['nummaxhits']
+        page_num = request.POST['pagenum']
 
-        free_text = request.POST[ 'input' ]
-        num_max_hits = request.POST[ 'nummaxhits' ]
-        page_num = request.POST[ 'pagenum' ]
+        connector = guided_search_s1_connector(quote(free_text),
+                                               num_max_hits, page_num)
 
-        connector = guided_search_s1_connector( quote( free_text ),
-                num_max_hits, page_num )
-
-        response = HttpResponse( content = connector,
-                                content_type = 'application/json' )
+        response = HttpResponse(content=connector,
+                                content_type='application/json')
 
         return response
 
-    response = HttpResponse( status = 403 )
+    response = HttpResponse(status=403)
     response._is_string = True
 
     return response
@@ -151,17 +202,16 @@ def guided_search_s2_service( request ):
     """
 
     if request.method == 'POST':
+        concept_uri_list = request.POST['concept_uri_list']
+        connector = guided_search_s2_connector(quote(concept_uri_list))
 
-        concept_uri_list = request.POST[ 'concept_uri_list' ]
-        connector = guided_search_s2_connector( quote( concept_uri_list ) )
-
-        response = HttpResponse( content = connector,
-                                content_type = 'application/json' )
+        response = HttpResponse(content=connector,
+                                content_type='application/json')
         response._is_string = False
 
         return response
 
-    response = HttpResponse( status = 403 )
+    response = HttpResponse(status=403)
     response._is_string = True
 
     return response
@@ -175,17 +225,17 @@ def complex_query_service(request):
 
     if request.method == 'POST':
 
-        groups_query = request.POST[ 'groups_query' ]
-        id = request.POST.get('id',"")
-        load_groups = simplejson.loads( groups_query )
+        groups_query = request.POST['groups_query']
+        id = request.POST.get('id', "")
+        load_groups = simplejson.loads(groups_query)
 
         ####### Save History #######
         user = request.user
         name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
 
         try:
-            if id == "" :
-                query_obj = Query( name=name, query=groups_query )
+            if id == "":
+                query_obj = Query(name=name, query=groups_query)
             else:
                 query_obj = Query.objects.get(id=id)
                 if not query_obj.saved:
@@ -193,20 +243,20 @@ def complex_query_service(request):
                 query_obj.query = groups_query
                 query_obj.date = datetime.utcnow()
             query_obj.save()
-            query_obj.user.add( user )
+            query_obj.user.add(user)
         except Exception, e:
             return
-        ############################
+            ############################
 
-        connector = json.dumps( complex_query_connector( load_groups ), sort_keys = False )
+        connector = json.dumps(complex_query_connector(load_groups), sort_keys=False)
 
-        response = HttpResponse( content = connector,
-                                content_type = 'application/json ')
+        response = HttpResponse(content=connector,
+                                content_type='application/json ')
         response._is_string = False
 
         return response
 
-    response = HttpResponse( status = 403 )
+    response = HttpResponse(status=403)
     response._is_string = True
 
     return response
@@ -219,9 +269,9 @@ def save_complex_query( request ):
 
     if request.method == 'POST':
 
-        query = request.POST[ 'groups_query' ]
-        name = request.POST[ 'name' ]
-        id = request.POST[ 'id' ]
+        query = request.POST['groups_query']
+        name = request.POST['name']
+        id = request.POST['id']
         user = request.user
 
         try:
@@ -233,20 +283,19 @@ def save_complex_query( request ):
                 query_obj.saved = True
 
             else:
-                query_obj = Query( name=name, query=query , saved = True )
-
+                query_obj = Query(name=name, query=query, saved=True)
 
             query_obj.save()
-            query_obj.user.add( user )
+            query_obj.user.add(user)
 
-            
-            response = HttpResponse(status=200, content_type = 'application/json ')
+            response = HttpResponse(status=200, content_type='application/json ')
             response._is_string = False
 
             return response
 
         except Exception, e:
             return
+
 
 @csrf_exempt
 def get_latest_query( request ):
@@ -258,15 +307,15 @@ def get_latest_query( request ):
         user = request.user
 
         try:
-            latest_query = Query.objects.filter( user = user  ).order_by( '-date' )
+            latest_query = Query.objects.filter(user=user).order_by('-date')
             latest_query_dict = []
             for query in latest_query[:5]:
-                latest_query_dict.append( [ query.id, query.name, query.query ] )
+                latest_query_dict.append([query.id, query.name, query.query])
             for query in latest_query[5:]:
                 if query.saved:
-                    latest_query_dict.append( [ query.id, query.name, query.query ] )
+                    latest_query_dict.append([query.id, query.name, query.query])
 
-            response = HttpResponse( content = json.dumps(latest_query_dict), content_type = 'application/json ')
+            response = HttpResponse(content=json.dumps(latest_query_dict), content_type='application/json ')
 
             response._is_string = False
 
@@ -283,7 +332,6 @@ def class_search_service(request):
     """
 
     if request.method == 'POST':
-
         free_text = request.POST['input']
         num_max_hits = request.POST['nummaxhits']
         page_num = request.POST['pagenum']
@@ -300,6 +348,7 @@ def class_search_service(request):
 
     return response
 
+
 @csrf_exempt
 def annotation_search_service(request):
     """
@@ -307,7 +356,6 @@ def annotation_search_service(request):
     """
 
     if request.method == 'POST':
-
         free_text = request.POST['input']
         num_max_hits = request.POST['nummaxhits']
         page_num = request.POST['pagenum']
@@ -333,36 +381,36 @@ def dataset_query_service( request ):
     """
 
     if request.method == 'POST':
-
-        query_request =  simplejson.loads(request.POST[ 'groups_query' ])
-        id = request.POST.get('id',"")
-        endpoint = request.POST.get('endpoint',"")
+        query_request = simplejson.loads(request.POST['groups_query'])
+        id = request.POST.get('id', "")
+        endpoint = request.POST.get('endpoint', "")
 
         query_sparql = json2sparql(query_request)
 
         import re
+
         r = re.compile('sparqlEndpoint=(.*?)&')
         endpoint_url = r.search(endpoint)
 
-        connector = json.dumps( dataset_query_connector( query_sparql ,endpoint_url), sort_keys = False )
+        connector = json.dumps(dataset_query_connector(query_sparql, endpoint_url), sort_keys=False)
 
-        response = HttpResponse( content = connector,
-            content_type = 'application/json ')
+        response = HttpResponse(content=connector,
+                                content_type='application/json ')
         response._is_string = False
 
         return response
 
-    response = HttpResponse( status = 403 )
+    response = HttpResponse(status=403)
     response._is_string = True
 
     return response
 
-def search_permalink( request ):
+
+def search_permalink(request):
     """
     """
 
     if request.method == 'GET':
+        return HttpResponse(status=200)
 
-        return HttpResponse( status = 200 )
-
-    return HttpResponse( status = 403 )
+    return HttpResponse(status=403)
