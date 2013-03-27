@@ -74,16 +74,7 @@
                             <li class="active" id="navhome"><a href="/"><i class="icon-home icon-white"></i>Home</a></li>
 
                             {% if request.user.is_authenticated %}
-                                    <li class="list-parent">
-                                        <div>
-                                            <div id="search-menu-link"><a href="/search/"><i class="icon-search icon-white"></i>Semantic search</a></div>
-                                            <!--<ul id="search-submenu" >
-                                                <li class="list-parent"><a id="automatic-search" href="/search/free-text/"><i class="icon-play icon-white"></i>Free text</a>
-                                                <li class="list-parent"><a id="guided-search" href="/search/guided/"><i class="icon-play icon-white"></i>Guided</a>
-                                                <li class="list-parent"><a id="complex-query-search" href="/search/complex/"><i class="icon-play icon-white"></i>Complex Query</a>
-                                            </ul>-->
-                                        </div>
-                                    </li>
+                                    <li class="list-parent"><a href="/search/"><i class="icon-search icon-white"></i>Semantic search</a></li>
                                 {% if request.user.is_staff %}
                                     <li class="list-parent"><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
                                     <li class="list-parent"><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>

@@ -1408,7 +1408,7 @@ $(document).on('click', '#back-to-query', function () {
 });
 
 
-$(document).on('click', '.term-table > .term', function () {
+$(document).on('click', '#terms-table > .term', function () {
 
     "use strict";
 

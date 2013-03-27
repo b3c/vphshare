@@ -305,6 +305,6 @@ div.k-treeview {
     border-left-color: #007ACC;
 }
 
-.term-table > .term{
+#terms-table > .term{
     cursor: pointer;
 }
