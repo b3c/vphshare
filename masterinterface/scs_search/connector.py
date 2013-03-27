@@ -246,7 +246,7 @@ def class_search_connector(free_text, dataset, num_max_hits, page_num):
     num_results_total = 0
     for table in root_elem.getiterator("table"):
 
-        if table.attrib['internalName'].lower().count(free_text.lower()):
+        if free_text is None or table.attrib['internalName'].lower().count(free_text.lower()):
             attrib = table.attrib
             annotationList[attrib['internalName']] = [attrib.get('annotationDisplayText', '')]
             num_results_total += 1
@@ -262,7 +262,10 @@ def class_search_connector(free_text, dataset, num_max_hits, page_num):
     results['num_results_total'] = num_results_total + (int(page_num) - 1) * 20
     results[page_num] = annotations[int(page_num) - 1]
 
-    json_results = json.dumps(results, sort_keys=False)
+    if free_text is None:
+        json_results = results
+    else:
+        json_results = json.dumps(results, sort_keys=False)
 
     return json_results
 
@@ -303,7 +306,7 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
     num_results_total = 0
     for field in root_elem.findall(".//*[@internalName='%s']/field" % classConcept):
 
-        if field.attrib['internalName'].lower().count(free_text.lower()):
+        if free_text is None or field.attrib['internalName'].lower().count(free_text.lower()):
             attrib = field.attrib
 
             #           THE ATOS SERVICE IS TOO SLOW!!
@@ -330,12 +333,12 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
                     termType = 'string'
                 inputType = {
                     'boolean': """<select class="operator">
-                             <option  value="=">=</option>
+                             <option style="display:none;" value="=">=</option>
                              </select>
                              <select id="annotation-value">
                              <option value="true">True</option><option value="false">False</option>
                              </select>""",
-                    'integer': """<select class="operator">
+                    'int': """<select class="operator">
                              <option value="=">=</option><option value=">">></option><option value="<"><</option>
                              </select>
                              <input id="annotation-value" type="number" placeholder="Integer value" />""",
@@ -344,7 +347,7 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
                              </select>
                              <input class="annotation-value" type="number" placeholder="Integer value" />""",
                     'string': """<select class="operator">
-                             <option value="=">=</option><option value="regex">⊃</option>
+                             <option value="=">= Exact match</option><option value="regex">⊃ Inclusion match</option>
                              </select>
                              <input id="annotation-value" type="text" placeholder="String value" />""",
                     'date': """<select class="operator">
@@ -352,6 +355,7 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
                              </select>
                              <input id="annotation-value" type="date" placeholder="Date:DD/MM/YY" />"""
                 }
+                inputType['float'] = inputType['int']
             except Exception, e:
                 continue
 
@@ -370,6 +374,7 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
     results['num_pages'] = len(annotations)
     results['num_results_total'] = num_results_total + (int(page_num) - 1) * 20
     results[page_num] = annotations[int(page_num) - 1]
+
 
     json_results = json.dumps(results, sort_keys=False)
 

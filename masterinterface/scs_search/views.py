@@ -91,13 +91,13 @@ def class_search_view(request):
 
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
-
+        allConcepts = class_search_connector(None, dataset, num_max_hits='200', page_num='1')['1']
     else:
 
         return HttpResponseRedirect(reverse('automaticSearch'))
 
     return render_to_response('scs_search/scs_search.html',
-                              {'search': 'guided', 'results': '', 'dataset': dataset, 'datasetLabel': datasetLabel,
+                              {'search': 'guided', 'results': allConcepts, 'dataset': dataset, 'datasetLabel': datasetLabel,
                                'class': '', 'breadcrum': [1, 1, 0]},
                               RequestContext(request))
 
@@ -143,6 +143,7 @@ def annotation_search_view(request):
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
         conceptClass = unquote(request.GET['conceptClass'])
+        #annotations = annotation_search_connector(None, dataset, conceptClass, num_max_hits='200', page_num='10')
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
@@ -356,13 +357,13 @@ def annotation_search_service(request):
     """
 
     if request.method == 'POST':
-        free_text = request.POST['input']
+        free_text = request.POST.get('input', None)
         num_max_hits = request.POST['nummaxhits']
         page_num = request.POST['pagenum']
         dataset = request.POST['dataset']
         classConcept = request.POST['classConcept']
 
-        connector = annotation_search_connector(quote(free_text), dataset, classConcept, num_max_hits, page_num, )
+        connector = annotation_search_connector(free_text, dataset, classConcept, num_max_hits, page_num, )
 
         response = HttpResponse(content=connector, content_type='application/json')
 

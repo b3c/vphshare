@@ -304,3 +304,7 @@ div.k-treeview {
 .wizard .current:after {
     border-left-color: #007ACC;
 }
+
+.term-table > .term{
+    cursor: pointer;
+}

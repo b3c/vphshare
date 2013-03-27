@@ -6,7 +6,11 @@
                    placeholder="Search dataset" {% if request.GET.input %} value="{{ request.GET.input }}"{% endif %}>
 
             <button id="search-button" type="button" class="btn">Search</button>
-            {% if search == 'automatic' %}<div id="advanced" style="font-size:9px;"><a href="/search/advanced/" style="color:#fff;">Advanced search.</a></div>{% endif %}
+            {% if search == 'automatic' %}
+                <div id="advanced" style="font-size:9px;"><a href="/search/advanced/" style="color:#fff;">Advanced search.</a></div>
+            {% elif search == 'complex' and dataset == '' %}
+                <div id="advanced" style="font-size:9px;"><a href="/search/" style="color:#fff;">Standard search.</a></div>
+            {% endif %}
             <div>
                 <!--<input id="guided-search-check-box" type="checkbox"  > Guided Search -->
                 <input id="num-max-hits" type="hidden" value="40">
