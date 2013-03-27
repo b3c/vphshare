@@ -44,7 +44,7 @@ class search_user(BaseHandler):
                         Q(username__icontains=term) | Q(email__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)
                     )
 
-                    return json.dumps([user.username for user in users])
+                    return [user.username for user in users]
 
                 else:
                     response = HttpResponse(status=403)
@@ -88,7 +88,7 @@ class search_group(BaseHandler):
 
                     groups = Group.objects.filter(name__icontains=term)
 
-                    return json.dumps([group.name for group in groups])
+                    return [group.name for group in groups]
 
                 else:
                     response = HttpResponse(status=403)
@@ -271,6 +271,10 @@ class add_user_to_group(BaseHandler):
                             return response
 
                         group.user_set.add(user_to_add)
+                        # add user to all parent group
+                        while group.parent is not None:
+                            group = VPHShareSmartGroup.objects.get(name=group.parent.name)
+                            group.user_set.add(user_to_add)
 
                         response = HttpResponse(status=200)
                         response._is_string = True
@@ -332,7 +336,13 @@ class remove_user_from_group(BaseHandler):
                             response._is_string = True
                             return response
 
-                        group.user_set.remove(user_to_remove)
+                        # remove user from all sub groups
+                        while group is not None:
+                            group.user_set.remove(user_to_remove)
+                            try:
+                                group = VPHShareSmartGroup.objects.get(parent=group)
+                            except ObjectDoesNotExist, e:
+                                group = None
 
                         response = HttpResponse(status=200)
                         response._is_string = True

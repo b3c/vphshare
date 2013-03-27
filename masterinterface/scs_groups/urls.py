@@ -5,7 +5,7 @@ from views import *
 
 urlpatterns = patterns(
     'scs_groups.views',
-    url(r'^$', 'list_institutions' ),
+    url(r'^$', 'list_groups'),
     url(r'^subscribe/$', 'subscribe' ),
     url(r'^manage_subscription/$', 'manage_subscription' ),
     url(r'^create_study/$', 'create_study' ),

@@ -45,9 +45,9 @@ def join_group_subscription(user, group):
         group.is_subscription_refused = True
     
 
-def list_institutions(request):
+def list_groups(request):
     """
-     Return a views of all available institutions
+     Return a views of all available institutions and groups
     """
 
     temp_fix_institution_managers()
@@ -55,6 +55,7 @@ def list_institutions(request):
     institutions = []
     user_institutions = []
     other_institutions = []
+
     pending_institutions = []
 
     for institution in Institution.objects.all():

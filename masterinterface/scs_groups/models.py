@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group, User
 class VPHShareSmartGroup(Group):
 
     managers = models.ManyToManyField(User)
-    parent = models.ForeignKey(Group, related_name='+', blank=True, null=True)
+    parent = models.ForeignKey(Group, related_name='+', blank=True, null=True, )
 
     class Meta:
         verbose_name_plural = "VPHShareSmartGroups"

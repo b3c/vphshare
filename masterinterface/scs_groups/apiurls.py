@@ -15,6 +15,7 @@ remove_user_entries = Resource(handler=remove_user_from_group)
 
 urlpatterns = patterns(
     url(r'^searchuser/',search_user_entries),
+    url(r'^searchuser/',search_user_entries),
     url(r'^searchuser\.(?P<emitter_format>.+)', search_user_entries),
     url(r'^searchgroup/',search_group_entries),
     url(r'^searchgroup\.(?P<emitter_format>.+)', search_group_entries),
