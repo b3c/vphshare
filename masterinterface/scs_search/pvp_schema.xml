@@ -1,324 +1,596 @@
 <schema>
-  <tables>
-    <table internalName="SF36" annotationUri="http://www.ihtsdo.org/SCT_273597006" annotationDisplayText="medical outcomes study short form general health survey - 36 (assessment scale)">
-      <field internalName="10a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10a" />
-      <field internalName="10b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10b" />
-      <field internalName="10c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10c" />
-      <field internalName="10d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10d" />
-      <field internalName="3a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3a" />
-      <field internalName="3b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3b" />
-      <field internalName="3c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3c" />
-      <field internalName="3d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3d" />
-      <field internalName="3e" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3e" />
-      <field internalName="3f" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3f" />
-      <field internalName="3g" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3g" />
-      <field internalName="3h" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3h" />
-      <field internalName="3i" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3i" />
-      <field internalName="3j" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3j" />
-      <field internalName="4a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4a" />
-      <field internalName="4b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4b" />
-      <field internalName="4c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4c" />
-      <field internalName="4d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4d" />
-      <field internalName="5a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5a" />
-      <field internalName="5b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5b" />
-      <field internalName="5c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5c" />
-      <field internalName="6" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_6" />
-      <field internalName="7" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_7" />
-      <field internalName="8" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_8" />
-      <field internalName="9a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9a" />
-      <field internalName="9b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9b" />
-      <field internalName="9c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9c" />
-      <field internalName="9d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9d" />
-      <field internalName="9e" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9e" />
-      <field internalName="9f" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9f" />
-      <field internalName="9g" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9g" />
-      <field internalName="9h" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9h" />
-      <field internalName="9i" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9i" />
-      <field internalName="9j" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9j" />
-      <field internalName="Age" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Age" />
-      <field internalName="CH" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CH" />
-      <field internalName="CHComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHComment" />
-      <field internalName="CHscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHscore" />
-      <field internalName="DOB" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_DOB" />
-      <field internalName="EV" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EV" />
-      <field internalName="EVComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVComment" />
-      <field internalName="EVscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVscore" />
-      <field internalName="Forename" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Forename" />
-      <field internalName="GHP" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHP" />
-      <field internalName="GHPComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPComment" />
-      <field internalName="GHPscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPscore" />
-      <field internalName="HospitalNumber" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_HospitalNumber" />
-      <field internalName="MH" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MH" />
-      <field internalName="MHComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHComment" />
-      <field internalName="MHscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHscore" />
-      <field internalName="P" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_P" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PatSerial" />
-      <field internalName="PComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PComment" />
-      <field internalName="PF" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PF" />
-      <field internalName="PFComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFComment" />
-      <field internalName="PFscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFscore" />
-      <field internalName="Pscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Pscore" />
-      <field internalName="Q1" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q1" />
-      <field internalName="Q2" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q2" />
-      <field internalName="QDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_QDate" />
-      <field internalName="RE" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RE" />
-      <field internalName="REComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REComment" />
-      <field internalName="ReferralID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_ReferralID" />
-      <field internalName="REscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REscore" />
-      <field internalName="RP" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RP" />
-      <field internalName="RPComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPComment" />
-      <field internalName="RPscore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPscore" />
-      <field internalName="Sex" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Sex" />
-      <field internalName="SF" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF" />
-      <field internalName="SF36ID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF36ID" />
-      <field internalName="SFComment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFComment" />
-      <field internalName="SFScore" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFScore" />
-      <field internalName="SingleIndex" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SingleIndex" />
-      <field internalName="Stage" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Stage" />
-    </table>
-    <table internalName="tblAnalgesiaScore" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pain_Therapy" annotationDisplayText="Pain Therapy">
-      <field internalName="AnalgesiaID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_AnalgesiaID" />
-      <field internalName="DrugsComment" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments" annotationDisplayText="Comment" />
-      <field internalName="DrugScore" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Drug_Sensitization" annotationDisplayText="drug sensitization" />
-      <field internalName="DrugsTaken" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pharmacologic_Substance" annotationDisplayText="Pharmacologic Substance" />
-      <field internalName="PainImprovement" annotationUri="http://www.ihtsdo.org/SCT_247406002" annotationDisplayText="increased pain threshold (finding)" />
-      <field internalName="PainScore" annotationUri="http://www.ihtsdo.org/SCT_22253000" annotationDisplayText="pain (finding)" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_PatSerial" />
-      <field internalName="ProcedureComments" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments" annotationDisplayText="comment" />
-      <field internalName="ProcedureImprovement" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_ProcedureImprovement" />
-      <field internalName="Qdate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Qdate" />
-      <field internalName="ReferralID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_ReferralID" />
-      <field internalName="Stage" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Stage" />
-    </table>
-    <table internalName="tblOswestryDisability" annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/273676000" annotationDisplayText="Oswestry pain questionnaire">
-      <field internalName="ODIID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_ODIID" />
-      <field internalName="ODIScore" annotationUri="http://www.ihtsdo.org/SCT_446604004" annotationDisplayText="oswestry disability index score (observable entity)" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_PatSerial" />
-      <field internalName="Q1" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q1" />
-      <field internalName="Q10" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q10" />
-      <field internalName="Q2" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q2" />
-      <field internalName="Q3" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q3" />
-      <field internalName="Q4" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q4" />
-      <field internalName="Q5" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q5" />
-      <field internalName="Q6" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q6" />
-      <field internalName="Q7" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q7" />
-      <field internalName="Q8" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q8" />
-      <field internalName="Q9" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q9" />
-      <field internalName="Qdate" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Questionnaire_Data_Collection_Date_Time" annotationDisplayText="questionnaire data collection date time" />
-      <field internalName="ReferralID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_ReferralID" />
-      <field internalName="Stage" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Stage" />
-      <field internalName="VASScore" annotationUri="http://www.ihtsdo.org/SCT_446661009" annotationDisplayText="visual analog scale score (observable entity)" />
-    </table>
-    <table internalName="tblPatientData" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient" annotationDisplayText="Patient">
-      <field internalName="Address1" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Street_Address" annotationDisplayText="Street Address" />
-      <field internalName="Address2" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Address2" />
-      <field internalName="Address3" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#County" annotationDisplayText="County" />
-      <field internalName="AppointmentDate" annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/185353001" annotationDisplayText="Appointment date" />
-      <field internalName="AppointmentDateTime" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_AppointmentDateTime" />
-      <field internalName="AppointmentTime" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_AppointmentTime" />
-      <field internalName="Comments" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments" annotationDisplayText="Comment" />
-      <field internalName="Consultant" annotationUri="http://purl.bioontology.org/ontology/HL7/10256_CON" annotationDisplayText="consultant" />
-      <field internalName="CurrentProcedure" annotationUri="http://www.ihtsdo.org/SCT_71388002" annotationDisplayText="procedure (procedure)" />
-      <field internalName="CurrentStatus" annotationUri="http://www.ihtsdo.org/SCT_263490005" annotationDisplayText="status (attribute)" />
-      <field internalName="CurrentStatusID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_CurrentStatusID" />
-      <field internalName="Date text" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date" annotationDisplayText="date" />
-      <field internalName="DateReferralReceived" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_DateReferralReceived" />
-      <field internalName="DateReferred" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_DateReferred" />
-      <field internalName="DateReviewDue" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_DateReviewDue" />
-      <field internalName="Deceased" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Deceased" />
-      <field internalName="DeceasedFlag" annotationUri="http://purl.bioontology.org/ontology/HL7/14884_DEC" annotationDisplayText="Patient Deceased" />
-      <field internalName="DOB" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date_of_Birth" annotationDisplayText="Birth Date" />
-      <field internalName="Forename" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#First_Name" annotationDisplayText="First Name" />
-      <field internalName="GPCode" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPCode" />
-      <field internalName="GPName" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPName" />
-      <field internalName="GPPracticeCode" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPPracticeCode" />
-      <field internalName="GPPracticeName" annotationUri="http://www.ihtsdo.org/SCT_394760002" annotationDisplayText="general practitioner practice (qualifier value)" />
-      <field internalName="HealthAuthority" annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/394747008" annotationDisplayText="Health Authority" />
-      <field internalName="Height" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Height" annotationDisplayText="Height" />
-      <field internalName="HomeTelephone" annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/429697006" annotationDisplayText="Patient home telephone number" />
-      <field internalName="Hospital" annotationUri="http://purl.bioontology.org/ontology/HL7/10602_HOSP" annotationDisplayText="Hospital" />
-      <field internalName="Input Date" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Content_Date" annotationDisplayText="Content Creation Date" />
-      <field internalName="letterprinteddate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_letterprinteddate" />
-      <field internalName="NHSCode" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_NHSCode" />
-      <field internalName="OldPatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_OldPatSerial" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_PatSerial" />
-      <field internalName="PostCode" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Postal_Code" annotationDisplayText="Postal Code" />
-      <field internalName="QuestionnaireSent" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_QuestionnaireSent" />
-      <field internalName="Review Date" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Review_Date" />
-      <field internalName="ReviewApptDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewApptDate" />
-      <field internalName="ReviewLetterSent" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewLetterSent" />
-      <field internalName="ReviewStatus" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewStatus" />
-      <field internalName="ReviewType" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewType" />
-      <field internalName="Sex" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Gender" annotationDisplayText="Gender" />
-      <field internalName="Smoker" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Current_Smoker" annotationDisplayText="Current Smoker" />
-      <field internalName="Staff" annotationUri="http://purl.bioontology.org/ontology/HL7/C1552089" annotationDisplayText="staff member" />
-      <field internalName="STHNumber" annotationUri="http://www.ihtsdo.org/SCT_184107009" annotationDisplayText="patient hospital number (observable entity)" />
-      <field internalName="Surname" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Last_Name" annotationDisplayText="Last Name" />
-      <field internalName="Title" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Document_Title" annotationDisplayText="Title" />
-      <field internalName="Ward" annotationUri="http://purl.bioontology.org/ontology/HL7/16135_W" annotationDisplayText="Ward" />
-      <field internalName="WorkTelephone" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Business_Telephone" annotationDisplayText="Business Telephone Number" />
-    </table>
-    <table internalName="tblPatientNotes" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Note" annotationDisplayText="Note">
-      <field internalName="Date" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date" annotationDisplayText="Date" />
-      <field internalName="DateResolved" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_DateResolved" />
-      <field internalName="Description" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Description" annotationDisplayText="Description" />
-      <field internalName="NotesID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_NotesID" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_PatSerial" />
-    </table>
-    <table internalName="tblProcedure" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Procedure_Generic" annotationDisplayText="Procedure">
-      <field internalName="Anaesthetist" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Anaesthetist" />
-      <field internalName="Analgesia" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Analgesia" />
-      <field internalName="AntibioticDetail" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AntibioticDetail" />
-      <field internalName="Antibiotics" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Antibiotics" />
-      <field internalName="Approach" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Approach" />
-      <field internalName="Arterial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Arterial" />
-      <field internalName="AssessmentNumber" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AssessmentNumber" />
-      <field internalName="BupivacaineAmount" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineAmount" />
-      <field internalName="BupivacaineStrength" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineStrength" />
-      <field internalName="Cement" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Cement" />
-      <field internalName="Complications" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Complications" />
-      <field internalName="Duration" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Duration" />
-      <field internalName="Epidural" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Epidural" />
-      <field internalName="FinishTime" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_FinishTime" />
-      <field internalName="Foraminal" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Foraminal" />
-      <field internalName="GA" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_GA" />
-      <field internalName="IntraDisc" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_IntraDisc" />
-      <field internalName="LANeedle" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LANeedle" />
-      <field internalName="Length" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Length" />
-      <field internalName="Level1" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level1" />
-      <field internalName="Level2" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level2" />
-      <field internalName="Level3" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level3" />
-      <field internalName="LidocaineAmount" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineAmount" />
-      <field internalName="LidocaineStrength" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineStrength" />
-      <field internalName="LOS" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LOS" />
-      <field internalName="NeedleGauge" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleGauge" />
-      <field internalName="NeedleType" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleType" />
-      <field internalName="NeuroComplication" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplication" />
-      <field internalName="NeuroComplicationDetail" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplicationDetail" />
-      <field internalName="OtherComplications" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_OtherComplications" />
-      <field internalName="Paravertebral" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Paravertebral" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PatSerial" />
-      <field internalName="PCA" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PCA" />
-      <field internalName="PE" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PE" />
-      <field internalName="PostProcedurePainDuration" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PostProcedurePainDuration" />
-      <field internalName="ProcedureDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureDate" />
-      <field internalName="ProcedureID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureID" />
-      <field internalName="ProcedureTime" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureTime" />
-      <field internalName="ReferralID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ReferralID" />
-      <field internalName="Sedation" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Sedation" />
-      <field internalName="Site1PercentFilling" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1PercentFilling" />
-      <field internalName="Site1VolumeInjected" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1VolumeInjected" />
-      <field internalName="Site2PercentFilling" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2PercentFilling" />
-      <field internalName="Site2VolumeInjected" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2VolumeInjected" />
-      <field internalName="Site3PercentFilling" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3PercentFilling" />
-      <field internalName="Site3VolumeInjected" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3VolumeInjected" />
-      <field internalName="StartTime" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_StartTime" />
-      <field internalName="SurgicalIntervention" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalIntervention" />
-      <field internalName="SurgicalProcedure" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalProcedure" />
-      <field internalName="TotalOpiateDose" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_TotalOpiateDose" />
-      <field internalName="Venous" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Venous" />
-    </table>
-    <table internalName="tblRecall" annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/308400007" annotationDisplayText="Patient recall procedure">
-      <field internalName="ActualDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_ActualDate" />
-      <field internalName="AssessmentID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_AssessmentID" />
-      <field internalName="DateDue" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_DateDue" />
-      <field internalName="LetterSent" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_LetterSent" />
-      <field internalName="Notes" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Notes" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_PatSerial" />
-      <field internalName="ReferralID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_ReferralID" />
-      <field internalName="Stage" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Stage" />
-      <field internalName="Timepoint" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Timepoint" />
-    </table>
-    <table internalName="tblReferral" annotationUri="http://purl.bioontology.org/ontology/NCIM/C0034927" annotationDisplayText="Referral">
-      <field internalName="AnaestAssessment" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_AnaestAssessment" />
-      <field internalName="AssessmentNumber" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Code" annotationDisplayText="assessment code" />
-      <field internalName="BackPain" annotationUri="http://www.ihtsdo.org/SCT_419258005" annotationDisplayText="back pain (finding)" />
-      <field internalName="BackPainLocation" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainLocation" />
-      <field internalName="BackPainOnsetDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainOnsetDate" />
-      <field internalName="Biopsy" annotationUri="http://www.ihtsdo.org/SCT_86273004" annotationDisplayText="biopsy (procedure)" />
-      <field internalName="BMI" annotationUri="http://www.ihtsdo.org/SCT_60621009" annotationDisplayText="body mass index (observable entity)" />
-      <field internalName="CervicalCollapse" annotationUri="http://www.ihtsdo.org/SCT_308757003" annotationDisplayText="collapse of cervical vertebra (disorder)" />
-      <field internalName="CoagProfile" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Coagulation_Study" annotationDisplayText="coagulation study" />
-      <field internalName="Consent" annotationUri="http://www.ihtsdo.org/SCT_309370004" annotationDisplayText="consent status (finding)" />
-      <field internalName="Consultant" annotationUri="http://purl.bioontology.org/ontology/HL7/C1549076" annotationDisplayText="consultant" />
-      <field internalName="ContinueToProcedure" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ContinueToProcedure" />
-      <field internalName="DateOfAssessment" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Date" annotationDisplayText="assessment date" />
-      <field internalName="DateReferralReceived" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DateReferralReceived" />
-      <field internalName="DateReferred" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DateReferred" />
-      <field internalName="DEXA" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DEXA" />
-      <field internalName="Diagnosis" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Diagnosis" />
-      <field internalName="ExpectedProcedureDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ExpectedProcedureDate" />
-      <field internalName="FBCBiochemistry" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FBCBiochemistry" />
-      <field internalName="FEV1_FVC" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FEV1_FVC" />
-      <field internalName="Height" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Height" annotationDisplayText="Height" />
-      <field internalName="Histology" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Histology" />
-      <field internalName="Hospital" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Hospital" annotationDisplayText="Hospital" />
-      <field internalName="InformationLeaflet" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_InformationLeaflet" />
-      <field internalName="Input Date" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Input_Date" />
-      <field internalName="LegPain" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPain" />
-      <field internalName="LegPainLocation" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainLocation" />
-      <field internalName="LegPainOnsetdate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainOnsetdate" />
-      <field internalName="Lesion1InferiorEndPlateCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1InferiorEndPlateCollapse" />
-      <field internalName="Lesion1PosteriorCortexIntact" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1PosteriorCortexIntact" />
-      <field internalName="Lesion1Site" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1Site" />
-      <field internalName="Lesion1SuperiorEndPlateCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1SuperiorEndPlateCollapse" />
-      <field internalName="Lesion1VertebralHeight" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1VertebralHeight" />
-      <field internalName="Lesion2InferiorEndPlateCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2InferiorEndPlateCollapse" />
-      <field internalName="Lesion2PosteriorCortexIntact" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2PosteriorCortexIntact" />
-      <field internalName="Lesion2Site" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2Site" />
-      <field internalName="Lesion2SuperiorEndPlateCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2SuperiorEndPlateCollapse" />
-      <field internalName="Lesion2VertebralHeight" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2VertebralHeight" />
-      <field internalName="Lesion3InferiorEndPlateCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3InferiorEndPlateCollapse" />
-      <field internalName="Lesion3PosteriorCortexIntact" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3PosteriorCortexIntact" />
-      <field internalName="Lesion3Site" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3Site" />
-      <field internalName="Lesion3SuperiorEndPlateCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3SuperiorEndPlateCollapse" />
-      <field internalName="Lesion3VertebralHeight" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3VertebralHeight" />
-      <field internalName="LocalisedTenderness" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LocalisedTenderness" />
-      <field internalName="LumbarCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LumbarCollapse" />
-      <field internalName="Malignancy" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Malignancy" />
-      <field internalName="MDTDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MDTDate" />
-      <field internalName="MRIDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRIDate" />
-      <field internalName="MRSAScreen" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRSAScreen" />
-      <field internalName="NeuroNotes" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroNotes" />
-      <field internalName="NeuroSymptoms" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroSymptoms" />
-      <field internalName="Osteoporosis" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Osteoporosis" />
-      <field internalName="OtherSymptoms" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptoms" />
-      <field internalName="OtherSymptomsNotes" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsNotes" />
-      <field internalName="OtherSymptomsOnsetDate" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsOnsetDate" />
-      <field internalName="PatientType" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PatientType" />
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PatSerial" />
-      <field internalName="PercentPredicted" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PercentPredicted" />
-      <field internalName="ReferralID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ReferralID" />
-      <field internalName="ReferralStatus" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ReferralStatus" />
-      <field internalName="ThoracicCollapse" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ThoracicCollapse" />
-      <field internalName="Treatment" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Therapeutic_Procedure" annotationDisplayText="Therapeutic Procedure" />
-      <field internalName="VertebraPlanaSite1" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite1" />
-      <field internalName="VertebraPlanaSite2" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite2" />
-      <field internalName="VertebraPlanaSite3" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite3" />
-      <field internalName="Weight" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Weight" annotationDisplayText="Weight" />
-    </table>
-    <table internalName="tblSymptoms" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms">
-      <field internalName="PatSerial" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_PatSerial" />
-      <field internalName="ReferralID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_ReferralID" />
-      <field internalName="SymptomID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_SymptomID" />
-      <field internalName="SymptomRefID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_SymptomRefID" />
-    </table>
-    <table internalName="tblSymptomsRef" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom" annotationDisplayText="Symptom">
-      <field internalName="InUse" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Active_Flag" annotationDisplayText="active flag" />
-      <field internalName="Symptom" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom" annotationDisplayText="Symptom" />
-      <field internalName="SymptomID" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptomsRef_SymptomID" />
-      <field internalName="Type" annotationUri="http://purl.bioontology.org/ontology/NCIM/C1515974" annotationDisplayText="Anatomic Site" />
-    </table>
-  </tables>
-  <relationships>
-    <relationship primaryField="tblReferral.ReferralID" secondaryField="SF36.ReferralID" />
-    <relationship primaryField="tblReferral.ReferralID" secondaryField="tblAnalgesiaScore.ReferralID" />
-    <relationship primaryField="tblReferral.ReferralID" secondaryField="tblOswestryDisability.ReferralID" />
-    <relationship primaryField="tblPatientData.PatSerial" secondaryField="tblReferral.PatSerial" />
-    <relationship primaryField="tblPatientData.PatSerial" secondaryField="tblPatientNotes.PatSerial" />
-    <relationship primaryField="tblReferral.ReferralID" secondaryField="tblProcedure.ReferralID" />
-    <relationship primaryField="tblReferral.ReferralID" secondaryField="tblRecall.ReferralID" />
-    <relationship primaryField="tblReferral.ReferralID" secondaryField="tblSymptoms.ReferralID" />
-    <relationship primaryField="tblSymptomsRef.SymptomID" secondaryField="tblSymptoms.SymptomRefID" />
-  </relationships>
+    <tables>
+        <table internalName="SF36" annotationUri="http://www.ihtsdo.org/SCT_273597006"
+               annotationDisplayText="medical outcomes study short form general health survey - 36 (assessment scale)">
+            <field internalName="10a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10a"/>
+            <field internalName="10b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10b"/>
+            <field internalName="10c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10c"/>
+            <field internalName="10d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10d"/>
+            <field internalName="3a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3a"/>
+            <field internalName="3b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3b"/>
+            <field internalName="3c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3c"/>
+            <field internalName="3d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3d"/>
+            <field internalName="3e" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3e"/>
+            <field internalName="3f" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3f"/>
+            <field internalName="3g" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3g"/>
+            <field internalName="3h" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3h"/>
+            <field internalName="3i" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3i"/>
+            <field internalName="3j" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3j"/>
+            <field internalName="4a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4a"/>
+            <field internalName="4b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4b"/>
+            <field internalName="4c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4c"/>
+            <field internalName="4d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4d"/>
+            <field internalName="5a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5a"/>
+            <field internalName="5b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5b"/>
+            <field internalName="5c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5c"/>
+            <field internalName="6" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_6"/>
+            <field internalName="7" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_7"/>
+            <field internalName="8" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_8"/>
+            <field internalName="9a" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9a"/>
+            <field internalName="9b" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9b"/>
+            <field internalName="9c" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9c"/>
+            <field internalName="9d" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9d"/>
+            <field internalName="9e" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9e"/>
+            <field internalName="9f" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9f"/>
+            <field internalName="9g" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9g"/>
+            <field internalName="9h" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9h"/>
+            <field internalName="9i" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9i"/>
+            <field internalName="9j" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9j"/>
+            <field internalName="Age" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Age"/>
+            <field internalName="CH" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CH"/>
+            <field internalName="CHComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHComment"/>
+            <field internalName="CHscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHscore"/>
+            <field internalName="DOB" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_DOB"/>
+            <field internalName="EV" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EV"/>
+            <field internalName="EVComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVComment"/>
+            <field internalName="EVscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVscore"/>
+            <field internalName="Forename"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Forename"/>
+            <field internalName="GHP" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHP"/>
+            <field internalName="GHPComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPComment"/>
+            <field internalName="GHPscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPscore"/>
+            <field internalName="HospitalNumber"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_HospitalNumber"/>
+            <field internalName="MH" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MH"/>
+            <field internalName="MHComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHComment"/>
+            <field internalName="MHscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHscore"/>
+            <field internalName="P" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_P"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PatSerial"/>
+            <field internalName="PComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PComment"/>
+            <field internalName="PF" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PF"/>
+            <field internalName="PFComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFComment"/>
+            <field internalName="PFscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFscore"/>
+            <field internalName="Pscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Pscore"/>
+            <field internalName="Q1" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q1"/>
+            <field internalName="Q2" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q2"/>
+            <field internalName="QDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_QDate"/>
+            <field internalName="RE" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RE"/>
+            <field internalName="REComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REComment"/>
+            <field internalName="ReferralID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_ReferralID"/>
+            <field internalName="REscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REscore"/>
+            <field internalName="RP" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RP"/>
+            <field internalName="RPComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPComment"/>
+            <field internalName="RPscore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPscore"/>
+            <field internalName="Sex" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Sex"/>
+            <field internalName="SF" annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF"/>
+            <field internalName="SF36ID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF36ID"/>
+            <field internalName="SFComment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFComment"/>
+            <field internalName="SFScore"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFScore"/>
+            <field internalName="SingleIndex"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SingleIndex"/>
+            <field internalName="Stage"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Stage"/>
+        </table>
+        <table internalName="tblAnalgesiaScore"
+               annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pain_Therapy"
+               annotationDisplayText="Pain Therapy">
+            <field internalName="AnalgesiaID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_AnalgesiaID"/>
+            <field internalName="DrugsComment"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"
+                   annotationDisplayText="Comment"/>
+            <field internalName="DrugScore"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Drug_Sensitization"
+                   annotationDisplayText="drug sensitization"/>
+            <field internalName="DrugsTaken"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pharmacologic_Substance"
+                   annotationDisplayText="Pharmacologic Substance"/>
+            <field internalName="PainImprovement" annotationUri="http://www.ihtsdo.org/SCT_247406002"
+                   annotationDisplayText="increased pain threshold (finding)"/>
+            <field internalName="PainScore" annotationUri="http://www.ihtsdo.org/SCT_22253000"
+                   annotationDisplayText="pain (finding)"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_PatSerial"/>
+            <field internalName="ProcedureComments"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"
+                   annotationDisplayText="comment"/>
+            <field internalName="ProcedureImprovement"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_ProcedureImprovement"/>
+            <field internalName="Qdate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Qdate"/>
+            <field internalName="ReferralID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_ReferralID"/>
+            <field internalName="Stage"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Stage"/>
+        </table>
+        <table internalName="tblOswestryDisability"
+               annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/273676000"
+               annotationDisplayText="Oswestry pain questionnaire">
+            <field internalName="ODIID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_ODIID"/>
+            <field internalName="ODIScore" annotationUri="http://www.ihtsdo.org/SCT_446604004"
+                   annotationDisplayText="oswestry disability index score (observable entity)"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_PatSerial"/>
+            <field internalName="Q1"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q1"/>
+            <field internalName="Q10"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q10"/>
+            <field internalName="Q2"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q2"/>
+            <field internalName="Q3"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q3"/>
+            <field internalName="Q4"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q4"/>
+            <field internalName="Q5"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q5"/>
+            <field internalName="Q6"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q6"/>
+            <field internalName="Q7"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q7"/>
+            <field internalName="Q8"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q8"/>
+            <field internalName="Q9"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q9"/>
+            <field internalName="Qdate"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Questionnaire_Data_Collection_Date_Time"
+                   annotationDisplayText="questionnaire data collection date time"/>
+            <field internalName="ReferralID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_ReferralID"/>
+            <field internalName="Stage"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Stage"/>
+            <field internalName="VASScore" annotationUri="http://www.ihtsdo.org/SCT_446661009"
+                   annotationDisplayText="visual analog scale score (observable entity)"/>
+        </table>
+        <table internalName="tblPatientData" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient"
+               annotationDisplayText="Patient">
+            <field internalName="Address1"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Street_Address"
+                   annotationDisplayText="Street Address"/>
+            <field internalName="Address2"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Address2"/>
+            <field internalName="Address3" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#County"
+                   annotationDisplayText="County"/>
+            <field internalName="AppointmentDate"
+                   annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/185353001"
+                   annotationDisplayText="Appointment date"/>
+            <field internalName="AppointmentDateTime"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_AppointmentDateTime"/>
+            <field internalName="AppointmentTime"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_AppointmentTime"/>
+            <field internalName="Comments" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"
+                   annotationDisplayText="Comment"/>
+            <field internalName="Consultant" annotationUri="http://purl.bioontology.org/ontology/HL7/10256_CON"
+                   annotationDisplayText="consultant"/>
+            <field internalName="CurrentProcedure" annotationUri="http://www.ihtsdo.org/SCT_71388002"
+                   annotationDisplayText="procedure (procedure)"/>
+            <field internalName="CurrentStatus" annotationUri="http://www.ihtsdo.org/SCT_263490005"
+                   annotationDisplayText="status (attribute)"/>
+            <field internalName="CurrentStatusID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_CurrentStatusID"/>
+            <field internalName="Date text" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date"
+                   annotationDisplayText="date"/>
+            <field internalName="DateReferralReceived"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_DateReferralReceived"/>
+            <field internalName="DateReferred"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_DateReferred"/>
+            <field internalName="DateReviewDue"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_DateReviewDue"/>
+            <field internalName="Deceased"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Deceased"/>
+            <field internalName="DeceasedFlag" annotationUri="http://purl.bioontology.org/ontology/HL7/14884_DEC"
+                   annotationDisplayText="Patient Deceased"/>
+            <field internalName="DOB" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date_of_Birth"
+                   annotationDisplayText="Birth Date"/>
+            <field internalName="Forename" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#First_Name"
+                   annotationDisplayText="First Name"/>
+            <field internalName="GPCode"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPCode"/>
+            <field internalName="GPName"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPName"/>
+            <field internalName="GPPracticeCode"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPPracticeCode"/>
+            <field internalName="GPPracticeName" annotationUri="http://www.ihtsdo.org/SCT_394760002"
+                   annotationDisplayText="general practitioner practice (qualifier value)"/>
+            <field internalName="HealthAuthority"
+                   annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/394747008"
+                   annotationDisplayText="Health Authority"/>
+            <field internalName="Height" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Height"
+                   annotationDisplayText="Height"/>
+            <field internalName="HomeTelephone" annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/429697006"
+                   annotationDisplayText="Patient home telephone number"/>
+            <field internalName="Hospital" annotationUri="http://purl.bioontology.org/ontology/HL7/10602_HOSP"
+                   annotationDisplayText="Hospital"/>
+            <field internalName="Input Date"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Content_Date"
+                   annotationDisplayText="Content Creation Date"/>
+            <field internalName="letterprinteddate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_letterprinteddate"/>
+            <field internalName="NHSCode"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_NHSCode"/>
+            <field internalName="OldPatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_OldPatSerial"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_PatSerial"/>
+            <field internalName="PostCode"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Postal_Code"
+                   annotationDisplayText="Postal Code"/>
+            <field internalName="QuestionnaireSent"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_QuestionnaireSent"/>
+            <field internalName="Review Date"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Review_Date"/>
+            <field internalName="ReviewApptDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewApptDate"/>
+            <field internalName="ReviewLetterSent"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewLetterSent"/>
+            <field internalName="ReviewStatus"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewStatus"/>
+            <field internalName="ReviewType"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewType"/>
+            <field internalName="Sex" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Gender"
+                   annotationDisplayText="Gender"/>
+            <field internalName="Smoker"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Current_Smoker"
+                   annotationDisplayText="Current Smoker"/>
+            <field internalName="Staff" annotationUri="http://purl.bioontology.org/ontology/HL7/C1552089"
+                   annotationDisplayText="staff member"/>
+            <field internalName="STHNumber" annotationUri="http://www.ihtsdo.org/SCT_184107009"
+                   annotationDisplayText="patient hospital number (observable entity)"/>
+            <field internalName="Surname" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Last_Name"
+                   annotationDisplayText="Last Name"/>
+            <field internalName="Title"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Document_Title"
+                   annotationDisplayText="Title"/>
+            <field internalName="Ward" annotationUri="http://purl.bioontology.org/ontology/HL7/16135_W"
+                   annotationDisplayText="Ward"/>
+            <field internalName="WorkTelephone"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Business_Telephone"
+                   annotationDisplayText="Business Telephone Number"/>
+        </table>
+        <table internalName="tblPatientNotes" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Note"
+               annotationDisplayText="Note">
+            <field internalName="Date" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date"
+                   annotationDisplayText="Date"/>
+            <field internalName="DateResolved"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_DateResolved"/>
+            <field internalName="Description"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Description"
+                   annotationDisplayText="Description"/>
+            <field internalName="NotesID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_NotesID"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_PatSerial"/>
+        </table>
+        <table internalName="tblProcedure"
+               annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Procedure_Generic"
+               annotationDisplayText="Procedure">
+            <field internalName="Anaesthetist"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Anaesthetist"/>
+            <field internalName="Analgesia"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Analgesia"/>
+            <field internalName="AntibioticDetail"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AntibioticDetail"/>
+            <field internalName="Antibiotics"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Antibiotics"/>
+            <field internalName="Approach"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Approach"/>
+            <field internalName="Arterial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Arterial"/>
+            <field internalName="AssessmentNumber"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AssessmentNumber"/>
+            <field internalName="BupivacaineAmount"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineAmount"/>
+            <field internalName="BupivacaineStrength"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineStrength"/>
+            <field internalName="Cement"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Cement"/>
+            <field internalName="Complications"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Complications"/>
+            <field internalName="Duration"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Duration"/>
+            <field internalName="Epidural"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Epidural"/>
+            <field internalName="FinishTime"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_FinishTime"/>
+            <field internalName="Foraminal"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Foraminal"/>
+            <field internalName="GA"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_GA"/>
+            <field internalName="IntraDisc"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_IntraDisc"/>
+            <field internalName="LANeedle"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LANeedle"/>
+            <field internalName="Length"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Length"/>
+            <field internalName="Level1"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level1"/>
+            <field internalName="Level2"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level2"/>
+            <field internalName="Level3"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level3"/>
+            <field internalName="LidocaineAmount"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineAmount"/>
+            <field internalName="LidocaineStrength"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineStrength"/>
+            <field internalName="LOS"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LOS"/>
+            <field internalName="NeedleGauge"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleGauge"/>
+            <field internalName="NeedleType"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleType"/>
+            <field internalName="NeuroComplication"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplication"/>
+            <field internalName="NeuroComplicationDetail"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplicationDetail"/>
+            <field internalName="OtherComplications"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_OtherComplications"/>
+            <field internalName="Paravertebral"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Paravertebral"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PatSerial"/>
+            <field internalName="PCA"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PCA"/>
+            <field internalName="PE"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PE"/>
+            <field internalName="PostProcedurePainDuration"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PostProcedurePainDuration"/>
+            <field internalName="ProcedureDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureDate"/>
+            <field internalName="ProcedureID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureID"/>
+            <field internalName="ProcedureTime"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureTime"/>
+            <field internalName="ReferralID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ReferralID"/>
+            <field internalName="Sedation"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Sedation"/>
+            <field internalName="Site1PercentFilling"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1PercentFilling"/>
+            <field internalName="Site1VolumeInjected"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1VolumeInjected"/>
+            <field internalName="Site2PercentFilling"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2PercentFilling"/>
+            <field internalName="Site2VolumeInjected"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2VolumeInjected"/>
+            <field internalName="Site3PercentFilling"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3PercentFilling"/>
+            <field internalName="Site3VolumeInjected"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3VolumeInjected"/>
+            <field internalName="StartTime"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_StartTime"/>
+            <field internalName="SurgicalIntervention"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalIntervention"/>
+            <field internalName="SurgicalProcedure"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalProcedure"/>
+            <field internalName="TotalOpiateDose"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_TotalOpiateDose"/>
+            <field internalName="Venous"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Venous"/>
+        </table>
+        <table internalName="tblRecall" annotationUri="http://purl.bioontology.org/ontology/SNOMEDCT/308400007"
+               annotationDisplayText="Patient recall procedure">
+            <field internalName="ActualDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_ActualDate"/>
+            <field internalName="AssessmentID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_AssessmentID"/>
+            <field internalName="DateDue"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_DateDue"/>
+            <field internalName="LetterSent"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_LetterSent"/>
+            <field internalName="Notes"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Notes"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_PatSerial"/>
+            <field internalName="ReferralID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_ReferralID"/>
+            <field internalName="Stage"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Stage"/>
+            <field internalName="Timepoint"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Timepoint"/>
+        </table>
+        <table internalName="tblReferral" annotationUri="http://purl.bioontology.org/ontology/NCIM/C0034927"
+               annotationDisplayText="Referral">
+            <field internalName="AnaestAssessment"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_AnaestAssessment"/>
+            <field internalName="AssessmentNumber"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Code"
+                   annotationDisplayText="assessment code"/>
+            <field internalName="BackPain" annotationUri="http://www.ihtsdo.org/SCT_419258005"
+                   annotationDisplayText="back pain (finding)"/>
+            <field internalName="BackPainLocation"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainLocation"/>
+            <field internalName="BackPainOnsetDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainOnsetDate"/>
+            <field internalName="Biopsy" annotationUri="http://www.ihtsdo.org/SCT_86273004"
+                   annotationDisplayText="biopsy (procedure)"/>
+            <field internalName="BMI" annotationUri="http://www.ihtsdo.org/SCT_60621009"
+                   annotationDisplayText="body mass index (observable entity)"/>
+            <field internalName="CervicalCollapse" annotationUri="http://www.ihtsdo.org/SCT_308757003"
+                   annotationDisplayText="collapse of cervical vertebra (disorder)"/>
+            <field internalName="CoagProfile"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Coagulation_Study"
+                   annotationDisplayText="coagulation study"/>
+            <field internalName="Consent" annotationUri="http://www.ihtsdo.org/SCT_309370004"
+                   annotationDisplayText="consent status (finding)"/>
+            <field internalName="Consultant" annotationUri="http://purl.bioontology.org/ontology/HL7/C1549076"
+                   annotationDisplayText="consultant"/>
+            <field internalName="ContinueToProcedure"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ContinueToProcedure"/>
+            <field internalName="DateOfAssessment"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Date"
+                   annotationDisplayText="assessment date"/>
+            <field internalName="DateReferralReceived"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DateReferralReceived"/>
+            <field internalName="DateReferred"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DateReferred"/>
+            <field internalName="DEXA"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DEXA"/>
+            <field internalName="Diagnosis"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Diagnosis"/>
+            <field internalName="ExpectedProcedureDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ExpectedProcedureDate"/>
+            <field internalName="FBCBiochemistry"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FBCBiochemistry"/>
+            <field internalName="FEV1_FVC"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FEV1_FVC"/>
+            <field internalName="Height" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Height"
+                   annotationDisplayText="Height"/>
+            <field internalName="Histology"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Histology"/>
+            <field internalName="Hospital" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Hospital"
+                   annotationDisplayText="Hospital"/>
+            <field internalName="InformationLeaflet"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_InformationLeaflet"/>
+            <field internalName="Input Date"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Input_Date"/>
+            <field internalName="LegPain"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPain"/>
+            <field internalName="LegPainLocation"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainLocation"/>
+            <field internalName="LegPainOnsetdate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainOnsetdate"/>
+            <field internalName="Lesion1InferiorEndPlateCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1InferiorEndPlateCollapse"/>
+            <field internalName="Lesion1PosteriorCortexIntact"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1PosteriorCortexIntact"/>
+            <field internalName="Lesion1Site"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1Site"/>
+            <field internalName="Lesion1SuperiorEndPlateCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1SuperiorEndPlateCollapse"/>
+            <field internalName="Lesion1VertebralHeight"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1VertebralHeight"/>
+            <field internalName="Lesion2InferiorEndPlateCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2InferiorEndPlateCollapse"/>
+            <field internalName="Lesion2PosteriorCortexIntact"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2PosteriorCortexIntact"/>
+            <field internalName="Lesion2Site"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2Site"/>
+            <field internalName="Lesion2SuperiorEndPlateCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2SuperiorEndPlateCollapse"/>
+            <field internalName="Lesion2VertebralHeight"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2VertebralHeight"/>
+            <field internalName="Lesion3InferiorEndPlateCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3InferiorEndPlateCollapse"/>
+            <field internalName="Lesion3PosteriorCortexIntact"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3PosteriorCortexIntact"/>
+            <field internalName="Lesion3Site"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3Site"/>
+            <field internalName="Lesion3SuperiorEndPlateCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3SuperiorEndPlateCollapse"/>
+            <field internalName="Lesion3VertebralHeight"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3VertebralHeight"/>
+            <field internalName="LocalisedTenderness"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LocalisedTenderness"/>
+            <field internalName="LumbarCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LumbarCollapse"/>
+            <field internalName="Malignancy"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Malignancy"/>
+            <field internalName="MDTDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MDTDate"/>
+            <field internalName="MRIDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRIDate"/>
+            <field internalName="MRSAScreen"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRSAScreen"/>
+            <field internalName="NeuroNotes"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroNotes"/>
+            <field internalName="NeuroSymptoms"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroSymptoms"/>
+            <field internalName="Osteoporosis"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Osteoporosis"/>
+            <field internalName="OtherSymptoms"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptoms"/>
+            <field internalName="OtherSymptomsNotes"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsNotes"/>
+            <field internalName="OtherSymptomsOnsetDate"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsOnsetDate"/>
+            <field internalName="PatientType"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PatientType"/>
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PatSerial"/>
+            <field internalName="PercentPredicted"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PercentPredicted"/>
+            <field internalName="ReferralID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ReferralID"/>
+            <field internalName="ReferralStatus"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ReferralStatus"/>
+            <field internalName="ThoracicCollapse"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ThoracicCollapse"/>
+            <field internalName="Treatment"
+                   annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Therapeutic_Procedure"
+                   annotationDisplayText="Therapeutic Procedure"/>
+            <field internalName="VertebraPlanaSite1"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite1"/>
+            <field internalName="VertebraPlanaSite2"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite2"/>
+            <field internalName="VertebraPlanaSite3"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite3"/>
+            <field internalName="Weight" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Weight"
+                   annotationDisplayText="Weight"/>
+        </table>
+        <table internalName="tblSymptoms"
+               annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms">
+            <field internalName="PatSerial"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_PatSerial"/>
+            <field internalName="ReferralID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_ReferralID"/>
+            <field internalName="SymptomID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_SymptomID"/>
+            <field internalName="SymptomRefID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptoms_SymptomRefID"/>
+        </table>
+        <table internalName="tblSymptomsRef" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom"
+               annotationDisplayText="Symptom">
+            <field internalName="InUse" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Active_Flag"
+                   annotationDisplayText="active flag"/>
+            <field internalName="Symptom" annotationUri="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom"
+                   annotationDisplayText="Symptom"/>
+            <field internalName="SymptomID"
+                   annotationUri="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblSymptomsRef_SymptomID"/>
+            <field internalName="Type" annotationUri="http://purl.bioontology.org/ontology/NCIM/C1515974"
+                   annotationDisplayText="Anatomic Site"/>
+        </table>
+    </tables>
+    <relationships>
+        <relationship primaryField="tblReferral.ReferralID" secondaryField="SF36.ReferralID"/>
+        <relationship primaryField="tblReferral.ReferralID" secondaryField="tblAnalgesiaScore.ReferralID"/>
+        <relationship primaryField="tblReferral.ReferralID" secondaryField="tblOswestryDisability.ReferralID"/>
+        <relationship primaryField="tblPatientData.PatSerial" secondaryField="tblReferral.PatSerial"/>
+        <relationship primaryField="tblPatientData.PatSerial" secondaryField="tblPatientNotes.PatSerial"/>
+        <relationship primaryField="tblReferral.ReferralID" secondaryField="tblProcedure.ReferralID"/>
+        <relationship primaryField="tblReferral.ReferralID" secondaryField="tblRecall.ReferralID"/>
+        <relationship primaryField="tblReferral.ReferralID" secondaryField="tblSymptoms.ReferralID"/>
+        <relationship primaryField="tblSymptomsRef.SymptomID" secondaryField="tblSymptoms.SymptomRefID"/>
+    </relationships>
 </schema>

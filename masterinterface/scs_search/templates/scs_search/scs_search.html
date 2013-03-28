@@ -5,38 +5,38 @@
 
     <script src="/static/kendo.web.min.js"></script>
     <script src="/static/jquery.address-1.5.min.js" type="text/javascript"></script>
-    <link href="/static/kendo/kendo.common.min.css" rel="stylesheet" />
-    <link href="/static/kendo/kendo.blueopal.min.css" rel="stylesheet" />
+    <link href="/static/kendo/kendo.common.min.css" rel="stylesheet"/>
+    <link href="/static/kendo/kendo.blueopal.min.css" rel="stylesheet"/>
 
-    <link rel="stylesheet" href="/static/css/scs_search_style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/scs_search_style.css" type="text/css" media="screen"/>
     <script src="/static/js/scs_search_script.js" type="text/javascript"></script>
-    {% if dataset != '' %}
-        <script  type="text/javascript">
-            $( function (){
+    {% if dataset != '' and class != '' %}
+        <script type="text/javascript">
+            $(function () {
                 complexSearchReady();
-                datasetSearchReady( "{{ dataset }}", "{{ datasetLabel }}");
+                datasetSearchReady("{{ dataset }}", "{{ datasetLabel }}");
             });
         </script>
     {% elif search == 'complex' %}
-    <script src="/static/js/scs_search_complex.js" type="text/javascript"></script>
+        <script src="/static/js/scs_search_complex.js" type="text/javascript"></script>
         {% if results != '' %}
-        <!-- show only results block -->
-        <script  type="text/javascript">
-            $( function() {
-                $( '#automatic-search-form' ).hide();
-                $( '#query-group' ).hide();
-                $( '#reset-groups' ).hide();
-                $( '#back-to-query' ).show();
-                $( '#search-content' ).hide();
-                $( '#results' ).show();
-            });
-        </script>
+            <!-- show only results block -->
+            <script type="text/javascript">
+                $(function () {
+                    $('#automatic-search-form').hide();
+                    $('#query-group').hide();
+                    $('#reset-groups').hide();
+                    $('#back-to-query').show();
+                    $('#search-content').hide();
+                    $('#results').show();
+                });
+            </script>
         {% endif %}
 
     {% elif search == 'guided' %}
-    <script src="/static/js/scs_search_guided.js" type="text/javascript"></script>
+        <script src="/static/js/scs_search_guided.js" type="text/javascript"></script>
     {% else %}
-    <script src="/static/js/scs_search_automatic.js" type="text/javascript"></script>
+        <script src="/static/js/scs_search_automatic.js" type="text/javascript"></script>
     {% endif %}
     <!--
     <script src="/static/js/scs_search_address.js" type="text/javascript"></script>
@@ -45,7 +45,7 @@
 {% endblock %}
 
 
-{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+{% block title %} Welcome to the Vph-Share Master Interface {% endblock %}
 
 
 {% block page-title %}
@@ -58,14 +58,27 @@
 
 {% block content %}
 
-    <div id="wait" class="wait span9" >
+    <div id="wait" class="wait span9">
         <div class="img"></div>
         <div class="info"></div>
     </div>
 
     <div id="search" class="container-fluid">
-        <legend><div id="legend-step1" class="step selected">Search dataset</div> <div id="legend-step2" class="
-         {% if results == '' and dataset == '' %} muted {% else %}selected {% endif %} step" >> select dataset</div> <div id="legend-step3" class=" {% if dataset ==  '' %} muted {% else %}selected {% endif %}  step" >> query the dataset</div> </legend>
+        <legend style="margin-bottom: 0px;border-bottom: none;">
+            <div class="wizard">
+                <div id="1wizard" class="current"><span class="badge badge-inverse">1</span> Search dataset</div>
+                <div id="2wizard" class="{% if breadcrum.0 %} current {% endif %}"><span class="badge badge-inverse">2</span> Select
+                    dataset
+                </div>
+                <div id="3wizard" class="{% if breadcrum.1 %} current {% endif %}"><span class="badge badge-inverse">3</span> Select
+                    concept
+                </div>
+                <div id="4wizard" class="{% if breadcrum.2 %} current {% endif %}"><span class="badge badge-inverse">4</span> Query
+                    dataset
+                </div>
+            </div>
+        </legend>
+        <legend><span id="wizard-legend">{{ datasetLabel }} {% if class != '' %} > {{ class }} {% endif %}</span></legend>
         <div id="search-block" class="row-fluid">
 
             {% include 'scs_search/scs_search_toolsbar.html' %}
@@ -73,24 +86,24 @@
         </div>
 
 
-        <div id="search-content" class="row-fluid hide" >
+        <div id="search-content" class="row-fluid hide">
 
             {% if search == 'guided' %}
-            {% include 'scs_search/scs_search_terms_table.html' %}
+                {% include 'scs_search/scs_search_terms_table.html' %}
             {% elif search == 'complex' %}
-            <!-- START Guided search block -->
-            <div id="guided-search-content-block" class="row-fluid ">
+                <!-- START Guided search block -->
+                <div id="guided-search-content-block" class="row-fluid ">
 
-                {% include 'scs_search/scs_search_terms_content.html' %}
+                    {% include 'scs_search/scs_search_terms_content.html' %}
 
-                {% include 'scs_search/scs_search_groups_content.html' %}
-            </div>
-            {% if dataset != '' %}{% include 'scs_search/scs_search_dataset_results.html' %}{% endif %}
-            <!-- END Guided Search block -->
+                    {% include 'scs_search/scs_search_groups_content.html' %}
+                </div>
+                {% if dataset != '' %}{% include 'scs_search/scs_search_dataset_results.html' %}{% endif %}
+                <!-- END Guided Search block -->
             {% endif %}
         </div>
 
-    {% include 'scs_search/scs_search_results_content.html' %}
+        {% include 'scs_search/scs_search_results_content.html' %}
 
     </div>
 
