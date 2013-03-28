@@ -2,6 +2,8 @@ __author__ = 'Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)'
 
 from django.contrib.auth import get_backends
 from django.conf import settings
+from django.db.models import ObjectDoesNotExist
+from masterinterface.scs_groups.models import VPHShareSmartGroup
 import time
 import binascii
 import base64
@@ -41,7 +43,14 @@ def getUserTokens(user):
         tokens.append(value['roleName'])
 
     for group in user.groups.all():
-        tokens.append(group.name)
+        try:
+            # check if there is a corresponding vphshare group and if it is active
+            vphgroup = VPHShareSmartGroup.objects.get(name=group.name)
+            if vphgroup.active:
+                tokens.append(group.name)
+        except ObjectDoesNotExist:
+            # simple group, just add it to the list
+            tokens.append(group.name)
 
         #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
         #if details['nickname']=='mi_testuser':

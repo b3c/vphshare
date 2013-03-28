@@ -7,7 +7,8 @@ from django.contrib.auth.models import Group, User
 class VPHShareSmartGroup(Group):
 
     managers = models.ManyToManyField(User)
-    parent = models.ForeignKey(Group, related_name='+', blank=True, null=True, )
+    parent = models.ForeignKey(Group, related_name='+', blank=True, null=True)
+    active = models.BooleanField(blank=False, default=True)
 
     class Meta:
         verbose_name_plural = "VPHShareSmartGroups"
@@ -21,6 +22,15 @@ class VPHShareSmartGroup(Group):
 
     def __unicode__(self):
         return self.name
+
+    def remove_users(self, users=[]):
+        if len(users):
+            for user in users:
+                self.user_set.remove(user)
+        else:
+            # TODO optimize this cycle with a sql statement
+            for user in self.user_set.all():
+                self.user_set.remove(user)
 
 
 class Institution(Group):

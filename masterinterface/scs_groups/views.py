@@ -6,8 +6,20 @@ from django.contrib.admin.models import User
 from workflows.utils import get_state, set_workflow, set_state, do_transition
 from permissions.utils import add_local_role
 from config import *
-from models import SubscriptionRequest, Study, Institution, AuditLog
+from models import SubscriptionRequest, Study, Institution, AuditLog, VPHShareSmartGroup
 from forms import StudyForm, InstitutionForm
+
+
+def get_group_by_name(name):
+    try:
+        group = Institution.objects.get(name=name)
+    except ObjectDoesNotExist:
+        try:
+            group = Study.objects.get(name=name)
+        except ObjectDoesNotExist:
+            group = VPHShareSmartGroup.objects.get(name=name)
+
+    return group
 
 
 def temp_fix_institution_managers():
@@ -56,6 +68,9 @@ def list_groups(request):
     user_institutions = []
     other_institutions = []
 
+    user_groups = []
+    other_groups = []
+
     pending_institutions = []
 
     for institution in Institution.objects.all():
@@ -67,6 +82,7 @@ def list_groups(request):
 
     if not request.user.is_authenticated():
         other_institutions = institutions
+        other_groups = VPHShareSmartGroup.objects.filter(active=True)
     else:
         for institution in institutions:
             join_group_subscription(request.user, institution)
@@ -78,11 +94,20 @@ def list_groups(request):
             for study in institution.studies:
                 join_group_subscription(request.user, study)
 
+        for vphgroup in VPHShareSmartGroup.objects.filter(active=True):
+            join_group_subscription(request.user, vphgroup)
+            if request.user in vphgroup.user_set.all() or request.user in vphgroup.managers.all():
+                user_groups.append(vphgroup)
+            else:
+                other_groups.append(vphgroup)
+
     return render_to_response(
         'scs_groups/institutions.html',
         {'user_institutions': user_institutions,
          'pending_institutions': pending_institutions,
-         'other_institutions': other_institutions},
+         'other_institutions': other_institutions,
+         'other_groups': other_groups,
+         'user_groups': user_groups},
         RequestContext(request)
     )
 
@@ -94,10 +119,7 @@ def manage_subscription(request):
 
     if request.method == 'POST':
         group_name = request.POST['group']
-        try:
-            group = Institution.objects.get(name=group_name)
-        except ObjectDoesNotExist:
-            group = Study.objects.get(name=group_name)
+        group = get_group_by_name(group_name)
         user_name = request.POST['user']
         user = User.objects.get(username=user_name)
         subscription = SubscriptionRequest.objects.get(user=user, group=group)
@@ -118,7 +140,7 @@ def manage_group_request(request):
 
     if request.method == 'POST':
         group_name = request.POST['group']
-        group = Institution.objects.get(name=group_name)
+        group = get_group_by_name(group_name)
 
         if request.POST['operation'] == 'accept':
             do_transition(group, group_accept_subscription, request.user)
@@ -135,10 +157,7 @@ def subscribe(request):
 
     if request.method == 'POST':
         group_name = request.POST['group']
-        try:
-            group = Institution.objects.get(name=group_name)
-        except ObjectDoesNotExist:
-            group = Study.objects.get(name=group_name)
+        group = get_group_by_name(group_name)
         subscription = SubscriptionRequest(user=request.user, group=group)
         subscription.save()
         set_workflow(subscription, SubscriptionRequestWorkflow)

@@ -208,7 +208,9 @@ class delete_group(BaseHandler):
                             response._is_string = True
                             return response
 
-                        group.delete()
+                        group.active = False
+                        group.remove_users()
+                        group.save()
 
                         response = HttpResponse(status=200)
                         response._is_string = True
