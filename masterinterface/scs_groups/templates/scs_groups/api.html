@@ -1,0 +1,69 @@
+{% extends 'scs_groups/base.html' %}
+
+{% block title %}
+    VPH-Share Groups API
+{% endblock %}
+
+{% block page-title %}
+    <span class="title" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">Groups API</span>
+    <span class="subtitle">Group api</span>
+{% endblock %}
+
+{% block content %}
+
+    <dl>
+        <dt>Create a group service</dt>
+        <dd>
+            <p>/api/creategroup</p>
+            <ul>                
+                <li></li>
+                <li><strong>ticket:</strong>your authentication ticket</li>
+            </ul>
+        </dd>
+        
+        <dt>Delete a group service</dt>
+        <dd>
+            <p>/api/deletegroup</p>
+            <ul>
+                <li></li>
+                <li><strong>ticket:</strong>your authentication ticket</li>
+            </ul>
+        </dd>
+        
+        <dt>Add a user to a group service</dt>
+        <dd>
+            <p>/api/adduser</p>            
+            <fieldset><legend>parameters</legend><ul>
+                <li></li>
+                <li><strong>ticket:</strong>your authentication ticket</li>
+            </ul></fieldset>
+        </dd>
+        
+        <dt>Remove a user from a group service</dt>
+        <dd>
+            <p>/api/removeuser</p>
+            <ul>
+                <li></li>
+                <li><strong>ticket:</strong>your authentication ticket</li>
+            </ul>
+        </dd>
+        
+        <dt>Search for a group service</dt>
+        <dd>
+            <p>/api/searchgroup</p>
+            <ul>
+                <li></li>             
+            </ul>
+        </dd>
+        
+        <dt>Search for a user service</dt>
+        <dd>
+            <p></p>
+            <ul>
+                <li></li>
+            </ul>
+        </dd>
+    
+    </dl>
+
+{% endblock %}
