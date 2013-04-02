@@ -8,114 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'VPHShareSmartGroup'
-        db.create_table('scs_groups_vphsharesmartgroup', (
-            ('group_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.Group'], unique=True, primary_key=True)),
-            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['auth.Group'])),
-        ))
-        db.send_create_signal('scs_groups', ['VPHShareSmartGroup'])
-
-        # Adding M2M table for field managers on 'VPHShareSmartGroup'
-        db.create_table('scs_groups_vphsharesmartgroup_managers', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('vphsharesmartgroup', models.ForeignKey(orm['scs_groups.vphsharesmartgroup'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique('scs_groups_vphsharesmartgroup_managers', ['vphsharesmartgroup_id', 'user_id'])
-
-        # Adding model 'Institution'
-        db.create_table('scs_groups_institution', (
-            ('group_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.Group'], unique=True, primary_key=True)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('address', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('country', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('logo', self.gf('django.db.models.fields.files.ImageField')(max_length=100, blank=True)),
-            ('signed_dsa', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('policies_url', self.gf('django.db.models.fields.URLField')(max_length=255, blank=True)),
-            ('admin_fullname', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('admin_address', self.gf('django.db.models.fields.CharField')(max_length=1024)),
-            ('admin_phone', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('admin_email', self.gf('django.db.models.fields.EmailField')(max_length=64)),
-            ('formal_fullname', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-            ('formal_address', self.gf('django.db.models.fields.CharField')(max_length=1024, blank=True)),
-            ('formal_phone', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-            ('formal_email', self.gf('django.db.models.fields.EmailField')(max_length=64, blank=True)),
-            ('breach_fullname', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-            ('breach_address', self.gf('django.db.models.fields.CharField')(max_length=1024, blank=True)),
-            ('breach_phone', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-            ('breach_email', self.gf('django.db.models.fields.EmailField')(max_length=64, blank=True)),
-        ))
-        db.send_create_signal('scs_groups', ['Institution'])
-
-        # Adding M2M table for field managers on 'Institution'
-        db.create_table('scs_groups_institution_managers', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('institution', models.ForeignKey(orm['scs_groups.institution'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique('scs_groups_institution_managers', ['institution_id', 'user_id'])
-
-        # Adding model 'Study'
-        db.create_table('scs_groups_study', (
-            ('group_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.Group'], unique=True, primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('start_date', self.gf('django.db.models.fields.DateField')()),
-            ('finish_date', self.gf('django.db.models.fields.DateField')()),
-            ('institution', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['scs_groups.Institution'])),
-        ))
-        db.send_create_signal('scs_groups', ['Study'])
-
-        # Adding M2M table for field principals on 'Study'
-        db.create_table('scs_groups_study_principals', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('study', models.ForeignKey(orm['scs_groups.study'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique('scs_groups_study_principals', ['study_id', 'user_id'])
-
-        # Adding model 'AuditLog'
-        db.create_table('scs_groups_auditlog', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('date', self.gf('django.db.models.fields.DateField')(auto_now=True, blank=True)),
-            ('log', self.gf('django.db.models.fields.CharField')(max_length=512)),
-        ))
-        db.send_create_signal('scs_groups', ['AuditLog'])
-
-        # Adding model 'SubscriptionRequest'
-        db.create_table('scs_groups_subscriptionrequest', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.Group'])),
-            ('date', self.gf('django.db.models.fields.DateField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('scs_groups', ['SubscriptionRequest'])
+        # Adding field 'VPHShareSmartGroup.active'
+        db.add_column('scs_groups_vphsharesmartgroup', 'active',
+                      self.gf('django.db.models.fields.BooleanField')(default=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting model 'VPHShareSmartGroup'
-        db.delete_table('scs_groups_vphsharesmartgroup')
-
-        # Removing M2M table for field managers on 'VPHShareSmartGroup'
-        db.delete_table('scs_groups_vphsharesmartgroup_managers')
-
-        # Deleting model 'Institution'
-        db.delete_table('scs_groups_institution')
-
-        # Removing M2M table for field managers on 'Institution'
-        db.delete_table('scs_groups_institution_managers')
-
-        # Deleting model 'Study'
-        db.delete_table('scs_groups_study')
-
-        # Removing M2M table for field principals on 'Study'
-        db.delete_table('scs_groups_study_principals')
-
-        # Deleting model 'AuditLog'
-        db.delete_table('scs_groups_auditlog')
-
-        # Deleting model 'SubscriptionRequest'
-        db.delete_table('scs_groups_subscriptionrequest')
+        # Deleting field 'VPHShareSmartGroup.active'
+        db.delete_column('scs_groups_vphsharesmartgroup', 'active')
 
 
     models = {
@@ -203,6 +104,7 @@ class Migration(SchemaMigration):
         },
         'scs_groups.vphsharesmartgroup': {
             'Meta': {'ordering': "['name']", 'object_name': 'VPHShareSmartGroup', '_ormbases': ['auth.Group']},
+            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'group_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.Group']", 'unique': 'True', 'primary_key': 'True'}),
             'managers': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['auth.Group']"})

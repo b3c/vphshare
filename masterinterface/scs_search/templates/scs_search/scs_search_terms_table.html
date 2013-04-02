@@ -1,16 +1,29 @@
+<form id="query-form" >
+    <legend>Available Concepts</legend>
+    <table id="terms-table-block" class="tableuserlits table table-hover table-bordered" >
+        <thead>
+        <tr>
+            <th>Term</th>
+            <th>description</th>
+        </tr>
+        </thead>
 
-<form id="query-form" style="display: none">
-<legend>Available Concepts</legend>
-<table id="terms-table-block" class="tableuserlits table table-hover table-bordered" style="display:none;">
-    <thead>
-    <tr><th>#</th><th>Term</th><th>description</th></tr>
-    </thead>
-    <tbody id="terms-table-base">
-    <tr class="term" style="display: none;">
-    <td class="select"></td>
-    <td class="term-name"></td>
-    <td class="term-desc"></td>
-    </tr>
-    </tbody>
-</table>
+        {% if results != '' %}
+            <tbody id="terms-table">
+            {% for key, value in results.items %}
+                <tr class="term" >
+                    <td class="term-name">{{ key }}<input name="inputConceptUri" type="hidden" value="{{ key }}"></td>
+                    <td class="term-desc">{{ value.0 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        {% endif %}
+        <tbody id="terms-table-base">
+        <tr class="term" style="display: none;">
+            <td class="term-name"></td>
+            <td class="term-desc"></td>
+        </tr>
+
+        </tbody>
+    </table>
 </form>

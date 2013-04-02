@@ -14,7 +14,7 @@ $(document).ready(
     function(){
 
         "use strict";
-        $( "#search-menu-link" ).click(function() {
+        /*$( "#search-menu-link" ).click(function() {
             var effect = "blind";
             var options = {};
 
@@ -29,7 +29,7 @@ $(document).ready(
                 $(this).parents( ".list-parent" ).addClass("active");
                 return false;
             }
-        });
+        });*/
 
         // highlight current section
         var thereIsASection = false;

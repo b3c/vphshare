@@ -7,7 +7,7 @@
  */
 
 
-$( function (){
+$(function () {
 
     complexSearchReady();
 

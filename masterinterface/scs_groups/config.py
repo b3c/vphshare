@@ -61,3 +61,10 @@ group_refused.transitions.add(group_accept_subscription)
 GroupRequestWorkflow.initial_state = group_pending
 
 GroupRequestWorkflow.save(force_update=True)
+
+
+# VPHShareSmartGroup permissions
+can_add_user_to_smartgroup, created = Permission.objects.get_or_create(name="Can add user to smartgroup", codename="can_add_user_to_smartgroup")
+can_remove_user_from_smartgroup, created = Permission.objects.get_or_create(name="Can remove user from smartgroup", codename="can_remove_user_from_smartgroup")
+can_add_smartgroup, created = Permission.objects.get_or_create(name="Can add smartgroup", codename="can_add_smartgroup")
+can_delete_smartgroup, created = Permission.objects.get_or_create(name="Can delete smartgroup", codename="can_delete_smartgroup")

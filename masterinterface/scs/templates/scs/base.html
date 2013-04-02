@@ -74,16 +74,7 @@
                             <li class="active" id="navhome"><a href="/"><i class="icon-home icon-white"></i>Home</a></li>
 
                             {% if request.user.is_authenticated %}
-                                    <li class="list-parent">
-                                        <div>
-                                            <div id="search-menu-link"><i class="icon-search icon-white"></i>Semantic search</div>
-                                            <ul id="search-submenu" >
-                                                <li class="list-parent"><a id="automatic-search" href="/search/free-text/"><i class="icon-play icon-white"></i>Free text</a>
-                                                <li class="list-parent"><a id="guided-search" href="/search/guided/"><i class="icon-play icon-white"></i>Guided</a>
-                                                <li class="list-parent"><a id="complex-query-search" href="/search/complex/"><i class="icon-play icon-white"></i>Complex Query</a>
-                                            </ul>
-                                        </div>
-                                    </li>
+                                    <li class="list-parent"><a href="/search/"><i class="icon-search icon-white"></i>Semantic search</a></li>
                                 {% if request.user.is_staff %}
                                     <li class="list-parent"><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
                                     <li class="list-parent"><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
@@ -92,7 +83,7 @@
                                 <li class="list-parent"><a href="/scs/workflows/"><i class="icon-tasks icon-white"></i>Workflows</a></li>
                             {% endif %}
 
-                            <li class="list-parent"><a href="/groups/"><i class="icon-globe icon-white"></i>People</a></li>
+                            <li class="list-parent"><a href="/groups/"><i class="icon-globe icon-white"></i>Groups</a></li>
 
                             <li class="list-parent"><a href="/scs/contacts/"><i class="icon-envelope icon-white"></i>Contact</a></li>
                             <li class="list-parent"><a href="/scs/help/"><i class="icon-info-sign icon-white"></i>Help</a></li>
@@ -144,6 +135,16 @@
             </footer>
         {% endblock %}
     {% endif %}
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-28624885-2', 'vph-share.eu');
+  ga('send', 'pageview');
+
+</script>
 </body>
 </html>
 

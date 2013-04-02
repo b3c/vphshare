@@ -4,6 +4,35 @@ from django.db import models
 from django.contrib.auth.models import Group, User
 
 
+class VPHShareSmartGroup(Group):
+
+    managers = models.ManyToManyField(User)
+    parent = models.ForeignKey(Group, related_name='+', blank=True, null=True)
+    active = models.BooleanField(blank=False, default=True)
+
+    class Meta:
+        verbose_name_plural = "VPHShareSmartGroups"
+        ordering = ['name']
+        permissions = (
+            ('can_add_user_to_smartgroup', 'Can add user to smartgroup'),
+            ('can_remove_user_from_smartgroup', 'Can remove user from smartgroup'),
+            ('can_add_smartgroup', 'Can add smartgroup'),
+            ('can_delete_smartgroup', 'Can delete smartgroup'),
+        )
+
+    def __unicode__(self):
+        return self.name
+
+    def remove_users(self, users=[]):
+        if len(users):
+            for user in users:
+                self.user_set.remove(user)
+        else:
+            # TODO optimize this cycle with a sql statement
+            for user in self.user_set.all():
+                self.user_set.remove(user)
+
+
 class Institution(Group):
 
     description = models.CharField(max_length=255, blank=False, help_text='Institution description')
@@ -71,7 +100,7 @@ class AuditLog(models.Model):
     log = models.CharField(max_length=512, blank=False)
 
     def __unicode__(self):
-        return "%s - %s - %s" % (self.uid, self.date.toordinal(), self.log)
+        return "%s - %s - %s" % (self.id, self.date.toordinal(), self.log)
 
 
 class SubscriptionRequest(models.Model):
