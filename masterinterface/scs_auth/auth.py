@@ -1,13 +1,15 @@
 __author__ = 'Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)'
 
 from django.contrib.auth import get_backends
-from django.conf import  settings
+from django.conf import settings
+from django.db.models import ObjectDoesNotExist
+from masterinterface.scs_groups.models import VPHShareSmartGroup
 import time
 import binascii
-
 import base64
 import hashlib
 from M2Crypto import RSA, DSA
+
 
 def authenticate(**credentials):
     """
@@ -23,11 +25,42 @@ def authenticate(**credentials):
         if user is None:
             continue
             # Annotate the user object with the path of the backend.
-        if isinstance(user,tuple):
+        if isinstance(user, tuple):
             user[0].backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
         else:
             user.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
         return user
+
+
+def getUserTokens(user):
+    """
+    Return the user tokens
+    """
+
+    tokens = []
+
+    for value in user.userprofile.roles.all().values():
+        tokens.append(value['roleName'])
+
+    for group in user.groups.all():
+        try:
+            # check if there is a corresponding vphshare group and if it is active
+            vphgroup = VPHShareSmartGroup.objects.get(name=group.name)
+            if vphgroup.active:
+                tokens.append(group.name)
+        except ObjectDoesNotExist:
+            # simple group, just add it to the list
+            tokens.append(group.name)
+
+        #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
+        #if details['nickname']=='mi_testuser':
+        #    tokens=[]
+        #else:
+        #    tokens=['developer']
+        #######
+
+    return tokens
+
 
 def userProfileUpdate(details, user, *args, **kwargs):
     """
@@ -37,14 +70,14 @@ def userProfileUpdate(details, user, *args, **kwargs):
     if not user:
         return
 
-    change=False
+    change = False
     for key, value in details.items():
-        if getattr(user,key,None) is not None:
-            change=True
-            setattr(user,key,value)
-        elif getattr(user.userprofile,key,None) is not None:
-            change=True
-            setattr(user.userprofile,key,value)
+        if getattr(user, key, None) is not None:
+            change = True
+            setattr(user, key, value)
+        elif getattr(user.userprofile, key, None) is not None:
+            change = True
+            setattr(user.userprofile, key, value)
     if change:
         user.userprofile.save()
         user.save()
@@ -59,25 +92,16 @@ def socialtktGen(details, *args, **kwargs):
 
     if email:
 
-        user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-        user_value=[]
+        user_key = ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
+        user_value = []
 
         for i in range(0, len(user_key)):
             user_value.append(details[user_key[i]])
 
-        tokens = []
         user = kwargs.get('user')
-        for value in user.userprofile.roles.all().values():
-            tokens.append(value['roleName'])
+        tokens = getUserTokens(user)
 
-        #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-        #if details['nickname']=='mi_testuser':
-        #    tokens=[]
-        #else:
-        #    tokens=['developer']
-        #######
-
-        validuntil= settings.TICKET_TIMEOUT + int(time.time())
+        validuntil = settings.TICKET_TIMEOUT + int(time.time())
 
         ticketObj = settings.TICKET
         try:
@@ -91,7 +115,7 @@ def socialtktGen(details, *args, **kwargs):
             )
         except  Exception, e:
             print e
-        #new_tkt = createTicket(
+            #new_tkt = createTicket(
         #    details['nickname'],
         #    settings.SECRET_KEY,
         #   tokens=tokens,
@@ -104,7 +128,8 @@ def socialtktGen(details, *args, **kwargs):
 
         tkt64 = binascii.b2a_base64(new_tkt).rstrip()
 
-        return  {'ticket' : tkt64 }
+        return {'ticket': tkt64}
+
 
 def calculate_sign(privkey, data):
     """Calculates and returns ticket's signature.

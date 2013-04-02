@@ -16,7 +16,7 @@ from openid.consumer.consumer import SUCCESS, CANCEL, FAILURE
 from social_auth.backends.exceptions import *
 
 #from masterinterface.scs_auth.tktauth import *
-from masterinterface.scs_auth.auth import authenticate
+from masterinterface.scs_auth.auth import authenticate, getUserTokens
 
 import binascii
 from datetime import  datetime
@@ -232,7 +232,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             #user_data = ticketObj.validateTkt(ticket,cip)
         if user_data:
 
-            user_key =  ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
+            user_key = ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
             user_value = user_data[2]
 
             self.user_dict = {}
@@ -255,18 +255,9 @@ class BiomedTownTicketBackend (RemoteUserBackend):
                 except User.DoesNotExist:
                     pass
 
-            tokens = []
-            for value in user.userprofile.roles.all().values():
-                tokens.append(value['roleName'])
+            tokens = getUserTokens(user)
 
-            #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-            #if user.username=='mi_testuser':
-            #    tokens=[]
-            #else:
-            #    tokens=['developer']
-            #######
-
-            validuntil= settings.TICKET_TIMEOUT + int(time.time())
+            validuntil = settings.TICKET_TIMEOUT + int(time.time())
 
             ticketObj = settings.TICKET
 
