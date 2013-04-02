@@ -11,4 +11,5 @@ urlpatterns = patterns(
     url(r'^create_study/$', 'create_study' ),
     url(r'^create_institution/$', 'create_institution' ),
     url(r'^manage_group_request/$', 'manage_group_request' ),
+    url(r'^api/$','api_help')
 )

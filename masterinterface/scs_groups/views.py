@@ -232,3 +232,9 @@ def create_institution(request):
             RequestContext(request)
         )
 
+
+def api_help(request):
+    return render_to_response(
+    'scs_groups/api.html',
+    RequestContext(request)
+    )

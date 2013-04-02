@@ -4,7 +4,7 @@ import os
 from mod_auth import SignedTicket, Ticket
 
 DEBUG = True
-DEVEL = True
+DEVEL = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
