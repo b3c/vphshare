@@ -1,4 +1,5 @@
 .idea
+local_settings.py
 *.pyc
 .*.sw[po]
 vphshare.db
