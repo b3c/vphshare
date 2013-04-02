@@ -156,7 +156,12 @@ INSTALLED_APPS = (
     'masterinterface.scs_auth',
     'masterinterface.cyfronet',
     'masterinterface.scs_search',
-    'south'
+    'south',
+
+    'masterinterface.scs_groups',
+    'workflows',
+    'permissions'
+
     
     ##NEW_APP
 )
