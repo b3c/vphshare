@@ -156,8 +156,8 @@ INSTALLED_APPS = (
     'masterinterface.scs_auth',
     'masterinterface.cyfronet',
     'masterinterface.scs_search',
-	'masterinterface.scs_groups',
-	'masterinterface.scs_security',
+    'masterinterface.scs_groups',
+    'masterinterface.scs_security',
     'south'
     
     ##NEW_APP
@@ -196,9 +196,6 @@ PASSWORD_HASHERS = (
     )
 
 
-
-
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
@@ -224,7 +221,7 @@ LOGGING = {
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/done'
-LOGIN_ERROR_URL    = '/login-error/'
+LOGIN_ERROR_URL = '/login-error/'
 
 #SOCIAL_AUTH SETTINGS
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL =True
@@ -233,7 +230,10 @@ SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
-CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+# CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://149.156.10.133:8080/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+CLOUDFACACE_URL = "http://149.156.10.133/cloudfacade"
+CLOUDFACACE_SSL = False
 
 #Atos service
 ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"

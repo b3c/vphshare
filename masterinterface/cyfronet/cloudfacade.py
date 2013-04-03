@@ -13,6 +13,7 @@ def get_securitypolicies(username, ticket):
     r = requests.post(
         "%s/securitypolicy" % settings.CLOUDFACACE_URL,
         auth=(username, ticket),
+        verify=settings.CLOUDFACACE_SSL
     )
 
     return r.json()
@@ -26,6 +27,7 @@ def get_securitypolicy_file(username, ticket, policy_name):
     r = requests.get(
         "%s/securitypolicy/%s/payload" % (settings.CLOUDFACACE_URL, policy_name),
         auth=(username, ticket),
+        verify=settings.CLOUDFACACE_SSL
     )
 
     return r.text
@@ -43,6 +45,7 @@ def set_securitypolicy_file(username, ticket, policy_name, policy_file):
             'name': policy_name,
             'payload': policy_file
         },
+        verify=settings.CLOUDFACACE_SSL
     )
 
     return True
@@ -58,7 +61,8 @@ def get_securityproxy_configuration_file(username, ticket, endpoint):
         auth=(username, ticket),
         data= {
             'load_payload': True
-        }
+        },
+        verify=settings.CLOUDFACACE_SSL
     )
 
     return r.text
@@ -76,6 +80,7 @@ def set_securityproxy_configuration_file(username, ticket, endpoint, configurati
             'name': configuration_name,
             'payload': configuration_file
         },
+        verify=settings.CLOUDFACACE_SSL
     )
 
     return True
@@ -91,6 +96,7 @@ def get_user_resources(username, ticket):
     r = requests.get(
         "%s/workflow/list" % settings.CLOUDFACACE_URL,
         auth=(username, ticket),
+        verify=settings.CLOUDFACACE_SSL
     )
 
     workflows = r.json()
@@ -98,7 +104,8 @@ def get_user_resources(username, ticket):
     for wf in workflows['workflows']:
         r = requests.get(
             "%s/workflow/%s" % (settings.CLOUDFACACE_URL, wf['id']),
-            auth=(username, ticket)
+            auth=(username, ticket),
+            verify=settings.CLOUDFACACE_SSL
         )
         workflow = r.json()
 
