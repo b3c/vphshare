@@ -8,5 +8,6 @@ urlpatterns = patterns(
     'scs_security.views',
     url(r'^$', 'index' ),
     url(r'^policy/$', 'policy' ),
-    url(r'^configuration/$', 'securityproxy_configuration'),
+    url(r'^configuration/$', 'configuration'),
+    url(r'^deletepolicy/$', 'delete_policy')
 )

@@ -9,9 +9,11 @@ from django.utils import simplejson
 from urllib import quote, unquote
 from datetime import datetime
 import json
+from lxml import etree
 from forms import PropertyForm
 from politicizer import create_policy_file, extract_permission_map
 from configurationizer import create_configuration_file, extract_configurations
+from masterinterface.scs.utils import get_file_data
 from masterinterface.cyfronet import cloudfacade
 
 
@@ -20,11 +22,34 @@ def index(request):
         security home page
     """
 
-    resources = cloudfacade.get_user_resources(request.user.username, request.COOKIES.get('vph-tkt'))
-
     return render_to_response(
         'scs_security/index.html',
-        {'resources': resources},
+        {'resources': cloudfacade.get_user_resources(request.user.username, request.COOKIES.get('vph-tkt')),
+         'policies': cloudfacade.get_securitypolicies(request.user.username, request.COOKIES.get('vph-tkt')),
+         'configurations': cloudfacade.get_securityproxy_configurations(request.user.username, request.COOKIES.get('vph-tkt'))},
+        RequestContext(request)
+    )
+
+
+def delete_policy(request):
+    """
+        delete the policy file
+    """
+
+    data = {'policies': cloudfacade.get_securitypolicies(request.user.username, request.COOKIES.get('vph-tkt'))}
+
+    if request.method == 'POST':
+        policy_name = request.POST.get('name')
+
+        if cloudfacade.delete_securitypolicy(request.user.username, request.COOKIES.get('vph-tkt'), policy_name):
+            data['statusmessage'] = "Security Policy correctly deleted"
+
+        else:
+            data['errormessage'] = "Error while deleting security policy"
+
+    return render_to_response(
+        'scs_security/policy.html',
+        data,
         RequestContext(request)
     )
 
@@ -34,30 +59,47 @@ def policy(request):
         get/set the policy file
     """
 
-    data = {}
+    data = {'policies': cloudfacade.get_securitypolicies(request.user.username, request.COOKIES.get('vph-tkt'))}
 
     if request.method == 'GET':
 
-        endpoint = request.GET['endpoint']
-        policy_name = request.GET['policy_name']
-        policy_file = cloudfacade.get_securitypolicy_file(request.user.username, request.COOKIES.get('vph-tkt'), policy_name)
-        permissions_map = extract_permission_map(policy_file)
+        policy_name = request.GET.get('name', '')
+        if policy_name:
+            policy_file = cloudfacade.get_securitypolicy_content(request.user.username, request.COOKIES.get('vph-tkt'), policy_name)
+            permissions_map = extract_permission_map(policy_file)
 
-        data['permissions_map'] = permissions_map
-        data['policy_name'] = policy_name
+            data['permissions_map'] = permissions_map
+            data['policy_name'] = policy_name
+            policy_dom = etree.fromstring(policy_file)
+            data['policy_file'] = etree.tostring(policy_dom)
 
     else:
 
-        endpoint = request.GET['endpoint']
-        policy_name = request.POST['policy_name']
-        permissions_map = request.POST['permissions']
-        policy_file = create_policy_file(permissions_map)
+        policy_name = request.POST['name']
+        # update/set with permissions map
+        if 'sumbitwithmap' in request.POST:
+            actions = request.POST.getlist('actions', [])
+            conditions = request.POST.getlist('conditions', [])
+            policy_file = create_policy_file(actions, conditions)
 
-        if cloudfacade.set_securitypolicy_file(request.username, request.COOKIES.get('vph-tkt'), policy_name, policy_file):
-            data['statusmessage'] = "Policy file correctly created"
+        # update/set by file content
+        elif 'sumbitwithcontent' in request.POST:
+            policy_file = request.POST.get('filecontent')
 
+        # update/set by file upload
+        elif 'sumbitwithfile' in request.POST:
+            policy_file = get_file_data(request.FILES.get('fileupload'))
+
+        if "newpolicy" in request.POST:
+            if cloudfacade.create_securitypolicy(request.user.username, request.COOKIES.get('vph-tkt'), policy_name, policy_file):
+                data['statusmessage'] = "Security Policy file correctly created"
+            else:
+                data['errormessage'] = "Error while creating security policy"
         else:
-            data['errormessage'] = "Error while creating policy file"
+            if cloudfacade.update_securitypolicy(request.user.username, request.COOKIES.get('vph-tkt'), policy_name, policy_file):
+                data['statusmessage'] = "Security policy correctly updated"
+            else:
+                data['errormessage'] = "Error while updating security policy"
 
     return render_to_response(
         'scs_security/policy.html',
@@ -66,44 +108,52 @@ def policy(request):
     )
 
 
-def securityproxy_configuration(request):
+def configuration(request):
     """
-        get/set the properties file
+        get/set the security proxy configuration
     """
 
-    data = {}
+    data = {'configurations': cloudfacade.get_securityproxy_configurations(request.user.username, request.COOKIES.get('vph-tkt'))}
 
     if request.method == 'GET':
 
-        endpoint = request.GET['endpoint']
+        configuration_name = request.GET.get('name', '')
 
-        configuration_file = cloudfacade.get_securityproxy_configuration_file(request.user.username, request.COOKIES.get('vph-tkt'), endpoint)
-        values = extract_configurations(configuration_file)
-        values['configuration_file'] = configuration_file
-
-        data['form'] = PropertyForm(initial=values)
+        if configuration_name:
+            data['configuration_name'] = configuration_name
+            data['configuration_file'] = cloudfacade.get_securityproxy_configuration_content(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name)
+            data['properties'] = extract_configurations(data['configuration_file'])
 
     else:
 
-        form = PropertyForm(request.POST)
+        configuration_name = request.POST['name']
+        # update/set with permissions map
+        if 'sumbitwithmap' in request.POST:
+            actions = request.POST.getlist('actions', [])
+            conditions = request.POST.getlist('conditions', [])
+            configuration_file = create_configuration_file(actions, conditions)
 
-        if form.is_valid():
+        # update/set by file content
+        elif 'sumbitwithcontent' in request.POST:
+            configuration_file = request.POST.get('filecontent')
 
-            endpoint = request.GET['endpoint']
-            configuration_name = request.POST['configuration_name']
-            props = request.POST['configurations']
-            configuration_file = create_configuration_file(props)
+        # update/set by file upload
+        elif 'sumbitwithfile' in request.POST:
+            configuration_file = get_file_data(request.FILES.get('fileupload'))
 
-            if cloudfacade.set_securityproxy_configuration_file(request.username, request.COOKIES.get('vph-tkt'), endpoint, configuration_name, configuration_file):
-                data['statusmessage'] = "Property file correctly created"
-
+        if "newconfiguration" in request.POST:
+            if cloudfacade.create_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name, configuration_file):
+                data['statusmessage'] = "Security configuration file correctly created"
             else:
-                data['errormessage'] = "Error while creating property file"
+                data['errormessage'] = "Error while creating security configuration"
         else:
-            data['form'] = form
+            if cloudfacade.update_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name, configuration_file):
+                data['statusmessage'] = "Security configuration correctly updated"
+            else:
+                data['errormessage'] = "Error while updating security configuration"
 
     return render_to_response(
-        'scs_security/properties.html',
+        'scs_security/configuration.html',
         data,
         RequestContext(request)
     )
