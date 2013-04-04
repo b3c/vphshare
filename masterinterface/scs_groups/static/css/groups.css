@@ -1,0 +1,68 @@
+
+.groups-list {
+    overflow: hidden;
+    display: block;
+}
+.group-item {
+    display: block;
+    position: relative;
+    float: left;
+    width: 180px;
+    padding: 10px !important;
+    margin: 0 10px 10px 0 !important;
+}
+
+.nano { height: 300px}
+.nano .content {  }
+.nano .pane   { background: #888; }
+.nano .slider { background: #111; }
+
+.main-item {
+    display: block;
+    float: left;
+    width: 180px;
+    height: 100%;
+    overflow: ;
+    padding: 10px !important;
+    margin: 0 10px 10px 0 !important;
+}
+
+.main-item-tab2 {
+    height: 100%;
+    width: 350px;
+}
+
+.main-item-tab3 {
+    height: 100%;
+    width: 250px;
+    border-left: 1px solid #DDD;
+}
+
+.badge-alert{
+    position: absolute;
+    top: 92px;
+    float: right;
+    right: -7px;
+}
+
+.group-smart{
+    background: rgba(223, 212, 130, 0.61) !important;
+}
+
+.group-institution{
+    background: rgba(130, 200, 223, 0.61) !important;
+}
+
+ul.inline,
+ol.inline {
+    list-style: none;
+}
+
+ul.inline > li,
+ol.inline > li {
+    display: inline-block;
+    *display: inline;
+    padding-right: 5px;
+    padding-left: 5px;
+    *zoom: 1;
+}

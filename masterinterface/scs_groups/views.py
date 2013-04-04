@@ -55,7 +55,69 @@ def join_group_subscription(user, group):
         group.is_subscription_pending = True
     elif subscription and get_state(subscription).name == 'Refused':
         group.is_subscription_refused = True
-    
+
+
+def group_details(request, idGroup=None, idStudy=None):
+
+    temp_fix_institution_managers()
+
+    institutions = []
+    user_institutions = []
+    other_institutions = []
+
+    user_groups = []
+    other_groups = []
+
+    pending_institutions = []
+    selected_group = None
+
+    for institution in Institution.objects.all():
+        state = get_state(institution)
+        if state is None or state.name == 'Accepted':
+            institutions.append(institution)
+        else:
+            pending_institutions.append(institution)
+
+    if not request.user.is_authenticated():
+        other_institutions = institutions
+        other_groups = VPHShareSmartGroup.objects.filter(active=True)
+    else:
+        for institution in institutions:
+
+            join_group_subscription(request.user, institution)
+            if request.user in institution.user_set.all() or request.user in institution.managers.all():
+                user_institutions.append(institution)
+            else:
+                other_institutions.append(institution)
+            institution.studies = institution.study_set.all()
+            institution.studies_actions = 0
+            if str(institution.pk) == idGroup:
+                selected_group = institution
+                selected_group.selected_study = None
+            for study in institution.studies:
+                join_group_subscription(request.user, study)
+                institution.studies_actions += len(study.pending_subscriptions)
+                if str(study.pk) == idStudy:
+                    selected_group.selected_study = study
+
+        for vphgroup in VPHShareSmartGroup.objects.filter(active=True):
+            join_group_subscription(request.user, vphgroup)
+            if request.user in vphgroup.user_set.all() or request.user in vphgroup.managers.all():
+                user_groups.append(vphgroup)
+            else:
+                other_groups.append(vphgroup)
+
+    return render_to_response(
+        'scs_groups/institutions.html',
+        {'user_institutions': user_institutions,
+         'pending_institutions': pending_institutions,
+         'other_institutions': other_institutions,
+         'other_groups': other_groups,
+         'user_groups': user_groups,
+         'selected_group': selected_group},
+        RequestContext(request)
+    )
+
 
 def list_groups(request):
     """
@@ -91,8 +153,10 @@ def list_groups(request):
             else:
                 other_institutions.append(institution)
             institution.studies = institution.study_set.all()
+            institution.studies_actions = 0
             for study in institution.studies:
                 join_group_subscription(request.user, study)
+                institution.studies_actions += len(study.pending_subscriptions)
 
         for vphgroup in VPHShareSmartGroup.objects.filter(active=True):
             join_group_subscription(request.user, vphgroup)

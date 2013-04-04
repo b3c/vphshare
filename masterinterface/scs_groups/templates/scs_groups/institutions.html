@@ -3,6 +3,18 @@
 {% load staticfiles %}
 {% load macros %}
 {% loadmacros 'scs_groups/group.html' %}
+{% loadmacros 'scs_groups/groupmanage.html' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/css/nanoscroller.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/groups.css" type="text/css" media="screen" />
+ {% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/static/js/jquery.nanoscroller.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.quicksand.js"></script>
+    <script type="text/javascript" src="/static/js/groups.js"></script>
+{% endblock %}
 
 {% block extrahead %}
     <script type="text/javascript">
@@ -13,7 +25,13 @@
         $(".collapse").collapse({
             toggle: false
         });
+        $(function (){$('a[data-toggle="tab"]').on('shown', function (e) {
+            $(".nano").nanoScroller({ alwaysVisible: true });
+        })});
 
+        $(function (){
+            GroupsList.autoDiscover();
+        });
     </script>
 {% endblock %}
 
@@ -27,20 +45,131 @@
 {% endblock %}
 
 {% block content %}
+    {% if selected_group %}
+        {% usemacro group_details selected_group  %}
+    {% endif %}
+    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All Groups</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="smart-filter" class="btn">VPH-Smart</button></li></ul></div>
+    <div class="row">
+    <ul class="groups-list">
+        {% if request.user.is_superuser and pending_institutions%}
+            {% for institution in pending_institutions %}
+                {% usemacro display_group institution 'institution' 1 %}
+            {% endfor %}
+        {% endif %}
+        {% for institution in user_institutions %}
+            {% usemacro display_group institution 'institution' 0 %}
+        {% endfor %}
+        {% for group in user_groups %}
+            {% usemacro display_group group 'smart' 0 %}
+        {% endfor %}
+        {% for institution in other_institutions %}
+            {% usemacro display_group institution 'institution' 0 %}
+        {% endfor %}
+        {% for group in other_groups %}
+            {% usemacro display_group group 'smart' 0 %}
+        {% endfor %}
+        <li data-id="2001" class="well group-item group-institution">
+            <span class="badge badge-success badge-alert"><span class="icon-ok icon-white"></span></span>
+            <div class="row">
+                <div class="span1">
+                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                </div>
+                <div class="span1">
+                    <strong>MSVTK</strong>
+                </div>
+                <div class="span1">
+                    <span class="muted">Italy</span>
+                </div>
+                <div class="span1">
+                    <span><span class="icon-user"></span>104</span>
+                </div>
+            </div>
+        </li>
+        <li data-id="2002" class="well group-item group-institution">
+            <span class="badge badge-important badge-alert"><strong style="font-size: 18px;">!</strong></span>
+            <div class="row">
+                <div class="span1">
+                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                </div>
+                <div class="span1">
+                    <strong>MSVTK</strong>
+                </div>
+                <div class="span1">
+                    <span class="muted">Italy</span>
+                </div>
+                <div class="span1">
+                    <span><span class="icon-user"></span>104</span>
+                </div>
+            </div>
+        </li>
+        <li data-id="2003" class="well group-item group-institution">
+            <div class="row">
+                <div class="span1">
+                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                </div>
+                <div class="span1">
+                    <strong>MSVTK</strong>
+                </div>
+                <div class="span1">
+                    <span class="muted">Italy</span>
+                </div>
+                <div class="span1">
+                    <span><span class="icon-user"></span>104</span>
+                </div>
+            </div>
+        </li>
+        <li data-id="2004" class="well group-item group-smart">
+            <div class="row">
+                <div class="span1">
+                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                </div>
+                <div class="span1">
+                    <strong>MSVTK</strong>
+                </div>
+                <div class="span1">
+                    <span class="muted">Italy</span>
+                </div>
+                <div class="span1">
+                    <span><span class="icon-user"></span>104</span>
+                </div>
+            </div>
+        </li>
+        <li data-id="2005" class="well group-item group-smart">
+            <div class="row">
+                <div class="span1">
+                    <strong>MSVTK</strong>
+                </div>
+                <div class="span1">
+                    <span class="muted">Italy</span>
+                </div>
+                <div class="span2">
+                    <form class="form-inline" action="/groups/manage_group_request/" enctype="multipart/form-data" method="post">
+                        <div style="display:none"><input type="hidden" name="csrfmiddlewaretoken" value="Zwu5lrymIRjP5RRpqNyLa0qsJ9Vqg87c"></div>
+                        <input type="hidden" name="group" value="test">
+                        <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept">Accept</button>
+                        <button class="btn btn-mini btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
+                    </form>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+
+    </div>
 
     {% if user_institutions %}
         <h3>Your Institutions</h3>
         <ul class="thumbnails">
         {% for institution in user_institutions %}
             <li class="thumbnail well span4">
-                {% usemacro display_group institution 'Institution' %}
+
 
                 {% if institution.studies %}
                     <div class="accordion" id="accordion2">
                         <h5>Institution Studies</h5>
                         <ul>
                         {% for study in institution.studies %}
-                            <li>{% usemacro display_group study 'Study' %}</li>
+                            <li></li>
                         {% endfor %}
                         </ul>
                     </div>
@@ -61,7 +190,7 @@
         <ul class="thumbnails">
             {% for institution in other_institutions %}
                 <li class="thumbnail well span4">
-                    {% usemacro display_group institution 'Institution' %}
+
                 </li>
             {% endfor %}
         </ul>
@@ -93,7 +222,7 @@
         <h3>Your VPH-Share Groups</h3>
         <ul>
             {% for group in user_groups %}
-                <li>{% usemacro display_group group '' %}</li>
+
             {% endfor %}
         </ul>
     {% endif %}
@@ -102,7 +231,7 @@
         <h3>Other VPH-Share Groups</h3>
         <ul>
             {% for group in other_groups %}
-                <li>{% usemacro display_group group '' %}</li>
+
             {% endfor %}
         </ul>
     {% endif %}

@@ -5,11 +5,25 @@ from views import *
 
 urlpatterns = patterns(
     'scs_groups.views',
-    url(r'^$', 'list_groups'),
+    #url(r'^$', 'list_groups'),
+
+    url(r'^(?P<idGroup>\d+)/$', 'group_details'),
+    url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/$', 'group_details'),
+
+
+    url(r'^(?P<idGroup>\d+)/subscribe/$', 'subscribe'),
+    url(r'^(?P<idGroup>\d+)/(?P<iduser>\d+)/subscribe/$', 'subscribe'),
+    url(r'^(?P<idGroup>\d+)/(?P<iduser>\d+)/subscribe/$', 'subscribe'),
+
+    url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/subscribe/$', 'subscribe'),
+    url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/(?P<iduser>\d+)/subscribe/$', 'subscribe'),
+    url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/(?P<iduser>\d+)/subscribe/$', 'subscribe'),
+
     url(r'^subscribe/$', 'subscribe' ),
     url(r'^manage_subscription/$', 'manage_subscription' ),
     url(r'^create_study/$', 'create_study' ),
     url(r'^create_institution/$', 'create_institution' ),
     url(r'^manage_group_request/$', 'manage_group_request' ),
-    url(r'^api/$','api_help')
+    url(r'^api/$','api_help'),
+
 )
