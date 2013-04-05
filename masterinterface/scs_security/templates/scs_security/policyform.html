@@ -1,0 +1,63 @@
+
+<fieldset>
+    <form action="/security/policy/" method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+        {% if policy_name %}
+            <input type="hidden" name="name" value="{{ policy_name }}"/>
+        {% else %}
+            <legend>Security Policy Name</legend>
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" />
+            <input type="hidden" name="newpolicy" value="newpolicy" />
+        {% endif %}
+
+        <legend>Permissions Map</legend>
+        <span class="help-block">Update the security policy by editing the permissions map.</span>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>action</th><th>condition</th>
+                <th>
+                    <span class="btn btn-small" onclick="var newrow=$('#ptbody').children('tr:first').clone();$(newrow).appendTo($('#ptbody'));$(newrow).find('input').val('');">+</span>
+                    <span class="btn btn-small" onclick="$('#ptbody').children().length > 1 && $('#ptbody').children('tr:last').remove()">-</span>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="ptbody">
+            {% for permission in permissions_map %}
+                <tr>
+                    <td><input name="actions" type="text" value="{{ permission.action }}" /></td>
+                    <td><input name="conditions" type="text" value="{{ permission.condition }}" /></td>
+                    <td></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td><input name="actions" type="text" value="" /></td>
+                    <td><input name="conditions" type="text" value="" /></td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <input type="submit" name="sumbitwithmap" class="btn btn-primary pull-right" value="update" />
+
+        <legend>File content</legend>
+        <span class="help-block">Update the security policy by editing the file content directly</span>
+
+        <label for="filecontent">Security Policy file content (click to edit)</label>
+                <pre onclick="$('#filecontent').show();$(this).hide();">
+                    {{ policy_file }}
+                </pre>
+        <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ policy_file }}</textarea>
+        <input type="submit" name="sumbitwithcontent" class="btn btn-primary pull-right" value="update" />
+
+        <legend>File upload</legend>
+        <span class="help-block">Update the security policy by uploading a file from your filesystem.</span>
+        <input type="file" name="fileupload" accept="application/xml" />
+        <br />
+        <input type="submit" name="sumbitwithfile" class="btn btn-primary pull-right" value="update" />
+    </form>
+</fieldset>

@@ -29,13 +29,13 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Cyfronet Database
 CYFRONET_DB = {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
-        'USER': 'vph',                      # Not used with sqlite3.
-        'PASSWORD': 'vph123',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-    }
+    'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
+    'USER': 'vph',                      # Not used with sqlite3.
+    'PASSWORD': 'vph123',                  # Not used with sqlite3.
+    'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+    'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+}
 
 
 DATABASES = {
@@ -100,10 +100,10 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT,'js'),
-    os.path.join(PROJECT_ROOT,'img'),
-    os.path.join(PROJECT_ROOT,'css'),
-    os.path.join(PROJECT_ROOT,'files'),
+    os.path.join(PROJECT_ROOT, 'js'),
+    os.path.join(PROJECT_ROOT, 'img'),
+    os.path.join(PROJECT_ROOT, 'css'),
+    os.path.join(PROJECT_ROOT, 'files'),
 )
 
 # List of finder classes that know how to find static files in
@@ -156,10 +156,11 @@ INSTALLED_APPS = (
     'masterinterface.scs_auth',
     'masterinterface.cyfronet',
     'masterinterface.scs_search',
-    'workflows',
-    'permissions',
+<<<<<<< HEAD
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
+=======
+>>>>>>> master
     'south'
     
     ##NEW_APP
@@ -197,7 +198,6 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.CryptPasswordHasher',
     )
 
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
@@ -223,7 +223,7 @@ LOGGING = {
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/done'
-LOGIN_ERROR_URL = '/login-error/'
+LOGIN_ERROR_URL    = '/login-error/'
 
 #SOCIAL_AUTH SETTINGS
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL =True
@@ -232,10 +232,8 @@ SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
-# CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
-CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://149.156.10.133:8080/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
-CLOUDFACACE_URL = "http://149.156.10.133/cloudfacade"
-CLOUDFACACE_SSL = False
+CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+CLOUDFACACE_URL = 'http://vph.cyfronet.pl/cloudfacade'
 
 #Atos service
 ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
@@ -244,10 +242,10 @@ ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
 TICKET_TIMEOUT = 12*60*60  # 12 h
 
 #MOD_AUTH_TKT settings
-MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/pubkey_DSA.pem')
-MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/privkey_DSA.pem')
+MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT, 'scs_auth/keys/pubkey_DSA.pem')
+MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT, 'scs_auth/keys/privkey_DSA.pem')
 #MOD_AUTH_PUBTKY COOKIE STYLE
-TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
+TICKET = SignedTicket(MOD_AUTH_PUBTICKET, MOD_AUTH_PRIVTICKET)
 
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)

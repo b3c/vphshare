@@ -1,6 +1,10 @@
 __author__ = 'Matteo Balasso <m.balasso@scsitaly.com>'
 
 from django.conf.urls import patterns, url
+<<<<<<< HEAD
+
+=======
+>>>>>>> master
 from views import *
 
 urlpatterns = patterns(

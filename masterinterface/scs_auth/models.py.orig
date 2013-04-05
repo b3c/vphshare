@@ -18,6 +18,12 @@ class roles(models.Model):
     id = models.AutoField(primary_key=True)
     roleName = models.CharField(max_length=20, unique=True)
 
+<<<<<<< HEAD
+    id = models.AutoField(primary_key=True)
+    roleName = models.CharField(max_length=20,unique=True)
+
+=======
+>>>>>>> master
 
 class user_role(models.Model):
     username = models.CharField(max_length=30)
@@ -48,8 +54,25 @@ class UserProfile(models.Model):
                 user_dict[user_key[i]] = getattr(self.user, user_key[i])
 
         user_dict['role'] = []
+        # add user roles
         for value in self.roles.all().values():
             user_dict['role'].append(value['roleName'])
+<<<<<<< HEAD
+
+        # add user groups
+        for group in self.user.groups.all():
+            user_dict['role'].append(group)
+
+        #user_dict['role'] = []
+        #for j in range(0, len(user_roles)):
+        #    user_dict['role'].append(user_roles[j]['role'].roleName)
+
+        #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
+        #if user_dict['username']=='mi_testuser':
+        #    user_dict['role'] = []
+        #else:
+        #    user_dict['role'] = ['developer']
+=======
             #user_dict['role'] = []
             #for j in range(0, len(user_roles)):
             #    user_dict['role'].append(user_roles[j]['role'].roleName)
@@ -59,6 +82,7 @@ class UserProfile(models.Model):
             #    user_dict['role'] = []
             #else:
             #    user_dict['role'] = ['developer']
+>>>>>>> master
             #######
         return user_dict
 
