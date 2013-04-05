@@ -15,16 +15,16 @@
         <span class="help-block">Update the Security Proxy configuration by editing its properties.</span>
 
         <label for="listeningport">Listening Port</label>
-        <input type="text" id="listeningport" name="listeningport" />
+        <input type="text" id="listeningport" name="listening_port" value="{{ properties.listening_port }}" />
 
         <label for="outgoingport">Outgoing Port</label>
-        <input type="text" id="outgoingport" name="outgoingport" />
+        <input type="text" id="outgoingport" name="outgoing_port" value="{{ properties.outgoing_port }}"/>
 
         <label for="outgoingaddress">Outgoing Address</label>
-        <input type="text" id="outgoingaddress" name="outgoingaddress" />
+        <input type="text" id="outgoingaddress" name="outgoing_address" value="{{ properties.outgoing_address }}" />
 
         <label for="role">Granted Role</label>
-        <input type="text" id="role" name="role" />
+        <input type="text" id="role" name="granted_roles" value="{{ properties.granted_roles }}"/>
 
         <input type="submit" name="sumbitwithprops" class="btn btn-primary pull-right" value="update" />
 
