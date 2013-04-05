@@ -23,9 +23,20 @@
         this.$allButton.click(function(e){self.allFilter(e);});
         this.$institutionButton.click(function(e){self.institutionFilter(e);});
         this.$smartButton.click(function(e){self.smartFilter(e);});
+        $('a[data-toggle="tab"]').on('shown',self.hideTab3);
 
     };
 
+    GroupsList.prototype.hideTab3 = function(e){
+        if (e.target.hash == '#lB'){
+            $('.main-item-tab3').show();
+        }else{
+            $('.main-item-tab3').hide();
+        }
+
+        $(".nano").nanoScroller({ alwaysVisible: true });
+
+    };
 
     GroupsList.prototype.allFilter = function(e){
         var self = this;

@@ -1,6 +1,7 @@
 {% load macros %}
 {% macro group_details group %}
-<div class="row" style="height: 300px;">
+{% if group.state %}
+<div class="row" style="height: 100%;">
     <ul style="height: 300px;">
         <li class="main-item">
             <div class="row">
@@ -21,51 +22,53 @@
                 </div>
                 <div class="span2">
                     <span><span class="icon-user"></span> {{ group.user_set.all|length }}
-                    {% if not group.pending_subscriptions|length_is:0 %}<span class="badge badge-important">{{ group.pending_subscriptions|length }}</span>{% endif %}</span>
+                    {% if not group.pending_subscriptions|length_is:0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.pending_subscriptions|length }}</span>{% endif %}</span>
                 </div>
                 {% if group.studies %}
                 <div class="span2">
-                    <span><span class="icon-book"></span> {{ group.studies|length }} <span class="badge badge-important">{{ group.studies_actions }}</span></span>
+                    <span><span class="icon-book"></span> {{ group.studies|length }} {% if studies_actions > 0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.studies_actions }}</span>{% endif %}</span>
                 </div>
                 {% endif %}
             </div>
-            {% if request.user in group.managers.all %}
-                <a href="/groups/create_study?institution={{ institution.pk }}"><strong class="btn btn-link btn-block">create a new study</strong></a>
+            {% if request.user in group.managers.all and group.type == 'institution'%}
+                <a href="/groups/create_study?institution={{ group.pk }}"><strong class="btn btn-link btn-block">create a new study</strong></a>
             {% endif %}
         </li>
         {% if request.user  in group.user_set.all %}
             <li class="main-item main-item-tab2">
                 <div class="tabbable tabs-left" style="height: 300px;">
                     <ul class="nav nav-tabs" style="height: 300px;">
-                        <li {% if not group.selected_study %}class="active"{% endif %} ><a href="#lA" data-toggle="tab">Users</a></li>
-                        <li {% if group.selected_study %}class="active"{% endif %}><a href="#lB" data-toggle="tab" >Studies</a></li>
+                        <li class="{% if not group.selected_study and 'studies' not in request.get_full_path%}active{% endif %}" ><a href="#lA" data-toggle="tab">Users</a></li>
+                        {% if group.type == 'institution' %}<li class="{% if group.selected_study or 'studies' in request.get_full_path %}active{% endif %}"><a href="#lB" data-toggle="tab" >Studies</a></li>{% endif %}
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane active nano" id="lA">
+                        <div class="tab-pane {% if not group.selected_study and 'studies' not in request.get_full_path%}active{% endif %} nano" id="lA">
                             <div class="content">
                                 {% if request.user in group.managers.all %}
-                                    <table class="table table-condensed">
-                                        <thead>
-                                        <tr>
-                                            <th>Pending users:</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for subscriber in group.pending_subscriptions %}
+                                    {% if group.pending_subscriptions %}
+                                        <table class="table table-condensed">
+                                            <thead>
                                             <tr>
-                                                <td style="vertical-align: middle;">
-                                                    {{ subscriber.user.first_name }} {{ subscriber.user.last_name }}
-                                                    <span class="muted">({{ subscriber.user.username }})</span>
-                                                    <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ subscriber.user.id }}/subscribe/" enctype="multipart/form-data" method="post">
-                                                        {% csrf_token %}
-                                                        <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept">Accept</button>
-                                                        <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
-                                                    </form>
-                                                </td>
+                                                <th>Pending users:</th>
                                             </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                            {% for subscriber in group.pending_subscriptions %}
+                                                <tr>
+                                                    <td style="vertical-align: middle;">
+                                                        {{ subscriber.user.first_name }} {{ subscriber.user.last_name }}
+                                                        <span class="muted">({{ subscriber.user.username }})</span>
+                                                        <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ subscriber.user.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                                                            {% csrf_token %}
+                                                            <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept"><span class="icon-ok icon-white"></span></button>
+                                                            <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse"><span class="icon-remove icon-white"></span></button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% endif %}
                                     <table class="table table-condensed">
                                         <thead>
                                         <tr>
@@ -78,10 +81,10 @@
                                                 <td style="vertical-align: middle;">
                                                     {{ subscriber.first_name }} {{ subscriber.last_name }}
                                                     <span class="muted">({{ subscriber.username }})</span>
-                                                    <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ subscriber.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                                                    <!--<form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ subscriber.id }}/subscribe/" enctype="multipart/form-data" method="post">
                                                         {% csrf_token %}
                                                         <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse">Delete</button>
-                                                    </form>
+                                                    </form>-->
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -106,13 +109,14 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="tab-pane nano" id="lB">
+                        {% if group.type == 'institution' %}
+                        <div class="tab-pane {% if group.selected_study or 'studies' in request.get_full_path %}active{% endif %} nano" id="lB">
                             <div class="content">
                             {% if group.selected_study %}
 
                                     <div class="row">
                                         <div class="span1">
-                                            <strong>{{ group.selected_study.name }}</strong>
+                                            <a class="btn btn-mini btn-primary btn-link" type="submit" style="color: #fff;" name="operation" value="accept" href="/groups/{{ group.id }}/?studies"><span class="icon-arrow-left icon-white" style="height: 17px;vertical-align: middle;"></span>Studies</a> <strong>{{ group.selected_study.name }}</strong>
                                         </div>
                                         <div class="span2">
                                             <strong>Description:</strong>
@@ -120,7 +124,7 @@
                                         </div>
                                         <div class="span2">
                                             <span><span class="icon-user"></span>{{ group.selected_study.user_set.all|length }}
-                                            {% if request.user in group.selected_study.principals %}<span class="badge badge-important">{{ group.selected_study.pending_users|length }}</span>{% endif %}</span>
+                                            {% if request.user in group.selected_study.principals %}<span class="badge badge-important">{{ group.selected_study.pending_subscriptions|length }}</span>{% endif %}</span>
                                         </div>
                                         <div class="span2">
                                             <div><span class="icon-time"></span> Star time: {{ group.selected_study.start_date }} </div>
@@ -135,11 +139,12 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for study in institution.studies %}
+                                    {% for study in group.studies %}
                                         <tr>
                                             <td>
                                                 <a href="/groups/{{ group.id }}/{{ study.id }}/">{{  study.name }}
-                                                {% if request.user in study.principals %}<span class="badge badge-important">{{ study.pending_users|length }}</span>{% endif %}
+                                                {% if request.user in study.user_set.all %}<span class="badge badge-success"><span class="icon-ok icon-white"></span></span>{% endif %}
+                                                {% if request.user in study.principals.all and not study.pending_subscriptions|length_is:0 %}<span class="badge badge-important">{{ study.pending_subscriptions|length }}</span>{% endif %}
                                                 </a>
                                             </td>
                                         </tr>
@@ -149,58 +154,61 @@
                             {% endif %}
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 
             </li>
             {% if group.selected_study %}
             <li class="main-item main-item-tab3 nano">
-                {% if request.user in group.selected_study.user_set.all %}
+                {% if request.user in group.selected_study.user_set.all or request.user in group.selected_study.principals.all %}
                     <div class="content">
-                        {% if request.user in group.selected_study.principals %}
-                        <table class="table table-condensed">
-                            <thead>
-                            <tr>
-                                <th>Pending users:</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for subscriber in group.selected_study.pending_users %}
+                        {% if request.user in group.selected_study.principals.all %}
+                            {% if group.selected_study.pending_subscriptions %}
+                                <table class="table table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <th>Pending users:</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for subscriber in group.selected_study.pending_subscriptions %}
+                                        <tr>
+                                            <td style="vertical-align: middle;">
+                                                {{ subscriber.user.first_name }} {{ subscriber.user.last_name }}
+                                                <span class="muted">({{ subscriber.user.username }})</span>
+                                                <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ group.selected_study.id }}/{{ subscriber.user.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept"><span class="icon-ok icon-white"></span></button>
+                                                    <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse"><span class="icon-remove icon-white"></span></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                            <table class="table table-condensed">
+                                <thead>
                                 <tr>
-                                    <td style="vertical-align: middle;">
-                                        {{ subscriber.user.first_name }} {{ subscriber.user.last_name }}
-                                        <span class="muted">({{ subscriber.user.username }})</span>
-                                        <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ group.selected_study.id }}/{{ subscriber.user.id }}/subscribe/" enctype="multipart/form-data" method="post">
-                                            {% csrf_token %}
-                                            <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept">Accept</button>
-                                            <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
-                                        </form>
-                                    </td>
+                                    <th>Accepted users:</th>
                                 </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        <table class="table table-condensed">
-                            <thead>
-                            <tr>
-                                <th>Accepted users:</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for subscriber in group.selected_study.user_set.all %}
-                                <tr>
-                                    <td style="vertical-align: middle;">
-                                        {{ subscriber.first_name }} {{ subscriber.last_name }}
-                                        <span class="muted">({{ subscriber.username }})</span>
-                                        <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ group.selected_study.id }}/{{ subscriber.id }}/subscribe/" enctype="multipart/form-data" method="post">
-                                            {% csrf_token %}
-                                            <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse">Delete</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {% for subscriber in group.selected_study.user_set.all %}
+                                    <tr>
+                                        <td style="vertical-align: middle;">
+                                            {{ subscriber.first_name }} {{ subscriber.last_name }}
+                                            <span class="muted">({{ subscriber.username }})</span>
+                                            <!--<form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ group.selected_study.id }}/{{ subscriber.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                                                {% csrf_token %}
+                                                <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse">Delete</button>
+                                            </form>-->
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         {% else %}
                             <table class="table table-condensed">
                                 <thead>
@@ -225,24 +233,24 @@
                     {% elif group.selected_study.is_subscription_refused %}
                         <span class="icon-remove-sign"></span>Your subscription request has been refused
                     {% else %}
-                        <form action="/groups/{{ group.id }}/{{ group.selected_study.id }}/{{ request.user.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                        <form action="/groups/{{ group.id }}/{{ group.selected_study.id }}/studysubscribe/" enctype="multipart/form-data" method="post" style="padding: 120px 20px;">
                             {% csrf_token %}
-                            <button class="btn btn-link pull-right" type="submit" title="Subscribe">Subscribe</button>
+                            <button class="btn btn-link btn-primary" type="submit" title="Subscribe">Subscribe</button>
                         </form>
                     {% endif %}
                 {% endif %}
             </li>
             {% endif %}
         {% else %}
-            <li class="main-item main-item-tab2" style="vertical-align: middle;">
+            <li class="main-item main-item-tab3" style="vertical-align: middle;">
                     {% if group.is_subscription_pending %}
                         <span class="icon-question-sign"></span>Your subscription request is pending
                     {% elif group.is_subscription_refused %}
                         <span class="icon-remove-sign"></span>Your subscription request has been refused
                     {% else %}
-                        <form action="/groups/{{ group.id }}/{{ request.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                        <form action="/groups/{{ group.id }}/subscribe/" enctype="multipart/form-data" method="post" style="padding: 120px 20px;">
                             {% csrf_token %}
-                            <button class="btn btn-link pull-right" type="submit" title="Subscribe">Subscribe</button>
+                            <button class="btn btn-link btn-primary" type="submit" title="Subscribe">Subscribe</button>
                         </form>
                     {% endif %}
             </li>
@@ -252,4 +260,39 @@
 
 </div>
 <script> $(".nano").nanoScroller({ alwaysVisible: true });</script>
+{% else %}
+    <div class="row" style="height: 100%;">
+        <ul style="height: 300px;">
+            <li class="main-item">
+                <div class="row">
+                    {% if group.logo %}
+                        <div class="span1">
+                            <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                        </div>
+                    {% endif %}
+                    <div class="span1">
+                        <strong>{{ group.name }}</strong>
+                    </div>
+                    <div class="span1">
+                        <span class="muted">{{ group.country }}</span>
+                    </div>
+                    <div class="span2">
+                        <strong>Description:</strong>
+                        <p> {{ group.description }}</p>
+                    </div>
+                </div>
+            </li>
+            {% if request.user.is_superuser %}
+            <li class="main-item main-item-tab3" style="vertical-align: middle;">
+                <form class="form-inline" action="/groups/manage_group_request/" enctype="multipart/form-data" method="post" style="padding: 120px 20px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="group" value="{{ group.name }}" />
+                    <button class="btn btn-success" type="submit" name="operation" value="accept">Accept</button>
+                    <button class="btn btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
+                </form>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}
 {% endmacro %}

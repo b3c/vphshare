@@ -40,7 +40,7 @@
 
 .badge-alert{
     position: absolute;
-    top: 92px;
+    bottom: -8px;
     float: right;
     right: -7px;
 }

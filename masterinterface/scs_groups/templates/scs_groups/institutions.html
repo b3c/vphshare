@@ -25,10 +25,6 @@
         $(".collapse").collapse({
             toggle: false
         });
-        $(function (){$('a[data-toggle="tab"]').on('shown', function (e) {
-            $(".nano").nanoScroller({ alwaysVisible: true });
-        })});
-
         $(function (){
             GroupsList.autoDiscover();
         });
@@ -68,172 +64,14 @@
         {% for group in other_groups %}
             {% usemacro display_group group 'smart' 0 %}
         {% endfor %}
-        <li data-id="2001" class="well group-item group-institution">
-            <span class="badge badge-success badge-alert"><span class="icon-ok icon-white"></span></span>
-            <div class="row">
-                <div class="span1">
-                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
-                </div>
-                <div class="span1">
-                    <strong>MSVTK</strong>
-                </div>
-                <div class="span1">
-                    <span class="muted">Italy</span>
-                </div>
-                <div class="span1">
-                    <span><span class="icon-user"></span>104</span>
-                </div>
-            </div>
-        </li>
-        <li data-id="2002" class="well group-item group-institution">
-            <span class="badge badge-important badge-alert"><strong style="font-size: 18px;">!</strong></span>
-            <div class="row">
-                <div class="span1">
-                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
-                </div>
-                <div class="span1">
-                    <strong>MSVTK</strong>
-                </div>
-                <div class="span1">
-                    <span class="muted">Italy</span>
-                </div>
-                <div class="span1">
-                    <span><span class="icon-user"></span>104</span>
-                </div>
-            </div>
-        </li>
-        <li data-id="2003" class="well group-item group-institution">
-            <div class="row">
-                <div class="span1">
-                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
-                </div>
-                <div class="span1">
-                    <strong>MSVTK</strong>
-                </div>
-                <div class="span1">
-                    <span class="muted">Italy</span>
-                </div>
-                <div class="span1">
-                    <span><span class="icon-user"></span>104</span>
-                </div>
-            </div>
-        </li>
-        <li data-id="2004" class="well group-item group-smart">
-            <div class="row">
-                <div class="span1">
-                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
-                </div>
-                <div class="span1">
-                    <strong>MSVTK</strong>
-                </div>
-                <div class="span1">
-                    <span class="muted">Italy</span>
-                </div>
-                <div class="span1">
-                    <span><span class="icon-user"></span>104</span>
-                </div>
-            </div>
-        </li>
-        <li data-id="2005" class="well group-item group-smart">
-            <div class="row">
-                <div class="span1">
-                    <strong>MSVTK</strong>
-                </div>
-                <div class="span1">
-                    <span class="muted">Italy</span>
-                </div>
-                <div class="span2">
-                    <form class="form-inline" action="/groups/manage_group_request/" enctype="multipart/form-data" method="post">
-                        <div style="display:none"><input type="hidden" name="csrfmiddlewaretoken" value="Zwu5lrymIRjP5RRpqNyLa0qsJ9Vqg87c"></div>
-                        <input type="hidden" name="group" value="test">
-                        <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept">Accept</button>
-                        <button class="btn btn-mini btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
-                    </form>
-                </div>
-            </div>
-        </li>
+
+    </ul>
+    <ul>
+        {% if request.user.is_authenticated %}
+            <a href="/groups/create_institution"><strong class="btn btn-link">Request a new institution</strong></a>
+        {% endif %}
     </ul>
 
-
     </div>
-
-    {% if user_institutions %}
-        <h3>Your Institutions</h3>
-        <ul class="thumbnails">
-        {% for institution in user_institutions %}
-            <li class="thumbnail well span4">
-
-
-                {% if institution.studies %}
-                    <div class="accordion" id="accordion2">
-                        <h5>Institution Studies</h5>
-                        <ul>
-                        {% for study in institution.studies %}
-                            <li></li>
-                        {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-
-                {% if request.user in institution.managers.all %}
-                    <br />
-                    <a href="/groups/create_study?institution={{ institution.pk }}"><strong class="btn btn-link btn-block">create a new study</strong></a>
-                {% endif %}
-
-            </li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% if other_institutions %}
-        <h3>Institutions</h3>
-        <ul class="thumbnails">
-            {% for institution in other_institutions %}
-                <li class="thumbnail well span4">
-
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-
-    {% if request.user.is_authenticated %}
-        <a href="/groups/create_institution"><strong class="btn btn-link">request a new institution</strong></a>
-    {% endif %}
-
-    {% if request.user.is_superuser and pending_institutions%}
-        <h3>Institutions to be approved</h3>
-        <ul class="thumbnails">
-            {% for institution in pending_institutions %}
-                <li class="thumbnail span3">
-                    <strong>{{ institution.name }}</strong>
-                    <form class="form-inline" action="/groups/manage_group_request/" enctype="multipart/form-data" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="group" value="{{ institution.name }}" />
-                        <button class="btn btn-success" type="submit" name="operation" value="accept">Accept</button>
-                        <button class="btn btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% if user_groups %}
-        <h3>Your VPH-Share Groups</h3>
-        <ul>
-            {% for group in user_groups %}
-
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% if other_groups %}
-        <h3>Other VPH-Share Groups</h3>
-        <ul>
-            {% for group in other_groups %}
-
-            {% endfor %}
-        </ul>
-    {% endif %}
 
 {% endblock %}
