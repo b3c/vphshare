@@ -128,10 +128,15 @@ def configuration(request):
 
         configuration_name = request.POST['name']
         # update/set with permissions map
-        if 'sumbitwithmap' in request.POST:
-            actions = request.POST.getlist('actions', [])
-            conditions = request.POST.getlist('conditions', [])
-            configuration_file = create_configuration_file(actions, conditions)
+        if 'sumbitwithprops' in request.POST:
+            props = {
+                'outgoing_port': request.POST.get('outgoing_port', ''),
+                'granted_roles': request.POST.get('granted_roles', ''),
+                'listening_port': request.POST.get('listening_port', ''),
+                'outgoing_address': request.POST.get('outgoing_address', ''),
+
+            }
+            configuration_file = create_configuration_file(props)
 
         # update/set by file content
         elif 'sumbitwithcontent' in request.POST:
@@ -148,9 +153,32 @@ def configuration(request):
                 data['errormessage'] = "Error while creating security configuration"
         else:
             if cloudfacade.update_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name, configuration_file):
-                data['statusmessage'] = "Security configuration correctly updated"
+                data['statusmessage'] = "Security Proxy configuration correctly updated"
             else:
                 data['errormessage'] = "Error while updating security configuration"
+
+    return render_to_response(
+        'scs_security/configuration.html',
+        data,
+        RequestContext(request)
+    )
+
+
+def delete_configuration(request):
+    """
+        delete the security proxy configuration file
+    """
+
+    data = {'configurations': cloudfacade.get_securityproxy_configurations(request.user.username, request.COOKIES.get('vph-tkt'))}
+
+    if request.method == 'POST':
+        configuration_name = request.POST.get('name')
+
+        if cloudfacade.delete_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name):
+            data['statusmessage'] = "Security Proxy configuration correctly deleted"
+
+        else:
+            data['errormessage'] = "Error while deleting Security Proxy configuration"
 
     return render_to_response(
         'scs_security/configuration.html',
