@@ -43,6 +43,7 @@ def temp_fix_institution_managers():
     """
 
     institutions = Institution.objects.all()
+    smartgroups = VPHShareSmartGroup.objects.all()
 
     for institution in institutions:
         for manager in institution.managers.all():
@@ -51,6 +52,11 @@ def temp_fix_institution_managers():
             for study in institution.study_set.all():
                 add_local_role(study, manager, group_manager)
                 study.principals.add(manager)
+
+    for smartgroup in smartgroups:
+        for manager in smartgroup.managers.all():
+            smartgroup.user_set.add(manager)
+            add_local_role(smartgroup, manager, group_manager)
 
 
 def join_group_subscription(user, group):
@@ -121,10 +127,10 @@ def group_details(request, idGroup=None, idStudy=None):
 
         for vphgroup in VPHShareSmartGroup.objects.filter(active=True):
             join_group_subscription(request.user, vphgroup)
+            vphgroup.studies_actions = 0
+            vphgroup.state = True
             if idGroup is not None and vphgroup.pk == int(idGroup):
                 selected_group = vphgroup
-                selected_group.state = True
-                selected_group.studies_actions = 0
                 selected_group.type = 'smart'
             if request.user in vphgroup.user_set.all() or request.user in vphgroup.managers.all():
                 user_groups.append(vphgroup)
