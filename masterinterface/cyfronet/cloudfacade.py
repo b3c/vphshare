@@ -174,7 +174,10 @@ def get_user_resources(username, ticket):
         verify=settings.CLOUDFACACE_SSL
     )
 
-    workflows = r.json()
+    try:
+        workflows = r.json()
+    except Exception, e:
+        workflows = {'workflows': []}
 
     for wf in workflows['workflows']:
         r = requests.get(
