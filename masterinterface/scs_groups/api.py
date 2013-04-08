@@ -44,7 +44,7 @@ class search_user(BaseHandler):
                         Q(username__icontains=term) | Q(email__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)
                     )
 
-                    return [user.username for user in users]
+                    return [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name), "email": user.email} for user in users]
 
                 else:
                     response = HttpResponse(status=403)
