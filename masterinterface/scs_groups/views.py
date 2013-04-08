@@ -80,7 +80,7 @@ def join_group_subscription(user, group):
 
 def group_details(request, idGroup=None, idStudy=None):
 
-    temp_fix_institution_managers()
+    #temp_fix_institution_managers()
 
     institutions = []
     user_institutions = []
