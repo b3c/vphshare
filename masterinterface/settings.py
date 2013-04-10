@@ -233,7 +233,7 @@ SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
 # CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
-CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl:8080/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
+CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'http://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
 CLOUDFACACE_URL = "http://vph.cyfronet.pl/cloudfacade"
 CLOUDFACACE_SSL = False
 
