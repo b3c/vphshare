@@ -1,0 +1,28 @@
+<h4>Available Security Proxy Configurations</h4>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>name</th><th>action</th>
+    </tr>
+    </thead>
+    {% for configuration in configurations%}
+        <tr>
+            <td>{{ configuration }}</td>
+            <td>
+                <a class="btn btn-link btn-success" href="/security/configuration/?name={{ configuration }}" title="manage configuration file"><span class="icon-wrench"></span></a>
+                <a class="btn btn-link btn-warning" href="/security/configuration/" title="delete configuration file"
+                   onclick="event.preventDefault(); if (confirm('Are you sure you want to delete this configuration?')){$('#{{ configuration }}').submit();}"><span class="icon-remove-sign"></span></a>
+            </td>
+        </tr>
+        <form id="{{ configuration }}" action="/security/deleteconfiguration/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="name" value="{{ configuration }}">
+        </form>
+    {% empty %}
+        <tr>
+            <td colspan="2"> no available configuration</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<a href="/security/configuration/"><button class="btn btn-link">create a new security proxy configuration</button></a>
