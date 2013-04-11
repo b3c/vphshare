@@ -17,7 +17,8 @@
         <tr>
             <td><strong>Description</strong></td>
             <td><p>Search for users. Term is searched in users email, first name and last name. Search is case insensitive.
- Without any term, the full list of users is returned. Available to all authenticated users. A <strong>JSON</strong> list of usernames is returned.</p></td>
+ Without any term, the full list of users is returned. Available to all authenticated users.
+                A <strong>JSON</strong> list of user attributes is returned.</p></td>
         </tr>
         <tr>
             <td><strong>Url structure</strong></td>
@@ -42,9 +43,8 @@
                 <div class="alert alert-success">
                     <strong>Status code 200</strong>
                     <pre>[
-    "mbalasso",
-    "admin",
-    "testuser"
+    {"username": "mbalasso", "email": "email@email.com", "fullname": "Matteo Balasso"},
+    {"username": "testuser", "email": "email@email.com", "fullname": "Test User"}
 ]</pre>
                 </div>
                 <div class="alert alert-error">
@@ -107,11 +107,12 @@
         <tbody>
             <tr>
                 <td><strong>Description</strong></td>
-                <td><p>Create a new group (available only to staff users). With the parent parameter provided, the group is created as child of the given group.</p></td>
+                <td><p>Create a new group (available only to staff users). With the parent parameter provided, the group is created as child of the given group.
+                    <span class="label label-important">Available only to staff users</span></p></td></p></td>
             </tr>
             <tr>
                 <td><strong>Url structure</strong></td>
-                <td><code>{{ request.get_host }}/api/creategroup?group=<strong class="text-info">&lt;group&gt;</strong>&parent=<strong class="text-info">&lt;parent</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
+                <td><code>{{ request.get_host }}/api/creategroup?group=<strong class="text-info">&lt;group&gt;</strong>&parent=<strong class="text-info">&lt;parent&gt;</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
             </tr>
             <tr>
                 <td><strong>Method</strong></td>
@@ -148,7 +149,8 @@
         <tbody>
         <tr>
             <td><strong>Description</strong></td>
-            <td><p>Delete an existing group (available only to staff users). Even after deletion, the group name won't be available for new groups.</p></td>
+            <td><p>Delete an existing group (available only to staff users). Even after deletion, the group name won't be available for new groups.
+                <span class="label label-important">Available only to staff users</span></p></td></p></td>
         </tr>
         <tr>
             <td><strong>Url structure</strong></td>
@@ -188,7 +190,8 @@
         <tbody>
         <tr>
             <td><strong>Description</strong></td>
-            <td><p>Add a user to a group. The requestor must be one of the group managers (the same user who has created the group)</p></td>
+            <td><p>Add a user to a group. The requestor must be one of the group managers (the same user who has created the group)
+                <span class="label label-important">Available only to staff users</span></p></td></p></td>
         </tr>
         <tr>
             <td><strong>Url structure</strong></td>
@@ -229,7 +232,8 @@
         <tbody>
         <tr>
             <td><strong>Description</strong></td>
-            <td><p>Remove a user from a group. The requestor must be one of the group managers (the same user who has created the group)</p></td>
+            <td><p>Remove a user from a group. The requestor must be one of the group managers (the same user who has created the group).
+                <span class="label label-important">Available only to staff users</span></p></td></p></td>
         </tr>
         <tr>
             <td><strong>Url structure</strong></td>
@@ -258,6 +262,98 @@
                 </div>
                 <div class="alert alert-error">
                     <p><strong>Status code 403</strong> Ticket not valid or user not allowed to invoke the service</p>
+                    <p><strong>Status code 500</strong> </p>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>/api/groupmembers</h3>
+    <table class="table">
+        <tbody>
+        <tr>
+            <td><strong>Description</strong></td>
+            <td><p>Search for group members. Given a group name, the service returns all group members.
+                A <strong>JSON</strong> list of user attributes is returned.
+                <span class="label label-important">Available only to staff users</span></p></td>
+        </tr>
+        <tr>
+            <td><strong>Url structure</strong></td>
+            <td><code>{{ request.get_host }}/api/groupmembers?group=<strong class="text-info">&lt;group&gt;</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
+        </tr>
+        <tr>
+            <td><strong>Method</strong></td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td><strong>Parameters</strong></td>
+            <td>
+                <dl>
+                    <dt>group</dt><dd>the group name</dd>
+                    <dt>ticket</dt><dd>your authentication ticket</dd>
+                </dl>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Returns</strong></td>
+            <td>
+                <div class="alert alert-success">
+                    <strong>Status code 200</strong>
+                    <pre>[
+    {"username": "mbalasso", "email": "email@email.com", "fullname": "Matteo Balasso"},
+    {"username": "testuser", "email": "email@email.com", "fullname": "Test User"}
+]</pre>
+                </div>
+                <div class="alert alert-error">
+                    <p><strong>Status code 403</strong>  Ticket not valid or user not allowed to invoke the service</p>
+                    <p><strong>Status code 404</strong> Group with given name does not exists</p>
+                    <p><strong>Status code 500</strong> </p>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>/api/usergroups</h3>
+    <table class="table">
+        <tbody>
+        <tr>
+            <td><strong>Description</strong></td>
+            <td><p>Search for users group. Given a username, the service returns all the group the user is part of.
+                A <strong>JSON</strong> list of group names is returned.
+                <span class="label label-important">Available only to staff users</span></p></td>
+        </tr>
+        <tr>
+            <td><strong>Url structure</strong></td>
+            <td><code>{{ request.get_host }}/api/usergroups?username=<strong class="text-info">&lt;username&gt;</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
+        </tr>
+        <tr>
+            <td><strong>Method</strong></td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td><strong>Parameters</strong></td>
+            <td>
+                <dl>
+                    <dt>username</dt><dd>the user username</dd>
+                    <dt>ticket</dt><dd>your authentication ticket</dd>
+                </dl>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Returns</strong></td>
+            <td>
+                <div class="alert alert-success">
+                    <strong>Status code 200</strong>
+                    <pre>[
+    "testgroup0001",
+    "tesgroup0002"
+]</pre>
+                </div>
+                <div class="alert alert-error">
+                    <p><strong>Status code 403</strong>  Ticket not valid or user not allowed to invoke the service</p>
+                    <p><strong>Status code 404</strong> User with given username does not exists</p>
                     <p><strong>Status code 500</strong> </p>
                 </div>
             </td>
