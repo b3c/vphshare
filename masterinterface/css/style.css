@@ -468,6 +468,7 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
     border-radius: 10px;
     min-height: 400px;
     position: relative;
+    margin-left: 0px;
 }
 
 /* PORTFOLIO --------------------------------------------------------*/
@@ -672,10 +673,11 @@ nav>li ul li:last-child a:hover{ /* last item its rounded at bottom */
 /* FOOTER - COLS ------------------------------------------------------------*/
 
 footer{
-    position:fixed;
-    width:100%;
-    bottom:0px;
-    left:0px;
+    position: relative;
+    width: 100%;
+    bottom: 0px;
+    left: 0px;
+    margin-top: 20px;
 
 }
 
@@ -951,3 +953,78 @@ tr.odd {
     top: 2px;
 }
 
+/*  carousel css  */
+
+.carousel-indicators {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 5;
+    margin: 0;
+    list-style: none;
+}
+
+.carousel-indicators li {
+    display: block;
+    float: left;
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    text-indent: -999px;
+    background-color: #ccc;
+    background-color: rgba(0, 0, 0, 0.24);
+    border-radius: 5px;
+}
+
+
+.carousel-indicators .active {
+    background-color: #385588;
+}
+
+.carousel-caption {
+    position: absolute;
+    left: initial;
+    right: 25px;
+    bottom: 25px;
+    padding: 15px;
+    background: #333333;
+    background: rgba(0, 0, 0, 0.43);
+}
+
+.carousel-caption h2{
+    color: #fff;
+}
+
+.carousel {
+    margin-bottom: 10px;
+}
+
+/* collapse */
+
+.accordion-inner {
+    border-top: none;
+}
+
+.accordion-group {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+}
+
+.accordion-group:last-child {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* mod to popover like window*/
+
+.popover-mod:first-child{
+    margin-top: 0px;
+}
+
+.popover-mod{
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+    top:inherit;
+    left: inherit;
+    position: relative;
+}

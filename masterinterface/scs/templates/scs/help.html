@@ -1,15 +1,45 @@
 {% extends 'scs/base.html' %}
 
-{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+{%  block title %} About Vph-Share {% endblock %}
+
+
 
 {% block page-title %}
-    <span class="title">Need help?</span>
-    <span class="subtitle">&nbsp;</span>
+        <span class="title">About</span>
 {% endblock%}
-
+{% block nav %}{% endblock %}
 {%  block content %}
-    <h4>Group services API</h4>
-    Group services API can be found <a href="/groups/api">here</a>
-
-
+    <div class="row"><div class="span6"><h3>Help</h3><h6 style="color: black;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nec purus quis quam vehicula volutpat ut a lacus. Mauris est mi, pellentesque sed viverra in, mollis ut urna. Cras eu gravida libero. Nam rutrum fermentum purus, quis varius lorem ultricies ac. Curabitur massa lectus, vehicula id cursus eu, pretium a. Nam rutrum fermentum purus, quis varius lorem ultricies ac.</h6></div><div class="span6"><img class="img-rounded" src="/static/img/about.jpg"/></div> </div>
+    <div class="row" style="margin-top:15px;">
+        <div class="span10">
+            <div class="accordion" id="accordion2">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                            <h3>Applications<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapseOne" class="accordion-body collapse in">
+                        <div class="accordion-inner">
+                            <h6 style="color: black;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nec purus quis quam vehicula volutpat ut a lacus. Mauris est mi, pellentesque sed viverra in, mollis ut urna. Cras eu gravida libero. Nam rutrum fermentum purus, quis varius lorem ultricies ac. Curabitur massa lectus, vehicula id cursus eu, pretium a.</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span2">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Download Applications</h3>
+                <div class="popover-content">
+                    <p>Data Publications Suite Taverna Workflow Engine Filestore Browser (Web DAV) Dummy App.</p>
+                </div>
+            </div>
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Documents</h3>
+                <div class="popover-content">
+                    <p>VPH-Share Help Developer API Infrastructure Tutorial Workflow Tutorial.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

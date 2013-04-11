@@ -15,9 +15,6 @@
    	{% block stylesheets %}
     {% endblock %}
 
-    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
-
-
     <link href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet"/>
     <script src="/static/jquery-1.8.3.js"></script>
     <script src="/static/jquery-ui-1.9.2.custom.min.js"></script>
@@ -28,8 +25,10 @@
 
     <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.css" type="text/css" media="screen" />
-    <script src="/static/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/static/bootstrap.min.2.js" type="text/javascript"></script>
     <!-- END bootstrap  -->
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
 
     <style type="text/css">
         body{
@@ -66,10 +65,8 @@
     <div id="content">
         <div class="container">
             <div class="row">
-                <div class="span2">
-
-                    {% block nav %}
-
+                {% block nav %}
+                    <div class="span2">
                         <ul id="main-nav" class="nav nav-tabs nav-stacked">
                             <li class="active" id="navhome"><a href="/"><i class="icon-home icon-white"></i>Home</a></li>
 
@@ -111,15 +108,12 @@
                                 {% endblock %}
                             </li>
                         </ul>
-
-
-                    {% endblock %}
-                </div>
-                <div id="page-content" class="span9">
+                    </div>
+                {% endblock %}
+                <div id="page-content" class="span12">
                     {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
                     {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{{ statusmessage  }}</span></div>{% endif %}
                     {% block content %} {% endblock %}
-                    <br /><br /><br /><br />
                 </div>
             </div>
         </div>

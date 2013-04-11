@@ -13,22 +13,42 @@
         <span class="subtitle"> Please login by choosing your identity provider</span>
     {% endif %}
 {% endblock%}
-
+{% block nav %}{% endblock %}
 {%  block content %}
 
-    <h6>What is VPH-Share?</h6>
-        <p style="text-align: justify; max-width: 90%;">VPH-Share is a large EC-funded research project that is building a
-            safe online facility in which medical simulation developers can easily
-            and quickly develop workflows – chains of processing tasks – to allow
-            raw medical information to be refined into meaningful diagnostic
-            and therapeutic information. Via an easy-to-use graphical interface
-            it provides all the routine facilities needed by workflow developers,
-            including design, construction, data-access and storage, test, highspeed
-            computation, sensitivity analyses and results presentation. By
-            allowing users to work collaboratively, and concentrate only on the
-            actual workflow design process, we estimate that over half the tasks
-            usually associated with workflow project construction can be avoided,
-            leading to huge savings in time and avoiding complex interactions with
-            infrastructure designers. Simple workflows can be running within minutes.</p>
-
+    <div id="myCarousel" class="carousel slide">
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1"></li>
+            <li data-target="#myCarousel" data-slide-to="2"></li>
+        </ol>
+        <!-- Carousel items -->
+        <div class="carousel-inner">
+            <div class="active item"><img src="/static/img/carousel1.jpg" class="img-rounded" />
+                <div class="carousel-caption pull-right img-rounded">
+                    <h2><b>Connect with data providers</b></h2>
+                </div>
+            </div>
+            <div class="item"><img src="/static/img/carousel2.jpg" class="img-rounded"/>
+                <div class="carousel-caption pull-right img-rounded">
+                    <h2><b>Search VPH data sets</b></h2>
+                </div>
+            </div>
+            <div class="item"><img src="/static/img/carousel3.jpg" class="img-rounded"/>
+                <div class="carousel-caption pull-right img-rounded">
+                    <h2><b>Run ViroLab workflow</b></h2>
+                </div>
+            </div>
+        </div>
+        <!-- Carousel nav -->
+        <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+        <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+    </div>
+    <div class="row"  ><div class="span12" style="border-bottom: 2px solid;margin-top: 15px;margin-bottom: 10px;padding-bottom: 15px;"><h6>VPH-Share is an online environment for the development, construction and storage of biomedical workflows. It is designed to help researchers, clinicians and software developers share resources - data and tools – to build workflows quickly and easily.</h6></div></div>
+    <div class="row" style="margin-top: 10px;">
+    <div class="span3"><a src="#"><img src="/static/img/workspace.jpg" class="img-rounded"/><h6 class="pagination-centered">WORKSPACE</h6></a></div>
+    <div class="span3"><a src="#"><img src="/static/img/biomedical_data.jpg" class="img-rounded"/><h6 class="pagination-centered">ACCESS BIOMEDICAL DATA</h6></a></div>
+    <div class="span3"><a src="#"><img src="/static/img/tools.jpg" class="img-rounded"/><h6 class="pagination-centered">USE VPH TOOLS</h6></a></div>
+    <div class="span3"><a src="#"><img src="/static/img/search.jpg" class="img-rounded"/><h6 class="pagination-centered">SEARCH RESOURCE LIBRARY</h6></a></div>
+    </div>
 {% endblock %}
