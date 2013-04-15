@@ -40,93 +40,82 @@
     {% block extrahead %} {% endblock %}
 </head>
 <body>
+    <div id="wrap">
     {% if not request.is_ajax %}
 
         {% block header %}
             <header id="header">
-                <img id="logo-left" src="/static/logo-web.png"/>
                 <div id="page-title-wrapper">
+                    <a href="/"><img id="logo-left" src="/static/logo-web.png"/></a>
                     <div id="page-title">
-                        {% block page-title %} {% endblock %}
+                        <span id="page-title-links">
+                            <a href="/help">Help</a>
+                            <span class="divider">|</span>
+                            <a href="/about">About</a>
+                            <button class="btn btn-large">Login</button>
+                        </span>
                     </div>
+                </div>
+
+                <div id="navbar-wrapper">
+                    {% block nav %}
+                        <div class="navbar">
+                            <div class="navbar-inner">
+                                <ul class="nav">
+                                    <li class="active" id="navhome"><a href="/">EXPLORE</a></li>
+                                    <li><a href="/">WORKFLOWS</a></li>
+                                    <li><a href="/">DATA</a></li>
+                                    <li><a href="/">TOOLS</a></li>
+                                    <li><a href="/">SEARCH</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endblock %}
                 </div>
 
                 <div id="breadcrumbs-wrapper">
                     <ul id="breadcrumbs" class="breadcrumb">
-                        <li>You are here: <a href="/" title="Home">Home</a> <span class="divider">/</span></li>
+                        {% if request.path|breadcrumbs|length_is:"0" %}
+                        <li class="active"><a href="/"  title="Home">home</a></li>
+                        {% else %}
+                        <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
+                        {% endif %}
                         {%  for crumb in request.path|breadcrumbs %}
-                            <li {% if cycle.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a><span class="divider">/</span></li>
+                            <li {% if forloop.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>{% if not forloop.last %}<span class="divider">|</span>{% endif %}</li>
                         {% endfor %}
                     </ul>
                 </div>
             </header>
         {% endblock %}
     {% endif %}
-    <div id="content">
-        <div class="container">
-            <div class="row">
-                {% block nav %}
-                    <div class="span2">
-                        <ul id="main-nav" class="nav nav-tabs nav-stacked">
-                            <li class="active" id="navhome"><a href="/"><i class="icon-home icon-white"></i>Home</a></li>
-
-                            {% if request.user.is_authenticated %}
-                                    <li class="list-parent"><a href="/search/"><i class="icon-search icon-white"></i>Semantic search</a></li>
-                                {% if request.user.is_staff %}
-                                    <li class="list-parent"><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
-                                    <li class="list-parent"><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
-                                    <li class="list-parent"><a href="/cyfronet/datamanager/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
-                                    <li class="list-parent"><a href="/security/"><i class="icon-fire icon-white"></i>Security</a></li>
-                                {% endif %}
-                                <li class="list-parent"><a href="/scs/workflows/"><i class="icon-tasks icon-white"></i>Workflows</a></li>
-                            {% endif %}
-
-                            <li class="list-parent"><a href="/groups/"><i class="icon-globe icon-white"></i>Groups</a></li>
-                            <li class="list-parent"><a href="/scs/contacts/"><i class="icon-envelope icon-white"></i>Contact</a></li>
-                            <li class="list-parent"><a href="/scs/help/"><i class="icon-info-sign icon-white"></i>Help</a></li>
-                        </ul>
-                        <ul class="nav nav-pills nav-stacked">
-                            <li>
-                                {% block login %}
-                                    {% if not request.user.is_authenticated %}
-                                        <!-- Button to trigger modal -->
-                                        <a href="#myModal" role="button"  data-toggle="modal"><span>Login with <img style="position:relative; top:-3px" src="/static/biomedtown_24.png" alt="bt" title="login with your BiomedTown identity"/> </span></a>
-
-                                        <!-- Modal -->
-                                        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-
-                                            {% include 'scs_auth/bt_login.html' %}
-
-                                        </div>
-
-
-                                    {% else %}
-                                        <span>Hi, {{ request.user.first_name|default:"Friend"}}!</span>
-                                        <a href="/profile/">Profile</a>
-                                        <a  class="popup" rel="#overlay" href="/logout">Logout</a>
-                                    {% endif %}
-                                {% endblock %}
-                            </li>
-                        </ul>
+        <div id="content">
+            <div class="container">
+                <div class="row">
+                    <div id="page-content" class="span12">
+                        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
+                        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{{ statusmessage  }}</span></div>{% endif %}
+                        {% block content %} {% endblock %}
                     </div>
-                {% endblock %}
-                <div id="page-content" class="span12">
-                    {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
-                    {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{{ statusmessage  }}</span></div>{% endif %}
-                    {% block content %} {% endblock %}
                 </div>
             </div>
+            <div id="push"></div>
         </div>
     </div>
 
     {% if not request.is_ajax %}
         {% block footer %}
             <footer>
-                <div id="bottom">
-                    <span>application developed by <a href="http://www.scsitaly.com/">SCS</a></span>
-                    <span>&dash;</span>
-                    <span>powered by <a href="https://www.djangoproject.com/">Django</a></span>
-                </div>
+
+                <p class="muted">
+                    <a href="/">Terms of use</a>
+                    <span class="divider">|</span>
+                    <a href="/">Privacy</a>
+                    <span class="divider">|</span>
+                    <a href="/">Security</a>
+                    <span class="divider">|</span>
+                    <span>&copy;Copyright 2013 VPH-Share All rights reserved</span>
+                </p>
+
             </footer>
         {% endblock %}
     {% endif %}
