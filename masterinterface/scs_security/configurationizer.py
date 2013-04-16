@@ -9,12 +9,18 @@ def create_configuration_file(configurations={}):
         create a properties file with the given properties
     """
 
-    sample_configuration_file = """listening_port={listening_port}
-outgoing_address={outgoing_address}
-outgoing_port={outgoing_port}
-granted_roles=^((?!/(admin/?)).)*$:{granted_roles};.*/admin/?:admin"""
+    lines = []
 
-    return sample_configuration_file.format(**configurations)
+    if 'listening_port' in configurations and configurations['listening_port']:
+        lines.append("listening_port=%s" % configurations['listening_port'])
+    if 'outgoing_address' in configurations and configurations['outgoing_address']:
+        lines.append("outgoing_address=%s" % configurations['outgoing_address'])
+    if 'outgoing_port' in configurations and configurations['outgoing_port']:
+        lines.append("outgoing_port=%s" % configurations['outgoing_port'])
+    if 'granted_roles' in configurations and configurations['granted_roles']:
+        lines.append("^((?!/(admin/?)).)*$:%s;.*/admin/?:admin" % configurations['granted_roles'])
+
+    return "\n".join(lines)
 
 
 def extract_configurations(configuration_file=""):
