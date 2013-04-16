@@ -9,9 +9,12 @@
             <legend>Security Policy Name</legend>
             <label for="name">Name</label>
             <input type="text" name="name" id="name" />
+            <span class="help-block">A new security policy will be created. The granted role will be equal to the policy name </span>
             <input type="hidden" name="newpolicy" value="newpolicy" />
+            <input type="submit" name="createwithname" class="btn btn-primary pull-right" value="create" />
         {% endif %}
 
+        {% comment %}
         <legend>Permissions Map</legend>
         <span class="help-block">Update the security policy by editing the permissions map.</span>
 
@@ -43,6 +46,8 @@
         </table>
 
         <input type="submit" name="sumbitwithmap" class="btn btn-primary pull-right" value="update" />
+
+        {% endcomment %}
 
         <legend>File content</legend>
         <span class="help-block">Update the security policy by editing the file content directly</span>
