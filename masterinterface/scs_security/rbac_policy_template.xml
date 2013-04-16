@@ -1,0 +1,39 @@
+<Policy PolicyId="ExamplePolicy"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+	<Target>
+		<Subjects>
+			<AnySubject />
+		</Subjects>
+		<Resources>
+		</Resources>
+		<Actions>
+			<AnyAction />
+		</Actions>
+	</Target>
+	<Rule RuleId="PermitRole" Effect="Permit">
+		<Target>
+			<Subjects>
+				<AnySubject />
+			</Subjects>
+			<Resources>
+				<AnyResource />
+			</Resources>
+			<Actions>
+				<Action>
+					<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+						<ActionAttributeDesignator
+							DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" />
+					</ActionMatch>
+				</Action>
+			</Actions>
+		</Target>
+		<Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+				<ResourceAttributeDesignator
+					DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="role" />
+			</Apply>
+			<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">RoleToBeSet</AttributeValue>
+		</Condition>
+	</Rule>
+</Policy>

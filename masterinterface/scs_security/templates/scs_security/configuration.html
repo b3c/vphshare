@@ -1,0 +1,15 @@
+{% extends 'scs_security/base.html' %}
+
+{% block content %}
+
+    {% include 'scs_security/configurationslist.html' %}
+
+    {% if configuration_name  %}
+        <h3>Security Proxy Configuration: {{ configuration_name }}</h3>
+    {% else %}
+        <h3>Create new Security Proxy Configuration</h3>
+    {% endif %}
+
+    {% include 'scs_security/configurationform.html' %}
+
+{% endblock %}
