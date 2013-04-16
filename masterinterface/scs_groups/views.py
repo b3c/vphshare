@@ -22,12 +22,28 @@ def get_group_by_name(name):
     return group
 
 
+def get_group_by_id(pk):
+    try:
+        group = Institution.objects.get(pk=pk)
+        gtype = 0
+    except ObjectDoesNotExist:
+        try:
+            group = Study.objects.get(pk=pk)
+            gtype = 1
+        except ObjectDoesNotExist:
+            group = VPHShareSmartGroup.objects.get(pk=pk)
+            gtype = 2
+
+    return group, gtype
+
+
 def temp_fix_institution_managers():
     """
         temporary method to grant GroupManager role to institution manager users
     """
 
     institutions = Institution.objects.all()
+    smartgroups = VPHShareSmartGroup.objects.all()
 
     for institution in institutions:
         for manager in institution.managers.all():
@@ -36,6 +52,11 @@ def temp_fix_institution_managers():
             for study in institution.study_set.all():
                 add_local_role(study, manager, group_manager)
                 study.principals.add(manager)
+
+    for smartgroup in smartgroups:
+        for manager in smartgroup.managers.all():
+            smartgroup.user_set.add(manager)
+            add_local_role(smartgroup, manager, group_manager)
 
 
 def join_group_subscription(user, group):
@@ -55,14 +76,11 @@ def join_group_subscription(user, group):
         group.is_subscription_pending = True
     elif subscription and get_state(subscription).name == 'Refused':
         group.is_subscription_refused = True
-    
 
-def list_groups(request):
-    """
-     Return a views of all available institutions and groups
-    """
 
-    temp_fix_institution_managers()
+def group_details(request, idGroup=None, idStudy=None):
+
+    #temp_fix_institution_managers()
 
     institutions = []
     user_institutions = []
@@ -72,30 +90,48 @@ def list_groups(request):
     other_groups = []
 
     pending_institutions = []
+    selected_group = None
 
     for institution in Institution.objects.all():
         state = get_state(institution)
+        join_group_subscription(request.user, institution)
         if state is None or state.name == 'Accepted':
+            institution.state = True
             institutions.append(institution)
         else:
+            institution.state = False
             pending_institutions.append(institution)
+
+        institution.studies = institution.study_set.all()
+        institution.studies_actions = 0
+
+        if idGroup is not None and institution.pk == int(idGroup):
+            selected_group = institution
+            selected_group.selected_study = None
+            selected_group.type = 'institution'
+        for study in institution.studies:
+            join_group_subscription(request.user, study)
+            institution.studies_actions += len(study.pending_subscriptions)
+            if idStudy is not None and study.pk == int(idStudy):
+                selected_group.selected_study = study
 
     if not request.user.is_authenticated():
         other_institutions = institutions
         other_groups = VPHShareSmartGroup.objects.filter(active=True)
     else:
         for institution in institutions:
-            join_group_subscription(request.user, institution)
             if request.user in institution.user_set.all() or request.user in institution.managers.all():
                 user_institutions.append(institution)
             else:
                 other_institutions.append(institution)
-            institution.studies = institution.study_set.all()
-            for study in institution.studies:
-                join_group_subscription(request.user, study)
 
         for vphgroup in VPHShareSmartGroup.objects.filter(active=True):
             join_group_subscription(request.user, vphgroup)
+            vphgroup.studies_actions = 0
+            vphgroup.state = True
+            if idGroup is not None and vphgroup.pk == int(idGroup):
+                selected_group = vphgroup
+                selected_group.type = 'smart'
             if request.user in vphgroup.user_set.all() or request.user in vphgroup.managers.all():
                 user_groups.append(vphgroup)
             else:
@@ -107,30 +143,10 @@ def list_groups(request):
          'pending_institutions': pending_institutions,
          'other_institutions': other_institutions,
          'other_groups': other_groups,
-         'user_groups': user_groups},
+         'user_groups': user_groups,
+         'selected_group': selected_group},
         RequestContext(request)
     )
-
-
-def manage_subscription(request):
-    """
-        accept or refuse subscription_pending subscription
-    """
-
-    if request.method == 'POST':
-        group_name = request.POST['group']
-        group = get_group_by_name(group_name)
-        user_name = request.POST['user']
-        user = User.objects.get(username=user_name)
-        subscription = SubscriptionRequest.objects.get(user=user, group=group)
-
-        if request.POST['operation'] == 'accept':
-            if do_transition(subscription, subscription_accept_subscription, request.user):
-                group.user_set.add(user)
-        else:
-            do_transition(subscription, subscription_refuse_subscription, request.user)
-
-    return redirect('/groups')
 
 
 def manage_group_request(request):
@@ -147,21 +163,41 @@ def manage_group_request(request):
         else:
             do_transition(group, group_refuse_subscription, request.user)
 
-    return redirect('/groups')
+        return redirect('/groups/%s/' % group.pk)
+    return redirect('/groups/')
 
 
-def subscribe(request):
+def subscribe(request, idGroup=None, idStudy=None, iduser=None):
     """
         create a subscription_pending subscription to an institution
     """
 
     if request.method == 'POST':
-        group_name = request.POST['group']
-        group = get_group_by_name(group_name)
-        subscription = SubscriptionRequest(user=request.user, group=group)
-        subscription.save()
-        set_workflow(subscription, SubscriptionRequestWorkflow)
-        set_state(subscription, subscription_pending)
+
+        if idStudy is not None:
+            group, gtype = get_group_by_id(idStudy)
+        else:
+            group, gtype = get_group_by_id(idGroup)
+
+        if iduser is None:
+            subscription = SubscriptionRequest(user=request.user, group=group)
+            subscription.save()
+            set_workflow(subscription, SubscriptionRequestWorkflow)
+            set_state(subscription, subscription_pending)
+        else:
+            user = User.objects.get(pk=iduser)
+            subscription = SubscriptionRequest.objects.get(user=user, group=group)
+
+            if request.POST['operation'] == 'accept':
+                if do_transition(subscription, subscription_accept_subscription, request.user):
+                    group.user_set.add(user)
+            else:
+                do_transition(subscription, subscription_refuse_subscription, request.user)
+
+        if gtype == 1:
+            return redirect('/groups/%s/%s/' % (idGroup, idStudy))
+        else:
+            return redirect('/groups/%s/' % idGroup)
 
     return redirect('/groups')
 
@@ -172,11 +208,12 @@ def create_study(request):
     """
 
     if request.method == 'POST':
+        request.POST['institution'] = int(request.POST['institution'])
         form = StudyForm(request.POST)
 
         if form.is_valid():
             form.save()
-            return redirect('/groups')
+            return redirect('/groups/%s/%s/' % (request.POST['institution'], form.instance.id))
         else:
             institution = Institution.objects.get(pk=request.POST['institution'])
             return render_to_response(
@@ -190,7 +227,7 @@ def create_study(request):
 
         institution = Institution.objects.get(pk=institution_pk)
         if not request.user in institution.managers.all():
-            return redirect('/groups')
+            return redirect('/groups/%s/' % institution_pk)
 
         form = StudyForm(initial={'institution': institution_pk})
         form.Meta.model.institution = institution
@@ -235,6 +272,6 @@ def create_institution(request):
 
 def api_help(request):
     return render_to_response(
-    'scs_groups/api.html',
-    RequestContext(request)
+        'scs_groups/api.html',
+        RequestContext(request)
     )
