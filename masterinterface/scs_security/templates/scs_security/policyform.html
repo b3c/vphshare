@@ -53,9 +53,7 @@
         <span class="help-block">Update the security policy by editing the file content directly</span>
 
         <label for="filecontent">Security Policy file content (click to edit)</label>
-                <pre onclick="$('#filecontent').show();$(this).hide();">
-                    {{ policy_file }}
-                </pre>
+                <pre onclick="$('#filecontent').show();$(this).hide();">{{ policy_file }}</pre>
         <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ policy_file }}</textarea>
         <input type="submit" name="sumbitwithcontent" class="btn btn-primary pull-right" value="update" />
 
