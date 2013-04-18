@@ -454,7 +454,8 @@ function guidedSearchS1Call() {
         url = '/class_search/',
         numMaxHits = $('#num-max-hits').val(),
         pageNum = $('#page-num').val(),
-        dataset = $('#dataset-value').val();
+        //dataset = $('#dataset-value').val();
+        dataset = $('#dataset-uri').val();
 
     if (SEARCH === false) {
 
@@ -758,7 +759,8 @@ function annotationSearchCall(init) {
         url = '/annotation_search/',
         numMaxHits = $('#num-max-hits').val(),
         pageNum = $('#page-num').val(),
-        dataset = $('#dataset-value').val(),
+        //dataset = $('#dataset-value').val(),
+        dataset = $('#dataset-uri').val(),
         classConcept = $('#class-value').val();
 
     if (SEARCH === false) {
