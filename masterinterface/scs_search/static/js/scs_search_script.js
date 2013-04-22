@@ -1007,7 +1007,10 @@ $(function () {
 
     $('#set-annotation-cancel').click(function () {
 
-        $('#annotation-value').val('');
+        var setAnnotationForm = $('#set-annotation-value-form');
+        $('#annotation-value:reset').val('');
+        setAnnotationForm.find('input').remove();
+        setAnnotationForm.find('select').remove();
 
     });
 
@@ -1048,8 +1051,10 @@ $(function () {
         itemValue.val(itemFormValue);
         operator.val(operatorFormValue);
         item.find('#term-value-text').text('Value '+ textOperator + " " + itemFormValue);
-        $('#annotation-value').val('');
+        $('#annotation-value:reset').val('');
         $('#set-annotation-value').modal('hide');
+        setAnnotationForm.find('input').remove();
+        setAnnotationForm.find('select').remove();
 
     }
 
@@ -1113,7 +1118,9 @@ $(function () {
                     itemCloned.find('.fieldsetTerm').append("<input type='hidden' class='term-operator' value='" + operator + "'/>");
 
 
-                    $('#annotation-value').val('');
+                    $('#annotation-value:reset').val('');
+                    setAnnotationForm.find('input').remove();
+                    setAnnotationForm.find('select').remove();
                     $('#set-annotation-value').modal('hide');
 
                 }
