@@ -98,6 +98,7 @@ function guidedSearchS1CallBack(results) {
         }
 
         addTerm.children('.term-name').append('<input name="inputConceptUri" type="hidden" value="' + item + '" /> ');
+        addTerm.children('.term-name').append('<input name="inputConceptLabel" type="hidden" value="' + termsResults[item][0] + '" /> ');
         addTerm.children('.term-desc').append(termsResults[item][0]);
 
         termList.append(addTerm);
@@ -518,7 +519,7 @@ function complexSearchS1Call() {
     });
 }
 
-function guidedSearchS2Call(val) {
+function guidedSearchS2Call(val, conceptLabel) {
 
     "use strict";
     var conceptUriList = [];
@@ -527,7 +528,7 @@ function guidedSearchS2Call(val) {
     var dataset = $("#dataset-uri").val(),
         datasetLabel = $("#dataset-value").val();
 
-    window.location.href = "/search/annotation/?dataset=" + encodeURIComponent(dataset) + "&datasetLabel=" + encodeURIComponent(datasetLabel) + "&conceptClass=" + encodeURIComponent(val);
+    window.location.href = "/search/annotation/?dataset=" + encodeURIComponent(dataset) + "&datasetLabel=" + encodeURIComponent(datasetLabel) + "&conceptClass=" + encodeURIComponent(val) + "&conceptLabel="+ encodeURIComponent(conceptLabel);
 
 }
 
@@ -568,23 +569,11 @@ function guidedSearchComplexQueryCall(saveToken) {
                 var termName = $(this).find("input[name=inputTermName]").val();
                 var conceptName = $(this).find("input[name=inputConceptName]").val();
 
+                singleTerm.push(conceptUri);
+                singleTerm.push(termName);
+                singleTerm.push(conceptName);
 
-                if ($("#" + id_group + ' > .exclude').children().hasClass('active')) {
-
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-
-                    conceptUriList.push(singleTerm);
-                }
-                else {
-
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-
-                    conceptUriList.push(singleTerm);
-                }
+                conceptUriList.push(singleTerm);
 
             });
             if (conceptUriList.length !== 0) {
@@ -678,28 +667,14 @@ function datasetQueryCall(saveToken) {
                 var conceptType = $(this).find("input[class=term-type]").val();
 
 
-                if ($("#" + id_group + ' > .exclude').children().hasClass('active')) {
+                singleTerm.push(conceptUri);
+                singleTerm.push(termName);
+                singleTerm.push(conceptName);
+                singleTerm.push(conceptValue);
+                singleTerm.push(conceptOperator);
+                singleTerm.push(conceptType);
 
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-                    singleTerm.push(conceptValue);
-                    singleTerm.push(conceptOperator);
-                    singleTerm.push(conceptType);
-
-                    conceptUriList.push(singleTerm);
-                }
-                else {
-
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-                    singleTerm.push(conceptValue);
-                    singleTerm.push(conceptOperator);
-                    singleTerm.push(conceptType);
-
-                    conceptUriList.push(singleTerm);
-                }
+                conceptUriList.push(singleTerm);
 
             });
             if (conceptUriList.length !== 0) {
@@ -761,7 +736,8 @@ function annotationSearchCall(init) {
         pageNum = $('#page-num').val(),
         //dataset = $('#dataset-value').val(),
         dataset = $('#dataset-uri').val(),
-        classConcept = $('#class-value').val();
+        classConcept = $('#class-value').val(),
+        classLabel = $('#class-label').val();
 
     if (SEARCH === false) {
 
@@ -777,7 +753,7 @@ function annotationSearchCall(init) {
     $.ajax({
         type: 'POST',
         url: url,
-        data: {input: input, dataset: dataset, classConcept: classConcept, nummaxhits: numMaxHits, pagenum: pageNum},
+        data: {input: input, dataset: dataset, classConcept: classConcept, nummaxhits: numMaxHits, pagenum: pageNum, classLabel:classLabel},
         success: function (results) {
 
             $('#wait-terms').fadeOut();
@@ -1414,7 +1390,7 @@ $(document).on('click', '#terms-table > .term', function () {
 
     "use strict";
 
-    guidedSearchS2Call($(this).find('input[name=inputConceptUri]').val());
+    guidedSearchS2Call($(this).find('input[name=inputConceptUri]').val(), $(this).find('input[name=inputConceptLabel]').val());
 
 
 });

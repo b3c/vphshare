@@ -12,7 +12,9 @@
             <tbody id="terms-table">
             {% for key, value in results.items %}
                 <tr class="term" >
-                    <td class="term-name">{{ key }}<input name="inputConceptUri" type="hidden" value="{{ key }}"></td>
+                    <td class="term-name">{{ key }}
+                        <input name="inputConceptUri" type="hidden" value="{{ key }}">
+                        <input name="inputConceptLabel" type="hidden" value="{{ value.0 }}"></td>
                     <td class="term-desc">{{ value.0 }}</td>
                 </tr>
             {% endfor %}

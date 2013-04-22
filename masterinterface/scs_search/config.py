@@ -21,6 +21,7 @@ GUIDED_SEARCH_COMPLEX_QUERY_API = \
 
 PAGE_SIZE = 20
 
+DATASET_SCHEMA = 'http://vphshare.atosresearch.eu/crawling/rest/schema'
 
 CLASSES_TABLES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/classesTables?datasetName=%s'
 

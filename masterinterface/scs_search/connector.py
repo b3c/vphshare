@@ -228,12 +228,18 @@ def class_search_connector(free_text, dataset, num_max_hits, page_num):
     results['max_matches'] = num_max_hits
     results['page_num'] = page_num
 
-    import re
-    r = re.compile('sparqlEndpoint=(.*?)&')
-    dataset = r.search(dataset).group(1).split('/sparql')[0]
-    if not dataset.count('https'):
-        dataset = dataset.replace('http', 'https')
+    #Find dataset on the schema
+    dataset_schema = json.loads(requests.get(DATASET_SCHEMA).text.encode())
+    found = False
+    for schema in dataset_schema:
+        if schema['dataset']['value'].count(dataset):
+            dataset = schema['dataset']['value']
+            found = True
+            break
+    if not found:
+        return ''
 
+    #End Find dataset
     response = requests.get(CLASSES_TABLES
                             % quote(dataset))
     classSearch = json.loads(response.text.encode())
@@ -348,7 +354,7 @@ def get_set_of_values(dataset, classConcept, annotationRange):
     return False
 
 
-def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, page_num):
+def annotation_search_connector(free_text, dataset, classConcept, classLabel, num_max_hits, page_num):
     """
         annotation_search: Call the annotation_search API
         and extract the result from XML.
@@ -454,7 +460,7 @@ def annotation_search_connector(free_text, dataset, classConcept, num_max_hits, 
             except Exception, e:
                 continue
 
-            annotationList[range['value']] = [termRange, rangeLabel['value'], classConcept.split('#')[1], inputType[termType],
+            annotationList[range['value']] = [termRange, rangeLabel['value'], classLabel, inputType[termType],
                                               termType]
             num_results_total += 1
             if not (len(annotationList) % 20):
