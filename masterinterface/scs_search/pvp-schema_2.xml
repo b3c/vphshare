@@ -1,0 +1,2854 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Active_Flag"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Code"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Date"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Business_Telephone"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Coagulation_Study"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Content_Date"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#County"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Current_Smoker"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date_of_Birth"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Description"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Document_Title"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Drug_Sensitization"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#First_Name"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Gender">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Hospital"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Last_Name"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Note">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientNotes_Description"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Description"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientNotes_Date"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date"/>
+        </connection>
+        <connection>
+            <property name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientNotes_NotesID"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_NotesID"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientNotes_DateResolved"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_DateResolved"/>
+        </connection>
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pain_Therapy">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_PatSerial"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_AnalgesiaID"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_AnalgesiaID"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_DrugsComment"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_ProcedureComments"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_DrugsTaken"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pharmacologic_Substance"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_ProcedureImprovement"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_ProcedureImprovement"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_Stage"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Stage"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_PainScore"/>
+            <term name="http://www.ihtsdo.org/SCT_22253000"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_Qdate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Qdate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_PainImprovement"/>
+            <term name="http://www.ihtsdo.org/SCT_247406002"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblAnalgesiaScore_DrugScore"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Drug_Sensitization"/>
+        </connection>
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_ReviewStatus"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewStatus"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Address2"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Address2"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Consultant"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/10256_CON"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Hospital"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/10602_HOSP"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Address1"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Street_Address"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Deceased"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Deceased"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_GPName"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPName"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_CurrentStatus"/>
+            <term name="http://www.ihtsdo.org/SCT_263490005"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Address3"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#County"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_CurrentProcedure"/>
+            <term name="http://www.ihtsdo.org/SCT_71388002"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_NHSCode"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_NHSCode"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_GPCode"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPCode"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_GPPracticeName"/>
+            <term name="http://www.ihtsdo.org/SCT_394760002"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_PostCode"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Postal_Code"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Smoker"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Current_Smoker"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Date_text"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_WorkTelephone"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Business_Telephone"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Title"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Document_Title"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Input_Date"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Content_Date"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Forename"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#First_Name"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Surname"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Last_Name"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Staff"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/C1552089"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_HealthAuthority"/>
+            <term name="http://purl.bioontology.org/ontology/SNOMEDCT/394747008"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_DOB"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date_of_Birth"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_OldPatSerial"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_OldPatSerial"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Comments"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_ReviewType"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewType"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Ward"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/16135_W"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_Sex"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Gender"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_STHNumber"/>
+            <term name="http://www.ihtsdo.org/SCT_184107009"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_CurrentStatusID"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_CurrentStatusID"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_DeceasedFlag"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/14884_DEC"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_HomeTelephone"/>
+            <term name="http://purl.bioontology.org/ontology/SNOMEDCT/429697006"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblPatientData_GPPracticeCode"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPPracticeCode"/>
+        </connection>
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pharmacologic_Substance"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Postal_Code"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Procedure_Generic">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_LOS"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LOS"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Length"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Length"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_OtherComplications"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_OtherComplications"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_TotalOpiateDose"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_TotalOpiateDose"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Site1PercentFilling"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1PercentFilling"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Duration"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Duration"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_ProcedureID"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureID"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_PE"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PE"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Complications"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Complications"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_NeedleGauge"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleGauge"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Venous"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Venous"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Anaesthetist"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Anaesthetist"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_NeedleType"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleType"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Site3VolumeInjected"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3VolumeInjected"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_FinishTime"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_FinishTime"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Sedation"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Sedation"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Site1VolumeInjected"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1VolumeInjected"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_NeuroComplication"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplication"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Antibiotics"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Antibiotics"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_PostProcedurePainDuration"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PostProcedurePainDuration"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Analgesia"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Analgesia"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Site2VolumeInjected"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2VolumeInjected"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_ProcedureTime"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureTime"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Epidural"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Epidural"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Level3"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level3"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Level2"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level2"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_BupivacaineAmount"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineAmount"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_SurgicalProcedure"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalProcedure"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Level1"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level1"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_BupivacaineStrength"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineStrength"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Site3PercentFilling"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3PercentFilling"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Cement"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Cement"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Arterial"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Arterial"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_AntibioticDetail"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AntibioticDetail"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_LANeedle"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LANeedle"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_SurgicalIntervention"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalIntervention"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_IntraDisc"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_IntraDisc"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Site2PercentFilling"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2PercentFilling"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_LidocaineAmount"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineAmount"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_NeuroComplicationDetail"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplicationDetail"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_AssessmentNumber"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AssessmentNumber"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_StartTime"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_StartTime"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_PCA"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PCA"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_GA"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_GA"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Approach"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Approach"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_LidocaineStrength"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineStrength"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Paravertebral"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Paravertebral"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_Foraminal"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Foraminal"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_ProcedureDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblProcedure_PatSerial"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PatSerial"/>
+        </connection>
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Questionnaire_Data_Collection_Date_Time"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Street_Address"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom"
+             type="http://www.w3.org/2001/XMLSchema#string">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblSymptomsRef_Type"/>
+            <term name="http://purl.bioontology.org/ontology/NCIM/C1515974"/>
+        </connection>
+        <connection>
+            <property name="http://purl.bioontology.org/ontology/NCIM/C0034927"/>
+            <term name="http://purl.bioontology.org/ontology/NCIM/C0034927"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblSymptomsRef_InUse"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Active_Flag"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblSymptomsRef_Symptom"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom"/>
+        </connection>
+    </concept>
+    <concept name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Therapeutic_Procedure"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/HL7/10256_CON" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/HL7/10602_HOSP" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/HL7/14884_DEC" type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/HL7/16135_W" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/HL7/C1549076" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/HL7/C1552089" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/NCIM/C0034927">
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion2InferiorEndPlateCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2InferiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_ReferralStatus"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ReferralStatus"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion1Site"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1Site"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_CoagProfile"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Coagulation_Study"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_AnaestAssessment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_AnaestAssessment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_ThoracicCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ThoracicCollapse"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_MRIDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRIDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_MDTDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MDTDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_InformationLeaflet"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_InformationLeaflet"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_OtherSymptomsOnsetDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsOnsetDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_AssessmentNumber"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Code"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_ContinueToProcedure"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ContinueToProcedure"/>
+        </connection>
+        <connection>
+            <property name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_LegPainOnsetdate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainOnsetdate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_FBCBiochemistry"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FBCBiochemistry"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_BackPain"/>
+            <term name="http://www.ihtsdo.org/SCT_419258005"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion3InferiorEndPlateCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3InferiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_DEXA"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DEXA"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Consultant"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/C1549076"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Malignancy"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Malignancy"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_BackPainOnsetDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainOnsetDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_BackPainLocation"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainLocation"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Histology"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Histology"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Osteoporosis"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Osteoporosis"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_LegPainLocation"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainLocation"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion1PosteriorCortexIntact"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1PosteriorCortexIntact"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_MRSAScreen"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRSAScreen"/>
+        </connection>
+        <connection>
+            <property name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_PercentPredicted"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PercentPredicted"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_FEV1_FVC"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FEV1_FVC"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion3PosteriorCortexIntact"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3PosteriorCortexIntact"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_DateOfAssessment"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Date"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_VertebraPlanaSite2"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite2"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Diagnosis"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Diagnosis"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_PatientType"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PatientType"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_LegPain"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPain"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Biopsy"/>
+            <term name="http://www.ihtsdo.org/SCT_86273004"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_VertebraPlanaSite3"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite3"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Treatment"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Therapeutic_Procedure"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_DateReferred"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DateReferred"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_OtherSymptomsNotes"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsNotes"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_LocalisedTenderness"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LocalisedTenderness"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Input_Date"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Input_Date"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_VertebraPlanaSite1"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite1"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion2Site"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2Site"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion3Site"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3Site"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_CervicalCollapse"/>
+            <term name="http://www.ihtsdo.org/SCT_308757003"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion2PosteriorCortexIntact"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2PosteriorCortexIntact"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion1VertebralHeight"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1VertebralHeight"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Consent"/>
+            <term name="http://www.ihtsdo.org/SCT_309370004"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion2VertebralHeight"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2VertebralHeight"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_LumbarCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LumbarCollapse"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion3VertebralHeight"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3VertebralHeight"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion1InferiorEndPlateCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1InferiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_OtherSymptoms"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptoms"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion3SuperiorEndPlateCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3SuperiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_NeuroNotes"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroNotes"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_ExpectedProcedureDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ExpectedProcedureDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Hospital"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Hospital"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_NeuroSymptoms"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroSymptoms"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion1SuperiorEndPlateCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1SuperiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property
+                    name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblReferral_Lesion2SuperiorEndPlateCollapse"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2SuperiorEndPlateCollapse"/>
+        </connection>
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/NCIM/C1515974" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/SNOMEDCT/273676000">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q7"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q7"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q8"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q8"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Qdate"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Questionnaire_Data_Collection_Date_Time"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q9"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q9"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_PatSerial"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Stage"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Stage"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q10"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q10"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q2"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q2"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q1"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q1"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q6"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q6"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_ODIScore"/>
+            <term name="http://www.ihtsdo.org/SCT_446604004"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q5"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q5"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q4"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q4"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_ODIID"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_ODIID"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblOswestryDisability_Q3"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q3"/>
+        </connection>
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/SNOMEDCT/308400007">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_DateDue"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_DateDue"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_ActualDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_ActualDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_Stage"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Stage"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_Notes"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Notes"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_AssessmentID"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_AssessmentID"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_PatSerial"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_Timepoint"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Timepoint"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_tblRecall_LetterSent"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_LetterSent"/>
+        </connection>
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/SNOMEDCT/394747008"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://purl.bioontology.org/ontology/SNOMEDCT/429697006"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_184107009" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_22253000" type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_247406002" type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_263490005" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_273597006">
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_SingleIndex"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SingleIndex"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_CHscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_SFComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_MHscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_PF"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PF"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_10a"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10a"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3c"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3c"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3b"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3b"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3a"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3a"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_RP"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RP"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_Sex"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Sex"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9b"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9b"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_REComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3e"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3e"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_PatSerial"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_SF36ID"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF36ID"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_Stage"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Stage"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_5c"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5c"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9a"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9a"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3d"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3d"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_HospitalNumber"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_HospitalNumber"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_4c"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4c"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_PComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_4d"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4d"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3g"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3g"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_SFScore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFScore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_4b"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4b"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_CHComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3f"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3f"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_4a"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4a"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_GHP"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHP"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_GHPscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_PFComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_RPComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_P"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_P"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3i"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3i"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_EVscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9f"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9f"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_GHPComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_8"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_8"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_RE"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RE"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_EV"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EV"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3h"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3h"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9e"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9e"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_QDate"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_QDate"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_7"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_7"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_PFscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_Q2"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q2"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_RPscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_CH"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CH"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_5a"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5a"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9d"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9d"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_6"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_6"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_Q1"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q1"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_MHComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_Pscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Pscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_5b"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5b"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9c"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9c"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_3j"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3j"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_10d"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10d"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_MH"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MH"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_EVComment"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVComment"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9j"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9j"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_REscore"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REscore"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_Forename"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Forename"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_10b"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10b"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9i"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9i"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_SF"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9h"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9h"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_10c"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10c"/>
+        </connection>
+        <connection>
+            <property name="https://vphsharedata1.sheffield.ac.uk/pvp/mapping#has_SF36_9g"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9g"/>
+        </connection>
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_308757003" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_309370004" type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_394760002" type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_419258005" type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_446604004" type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_71388002">
+    </concept>
+    <concept name="http://www.ihtsdo.org/SCT_86273004" type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10a">
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2InferiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LOS"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Length"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_OtherComplications"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewStatus"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SingleIndex"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Address2"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q7"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ReferralStatus"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_TotalOpiateDose"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1PercentFilling"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/10256_CON"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Duration"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureID"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1Site"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PE"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/10602_HOSP"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Street_Address"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Coagulation_Study"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Complications"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleGauge"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_AnaestAssessment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PF"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q8"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ThoracicCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_DateDue"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Deceased"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Venous"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Anaesthetist"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10a"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleType"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Questionnaire_Data_Collection_Date_Time"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRIDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPName"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3c"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q9"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MDTDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3VolumeInjected"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/SNOMEDCT/308400007"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_InformationLeaflet"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3b"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_FinishTime"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsOnsetDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_263490005"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Sedation"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1VolumeInjected"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Code"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ContinueToProcedure"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Symptom"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#County"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_71388002"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainOnsetdate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FBCBiochemistry"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_NHSCode"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_419258005"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_ActualDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3InferiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DEXA"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3a"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/C1549076"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Description"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPCode"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RP"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_394760002"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplication"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Sex"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9b"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Antibiotics"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3e"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PostProcedurePainDuration"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Postal_Code"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Analgesia"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Malignancy"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainOnsetDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2VolumeInjected"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF36ID"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Stage"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Stage"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainLocation"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Histology"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Osteoporosis"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainLocation"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureTime"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5c"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9a"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1PosteriorCortexIntact"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3d"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_HospitalNumber"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_AnalgesiaID"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4c"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Stage"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Epidural"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level3"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level2"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4d"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineAmount"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalProcedure"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRSAScreen"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Current_Smoker"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Notes"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Comments"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3g"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFScore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4b"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Patient"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/NCIM/C1515974"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PercentPredicted"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level1"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_AssessmentID"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineStrength"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Business_Telephone"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3PercentFilling"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3f"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FEV1_FVC"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Document_Title"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4a"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Content_Date"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3PosteriorCortexIntact"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHP"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Cement"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q10"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Note"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Arterial"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AntibioticDetail"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#First_Name"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Assessment_Date"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/NCIM/C0034927"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Last_Name"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite2"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Diagnosis"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_P"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3i"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/C1552089"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LANeedle"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/SNOMEDCT/394747008"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PatientType"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9f"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPain"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q2"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_8"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalIntervention"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_IntraDisc"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_86273004"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RE"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pharmacologic_Substance"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite3"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EV"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3h"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Therapeutic_Procedure"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q1"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9e"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_PatSerial"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_QDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DateReferred"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsNotes"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_7"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LocalisedTenderness"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2PercentFilling"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q2"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Date_of_Birth"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_ProcedureImprovement"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CH"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_OldPatSerial"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5a"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9d"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Timepoint"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_273597006"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineAmount"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_6"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplicationDetail"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q1"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_NotesID"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Stage"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewType"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Input_Date"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/16135_W"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Gender"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AssessmentNumber"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite1"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2Site"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3Site"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_308757003"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Pscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5b"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9c"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3j"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10d"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2PosteriorCortexIntact"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_184107009"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MH"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVComment"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q6"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_22253000"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Procedure_Generic"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_CurrentStatusID"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/SNOMEDCT/273676000"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Active_Flag"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Qdate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_StartTime"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_247406002"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1VertebralHeight"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9j"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REscore"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_446604004"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q5"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/HL7/14884_DEC"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_DateResolved"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PCA"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_GA"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_LetterSent"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://www.ihtsdo.org/SCT_309370004"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2VertebralHeight"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Forename"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10b"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Approach"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9i"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9h"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LumbarCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q4"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Drug_Sensitization"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3VertebralHeight"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1InferiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Pain_Therapy"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_ODIID"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptoms"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10c"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineStrength"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3SuperiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroNotes"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ExpectedProcedureDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Paravertebral"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9g"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Hospital"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroSymptoms"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="http://purl.bioontology.org/ontology/SNOMEDCT/429697006"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Foraminal"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q3"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1SuperiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureDate"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPPracticeCode"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2SuperiorEndPlateCollapse"/>
+        </connection>
+        <connection>
+            <property name="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+            <term name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PatSerial"/>
+        </connection>
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10b"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10c"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_10d"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3a"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3b"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3c"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3d"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3e"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3f"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3g"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3h"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3i"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_3j"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4a"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4b"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4c"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_4d"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5a"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5b"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_5c"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_6"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_7"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_8"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9a"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9b"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9c"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9d"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9e"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9f"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9g"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9h"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9i"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_9j"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CH"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_CHscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EV"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_EVscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Forename"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHP"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_GHPscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_HospitalNumber"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MH"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_MHscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_P"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PF"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PFscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_PatSerial"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Pscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q1"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Q2"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_QDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RE"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_REscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RP"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_RPscore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SF36ID"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFComment"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SFScore"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Sex"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_SingleIndex"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#SF36_Stage"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_AnalgesiaID"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_PatSerial"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_ProcedureImprovement"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Qdate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblAnalgesiaScore_Stage"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_ODIID"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_PatSerial"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q1"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q10"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q2"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q3"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q4"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q5"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q6"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q7"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q8"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Q9"
+             type="http://www.w3.org/2001/XMLSchema#short">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblOswestryDisability_Stage"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Address2"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_CurrentStatusID"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_Deceased"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPCode"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPName"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_GPPracticeCode"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_NHSCode"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_OldPatSerial"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewStatus"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientData_ReviewType"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_DateResolved"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblPatientNotes_NotesID"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Anaesthetist"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Analgesia"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AntibioticDetail"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Antibiotics"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Approach"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Arterial"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_AssessmentNumber"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineAmount"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_BupivacaineStrength"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Cement"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Complications"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Duration"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Epidural"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_FinishTime"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Foraminal"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_GA"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_IntraDisc"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LANeedle"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LOS"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Length"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level1"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level2"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Level3"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineAmount"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_LidocaineStrength"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleGauge"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeedleType"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplication"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_NeuroComplicationDetail"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_OtherComplications"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PCA"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PE"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Paravertebral"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PatSerial"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_PostProcedurePainDuration"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureID"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_ProcedureTime"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Sedation"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1PercentFilling"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site1VolumeInjected"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2PercentFilling"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site2VolumeInjected"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3PercentFilling"
+             type="http://www.w3.org/2001/XMLSchema#float">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Site3VolumeInjected"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_StartTime"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalIntervention"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_SurgicalProcedure"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_TotalOpiateDose"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblProcedure_Venous"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_ActualDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_AssessmentID"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_DateDue"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_LetterSent"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Notes"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_PatSerial"
+             type="http://www.w3.org/2001/XMLSchema#int">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Stage"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblRecall_Timepoint"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_AnaestAssessment"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainLocation"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_BackPainOnsetDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ContinueToProcedure"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DEXA"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_DateReferred"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Diagnosis"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ExpectedProcedureDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FBCBiochemistry"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_FEV1_FVC"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Histology"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_InformationLeaflet"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Input_Date"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPain"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainLocation"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LegPainOnsetdate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1InferiorEndPlateCollapse"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1PosteriorCortexIntact"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1Site"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1SuperiorEndPlateCollapse"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion1VertebralHeight"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2InferiorEndPlateCollapse"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2PosteriorCortexIntact"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2Site"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2SuperiorEndPlateCollapse"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion2VertebralHeight"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3InferiorEndPlateCollapse"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3PosteriorCortexIntact"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3Site"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3SuperiorEndPlateCollapse"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Lesion3VertebralHeight"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LocalisedTenderness"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_LumbarCollapse"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MDTDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRIDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_MRSAScreen"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Malignancy"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroNotes"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_NeuroSymptoms"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_Osteoporosis"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptoms"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsNotes"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_OtherSymptomsOnsetDate"
+             type="http://www.w3.org/2001/XMLSchema#date">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PatientType"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_PercentPredicted"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ReferralStatus"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_ThoracicCollapse"
+             type="http://www.w3.org/2001/XMLSchema#string">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite1"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite2"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+    <concept name="https://vphsharedata1.sheffield.ac.uk/pvp/unannotated#tblReferral_VertebraPlanaSite3"
+             type="http://www.w3.org/2001/XMLSchema#boolean">
+    </concept>
+</schema>

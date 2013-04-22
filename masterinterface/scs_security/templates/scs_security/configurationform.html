@@ -1,0 +1,46 @@
+<fieldset>
+    <form action="/security/configuration/" method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+        {% if configuration_name %}
+            <input type="hidden" name="name" value="{{ configuration_name }}"/>
+        {% else %}
+            <legend>Security Proxy Configuration Name</legend>
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" />
+            <input type="hidden" name="newconfiguration" value="newconfiguration" />
+        {% endif %}
+
+        <legend>Basic Administration</legend>
+        <span class="help-block">Update the Security Proxy configuration by editing its properties.</span>
+
+        <label for="listeningport">Listening Port</label>
+        <input type="text" id="listeningport" name="listening_port" value="{{ properties.listening_port }}" />
+
+        <label for="outgoingport">Outgoing Port</label>
+        <input type="text" id="outgoingport" name="outgoing_port" value="{{ properties.outgoing_port }}"/>
+
+        <label for="outgoingaddress">Outgoing Address</label>
+        <input type="text" id="outgoingaddress" name="outgoing_address" value="{{ properties.outgoing_address }}" />
+
+        <label for="role">Granted Role</label>
+        <input type="text" id="role" name="granted_roles" value="{{ properties.granted_roles }}"/>
+
+        <input type="submit" name="sumbitwithprops" class="btn btn-primary pull-right" value="update" />
+
+        <legend>File content</legend>
+        <span class="help-block">Update the security proxy configuration by editing the file content directly</span>
+
+        <label for="filecontent">Security Proxy configuration file content (click to edit)</label>
+                <pre onclick="$('#filecontent').show();$(this).hide();">{{ configuration_file }}</pre>
+        <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ configuration_file }}</textarea>
+        <input type="submit" name="sumbitwithcontent" class="btn btn-primary pull-right" value="update" />
+
+        <legend>File upload</legend>
+        <span class="help-block">Update the security proxy configuration by uploading a file from your filesystem.</span>
+        <input type="file" name="fileupload" />
+        <br />
+        <input type="submit" name="sumbitwithfile" class="btn btn-primary pull-right" value="update" />
+
+    </form>
+</fieldset>

@@ -15,13 +15,19 @@ from views import *
 urlpatterns = patterns(
     'scs_search.views',
 
-    url(r'^search/free-text/', automatic_search_view, name='automaticSearchView'),
+    url(r'^search/advanced/', advance_search_view, name='advanceSearch'),
+
+    url(r'^search/concept/', class_search_view, name='classSearch'),
+
+    url(r'^search/annotation/', annotation_search_view, name='annotationSearch'),
+
+    url(r'^search/', automatic_search_view, name='automaticSearch'),
+
+    #url(r'^search/results/', results_search_view, name='resultsQueryView'),
+
+    ##url services##
 
     url(r'^search/complex/latest/', get_latest_query, name='getLatestQuery'),
-
-    url(r'^search/complex/', complex_search_view, name='complexQueryView'),
-
-    url(r'^search/guided/', guided_search_view, name='guidedQueryView'),
 
     url(r'^automatic_search/', automatic_search_service,
         name='automatic_search_service'),
@@ -38,5 +44,14 @@ urlpatterns = patterns(
     url(r'^save_complex_query/', save_complex_query,
         name='save_complex_query'),
 
+    url(r'^class_search/', class_search_service,
+        name='annotation_search_service'),
+
+    url(r'^annotation_search/', annotation_search_service,
+        name='annotation_search_service'),
+
+    url(r'^dataset_query/', dataset_query_service,
+        name='dataset_query'),
+
     url(r'^search/$', search_permalink, name="searchPermalink")
-    )
+)

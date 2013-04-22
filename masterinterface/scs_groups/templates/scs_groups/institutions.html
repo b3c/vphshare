@@ -1,0 +1,77 @@
+{% extends 'scs_groups/base.html' %}
+
+{% load staticfiles %}
+{% load macros %}
+{% loadmacros 'scs_groups/group.html' %}
+{% loadmacros 'scs_groups/groupmanage.html' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/css/nanoscroller.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/groups.css" type="text/css" media="screen" />
+ {% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/static/js/jquery.nanoscroller.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.quicksand.js"></script>
+    <script type="text/javascript" src="/static/js/groups.js"></script>
+{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript">
+        $('.modal').modal({
+            keyboard: true
+        });
+
+        $(".collapse").collapse({
+            toggle: false
+        });
+        $(function (){
+            GroupsList.autoDiscover();
+        });
+    </script>
+{% endblock %}
+
+{% block title %}
+    VPH-Share Institutions
+{% endblock %}
+
+{% block page-title %}
+    <span class="title" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">Institutions</span>
+    <span class="subtitle">Find your institution or create a new one...</span>
+{% endblock %}
+
+{% block content %}
+    {% if selected_group %}
+        {% usemacro group_details selected_group  %}
+    {% endif %}
+    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All Groups</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="smart-filter" class="btn">VPH-Smart</button></li></ul></div>
+    <div class="row">
+    <ul class="groups-list">
+        {% if request.user.is_superuser and pending_institutions%}
+            {% for institution in pending_institutions %}
+                {% usemacro display_group institution 'institution' 1 %}
+            {% endfor %}
+        {% endif %}
+        {% for institution in user_institutions %}
+            {% usemacro display_group institution 'institution' 0 %}
+        {% endfor %}
+        {% for group in user_groups %}
+            {% usemacro display_group group 'smart' 0 %}
+        {% endfor %}
+        {% for institution in other_institutions %}
+            {% usemacro display_group institution 'institution' 0 %}
+        {% endfor %}
+        {% for group in other_groups %}
+            {% usemacro display_group group 'smart' 0 %}
+        {% endfor %}
+
+    </ul>
+    <ul>
+        {% if request.user.is_authenticated %}
+            <a href="/groups/create_institution"><strong class="btn btn-link">Request a new institution</strong></a>
+        {% endif %}
+    </ul>
+
+    </div>
+
+{% endblock %}

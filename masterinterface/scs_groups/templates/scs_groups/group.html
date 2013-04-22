@@ -1,0 +1,35 @@
+{% load macros %}
+{% macro display_group group type need_action %}
+    <li data-id="{{ group.id }}" class="well group-item group-{{ type }}">
+        <a href="/groups/{{ group.id }}/">
+        <div class="row">
+            {% if need_action %}
+                <span class="badge badge-important badge-alert"><strong style="font-size: 18px;">!</strong></span>
+            {% elif request.user in group.managers.all or request.user in group.principals.all %}
+                {% if group.pending_subscriptions|length_is:0  and group.studies_actions == 0 %}
+                    <span class="badge badge-success badge-alert"><span class="icon-ok icon-white"></span></span>
+                {% else%}
+                    <span class="badge badge-important badge-alert"><strong style="font-size: 18px;">!</strong></span>
+                {% endif %}
+            {% elif request.user in group.user_set.all %}
+                <span class="badge badge-success badge-alert"><span class="icon-ok icon-white"></span></span>
+            {% endif %}
+
+            {% if type == 'institution' %}
+                <div class="span1">
+                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                </div>
+            {% endif %}
+            <div class="span1">
+                <strong>{{ group.name }}</strong>
+            </div>
+            <div class="span1">
+                <span class="muted">{{ group.country }}</span>
+            </div>
+            <div class="span1">
+                <span><span class="icon-user"></span>{{ group.user_set.all|length }}</span>
+            </div>
+        </div>
+        </a>
+    </li>
+{% endmacro %}
