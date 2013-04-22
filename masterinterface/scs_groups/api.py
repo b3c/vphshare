@@ -243,20 +243,25 @@ class add_user_to_group(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None:
 
                     group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
                     user_to_add = User.objects.get(username=request.GET.get('username'))
 
-                    if not user in group.managers.all():
+                    if not group.is_manager(user):
                         response = HttpResponse(status=403)
                         response._is_string = True
                         return response
 
-                    group.user_set.add(user_to_add)
-                    # add user to all parent group
-                    while group.parent is not None:
-                        group = VPHShareSmartGroup.objects.get(name=group.parent.name)
+                    # add user to all children groups
+                    if request.GET.get('recursive', False):
+                        while group is not None:
+                            group.user_set.add(user_to_add)
+                            try:
+                                group = VPHShareSmartGroup.objects.get(parent=group)
+                            except ObjectDoesNotExist, e:
+                                group = None
+                    else:
                         group.user_set.add(user_to_add)
 
                     response = HttpResponse(status=200)
@@ -280,7 +285,7 @@ class remove_user_from_group(BaseHandler):
         REST service based on Django-Piston Library.\n
     """
 
-    def read(self, request, ticket='', group='', username=''):
+    def read(self, request, ticket='', group='', username='', recursive=False):
         """
             Remove a user from a smart group
             Arguments:
@@ -289,6 +294,7 @@ class remove_user_from_group(BaseHandler):
             ticket (string) : base 64 ticket.
             group (string) : the group name
             username (string) : the username
+            recursive (string) : if present the user will be removed from all the tree of group
 
             Return:
 
@@ -301,23 +307,28 @@ class remove_user_from_group(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None:
 
                     group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
                     user_to_remove = User.objects.get(username=request.GET.get('username'))
 
-                    if not user in group.managers.all():
+                    if not group.is_manager(user):
                         response = HttpResponse(status=403)
                         response._is_string = True
                         return response
 
-                    # remove user from all sub groups
-                    while group is not None:
+                    if request.GET.get('recursive', False):
+                        # remove user from all sub groups
+                        while group is not None:
+                            group.user_set.remove(user_to_remove)
+                            try:
+                                group = VPHShareSmartGroup.objects.get(parent=group)
+                            except ObjectDoesNotExist, e:
+                                group = None
+
+                    else:
+                        # remove only from this group
                         group.user_set.remove(user_to_remove)
-                        try:
-                            group = VPHShareSmartGroup.objects.get(parent=group)
-                        except ObjectDoesNotExist, e:
-                            group = None
 
                     response = HttpResponse(status=200)
                     response._is_string = True
@@ -360,7 +371,7 @@ class group_members(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None and user.is_staff:
 
                     try:
                         group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
@@ -369,7 +380,10 @@ class group_members(BaseHandler):
                         response._is_string = True
                         return response
 
-                    return [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name), "email": user.email} for user in group.user_set.all()]
+                    return {
+                        "users": [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name), "email": user.email} for user in group.user_set.all()],
+                        "groups": [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in VPHShareSmartGroup.objects.filter(parent=group)]
+                    }
 
                 else:
                     response = HttpResponse(status=403)
@@ -407,7 +421,7 @@ class user_groups(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None and user.is_staff:
 
                     try:
                         target_user = User.objects.get(username=request.GET.get('username'))
@@ -417,6 +431,130 @@ class user_groups(BaseHandler):
                         return response
 
                     return [group.name for group in target_user.groups.all()]
+
+                else:
+                    response = HttpResponse(status=403)
+                    response._is_string = True
+                    return response
+
+        except Exception, e:
+            response = HttpResponse(status=500)
+            response._is_string = True
+            return response
+
+
+class promote_user(BaseHandler):
+    """
+        REST service based on Django-Piston Library.\n
+    """
+
+    def read(self, request, ticket='', group='', username=''):
+        """
+            Promote a user as manager of a group
+            Arguments:
+
+            request (HTTP request istance): HTTP request send from client.
+            ticket (string) : base 64 ticket.
+            group (string) : the group name
+            username (string) : the username
+
+            Return:
+
+            Successes - Json/xml/yaml format response
+            Failure - 403 error
+
+        """
+        try:
+            if request.GET.get('ticket'):
+                client_address = request.META['REMOTE_ADDR']
+                user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
+
+                if user is not None or not user.is_staff:
+
+                    group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
+                    user_to_promote = User.objects.get(username=request.GET.get('username'))
+
+                    if not group.is_manager(user):
+                        response = HttpResponse(status=403)
+                        response._is_string = True
+                        return response
+
+                    # add user to the managers
+                    group.managers.add(user_to_promote)
+
+                    # add user to the group and all sub groups
+                    while group is not None:
+                        group.user_set.add(user_to_promote)
+                        try:
+                            group = VPHShareSmartGroup.objects.get(parent=group)
+                        except ObjectDoesNotExist, e:
+                            group = None
+
+                    response = HttpResponse(status=200)
+                    response._is_string = True
+                    response.write("OK")
+                    return response
+
+                else:
+                    response = HttpResponse(status=403)
+                    response._is_string = True
+                    return response
+
+        except Exception, e:
+            response = HttpResponse(status=500)
+            response._is_string = True
+            return response
+
+
+class downgrade_user(BaseHandler):
+    """
+        REST service based on Django-Piston Library.\n
+    """
+
+    def read(self, request, ticket='', group='', username=''):
+        """
+            Promote a user as manager of a group
+            Arguments:
+
+            request (HTTP request istance): HTTP request send from client.
+            ticket (string) : base 64 ticket.
+            group (string) : the group name
+            username (string) : the username
+
+            Return:
+
+            Successes - Json/xml/yaml format response
+            Failure - 403 error
+
+        """
+        try:
+            if request.GET.get('ticket'):
+                client_address = request.META['REMOTE_ADDR']
+                user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
+
+                if user is not None or not user.is_staff:
+
+                    group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
+                    user_to_downgrade = User.objects.get(username=request.GET.get('username'))
+
+                    if not group.is_manager(user):
+                        response = HttpResponse(status=403)
+                        response._is_string = True
+                        return response
+
+                    # remove user from the group managers and all sub groups
+                    while group is not None:
+                        # group.user_set.remove(user_to_downgrade)
+                        group.managers.remove(user_to_downgrade)
+                        try:
+                            group = VPHShareSmartGroup.objects.get(parent=group)
+                        except ObjectDoesNotExist, e:
+                            group = None
+
+                    response = HttpResponse(status=200)
+                    response._is_string = True
+                    response.write("OK")
+                    return response
 
                 else:
                     response = HttpResponse(status=403)

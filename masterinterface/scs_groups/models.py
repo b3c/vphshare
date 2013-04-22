@@ -32,6 +32,25 @@ class VPHShareSmartGroup(Group):
             for user in self.user_set.all():
                 self.user_set.remove(user)
 
+    def is_manager(self, user):
+
+        if user in self.managers.all():
+            return True
+
+        try:
+            parent = self.parent
+            while parent is not None:
+                parent = VPHShareSmartGroup.objects.get(name=parent.name)
+                if parent.is_manager(user):
+                    return True
+                else:
+                    parent = parent.parent
+
+        except Exception, e:
+            return False
+
+        return False
+
 
 class Institution(Group):
 
