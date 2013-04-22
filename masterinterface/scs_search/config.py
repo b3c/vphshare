@@ -20,3 +20,18 @@ GUIDED_SEARCH_COMPLEX_QUERY_API = \
     'guided-search/complex_triples?terms=%s'
 
 PAGE_SIZE = 20
+
+DATASET_SCHEMA = 'http://vphshare.atosresearch.eu/crawling/rest/schema'
+
+CLASSES_TABLES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/classesTables?datasetName=%s'
+
+PROPERTIES_RANGES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/propertiesRanges?datasetName=%s' \
+                    '&conceptURI=%s'
+
+OBJECT_PROPERTIES_RANGES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/objectPropertiesRanges?datasetName=%s&' \
+                           'conceptURI=%s'
+
+INDIVIDUALS = 'http://vphshare.atosresearch.eu/crawling/rest/schema/individuals?datasetName=%s&conceptURI=%s'
+
+DATA_PROPERTIES_RANGES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/dataPropertiesRanges?datasetName=%s&' \
+                         'conceptURI=%s'

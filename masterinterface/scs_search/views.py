@@ -32,7 +32,7 @@ def automatic_search_view( request ):
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'automatic', 'results': results, 'dataset': '', 'class': '',
-                               'breadcrum': breadcrum},
+                               'breadcrum': breadcrum, 'classLabel': ''},
                               RequestContext(request))
 
 
@@ -76,7 +76,7 @@ def advance_search_view(request):
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
-                                  , 'class': conceptClass, 'breadcrum': breadcrum},
+                                  , 'class': conceptClass, 'breadcrum': breadcrum, 'classLabel': ''},
                               RequestContext(request))
 
 
@@ -91,14 +91,14 @@ def class_search_view(request):
 
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
-        allConcepts = class_search_connector(None, dataset, num_max_hits='200', page_num='1')['1']
+        allConcepts = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1')['1']
     else:
 
         return HttpResponseRedirect(reverse('automaticSearch'))
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'guided', 'results': allConcepts, 'dataset': dataset, 'datasetLabel': datasetLabel,
-                               'class': '', 'breadcrum': [1, 1, 0]},
+                               'class': '', 'breadcrum': [1, 1, 0], 'classLabel': ''},
                               RequestContext(request))
 
 
@@ -109,6 +109,7 @@ def annotation_search_view(request):
     dataset = ''
     datasetLabel = ''
     conceptClass = ''
+    conceptLabel = ''
     user = request.user
     name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
     results = ''
@@ -143,11 +144,12 @@ def annotation_search_view(request):
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
         conceptClass = unquote(request.GET['conceptClass'])
+        conceptClassLabel = unquote(request.GET['conceptLabel'])
         #annotations = annotation_search_connector(None, dataset, conceptClass, num_max_hits='200', page_num='10')
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
-                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1]},
+                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'classLabel': conceptClassLabel},
                               RequestContext(request))
 
 
@@ -362,8 +364,9 @@ def annotation_search_service(request):
         page_num = request.POST['pagenum']
         dataset = request.POST['dataset']
         classConcept = request.POST['classConcept']
+        classLabel = request.POST['classLabel']
 
-        connector = annotation_search_connector(free_text, dataset, classConcept, num_max_hits, page_num, )
+        connector = annotation_search_connector(free_text, dataset, classConcept, classLabel, num_max_hits, page_num, )
 
         response = HttpResponse(content=connector, content_type='application/json')
 
