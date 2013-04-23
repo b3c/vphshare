@@ -18,7 +18,7 @@ def create_configuration_file(configurations={}):
     if 'outgoing_port' in configurations and configurations['outgoing_port']:
         lines.append("outgoing_port=%s" % configurations['outgoing_port'])
     if 'granted_roles' in configurations and configurations['granted_roles']:
-        lines.append("^((?!/(admin/?)).)*$:%s;.*/admin/?:admin" % configurations['granted_roles'])
+        lines.append("granted_role=^((?!/(admin/?)).)*$:%s;.*/admin/?:admin" % configurations['granted_roles'])
 
     return "\n".join(lines)
 
