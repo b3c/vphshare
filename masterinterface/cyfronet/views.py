@@ -8,7 +8,7 @@ from masterinterface import settings
 from forms import LobcderUpload
 
 import easywebdav
-
+from lobcder import lobcderEntries
 
 def index(request):
     """ Index page to reach all available services
@@ -61,8 +61,8 @@ def lobcder(request, path = '/'):
     else:
         form = LobcderUpload()
 
-    entries = webdav.ls(settings.LOBCDER_ROOT + path)    
+    entries = lobcderEntries(webdav.ls(settings.LOBCDER_ROOT + path), settings.LOBCDER_ROOT, path)
     
     return render_to_response("cyfronet/lobcder.html",
-            {'path': path, 'entries': entries, 'form': form, 'fileName': fileName},
+            {'path': path, 'entries': entries, 'form': form},
         RequestContext(request))
