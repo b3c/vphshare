@@ -1,0 +1,32 @@
+{% extends 'cyfronet/base.html' %}
+
+{%  block title %} LOBCDER {% endblock %}
+
+{% block page-title %}
+    <span class="title">LOBCDER</span>
+    <span class="subtitle">Manage LOBCDER resources</span>
+{% endblock%}
+
+{%  block content %}
+    hello from LOBCDER, listing path: {{  path  }}<br/>
+    
+    <div class="container">
+    {% for entry in entries %}
+		<div class="row">
+			<div class="span1"><i class="icon-search"></i></div>
+    		<div class="span6">{{ entry.name }}</div>
+    		<div class="span5">{{ entry.size }}</div>
+    		</div>
+		<br/>
+    {% endfor %}
+    </div>
+    <br/>
+    <form action="/cyfronet/lobcder{{ path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+    	{% csrf_token %}
+    	{{ form.as_p }}
+		<input type="submit" value="Upload"/>
+    </form>
+    {% if fileName %}
+    	{{ fileName }}
+    {% endif %}
+{% endblock %}

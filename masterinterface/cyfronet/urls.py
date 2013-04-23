@@ -8,6 +8,7 @@ urlpatterns = patterns(
     url(r'^cloudmanager/$', 'cloudmanager'),
     url(r'^datamanager/$', 'datamanager'),
     url(r'^policymanager/$', 'policymanager'),
+    url(r'^lobcder(.*)$', 'lobcder'),
 
     # default rollback to cloudmanager
     url(r'', 'index'),
