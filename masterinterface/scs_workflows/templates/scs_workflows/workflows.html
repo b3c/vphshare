@@ -1,0 +1,41 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+{% block page-title %}
+    <span class="title">Workflows</span>
+    <span class="subtitle">the availables workflow definition files</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="row">
+        <div class="span12">
+        {% if form %}
+            {{ form.as_p }}
+        {% else %}
+        </div>
+    </div>
+    <a class="btn btn-link">New Workflow</a>
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                    <h4>@neurist Morphological Workflow</h4>
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <p style="text-align: justify; max-width: 90%;">The @neurIST workflow classifies a complex information processing chain, which originally comprised morphological,
+                        haemodynamic and structural characterisations of intracranial aneurysms appearing in a medical image. The VPH-Share
+                        @neurIST workflow concentrates on the morphological and haemodynamic characterisations, and will exclude the structural
+                        measures.</p>
+                    <a href="/static/AneuristMorphologicalWorkflowStatic.t2flow">click here to download the file</a>
+                    <button class="btn">upload a new version</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+{% endblock %}

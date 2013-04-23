@@ -160,6 +160,7 @@ INSTALLED_APPS = (
     'permissions',
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
+    'masterinterface.scs_workflows',
     'south'
     
     ##NEW_APP
