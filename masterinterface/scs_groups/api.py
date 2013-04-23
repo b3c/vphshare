@@ -88,7 +88,7 @@ class search_group(BaseHandler):
 
                     groups = Group.objects.filter(name__icontains=term)
 
-                    return [group.name for group in groups]
+                    return [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in groups]
 
                 else:
                     response = HttpResponse(status=403)
@@ -430,7 +430,7 @@ class user_groups(BaseHandler):
                         response._is_string = True
                         return response
 
-                    return [group.name for group in target_user.groups.all()]
+                    return [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in target_user.groups.all()]
 
                 else:
                     response = HttpResponse(status=403)
