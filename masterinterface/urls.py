@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 #from django.shortcuts import render_to_response
-
+from django.conf import settings
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -38,7 +38,11 @@ urlpatterns = patterns('',
     url(r'', include('masterinterface.scs_auth.urls')),
     url(r'scs_auth/', include('masterinterface.scs_auth.urls')),
     url(r'', include('masterinterface.scs_search.urls')),
-    url(r'', include('masterinterface.scs_workflows.urls'))
+    url(r'', include('masterinterface.scs_workflows.urls')),
+
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+         {'document_root': settings.MEDIA_ROOT, 'show_indexes': True })
+
 
     ##NEW_URL
 )

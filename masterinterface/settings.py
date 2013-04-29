@@ -104,6 +104,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT,'img'),
     os.path.join(PROJECT_ROOT,'css'),
     os.path.join(PROJECT_ROOT,'files'),
+    os.path.join(PROJECT_ROOT,'media'),
 )
 
 # List of finder classes that know how to find static files in
@@ -187,6 +188,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_by_name_backends',
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
+    'scs.templates_middleware.statusMessage',
     )
 
 PASSWORD_HASHERS = (

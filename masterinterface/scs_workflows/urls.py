@@ -5,7 +5,8 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     'scs_workflows.views',
-    url(r'^workflows/$', workflows , name='workflows'),
-    url(r'^workflows/new/$', create_workflow , name='workflows'),
+    url(r'^workflows/$', workflowsView, name='workflows'),
+    url(r'^workflows/new/$', create_workflow, name='createWorkflows'),
+    url(r'^workflows/edit/(?P<id>\d+)/$', edit_workflow, name='editWorkflow'),
     )
 

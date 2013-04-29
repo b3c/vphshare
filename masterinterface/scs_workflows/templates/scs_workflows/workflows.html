@@ -1,5 +1,6 @@
 {% extends 'scs/base.html' %}
 
+
 {%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
 
 {% block page-title %}
@@ -8,34 +9,64 @@
 {% endblock%}
 
 {%  block content %}
-    <div class="row">
-        <div class="span12">
+    <div class="span9">
+
         {% if form %}
-            {{ form.as_p }}
-        {% else %}
-        </div>
-    </div>
-    <a class="btn btn-link">New Workflow</a>
-    <div class="accordion" id="accordion2">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-                    <h4>@neurist Morphological Workflow</h4>
-                </a>
-            </div>
-            <div id="collapseOne" class="accordion-body collapse in">
-                <div class="accordion-inner">
-                    <p style="text-align: justify; max-width: 90%;">The @neurIST workflow classifies a complex information processing chain, which originally comprised morphological,
-                        haemodynamic and structural characterisations of intracranial aneurysms appearing in a medical image. The VPH-Share
-                        @neurIST workflow concentrates on the morphological and haemodynamic characterisations, and will exclude the structural
-                        measures.</p>
-                    <a href="/static/AneuristMorphologicalWorkflowStatic.t2flow">click here to download the file</a>
-                    <button class="btn">upload a new version</button>
+        <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
+        {% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {% for field in form.visible_fields %}
+                <div class="control-group{% if field.errors %}{% endif %}">
+                    <label class="control-label" for="{{ field.id }}">
+                        {{ field.label }} {% if field.errors %}<span class="badge badge-important" title="{{ field.errors|first }}">!</span>{% endif %}</label>
+                    <div class="controls">
+                        {{ field }}
+                        <span class="help-inline">{{ field.help_text }}</span>
+                    </div>
+
                 </div>
+            {% endfor %}
+            <input type="submit" class="btn btn-primary" value="submit your request" />
+        </form>
+
+        {% else %}
+            <a class="btn btn-link" href="/workflows/new">New Workflow</a>
+            <div class="accordion" id="accordion2">
+            {% for workflow in workflows %}
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{ workflow.metadata.resource_metadata.global_id }}">
+                                <h4>{{ workflow.title }}</h4>
+                            </a>
+                        </div>
+                        <div id="{{ workflow.metadata.resource_metadata.global_id }}" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                <p style="text-align: justify; max-width: 90%;">{{ workflow.description }}</p>
+                                <p><b>Metadata</b>
+                                <ul>
+                                    <li>Author: {{ workflow.metadata.resource_metadata.author }}</li>
+                                    <li>Category: {{ workflow.metadata.resource_metadata.category }}</li>
+                                    <li>Licence: {{ workflow.metadata.resource_metadata.licence }}</li>
+                                    <li>Type: {{ workflow.metadata.resource_metadata.type }}</li>
+                                    <li>Tags: {{ workflow.metadata.resource_metadata.tags }}</li>
+                                    <li>Semantic Annotations: {{ workflow.metadata.resource_metadata.semantic_annotations }}</li>
+                                    <li>Created:{{ workflow.metadata.resource_metadata.creation_date }}</li>
+                                    <li>Last update: {{ workflow.metadata.resource_metadata.update_date }}</li>
+                                    <li>Rating: {{ workflow.metadata.resource_metadata.rating }}</li>
+                                    <li>Views: {{ workflow.metadata.resource_metadata.views }}</li>
+                                </ul>
+                                </p>
+                                <a class="btn" href="{{ workflow.t2flow.url }}">Taverna workflow</a>
+                                <a class="btn" href="{{ workflow.xml.url }}">xml file</a>
+                                {% if workflow.user == request.user %}<a class="btn" href="/workflows/edit/{{ workflow.id }}">Edit Workflow</a>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+            {% endfor %}
             </div>
-        </div>
-    </div>
     {% endif %}
-
-
+    </div>
 {% endblock %}
