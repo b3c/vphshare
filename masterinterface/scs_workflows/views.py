@@ -4,12 +4,12 @@ from django.contrib.auth.decorators import login_required
 from .models import scsWorkflowForm, scsWorkflow
 import requests
 import re
-from lxml import etree
+import os
 import xmltodict
 
 PAYLOAD = """
     <metadata>
-    <type>File</type>
+    <type>Workflow</type>
     <name>%s</name>
     <description>%s</description>
     <author>%s</author>
@@ -49,6 +49,8 @@ def edit_workflow(request, id=False):
     try:
         if id:
             dbWorkflow = scsWorkflow.objects.get(id=id)
+            if request.user != dbWorkflow.user:
+                raise
             response = requests.get('http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/%s' % dbWorkflow.metadataId)
             metadata = xmltodict.parse(response.text.encode())['resource_metadata']
             metadata['title'] = metadata['name']
@@ -95,6 +97,21 @@ def create_workflow(request):
 
             if form.is_valid():
                 workflow = form.save(commit=False)
+
+                #validate filetype
+                filename = workflow.t2flow.path
+                ext = os.path.splitext(filename)[1]
+                ext = ext.lower()
+                if ext != '.t2flow':
+                    request.session['errormessage'] = "Taverna workflow need a correct file type, es. *.t2flow."
+                    raise
+                filename = workflow.xml.path
+                ext = os.path.splitext(filename)[1]
+                ext = ext.lower()
+                if ext != u'.xml':
+                    request.session['errormessage'] = "Input definition file need an xml file type"
+                    raise
+
                 workflow.user = request.user
                 workflow.save()
                 name = form.data['title']
