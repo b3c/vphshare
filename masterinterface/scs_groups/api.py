@@ -130,6 +130,17 @@ class create_group(BaseHandler):
                 if user is not None or not user.is_staff:
 
                     name = request.GET.get('group')
+
+                    # check if a user with the group name exists
+                    try:
+                        User.objects.get(username=name)
+                        response = HttpResponse(status=500)
+                        response._is_string = True
+                        return response
+
+                    except ObjectDoesNotExist, e:
+                        pass
+
                     parent = request.GET.get('parent', '')
 
                     group = VPHShareSmartGroup.objects.create(name=name)
