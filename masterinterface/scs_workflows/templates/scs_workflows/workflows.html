@@ -12,6 +12,7 @@
     <div class="span9">
 
         {% if form %}
+        <h3>Create new workflow</h3>
         <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
         {% csrf_token %}
             {% for hidden in form.hidden_fields %}
@@ -28,7 +29,11 @@
 
                 </div>
             {% endfor %}
-            <input type="submit" class="btn btn-primary" value="submit your request" />
+            <div class="control-group">
+                <div class="control-label"><i>* Required fields.</i></div>
+            </div>
+
+            <input type="submit" class="btn btn-primary" value="Create Workflow" />
         </form>
 
         {% else %}
@@ -59,7 +64,7 @@
                                 </ul>
                                 </p>
                                 <a class="btn" href="{{ workflow.t2flow.url }}">Taverna workflow</a>
-                                <a class="btn" href="{{ workflow.xml.url }}">xml file</a>
+                                <a class="btn" href="{{ workflow.xml.url }}" target="_blank">xml file</a>
                                 {% if workflow.user == request.user %}<a class="btn" href="/workflows/edit/{{ workflow.id }}">Edit Workflow</a>{% endif %}
                             </div>
                         </div>

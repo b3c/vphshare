@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from .models import scsWorkflowForm, scsWorkflow
 import requests
 import re
@@ -21,7 +22,7 @@ PAYLOAD = """
     <views>0</views>
     <local_id>%s</local_id>
     </metadata>"""
-
+METADATA_SERVICE = settings.ATOS_METADATA_URL + "/%s"
 @login_required
 def workflowsView(request):
 
@@ -30,7 +31,7 @@ def workflowsView(request):
         workflows = []
         key = 0
         for workflow in dbWorkflows:
-            response = requests.get('http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/%s' % workflow.metadataId)
+            response = requests.get(METADATA_SERVICE % workflow.metadataId)
             workflow.metadata = xmltodict.parse(response.text.encode())
             workflow.key = key
             key += 1
@@ -51,7 +52,7 @@ def edit_workflow(request, id=False):
             dbWorkflow = scsWorkflow.objects.get(id=id)
             if request.user != dbWorkflow.user:
                 raise
-            response = requests.get('http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/%s' % dbWorkflow.metadataId)
+            response = requests.get(METADATA_SERVICE % dbWorkflow.metadataId)
             metadata = xmltodict.parse(response.text.encode())['resource_metadata']
             metadata['title'] = metadata['name']
             form = scsWorkflowForm(metadata, instance=dbWorkflow)
@@ -62,7 +63,6 @@ def edit_workflow(request, id=False):
             if form.is_valid():
                 workflow = form.save(commit=False)
                 workflow.user = request.user
-                workflow.save()
                 name = form.data['title']
                 description = form.data['description']
                 author = request.user.username
@@ -73,17 +73,27 @@ def edit_workflow(request, id=False):
                 local_id = workflow.id
                 headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
                 data = PAYLOAD % (name,description, author, category, tags, semantic_annotations, licence, local_id)
-                response = requests.put('http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/%s' % dbWorkflow.metadataId, data,
+                response = requests.put(METADATA_SERVICE % dbWorkflow.metadataId, data,
                                          headers=headers)
+                if response.status_code != 200:
+                    request.session['errormessage'] = 'Metadata service not work, please try later.'
+                    raise StandardError
 
+                workflow.save()
                 request.session['statusmessage'] = 'Changes were successful'
                 return redirect('/workflows')
 
         return render_to_response("scs_workflows/workflows.html",
                                   {'form': form},
                                   RequestContext(request))
+    except StandardError, e:
+        return render_to_response("scs_workflows/workflows.html",
+                                  {'form': form},
+                                  RequestContext(request))
+
     except Exception, e:
-        request.session['errormessage'] = 'Some errors occurs, please try later. '
+        if not request.session['errormessage']:
+            request.session['errormessage'] = 'Some errors occurs, please try later. '
         return redirect('/workflows')
 
 
@@ -124,8 +134,13 @@ def create_workflow(request):
                 local_id = workflow.id
                 headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
                 data = PAYLOAD % (name,description, author, category, tags, semantic_annotations, licence, local_id)
-                response = requests.post('http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata', data,
+                response = requests.post(settings.ATOS_METADATA_URL, data,
                                          headers=headers)
+
+                if response.status_code != 200:
+                    workflow.delete()
+                    request.session['errormessage'] = 'Metadata service not work, please try later.'
+                    raise
 
                 regEx = re.compile('global_id>(.*?)<')
                 globalId = regEx.search(response.text).group(1)

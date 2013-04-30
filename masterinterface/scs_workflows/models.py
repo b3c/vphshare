@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 class scsWorkflow(models.Model):
 
     title = models.CharField(verbose_name="Title *", max_length=125, null=False, blank=False)
-    description = models.TextField(verbose_name="Description *", blank=True, null=True, help_text="Workflow description")
+    description = models.TextField(verbose_name="Description *", default="", blank=False, null=False,
+                                   help_text="Workflow description")
     t2flow = models.FileField(verbose_name="Taverna workflow *", upload_to='./taverna_workflows/',
                               help_text="Taverna workflow file, *.t2flow")
     xml = models.FileField(verbose_name="Input definition *", upload_to='./workflows_input/',
@@ -25,10 +26,12 @@ class scsWorkflowForm(forms.ModelForm):
     #name = forms.CharField()
     #description = forms.Textarea()
     #author = forms.CharField()
-    category = forms.CharField(help_text="Workflow Category")
-    tags = forms.CharField(help_text="Add tags,separated by comma")
-    semantic_annotations = forms.CharField(help_text="Add the annotations uri, separated by comma ")
-    licence = forms.CharField(help_text="licence type for this workflow, es. GPL, BSD, MIT .. ")
+    category = forms.CharField(help_text="Workflow Category", required=True, label="Category *")
+    tags = forms.CharField(help_text="Add tags,separated by comma", required=False, label="Tags")
+    semantic_annotations = forms.CharField(help_text="Add the annotations uri, separated by comma ", required=False,
+                                           label="Semantic annotations")
+    licence = forms.CharField(help_text="licence type for this workflow, es. GPL, BSD, MIT .. ", required=True,
+                              label='Licence *')
     #rating = forms.CharField()
     #views = forms.CharField()
     #local_id = forms.CharField()
