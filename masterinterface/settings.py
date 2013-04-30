@@ -203,7 +203,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
     },
     'loggers': {
         'django.request': {
@@ -211,6 +211,9 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'cyfronet': {
+            'level': 'DEBUG'
+        }
     }
 }
 
@@ -249,6 +252,7 @@ TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 LOBCDER_HOST = '149.156.10.138'
 LOBCDER_PORT = 8081
 LOBCDER_ROOT = '/lobcder-2.1/dav'
+LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder-2.1/rest"
 
 ##################
 # LOCAL SETTINGS #

@@ -8,11 +8,12 @@
 {% endblock%}
 
 {%  block content %}
+	{% if entries %}
     <table class="table table-hover">
     	<thead>
     		<tr>
     			<th>Name</th>
-    			<th>Size</th>
+    			<th>Size (B)</th>
     		</tr>
     	</thead>
     	<tbody>
@@ -27,13 +28,27 @@
 		    			<a href="/cyfronet/lobcder{{ entry.path }}">{{ entry.name }}</a>
 		    		</td>
 		    		<td>{{ entry.size }}</td>
+		    		<td>
+		    			<form action="/cyfronet/lobcder/delete{{ entry.path }}" method="POST" style="margin: 0px;">
+		    				{% csrf_token %}
+		    				<input type="submit" value="Delete"/>
+		    			</form>
+		    		</td>
 		    	</tr>
 		    {% endfor %}
     	</tbody>
     </table>
-    <form action="/cyfronet/lobcder{{ path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+    {% else %}
+    	no files
+    {% endif %}
+    <form action="/cyfronet/lobcder{{ path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} style="float: left; margin-right: 20px;">
     	{% csrf_token %}
     	{{ form.as_p }}
 		<input type="submit" value="Upload"/>
+    </form>
+    <form action="/cyfronet/lobcder/create{{ path }}" method="POST" style="float: left; margin-right: 20px;">
+    	{% csrf_token %}
+    	{{ createDirectoryForm.as_p }}
+		<input type="submit" value="Create directory"/>
     </form>
 {% endblock %}

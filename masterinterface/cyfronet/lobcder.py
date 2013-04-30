@@ -1,4 +1,7 @@
 from operator import attrgetter
+from masterinterface import settings
+import requests
+import xml.etree.cElementTree as xml
 
 class LobcderEntry:
     def __init__(self, name, type, size, path):
@@ -7,8 +10,17 @@ class LobcderEntry:
         self.size = size
         self.path = path
 
-def lobcderEntries(files, root, currentPath):
+def getMetadata(path, ticket):
+    response = requests.get(settings.LOBCDER_REST + '/items/query?path=' + path, auth = ('user', ticket))
+    return response.text
+
+def fillInMetadata(entry, metadata):
+    doc = xml.fromstring(metadata)
+    found = [element for element in doc.getiterator() if element.text == entry.name]
+
+def lobcderEntries(files, root, currentPath, ticket):
     result = []
+    metadata = getMetadata(currentPath, ticket)
     for file in files:
         #removing the LOBCDER root path
         path = file.name.replace(root, '', 1)
@@ -21,6 +33,8 @@ def lobcderEntries(files, root, currentPath):
             #producing a name from the last component of the path
             name = path if not path.endswith('/') else path.rstrip('/')
             name = name.split('/')[-1]
-            result.append(LobcderEntry(name, type, file.size, path))
+            entry = LobcderEntry(name, type, file.size, path)
+            fillInMetadata(entry, metadata)
+            result.append(entry)
             result.sort(key = attrgetter('type', 'name'))
     return result

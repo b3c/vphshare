@@ -123,10 +123,12 @@ class Client(object):
     def uploadChunks(self, chunks, remote_path):
         self._send('PUT', remote_path, (201, 204), data = chunks)
     def download(self, remote_path, local_path):
-        response = self._send('GET', remote_path, 200)
+        response = self._send('GET', remote_path, 200, stream = True)
         with open(local_path, 'wb') as f:
-            #f.write(response.content)
             shutil.copyfileobj(response.raw, f)
+    def downloadChunks(self, remote_path):
+        response = self._send('GET', remote_path, 200, stream = True)
+        return response
     def ls(self, remote_path='.'):
         headers = {'Depth': '1'}
         response = self._send('PROPFIND', remote_path, (207, 301), headers=headers)
