@@ -104,6 +104,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT,'img'),
     os.path.join(PROJECT_ROOT,'css'),
     os.path.join(PROJECT_ROOT,'files'),
+    os.path.join(PROJECT_ROOT,'media'),
 )
 
 # List of finder classes that know how to find static files in
@@ -160,6 +161,7 @@ INSTALLED_APPS = (
     'permissions',
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
+    'masterinterface.scs_workflows',
     'south'
     
     ##NEW_APP
@@ -186,6 +188,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_by_name_backends',
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
+    'scs.templates_middleware.statusMessage',
     )
 
 PASSWORD_HASHERS = (
@@ -251,6 +254,9 @@ TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)
+
+#METADATA SERVICE URL
+ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
 
 ##################
 # LOCAL SETTINGS #
