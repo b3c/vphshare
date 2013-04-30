@@ -7,42 +7,24 @@ import requests
 import re
 import os
 import xmltodict
+from masterinterface.atos.metadata_connector import *
 
-PAYLOAD = """
-    <metadata>
-    <type>Workflow</type>
-    <name>%s</name>
-    <description>%s</description>
-    <author>%s</author>
-    <category>%s</category>
-    <tags>%s</tags>
-    <semantic_annotations>%s</semantic_annotations>
-    <licence>%s</licence>
-    <rating>0</rating>
-    <views>0</views>
-    <local_id>%s</local_id>
-    </metadata>"""
-METADATA_SERVICE = settings.ATOS_METADATA_URL + "/%s"
 @login_required
 def workflowsView(request):
 
+    workflows = []
+
     try:
         dbWorkflows = scsWorkflow.objects.all()
-        workflows = []
-        key = 0
         for workflow in dbWorkflows:
-            response = requests.get(METADATA_SERVICE % workflow.metadataId)
-            workflow.metadata = xmltodict.parse(response.text.encode())
-            workflow.key = key
-            key += 1
+            workflow.metadata = get_resource_metadata(workflow.metadataId)
             workflows.append(workflow)
+
     except Exception, e:
         request.session['errormessage'] = 'Metadata server is down. Please try later'
         pass
 
-    return render_to_response("scs_workflows/workflows.html",
-                              {'workflows': workflows},
-                              RequestContext(request))
+    return render_to_response("scs_workflows/workflows.html", {'workflows': workflows}, RequestContext(request))
 
 
 @login_required
@@ -52,10 +34,10 @@ def edit_workflow(request, id=False):
             dbWorkflow = scsWorkflow.objects.get(id=id)
             if request.user != dbWorkflow.user:
                 raise
-            response = requests.get(METADATA_SERVICE % dbWorkflow.metadataId)
-            metadata = xmltodict.parse(response.text.encode())['resource_metadata']
-            metadata['title'] = metadata['name']
-            form = scsWorkflowForm(metadata, instance=dbWorkflow)
+
+            metadata = get_resource_metadata(dbWorkflow.metadataId)
+            metadata['resource_metadata']['title'] = metadata['resource_metadata']['name']
+            form = scsWorkflowForm(metadata['resource_metadata'], instance=dbWorkflow)
 
         if request.method == "POST":
             form = scsWorkflowForm(request.POST, request.FILES, instance=dbWorkflow)
@@ -63,21 +45,14 @@ def edit_workflow(request, id=False):
             if form.is_valid():
                 workflow = form.save(commit=False)
                 workflow.user = request.user
-                name = form.data['title']
-                description = form.data['description']
-                author = request.user.username
-                category = form.data['category']
-                tags = form.data['tags']
-                semantic_annotations = form.data['semantic_annotations']
-                licence = form.data['licence']
-                local_id = workflow.id
-                headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
-                data = PAYLOAD % (name,description, author, category, tags, semantic_annotations, licence, local_id)
-                response = requests.put(METADATA_SERVICE % dbWorkflow.metadataId, data,
-                                         headers=headers)
-                if response.status_code != 200:
-                    request.session['errormessage'] = 'Metadata service not work, please try later.'
-                    raise StandardError
+
+                metadata_payload = {'name': form.data['title'], 'description': form.data['description'],
+                                    'author': request.user.username, 'category': form.data['category'],
+                                    'tags': form.data['tags'], 'type': 'Workflow',
+                                    'semantic_annotations': form.data['semantic_annotations'],
+                                    'licence': form.data['licence'], 'local_id': workflow.id}
+
+                update_resource_metadata(dbWorkflow.metadataId, metadata_payload)
 
                 workflow.save()
                 request.session['statusmessage'] = 'Changes were successful'
@@ -86,7 +61,8 @@ def edit_workflow(request, id=False):
         return render_to_response("scs_workflows/workflows.html",
                                   {'form': form},
                                   RequestContext(request))
-    except StandardError, e:
+    except AtosServiceException, e:
+        request.session['errormessage'] = 'Metadata service not work, please try later.'
         return render_to_response("scs_workflows/workflows.html",
                                   {'form': form},
                                   RequestContext(request))
@@ -124,39 +100,29 @@ def create_workflow(request):
 
                 workflow.user = request.user
                 workflow.save()
-                name = form.data['title']
-                description = form.data['description']
-                author = request.user.username
-                category = form.data['category']
-                tags = form.data['tags']
-                semantic_annotations = form.data['semantic_annotations']
-                licence = form.data['licence']
-                local_id = workflow.id
-                headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
-                data = PAYLOAD % (name,description, author, category, tags, semantic_annotations, licence, local_id)
-                response = requests.post(settings.ATOS_METADATA_URL, data,
-                                         headers=headers)
+                metadata_payload = {'name': form.data['title'], 'description': form.data['description'],
+                                    'author': request.user.username, 'category': form.data['category'],
+                                    'tags': form.data['tags'], 'type': 'Workflow',
+                                    'semantic_annotations': form.data['semantic_annotations'],
+                                    'licence': form.data['licence'], 'local_id': workflow.id}
 
-                if response.status_code != 200:
-                    workflow.delete()
-                    request.session['errormessage'] = 'Metadata service not work, please try later.'
-                    raise
+                global_id = set_resource_metadata(metadata_payload)
 
-                regEx = re.compile('global_id>(.*?)<')
-                globalId = regEx.search(response.text).group(1)
-
-                workflow.metadataId = globalId
+                workflow.metadataId = global_id
                 workflow.save()
 
                 request.session['statusmessage'] = 'Workflow successfully created'
                 return redirect('/workflows')
             else:
                 request.session['errormessage'] = 'Some fields are wrong or missed.'
-                return render_to_response("scs_workflows/workflows.html",
-                                          {'form': form},
-                                          RequestContext(request))
+                return render_to_response("scs_workflows/workflows.html", {'form': form}, RequestContext(request))
         raise
-    except Exception, e :
-        return render_to_response("scs_workflows/workflows.html",
-                              {'form': form},
-                              RequestContext(request))
+
+    except AtosServiceException, e:
+        if workflow is not None:
+            workflow.delete()
+        request.session['errormessage'] = 'Metadata service not work, please try later.'
+        return render_to_response("scs_workflows/workflows.html", {'form': form}, RequestContext(request))
+
+    except Exception, e:
+        return render_to_response("scs_workflows/workflows.html", {'form': form}, RequestContext(request))

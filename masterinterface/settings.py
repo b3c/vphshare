@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
     'masterinterface.scs_workflows',
+    'masterinterface.atos',
     'south'
     
     ##NEW_APP
