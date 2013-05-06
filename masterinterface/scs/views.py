@@ -15,7 +15,6 @@ from masterinterface import settings
 from masterinterface.scs_auth.models import roles
 from masterinterface.atos.metadata_connector import *
 
-
 def home(request):
     """Home view """
 
@@ -32,6 +31,7 @@ def home(request):
         RequestContext(request)
     )
 
+
 def login(request):
     """Login view"""
 
@@ -40,6 +40,7 @@ def login(request):
         {'version': version, 'next': request.GET.get('next','/')},
         RequestContext(request)
     )
+
 
 @login_required
 def profile(request):
@@ -61,6 +62,7 @@ def profile(request):
         RequestContext(request)
     )
 
+
 @login_required
 def login_error(request):
     """Very simpole login error view"""
@@ -72,10 +74,12 @@ def login_error(request):
         RequestContext(request)
     )
 
+
 @login_required
 def test(request):
     """ just a test page """
     return render_to_response("scs/test.html", {'ajax':request.is_ajax}, RequestContext(request))
+
 
 @login_required
 def services(request):
@@ -123,6 +127,7 @@ def services(request):
             message,
         RequestContext(request))
 
+
 def contacts(request):
 
     if request.method == 'GET':
@@ -134,10 +139,30 @@ def contacts(request):
                 {'statusmessage':'Thanks, your message has been sent!'},
             RequestContext(request))
 
+
 def help(request):
     return render_to_response("scs/help.html",
             {},
         RequestContext(request))
+
+
+def data(request):
+    return render_to_response("scs/data.html",
+        {},
+                              RequestContext(request))
+
+
+def search_data(request):
+    return render_to_response("scs/search_data.html",
+        {},
+                              RequestContext(request))
+
+def upload_data(request):
+    return render_to_response("scs/upload_data.html",
+        {},
+                              RequestContext(request))
+
+
 
 @is_staff()
 def users_access_admin(request):
