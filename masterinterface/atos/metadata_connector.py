@@ -23,9 +23,9 @@ def get_all_resources_metadata():
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
-        metadata = xmltodict.parse(response.text.encode())
+        metadata = xmltodict.parse(response.text.encode('utf-8'))
 
-        return metadata["resource_metadata_list"]
+        return metadata["resource_metadata_list"]["resource_metadata"]
 
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
@@ -64,7 +64,7 @@ def get_resource_metadata(global_id):
 
         metadata = xmltodict.parse(response.text.encode())
 
-        return metadata
+        return metadata['resource_metadata']
 
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
@@ -131,7 +131,7 @@ def filter_resources_by_facet(facet, value):
 
         metadata = xmltodict.parse(response.text.encode())
 
-        return metadata["resource_metadata_list"]
+        return metadata["resource_metadata_list"]['resource_metadata']
 
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
@@ -165,7 +165,7 @@ def filter_resources_by_facets(query):
 
     for facet, value in query.items():
         for resource in resources:
-            if not facet in resource['resource_metadata'] or not resource['resource_metadata'][facet].count(value):
+            if not facet in resource or not resource[facet].count(value):
                 resources.remove(resource)
 
     return resources
