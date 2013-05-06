@@ -138,11 +138,6 @@ def help(request):
             {},
         RequestContext(request))
 
-@login_required
-def workflows(request):
-    return render_to_response("scs/workflows.html",
-            {},
-        RequestContext(request))
 @is_staff()
 def users_access_admin(request):
 

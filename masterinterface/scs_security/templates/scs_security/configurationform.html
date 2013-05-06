@@ -32,9 +32,7 @@
         <span class="help-block">Update the security proxy configuration by editing the file content directly</span>
 
         <label for="filecontent">Security Proxy configuration file content (click to edit)</label>
-                <pre onclick="$('#filecontent').show();$(this).hide();">
-                    {{ configuration_file }}
-                </pre>
+                <pre onclick="$('#filecontent').show();$(this).hide();">{{ configuration_file }}</pre>
         <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ configuration_file }}</textarea>
         <input type="submit" name="sumbitwithcontent" class="btn btn-primary pull-right" value="update" />
 

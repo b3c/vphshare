@@ -87,10 +87,14 @@
                 <div class="alert alert-success">
                     <strong>Status code 200</strong>
                     <pre>[
-    "testgroup0001",
-    "testgroup0002",
-    "testgroup0003",
-    "testgroup0004"
+    {
+        "groupname": "testgroup0001",
+        "subscribers": 1
+    },
+    {
+        "groupname": "testgroup0002",
+        "subscribers": 3
+    }
 ]</pre>
                 </div>
                 <div class="alert alert-error">
@@ -191,7 +195,8 @@
         <tr>
             <td><strong>Description</strong></td>
             <td><p>Add a user to a group. The requestor must be one of the group managers (the same user who has created the group)
-                <span class="label label-important">Available only to staff users</span></p></td></p></td>
+                With the <em>recursive</em> parameter, if the group has any child group, the user will be added to them as well.
+                <span class="label label-important">Available only to group managers</span></p></td></p></td>
         </tr>
         <tr>
             <td><strong>Url structure</strong></td>
@@ -207,6 +212,7 @@
                 <dl>
                     <dt>group</dt><dd>the group name</dd>
                     <dt>username</dt><dd>the user name</dd>
+                    <dt>recursive</dt><dd>if present with any non-empty value, add user to all children group<span class="label">optional</span></dd>
                     <dt>ticket</dt><dd>your authentication ticket</dd>
                 </dl>
             </td>
@@ -233,7 +239,8 @@
         <tr>
             <td><strong>Description</strong></td>
             <td><p>Remove a user from a group. The requestor must be one of the group managers (the same user who has created the group).
-                <span class="label label-important">Available only to staff users</span></p></td></p></td>
+                With the <em>recursive</em> parameter, if the group has any child group, the user will be removed from them as well.
+                <span class="label label-important">Available only to group managers</span></p></td></p></td>
         </tr>
         <tr>
             <td><strong>Url structure</strong></td>
@@ -249,6 +256,7 @@
                 <dl>
                     <dt>group</dt><dd>the group name</dd>
                     <dt>username</dt><dd>the user name</dd>
+                    <dt>recursive</dt><dd>if present with any non-empty value, remove user from all children group<span class="label">optional</span></dd>
                     <dt>ticket</dt><dd>your authentication ticket</dd>
                 </dl>
             </td>
@@ -274,8 +282,8 @@
         <tbody>
         <tr>
             <td><strong>Description</strong></td>
-            <td><p>Search for group members. Given a group name, the service returns all group members.
-                A <strong>JSON</strong> list of user attributes is returned.
+            <td><p>Search for group members. Given a group name, the service returns all group members and children groups.
+                A <strong>JSON</strong> dictionary with the list of user attributes and the list of children groups is returned.
                 <span class="label label-important">Available only to staff users</span></p></td>
         </tr>
         <tr>
@@ -300,10 +308,26 @@
             <td>
                 <div class="alert alert-success">
                     <strong>Status code 200</strong>
-                    <pre>[
-    {"username": "mbalasso", "email": "email@email.com", "fullname": "Matteo Balasso"},
-    {"username": "testuser", "email": "email@email.com", "fullname": "Test User"}
-]</pre>
+                    <pre>{
+    "users": [
+        {
+            "username": "mbalasso",
+            "fullname": "Matteo Balasso",
+            "email": "mail@example.com"
+        },
+        {
+            "username": "testuser",
+            "fullname": "Test User",
+            "email": "mail@example.com"
+        }
+    ],
+    "groups": [
+        {
+            "groupname": "testgroup0002",
+            "subscribers": 3
+        }
+    ]
+}</pre>
                 </div>
                 <div class="alert alert-error">
                     <p><strong>Status code 403</strong>  Ticket not valid or user not allowed to invoke the service</p>
@@ -347,13 +371,103 @@
                 <div class="alert alert-success">
                     <strong>Status code 200</strong>
                     <pre>[
-    "testgroup0001",
-    "tesgroup0002"
+    {
+        "groupname": "testgroup0001",
+        "subscribers": 1
+    },
+    {
+        "groupname": "testgroup0002",
+        "subscribers": 3
+    }
 ]</pre>
                 </div>
                 <div class="alert alert-error">
                     <p><strong>Status code 403</strong>  Ticket not valid or user not allowed to invoke the service</p>
                     <p><strong>Status code 404</strong> User with given username does not exists</p>
+                    <p><strong>Status code 500</strong> </p>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>/api/promoteuser</h3>
+    <table class="table">
+        <tbody>
+        <tr>
+            <td><strong>Description</strong></td>
+            <td><p>The given user is added to the given group managers. If the group has (or will have) any child group, the user will be managers of them as well.
+                <span class="label label-important">Available only to group managers</span></p></td>
+        </tr>
+        <tr>
+            <td><strong>Url structure</strong></td>
+            <td><code>{{ request.get_host }}/api/promoteuser?group=<strong class="text-info">&lt;group&gt;</strong>&username=<strong class="text-info">&lt;username&gt;</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
+        </tr>
+        <tr>
+            <td><strong>Method</strong></td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td><strong>Parameters</strong></td>
+            <td>
+                <dl>
+                    <dt>username</dt><dd>the user username</dd>
+                    <dt>group</dt><dd>the group name</dd>
+                    <dt>ticket</dt><dd>your authentication ticket</dd>
+                </dl>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Returns</strong></td>
+            <td>
+                <div class="alert alert-success">
+                    <strong>Status code 200</strong>
+                    <pre>OK</pre>
+                </div>
+                <div class="alert alert-error">
+                    <p><strong>Status code 403</strong>  Ticket not valid or user not allowed to invoke the service</p>
+                    <p><strong>Status code 500</strong> </p>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>/api/downgradeuser</h3>
+    <table class="table">
+        <tbody>
+        <tr>
+            <td><strong>Description</strong></td>
+            <td><p>The given user is removed from the given group managers. If the group has any child group, the user will be removed from their managers as well.
+                <span class="label label-important">Available only to group managers</span></p></td>
+        </tr>
+        <tr>
+            <td><strong>Url structure</strong></td>
+            <td><code>{{ request.get_host }}/api/downgradeuser?group=<strong class="text-info">&lt;group&gt;</strong>&username=<strong class="text-info">&lt;username&gt;</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
+        </tr>
+        <tr>
+            <td><strong>Method</strong></td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td><strong>Parameters</strong></td>
+            <td>
+                <dl>
+                    <dt>username</dt><dd>the user username</dd>
+                    <dt>group</dt><dd>the group name</dd>
+                    <dt>ticket</dt><dd>your authentication ticket</dd>
+                </dl>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Returns</strong></td>
+            <td>
+                <div class="alert alert-success">
+                    <strong>Status code 200</strong>
+                    <pre>OK</pre>
+                </div>
+                <div class="alert alert-error">
+                    <p><strong>Status code 403</strong>  Ticket not valid or user not allowed to invoke the service</p>
                     <p><strong>Status code 500</strong> </p>
                 </div>
             </td>
