@@ -57,10 +57,10 @@ def lobcder(request, path = '/'):
         path = '/'
     webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
     if request.method == 'POST':
-        log.info('Uploading LOBCDER file ' + request.FILES['file'].name + ' to path ' + path)
+        log.info('Uploading LOBCDER file ' + request.FILES['files'].name + ' to path ' + path)
         form = LobcderUpload(request.POST, request.FILES)
         if form.is_valid():
-            webdav.uploadChunks(request.FILES['file'], settings.LOBCDER_ROOT + path + request.FILES['file'].name)
+            webdav.uploadChunks(request.FILES['files'], settings.LOBCDER_ROOT + path + request.FILES['files'].name)
     else:
         form = LobcderUpload()
     if not path.endswith('/'):
