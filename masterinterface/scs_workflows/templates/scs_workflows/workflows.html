@@ -42,25 +42,25 @@
             {% for workflow in workflows %}
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{ workflow.metadata.resource_metadata.global_id }}">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{ workflow.metadata.global_id }}">
                                 <h4>{{ workflow.title }}</h4>
                             </a>
                         </div>
-                        <div id="{{ workflow.metadata.resource_metadata.global_id }}" class="accordion-body collapse">
+                        <div id="{{ workflow.metadata.global_id }}" class="accordion-body collapse">
                             <div class="accordion-inner">
                                 <p style="text-align: justify; max-width: 90%;">{{ workflow.description }}</p>
                                 <p><b>Metadata</b>
                                 <ul>
-                                    <li>Author: {{ workflow.metadata.resource_metadata.author }}</li>
-                                    <li>Category: {{ workflow.metadata.resource_metadata.category }}</li>
-                                    <li>Licence: {{ workflow.metadata.resource_metadata.licence }}</li>
-                                    <li>Type: {{ workflow.metadata.resource_metadata.type }}</li>
-                                    <li>Tags: {{ workflow.metadata.resource_metadata.tags }}</li>
-                                    <li>Semantic Annotations: {{ workflow.metadata.resource_metadata.semantic_annotations }}</li>
-                                    <li>Created:{{ workflow.metadata.resource_metadata.creation_date }}</li>
-                                    <li>Last update: {{ workflow.metadata.resource_metadata.update_date }}</li>
-                                    <li>Rating: {{ workflow.metadata.resource_metadata.rating }}</li>
-                                    <li>Views: {{ workflow.metadata.resource_metadata.views }}</li>
+                                    <li>Author: {{ workflow.metadata.author }}</li>
+                                    <li>Category: {{ workflow.metadata.category }}</li>
+                                    <li>Licence: {{ workflow.metadata.licence }}</li>
+                                    <li>Type: {{ workflow.metadata.type }}</li>
+                                    <li>Tags: {{ workflow.metadata.tags }}</li>
+                                    <li>Semantic Annotations: {{ workflow.metadata.semantic_annotations }}</li>
+                                    <li>Created:{{ workflow.metadata.creation_date }}</li>
+                                    <li>Last update: {{ workflow.metadata.update_date }}</li>
+                                    <li>Rating: {{ workflow.metadata.rating }}</li>
+                                    <li>Views: {{ workflow.metadata.views }}</li>
                                 </ul>
                                 </p>
                                 <a class="btn" href="{{ workflow.t2flow.url }}">Taverna workflow</a>
