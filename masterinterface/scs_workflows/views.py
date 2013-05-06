@@ -36,8 +36,8 @@ def edit_workflow(request, id=False):
                 raise
 
             metadata = get_resource_metadata(dbWorkflow.metadataId)
-            metadata['resource_metadata']['title'] = metadata['resource_metadata']['name']
-            form = scsWorkflowForm(metadata['resource_metadata'], instance=dbWorkflow)
+            metadata['title'] = metadata['name']
+            form = scsWorkflowForm(metadata, instance=dbWorkflow)
 
         if request.method == "POST":
             form = scsWorkflowForm(request.POST, request.FILES, instance=dbWorkflow)
