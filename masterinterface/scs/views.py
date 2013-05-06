@@ -7,12 +7,13 @@ from django.shortcuts import render_to_response
 from django.contrib.messages.api import get_messages
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-
+import string
+import ordereddict
 from scs import __version__ as version
 from permissions import is_staff
 from masterinterface import settings
 from masterinterface.scs_auth.models import roles
-
+from masterinterface.atos.metadata_connector import *
 
 
 def home(request):
@@ -146,4 +147,28 @@ def users_access_admin(request):
     return render_to_response("scs/usersadmin.html",
             {'Roles' : Roles.values()},
         RequestContext(request))
+
+
+def browse_data_az(request):
+    """
+        browse data in alphabetical order
+    """
+
+    all_resources = get_all_resources_metadata()
+    resources_by_letter = ordereddict.OrderedDict()
+
+    for letter in string.uppercase:
+        resources_by_letter[letter] = []
+
+    resources_by_letter['0-9'] = []
+
+    for r in all_resources:
+        key = str(r.get('name', ' ')).upper()[0]
+        if key in resources_by_letter:
+            resources_by_letter[key].append(r)
+        else:
+            resources_by_letter['0-9'].append(r)
+
+    return render_to_response("scs/browseaz.html", {"resources_by_letter": resources_by_letter, "letters": string.uppercase}, RequestContext(request))
+
 
