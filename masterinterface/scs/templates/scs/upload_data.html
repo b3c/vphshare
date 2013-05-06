@@ -1,0 +1,50 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Upload data {% endblock %}
+
+
+
+{% block page-title %}
+    <span class="title">Upload Data</span>
+    <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="row"><div class="span12"><h6 >Upload data to VPH-Share, be it structured, tabular data or unstructured images and scans, to make use of many time and cost saving facilites:
+        <ul>
+            <li>Use data with established tools and applications to personalise workflows.</li>
+            <li>Store large files in our free, fast and easy to use cloud environment.</li>
+            <li>Share data with researchers, clinicians and developers to maximise its potential.</li>
+        </ul>
+        If you're new to VPH-Share and want to find out how the upload works, <a href="#">click here</a>.<br> Otherwise, follow the relevant link below:</h6></div></div>
+
+    <div class="row row-contet" >
+        <div class="span9">
+            <ul class="inline unstyled">
+                <li class="span4 text-center" >
+                    <a href="#"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo1.png"/></a>
+                    <h6><b>Upload Unstructured Data</b></h6><p>(e.g. images and scans)</p>
+                </li>
+                <li class="span4 text-center" >
+                    <a href="#"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo2.png"/></a>
+                    <h6><b>Upload Structured Data</b></h6><p>(e.g. tables and spreadsheets)</p>
+                </li></ul>
+        </div>
+        <div class="span3 rigth-list" >
+            <div class="popover-list">
+                <div class="popover-content">
+                    <p><i class="icon-bookmark"></i><b>Documents</b></p>
+                    <p>Data Sharing Policy</p>
+                    <p>Use of Data Guidlines</p>
+                </div>
+            </div>
+            <div class="popover-list">
+                <div class="popover-content">
+                    <p><i class="icon-th"></i><b>Applications</b></p>
+                    <p>Data Publications Suite</p>
+                    <p>LOBCDER</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
