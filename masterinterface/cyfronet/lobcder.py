@@ -1,7 +1,14 @@
 from operator import attrgetter
 from masterinterface import settings
 import requests
-import xml.etree.cElementTree as xml
+from lxml import etree as xml
+from datetime import datetime
+
+class LobcderPermissions:
+    def __init__(self, owner, read, write):
+        self.owner = owner
+        self.read = read
+        self.write = write
 
 class LobcderEntry:
     def __init__(self, name, type, size, path):
@@ -9,14 +16,30 @@ class LobcderEntry:
         self.type = type
         self.size = size
         self.path = path
+        self.owner = ''
+        self.created = None
+        self.modified = None
+        driSupervised = False
+        driChecksum = None
+        driValidationDate = None
+        perms = None
+        
 
 def getMetadata(path, ticket):
     response = requests.get(settings.LOBCDER_REST + '/items/query?path=' + path, auth = ('user', ticket))
-    return response.text
+    return response.content
 
 def fillInMetadata(entry, metadata):
-    doc = xml.fromstring(metadata)
-    found = [element for element in doc.getiterator() if element.text == entry.name]
+    doc = xml.XML(metadata)
+    #find logicalDataWrapped element whoose path element contains entry.path
+    found = doc.xpath('//path[text()="' + entry.path.rstrip('/') + '"]/..|//path[text()="/' + entry.path.rstrip('/').lstrip('/').replace('/', '//') + '"]/..')[0]
+    entry.owner = found.xpath('logicalData/owner')[0].text
+    entry.created = datetime.fromtimestamp(float(found.xpath('logicalData/createDate')[0].text)/1000)
+    entry.modified = datetime.fromtimestamp(float(found.xpath('logicalData/modifiedDate')[0].text)/1000)
+    entry.driSupervised = found.xpath('logicalData/supervised')[0].text.lower() == 'true'
+    entry.driChecksum = found.xpath('logicalData/checksum')[0].text
+    entry.driValidationDate = datetime.fromtimestamp(float(found.xpath('logicalData/lastValidationDate')[0].text)/1000)
+    entry.perms = LobcderPermissions(found.xpath('permissions/owner')[0].text, found.xpath('permissions/read/text()'), found.xpath('permissions/write/text()'))
 
 def lobcderEntries(files, root, currentPath, ticket):
     result = []

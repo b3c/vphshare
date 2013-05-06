@@ -92,3 +92,9 @@ def lobcderCreateDirectory(request, path = '/'):
         webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
         webdav.mkdir(settings.LOBCDER_ROOT + path + form.cleaned_data['name'])
     return redirect('/cyfronet/lobcder' + path)
+
+@login_required
+def lobcderMetadata(request, path = '/'):
+    log.info('Updating LOBCDER metadata for path ' + path)
+    return HttpResponse("OK")
+    

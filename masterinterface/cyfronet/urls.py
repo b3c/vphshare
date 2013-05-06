@@ -10,6 +10,7 @@ urlpatterns = patterns(
     url(r'^policymanager/$', 'policymanager'),
 
     url(r'^lobcder/create(.*)$', 'lobcderCreateDirectory'),
+    url(r'^lobcder/metadata(.*)$', 'lobcderMetadata'),
     url(r'^lobcder/delete(.*)$', 'lobcderDelete'),
     url(r'^lobcder(.*)$', 'lobcder'),
 

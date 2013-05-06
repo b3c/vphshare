@@ -13,7 +13,10 @@
     	<thead>
     		<tr>
     			<th>Name</th>
+    			<th>Owner</th>
+    			<th>Created</th>
     			<th>Size (B)</th>
+    			<th>Actions</th>
     		</tr>
     	</thead>
     	<tbody>
@@ -27,17 +30,61 @@
 		    			{% endif %}
 		    			<a href="/cyfronet/lobcder{{ entry.path }}">{{ entry.name }}</a>
 		    		</td>
+		    		<td>{{ entry.owner }}</td>
+		    		<td>{{ entry.created|date:"d M Y" }}</td>
 		    		<td>{{ entry.size }}</td>
 		    		<td>
-		    			<form action="/cyfronet/lobcder/delete{{ entry.path }}" method="POST" style="margin: 0px;">
-		    				{% csrf_token %}
-		    				<input type="submit" value="Delete"/>
-		    			</form>
+		    			<a class="lobcder-delete" href="/cyfronet/lobcder/delete{{ entry.path }}">Delete</a>
+		    			<button class="btn btn-link show-metadata" data-path="{{ entry.path }}">Metadata</button>
+		    			<div class="hide metadata-popover-content" data-path="{{ entry.path }}">
+		    				<form action="/cyfronet/lobcder/metadata{{ entry.path }}" method="POST" class="lobcder-metadata-form">
+		    					{% csrf_token %}
+	    						<label class="control-label" for="readPerms">Read permissions</label>
+	    						<input name="read" type="text" id="readPerms" placeholder="Read permissions" style="width: 180px;" value="{{ entry.perms.read|join:', ' }}"/>
+	    						<label class="control-label" for="writePerms">Write permissions</label>
+	    						<input name="write" type="text" id="writePerms" placeholder="Write permissions" style="width: 180px;" value="{{ entry.perms.write|join:', ' }}"/>
+	    						<label class="checkbox">
+	    							<input name="driSupervised" type="checkbox" {% if entry.driSupervised %}checked{% endif %}>
+	    							DRI Supervised
+	    						</label>
+		    					<button type="button" class="btn" style="margin: 20px auto; display: block;" onclick="submitLobcderMetadata(this.parentNode)">Update metadata</button>
+		    					<div class="alert fade">&nbsp;</div>
+		    				</form>
+		    			</div>
 		    		</td>
 		    	</tr>
 		    {% endfor %}
     	</tbody>
     </table>
+    <script type="text/javascript">
+    	function submitLobcderMetadata(form) {
+			var f = jQuery(form);
+			var url = f.attr('action');
+			jQuery.post(url, f.serialize(), function(data) {
+				if(data == 'OK') {
+					f.find('div.alert').addClass('alert-success').removeClass('fade').html('<strong>Done!</strong> Metadata saved.');
+				} else {
+					f.find('div.alert').addClass('alert-error').removeClass('fade').html('<strong>Error!</strong> ' + data);
+				}
+			});
+    	}
+		jQuery(document).ready(function() {
+			jQuery('.lobcder-delete').click(function() {
+				if(!confirm("Are you sure you would like to remove one of LOBCDER resources?")) {
+					return false;
+				}
+			});
+			jQuery('.btn.btn-link.show-metadata').popover({
+				html: true,
+				title: function() {
+					return 'Metadata for ' + jQuery(this).attr('data-path');
+				},
+				content: function() {
+					return jQuery('.metadata-popover-content[data-path="' + jQuery(this).attr('data-path') + '"]').html();
+				}
+			});
+		});
+	</script>
     {% else %}
     	no files
     {% endif %}
