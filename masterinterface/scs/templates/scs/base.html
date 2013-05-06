@@ -62,11 +62,11 @@
                         <div class="navbar">
                             <div class="navbar-inner">
                                 <ul class="nav">
-                                    <li {% if 'exmplore' in request.path %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li>
-                                    <li {% if 'workflow' in request.path %}class="active" {% endif %}><a href="/">WORKFLOWS</a></li>
-                                    <li {% if 'data' in request.path %}class="active" {% endif %}><a href="/data">DATA</a></li>
-                                    <li {% if 'tools' in request.path %}class="active" {% endif %}><a href="/">TOOLS</a></li>
-                                    <li {% if 'search' in request.path %}class="active" {% endif %}><a href="/">SEARCH</a></li>
+                                    <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li>
+                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
+                                    <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
+                                    <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/">TOOLS</a></li>
+                                    <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/">SEARCH</a></li>
                                 </ul>
                             </div>
                         </div>

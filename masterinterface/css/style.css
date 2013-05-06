@@ -78,7 +78,7 @@ body {
 
 /* header --------------------------------------------------------*/
 header{
-    height: 200px;
+    height: 175px;
     z-index: 10;
     width: 100%;
     margin-left: -30px;
@@ -894,7 +894,7 @@ a.search-data-link:hover{
 }
 .popover-list{
     margin-top: 15px;
-    border-top:1px solid #e5e5e5;
+    border-bottom:1px solid #e5e5e5;
 }
 
 .row-contet{
