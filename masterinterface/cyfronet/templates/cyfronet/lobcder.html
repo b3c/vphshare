@@ -7,7 +7,7 @@
     <span class="subtitle">Manage LOBCDER resources</span>
 {% endblock%}
 
-{%  block content %}
+{% block content %}
 	<form action="/cyfronet/lobcder{{ path }}" method="POST" class="form-inline">
     	{% csrf_token %}
     	<div class="input-append">
@@ -42,10 +42,10 @@
 		    		<td>{{ entry.created|date:"d M Y" }}</td>
 		    		<td>{{ entry.size }}</td>
 		    		<td>
-		    			<a class="lobcder-delete" href="/cyfronet/lobcder/delete{{ entry.path }}">Delete</a>
+		    			<a class="lobcder-delete" href="/cyfronet/lobcderdelete{{ entry.path }}">Delete</a>
 		    			<button class="btn btn-link show-metadata" data-path="{{ entry.path }}">Metadata</button>
 		    			<div class="hide metadata-popover-content" data-path="{{ entry.path }}">
-		    				<form action="/cyfronet/lobcder/metadata{{ entry.path }}" method="POST" class="lobcder-metadata-form">
+		    				<form action="/cyfronet/lobcdermetadata{{ entry.path }}" method="POST" class="lobcder-metadata-form">
 		    					{% csrf_token %}
 		    					<input type="hidden" name="uid" value="{{ entry.uid }}"/>
 		    					<input type="hidden" name="owner" value="{{ entry.perms.owner }}"/>

@@ -2,7 +2,7 @@ from operator import attrgetter
 from masterinterface import settings
 import requests
 from lxml import etree as xml
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 log = logging.getLogger('cyfronet')
@@ -35,7 +35,7 @@ def getMetadata(path, ticket):
 
 def fillInMetadata(entry, metadata):
     doc = xml.XML(metadata)
-    #find logicalDataWrapped element whoose path element contains entry.path
+    #find logicalDataWrapped element whose path element contains entry.path
     found = doc.xpath('//path[text()="' + entry.path.rstrip('/') + '"]/..|//path[text()="/' + entry.path.rstrip('/').lstrip('/').replace('/', '//') + '"]/..')[0]
     entry.owner = found.xpath('logicalData/owner')[0].text
     entry.created = datetime.fromtimestamp(float(found.xpath('logicalData/createDate')[0].text)/1000)
@@ -64,7 +64,7 @@ def lobcderEntries(files, root, currentPath, ticket):
             entry = LobcderEntry(name, type, file.size, path)
             fillInMetadata(entry, metadata)
             result.append(entry)
-            result.sort(key = attrgetter('type', 'name'))
+    result.sort(key = attrgetter('type', 'name'))
     return result
 
 def updateMetadata(uid, owner, read, write, driSupervised, ticket):
@@ -86,5 +86,43 @@ def updateMetadata(uid, owner, read, write, driSupervised, ticket):
     headers = {'content-type': 'application/xml'}
     response = requests.put(settings.LOBCDER_REST + '/item/permissions/' + uid, headers = headers, data = requestBody, auth = ('user', ticket))
     log.debug('LOBCDER permission update response url, code and content: ' + response.url + ', ' + str(response.status_code) + ' - ' + response.content)
-    response = requests.put(settings.LOBCDER_REST + '/item/dri/' + uid + '/supervised/' + 'TRUE' if driSupervised else 'FALSE', auth = ('user', ticket))
+    response = requests.put(settings.LOBCDER_REST + '/item/dri/' + uid + '/supervised/' + ('TRUE' if driSupervised else 'FALSE'), auth = ('user', ticket))
     log.debug('LOBCDER DRI supervised update response url, code and content: ' + response.url + ', ' + str(response.status_code) + ' - ' + response.content)
+
+def extractEntriesFromMetadata(metadata):
+    doc = xml.XML(metadata)
+    entries = []
+    for pathElement in doc.xpath('//path'):
+        #omitting root element
+        if pathElement.text == '/':
+            continue
+        name = pathElement.getparent().xpath('logicalData/name/text()')[0]
+        type = 'file' if pathElement.getparent().xpath('logicalData/type/text()')[0] == 'logical.file' else 'directory'
+        size = pathElement.getparent().xpath('logicalData/length/text()')[0]
+        path = pathElement.text + ('/' if type == 'directory' else '')
+        if path == '/':
+            continue
+        entry = LobcderEntry(name, type, size, path)
+        fillInMetadata(entry, metadata)
+        entries.append(entry)
+    entries.sort(key = attrgetter('type', 'path'))
+    return entries
+
+def lobcderQuery(resourceName, createdAfter, createdBefore, modifiedAfter, modifiedBefore, ticket):
+    params = {}
+    createdAfterSeconds = '0'
+    createdBeforeSeconds = (datetime.now() + timedelta(days=1)).strftime('%s')
+    modifiedAfterSeconds = '0'
+    modifiedBeforeSeconds = (datetime.now() + timedelta(days=1)).strftime('%s')
+    if createdAfter:
+        createdAfterSeconds = datetime.strptime(createdAfter, '%m-%d-%Y').strftime('%s')
+    if createdBefore:
+        createdBeforeSeconds = datetime.strptime(createdBefore, '%m-%d-%Y').strftime('%s')
+    if modifiedAfter:
+        modifiedAfterSeconds = datetime.strptime(modifiedAfter, '%m-%d-%Y').strftime('%s')
+    if modifiedBefore:
+        modifiedBeforeSeconds = datetime.strptime(modifiedBefore, '%m-%d-%Y').strftime('%s')
+    params = {'path': '/', 'name': resourceName, 'cStartDate': createdAfterSeconds, 'cEndDate': createdBeforeSeconds, 'mStartDate': modifiedAfterSeconds, 'mEndDate': modifiedBeforeSeconds}
+    response = requests.get(settings.LOBCDER_REST + '/items/query', params = params, auth = ('user', ticket))
+    metadata = response.content
+    return extractEntriesFromMetadata(metadata)

@@ -12,6 +12,7 @@ from forms import LobcderCreateDirectory
 import easywebdav
 from lobcder import lobcderEntries
 from lobcder import updateMetadata
+from lobcder import lobcderQuery
 import mimetypes
 from StringIO import StringIO
 import logging
@@ -112,3 +113,11 @@ def lobcderMetadata(request, path = '/'):
     driSupervised = True if request.POST.get('driSupervised', '') else False
     updateMetadata(uid, owner, read, write, driSupervised, request.COOKIES.get('vph-tkt','No ticket'))
     return HttpResponse("OK")
+
+@login_required
+def lobcderSearch(request):
+    entries = None
+    if request.method == 'POST':
+        entries = lobcderQuery(request.POST['resourceName'], request.POST['createdAfter'], request.POST['createdBefore'],
+            request.POST['modifiedAfter'], request.POST['modifiedBefore'], request.COOKIES.get('vph-tkt','No ticket'))
+    return render_to_response('cyfronet/lobcderSearch.html', {'entries': entries}, RequestContext(request))
