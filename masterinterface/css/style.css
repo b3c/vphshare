@@ -21,9 +21,8 @@
 /* GENERAL ------------------------------------------------------------*/
 
 body {
-    padding-bottom: 35px;
     line-height: 1;
-    background: url('/static/bg.png') no-repeat top right fixed white;
+    /*BYE BYE background: url('/static/bg.png') no-repeat top right fixed white;*/
     font-size:  100%;
     margin: 0 0 1px;
     height: 100%;
@@ -78,7 +77,6 @@ body {
 
 /* header --------------------------------------------------------*/
 header{
-    height: 175px;
     z-index: 10;
     width: 100%;
     margin-left: -30px;
@@ -100,7 +98,6 @@ header #headline{
 }
 
 #breadcrumbs-wrapper{
-    width: 1170px;
     height: 25px;
     margin: 0px auto 10px auto;
 }
@@ -140,6 +137,9 @@ header #login a img{
 
 #logo-left{
     float: left;
+    background-image: url("/static/logo-web.png");
+    width: 443px;
+    height: 90px;
 }
 #logo-right{
     position: absolute;
@@ -150,8 +150,7 @@ header #login a img{
 /* TITLE --------------------------------------------------------*/
 
 #page-title-wrapper{
-    width: 1170px;
-    margin: 0 auto;
+
     background: url('/static/square.png') repeat top right, -ms-linear-gradient(left, #c5deea 0%,#8abbd7 31%,#066dab 100%); /* IE10+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c5deea', endColorstr='#066dab',GradientType=1 ); /* IE6-9 */
     background: url('/static/square.png') repeat top right, linear-gradient(to right, #c5deea 0%,#8abbd7 31%,#066dab 100%); /* W3C */
@@ -218,9 +217,26 @@ header #login a img{
 }
 
 .navbar .nav > li {
-    float: left;
+    display: table-cell;
+    width: 1%;
+    float: none;
+}
+
+.navbar .nav li a {
+    font-weight: bold;
     text-align: center;
-    width: 220px;
+    border-left: 1px solid rgba(255,255,255,.75);
+    border-right: 1px solid rgba(0,0,0,.1);
+}
+
+.navbar .nav li:first-child a {
+    border-left: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.navbar .nav li:last-child a {
+    border-right: 0;
+    border-radius: 0 3px 3px 0;
 }
 
 /* HEADERS --------------------------------------------------------*/
@@ -240,7 +256,7 @@ h4{ font-size: 24px; }
 
 h5{ font-size: 22px; }
 
-h6{ font-size: 18px; }
+h6{ font-size: 17px; }
 
 /* COLUMNS LAYOUT----------------------------------------------------------*/
 
@@ -632,13 +648,12 @@ h6{ font-size: 18px; }
 
 footer{
     width: 100%;
-    height: 60px;
     font-size: 12px;
     line-height: 45px;
     text-align: center;
     color: #868686;
     background-color: rgba(250, 250, 250, 0.18);
-    margin-top: 60px;
+    margin-top: 10px;
 }
 
 footer a{
@@ -869,9 +884,13 @@ tr.odd {
 /*data pages*/
 a.search-data-link{
     float: left;
-    height: 230px;
-    width: 230px;
-    background-size: 230px 230px !important;
+    height: 185px;
+    width: 185px;
+    background-size: 100% 100% !important;
+    -o-background-size: 100% 100% !important;
+    -webkit-background-size: 100% 100% !important;
+    -khtml-background-size: 100% 100% !important;
+    -moz-background-size: 100% 100% !important;
 }
 
 a.search-data-link:hover{
@@ -888,6 +907,7 @@ a.search-data-link:hover{
     bottom: 0px;
     right: 0px;
 }
+
 .row-list{
     margin-top:15px;
     padding-top: 20px;
@@ -903,4 +923,77 @@ a.search-data-link:hover{
     border-top: 1px solid #e5e5e5;
     position: relative;
     min-height: 316px;
+}
+
+.azlist{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.azlist>li>a{
+    float: none;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #ffffff;
+}
+.azlist>li{
+    float: left;
+    text-align: center;
+    width: 3.7%;
+    min-width: 30px;
+    padding:5px 0px 5px 0px !important;
+}
+
+.btn-mobile{
+    padding-left: 20px;
+}
+
+@media (min-width: 1200px){
+    a.search-data-link{
+        height: 230px;
+        width: 230px;
+        background-size: 100% 100% !important;
+        -o-background-size: 100% 100% !important;
+        -webkit-background-size: 100% 100% !important;
+        -khtml-background-size: 100% 100% !important;
+        -moz-background-size: 100% 100% !important;
+    }
+}
+
+@media (max-width: 979px) and (min-width: 768px){
+    a.search-data-link{
+        height: 143px;
+        width: 143px;
+        background-size: 100% 100% !important;
+        -o-background-size: 100% 100% !important;
+        -webkit-background-size: 100% 100% !important;
+        -khtml-background-size: 100% 100% !important;
+        -moz-background-size: 100% 100% !important;
+    }
+
+}
+
+@media (max-width: 767px) {
+    #logo-left{
+        float: left;
+        background-image: url("/static/logo.png");
+        width: 75px;
+        height: 81px;
+    }
+    .rigth-list {
+        position: relative;
+    }
+    .row-contet{
+        text-align: center;
+    }
+    a.search-data-link{
+        height: 150px;
+        width: 150px;
+        background-size: 100% 100% !important;
+        -o-background-size: 100% 100% !important;
+        -webkit-background-size: 100% 100% !important;
+        -khtml-background-size: 100% 100% !important;
+        -moz-background-size: 100% 100% !important;
+    }
+    .navbar .nav>li>a {
+        padding: 10px 0px 10px;
+    }
 }

@@ -40,27 +40,31 @@
     {% block extrahead %} {% endblock %}
 </head>
 <body>
-    <div id="wrap">
-    {% if not request.is_ajax %}
-
-        {% block header %}
-            <header id="header">
-                <div id="page-title-wrapper">
-                    <a href="/"><img id="logo-left" src="/static/logo-web.png"/></a>
-                    <div id="page-title">
-                        <span id="page-title-links">
-                            <a href="/help">Help</a>
-                            <span class="divider">|</span>
-                            <a href="/about">About</a>
-                            <button class="btn btn-large">Login</button>
-                        </span>
+    <div class="container">
+        {% if not request.is_ajax %}
+            {% block header %}
+                    <div id="page-title-wrapper">
+                        <a href="/"><div id="logo-left" ></div></a>
+                        <div id="page-title">
+                            <span id="page-title-links">
+                                <a href="/help">Help</a>
+                                <span class="divider">|</span>
+                                <a href="/about">About</a>
+                                <button class="btn btn-large">Login</button>
+                            </span>
+                        </div>
                     </div>
-                </div>
-
-                <div id="navbar-wrapper">
                     {% block nav %}
-                        <div class="navbar">
-                            <div class="navbar-inner">
+
+                    <div class="navbar">
+
+                        <!--<div class="navbar-inner ">
+                            <button type="button" class="btn btn-navbar collapsed btn-mobile" data-toggle="collapse" data-target=".nav-collapse">
+                                <span class="icon-bar" style="background-color: #000000"></span>
+                                <span class="icon-bar" style="background-color: #000000"></span>
+                                <span class="icon-bar" style="background-color: #000000"></span>
+                            </button>
+                            <div class="container nav-collapse collapse">
                                 <ul class="nav">
                                     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li>
                                     <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
@@ -70,53 +74,50 @@
                                 </ul>
                             </div>
                         </div>
-                    {% endblock %}
-                </div>
-
-                <div id="breadcrumbs-wrapper">
-                    <ul id="breadcrumbs" class="breadcrumb">
-                        {% if request.path|breadcrumbs|length_is:"0" %}
-                        <li class="active"><a href="/"  title="Home">home</a></li>
-                        {% else %}
-                        <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
-                        {% endif %}
-                        {%  for crumb in request.path|breadcrumbs %}
-                            <li {% if forloop.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>{% if not forloop.last %}<span class="divider">|</span>{% endif %}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </header>
-        {% endblock %}
-    {% endif %}
-        <div id="content">
-            <div class="container">
-                <div class="row">
-                    <div id="page-content" class="span12">
-                        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
-                        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{{ statusmessage  }}</span></div>{% endif %}
-                        {% block content %} {% endblock %}
+                        -->
+                        <div class="navbar-inner ">
+                            <div class="container ">
+                                <ul class="nav">
+                                    <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li>
+                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
+                                    <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
+                                    <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/">TOOLS</a></li>
+                                    <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/">SEARCH</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div id="push"></div>
-        </div>
+                    {% endblock %}
+                    {% if not request.path|breadcrumbs|length_is:"0" %}
+                    <div id="breadcrumbs-wrapper">
+                        <ul id="breadcrumbs" class="breadcrumb">
+                            <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
+                            {%  for crumb in request.path|breadcrumbs %}
+                                <li {% if forloop.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>{% if not forloop.last %}<span class="divider">|</span>{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+            {% endblock %}
+        {% endif %}
+        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
+        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{{ statusmessage  }}</span></div>{% endif %}
+        {% block content %} {% endblock %}
     </div>
 
     {% if not request.is_ajax %}
         {% block footer %}
-            <footer>
-
-                <p class="muted">
-                    <a href="/">Terms of use</a>
-                    <span class="divider">|</span>
-                    <a href="/">Privacy</a>
-                    <span class="divider">|</span>
-                    <a href="/">Security</a>
-                    <span class="divider">|</span>
-                    <span>&copy;Copyright 2013 VPH-Share All rights reserved</span>
-                </p>
-
-            </footer>
+        <footer>
+            <p class="muted">
+                <a href="/">Terms of use</a>
+                <span class="divider">|</span>
+                <a href="/">Privacy</a>
+                <span class="divider">|</span>
+                <a href="/">Security</a>
+                <span class="divider">|</span>
+                <span>&copy;Copyright 2013 VPH-Share All rights reserved</span>
+            </p>
+        </footer>
         {% endblock %}
     {% endif %}
 <script>

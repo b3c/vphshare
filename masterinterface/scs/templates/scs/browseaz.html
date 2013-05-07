@@ -8,16 +8,20 @@
 {% endblock%}
 
 {%  block content %}
-    <div class="navbar" style="background: transparent;">
-        <div class="navbar-inner" id="browse-navbar" style="background: transparent; border:none;">
-            <ul class="nav">
-                {% for letter in letters %}
-                <li style="width:auto;"><a href="#{{ letter }}"><strong style="color:black">{{ letter }}</strong></a></li>
-                {% endfor %}
-                <li style="width:auto;"><a href="#0-9"><strong style="color:black">0-9</strong></a></li>
-            </ul>
-        </div>
-    </div>
+
+            <div class="container">
+                <div class="navbar" style="background: transparent;">
+                    <div class="navbar-inner" id="browse-navbar" style="background: transparent; border:none;">
+                        <ul class="inline azlist">
+                            {% for letter in letters %}
+                            <li ><a href="#{{ letter }}"><strong style="color:black">{{ letter }}</strong></a></li>
+                            {% endfor %}
+                            <li ><a href="#0-9"><strong style="color:black">0-9</strong></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
     <div>
         {% for letter, resources in resources_by_letter.items %}
             <div style="margin-top: 15px;">

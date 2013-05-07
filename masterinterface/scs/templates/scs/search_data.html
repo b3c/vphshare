@@ -18,6 +18,21 @@
     <div class="row row-list" >
         <div class="span12"><a href="#" class="search-data-link" style="background: url('/static/img/search_data6.jpg');" ></a><a href="#" class="search-data-link" style="background: url('/static/img/search_data7.jpg');" ></a><a href="#" class="search-data-link" style="background: url('/static/img/search_data8.jpg');" ></a><a href="#" class="search-data-link" style="background: url('/static/img/search_data9.jpg');" ></a><a href="#" class="search-data-link" style="background: url('/static/img/search_data10.jpg');" ></a></div>
     </div>
+    <script type="text/javascript">
+        var cw = ($(this).width()/5)-3;
+        $('.search-data-link').css({'height':cw+'px'});
+        $('.search-data-link').css({'width':cw+'px'});
+        $(window).resize(function(event) {
+            if ($(this).width()<767){
+                var cw = ($(this).width()/5)-3;
+                $('.search-data-link').css({'height':cw+'px'});
+                $('.search-data-link').css({'width':cw+'px'});
+            }else{
+                $('.search-data-link').css({'height':''});
+                $('.search-data-link').css({'width':''});
+            }
+        })
+    </script>
     <div class="row row-contet" >
         <div class="span9">
             <h3><a href="/data/browse">Browse Data A-Z</a></h3>
