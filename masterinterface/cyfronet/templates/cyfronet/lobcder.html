@@ -8,6 +8,14 @@
 {% endblock%}
 
 {%  block content %}
+	<form action="/cyfronet/lobcder{{ path }}" method="POST" class="form-inline">
+    	{% csrf_token %}
+    	<div class="input-append">
+	    	<input id="id_name" type="text" name="name" placeholder="Directory name"/>
+			<button type="submit" class="btn" name="createDirectory">Create directory</button>
+		</div>
+		<span style="color: red;">{{ createDirectoryForm.name.errors }}</span>
+    </form>
 	{% if entries %}
     <table class="table table-hover">
     	<thead>
@@ -40,6 +48,7 @@
 		    				<form action="/cyfronet/lobcder/metadata{{ entry.path }}" method="POST" class="lobcder-metadata-form">
 		    					{% csrf_token %}
 		    					<input type="hidden" name="uid" value="{{ entry.uid }}"/>
+		    					<input type="hidden" name="owner" value="{{ entry.perms.owner }}"/>
 	    						<label class="control-label" for="readPerms">Read permissions</label>
 	    						<input name="read" type="text" id="readPerms" placeholder="Read permissions" style="width: 180px;" value="{{ entry.perms.read|join:',' }}"/>
 	    						<label class="control-label" for="writePerms">Write permissions</label>
@@ -107,11 +116,6 @@
     {% else %}
     	no files
     {% endif %}
-    <form action="/cyfronet/lobcder/create{{ path }}" method="POST" style="float: left; margin-right: 20px;">
-    	{% csrf_token %}
-    	{{ createDirectoryForm.as_p }}
-		<input type="submit" value="Create directory"/>
-    </form>
     <form id="fileupload" action="/cyfronet/lobcder{{ path }}" method="POST" enctype="multipart/form-data" style="float: left; width: 100%;">
     	{% csrf_token %}
         <div class="row fileupload-buttonbar">

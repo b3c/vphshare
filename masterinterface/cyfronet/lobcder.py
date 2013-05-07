@@ -67,8 +67,11 @@ def lobcderEntries(files, root, currentPath, ticket):
             result.sort(key = attrgetter('type', 'name'))
     return result
 
-def updateMetadata(uid, read, write, driSupervised, ticket):
+def updateMetadata(uid, owner, read, write, driSupervised, ticket):
     perms = xml.Element('permissions')
+    ownerElement = xml.Element('owner')
+    ownerElement.text = owner
+    perms.append(ownerElement)
     if read:
         for r in read.split(','):
             rElement = xml.Element('read')

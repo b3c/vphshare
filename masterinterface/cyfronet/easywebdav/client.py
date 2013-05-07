@@ -141,3 +141,13 @@ class Client(object):
         tree = xml.parse(StringIO(response.content))
         #print response.content
         return [elem2file(elem) for elem in tree.findall('{DAV:}response')]
+    def exists(self, path):
+        headers = {'Depth': '0'}
+        try:
+            response = self._send('PROPFIND', path, (207, 301), headers = headers)
+        except OperationFailed as e:
+            if e.actual_code == 404:
+                return False
+            else:
+                raise e
+        return True

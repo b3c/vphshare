@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.forms.util import ErrorList
 from masterinterface import settings
 from forms import LobcderUpload
 from forms import LobcderDelete
@@ -54,16 +55,31 @@ def lobcder(request, path = '/'):
     """
         LOBCDER Management Portlet
     """
+    form = None
+    createDirectoryForm = None
     if not path:
         path = '/'
     webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
     if request.method == 'POST':
-        log.info('Uploading LOBCDER file ' + request.FILES['files'].name + ' to path ' + path)
-        form = LobcderUpload(request.POST, request.FILES)
-        if form.is_valid():
-            webdav.uploadChunks(request.FILES['files'], settings.LOBCDER_ROOT + path + request.FILES['files'].name)
-    else:
+        if 'createDirectory' in request.POST:
+            log.info('Creating LOBCDER directory in path ' + path)
+            createDirectoryForm = LobcderCreateDirectory(request.POST)
+            if createDirectoryForm.is_valid():
+                webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
+                if not webdav.exists(settings.LOBCDER_ROOT + path + createDirectoryForm.cleaned_data['name']):
+                    webdav.mkdir(settings.LOBCDER_ROOT + path + createDirectoryForm.cleaned_data['name'])
+                    return redirect('/cyfronet/lobcder' + path)
+                else:
+                    createDirectoryForm._errors['name'] = ErrorList(['The directory already exists'])
+        else:
+            log.info('Uploading LOBCDER file ' + request.FILES['files'].name + ' to path ' + path)
+            form = LobcderUpload(request.POST, request.FILES)
+            if form.is_valid():
+                webdav.uploadChunks(request.FILES['files'], settings.LOBCDER_ROOT + path + request.FILES['files'].name)
+    if not form:
         form = LobcderUpload()
+    if not createDirectoryForm:
+        createDirectoryForm = LobcderCreateDirectory()
     if not path.endswith('/'):
         #downloading a file
         fileName = path.split('/')[-1]
@@ -73,7 +89,8 @@ def lobcder(request, path = '/'):
     else:
         #listing a directory
         entries = lobcderEntries(webdav.ls(settings.LOBCDER_ROOT + path), settings.LOBCDER_ROOT, path, request.COOKIES.get('vph-tkt','No ticket'))
-        return render_to_response("cyfronet/lobcder.html", {'path': path, 'entries': entries, 'form': form, 'deleteForm': LobcderDelete(), 'createDirectoryForm': LobcderCreateDirectory()}, RequestContext(request))
+        return render_to_response("cyfronet/lobcder.html", {'path': path, 'entries': entries, 'form': form, 'deleteForm': LobcderDelete(),
+            'createDirectoryForm': createDirectoryForm}, RequestContext(request))
 
 @login_required
 def lobcderDelete(request, path = '/'):
@@ -83,16 +100,7 @@ def lobcderDelete(request, path = '/'):
         webdav.rmdir(settings.LOBCDER_ROOT + path)
     else:
         webdav.delete(settings.LOBCDER_ROOT + path)
-    return redirect('/cyfronet/lobcder' + path.rstrip('/')[0:path.rstrip('/').rfind('/')])
-
-@login_required
-def lobcderCreateDirectory(request, path = '/'):
-    log.info('Creating LOBCDER directory in path ' + path)
-    form = LobcderCreateDirectory(request.POST)
-    if form.is_valid():
-        webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
-        webdav.mkdir(settings.LOBCDER_ROOT + path + form.cleaned_data['name'])
-    return redirect('/cyfronet/lobcder' + path)
+    return redirect('/cyfronet/lobcder' + path.rstrip('/')[0:path.rstrip('/').rfind('/')] + '/')
 
 @login_required
 def lobcderMetadata(request, path = '/'):
@@ -100,6 +108,7 @@ def lobcderMetadata(request, path = '/'):
     read = request.POST['read']
     write = request.POST['write']
     uid = request.POST['uid']
+    owner = request.POST['owner']
     driSupervised = True if request.POST.get('driSupervised', '') else False
-    updateMetadata(uid, read, write, driSupervised, request.COOKIES.get('vph-tkt','No ticket'))
+    updateMetadata(uid, owner, read, write, driSupervised, request.COOKIES.get('vph-tkt','No ticket'))
     return HttpResponse("OK")
