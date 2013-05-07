@@ -18,8 +18,8 @@ urlpatterns = patterns(
     url(r'^profile/$',profile, name='profile'),
     url(r'^login-error/$', login_error , name='login_error'),
     url(r'^services/$', services ,name='services'),
-    url(r'^workflows/$', workflows , name='workflows'),
     url(r'^test/$', test , name='test'),
     url(r'^users_admin/$', users_access_admin , name='users_access_admin'),
+    url(r'^data/browse/$', browse_data_az, name="browse_data_az")
 )
 

@@ -98,6 +98,7 @@ function guidedSearchS1CallBack(results) {
         }
 
         addTerm.children('.term-name').append('<input name="inputConceptUri" type="hidden" value="' + item + '" /> ');
+        addTerm.children('.term-name').append('<input name="inputConceptLabel" type="hidden" value="' + termsResults[item][0] + '" /> ');
         addTerm.children('.term-desc').append(termsResults[item][0]);
 
         termList.append(addTerm);
@@ -454,7 +455,8 @@ function guidedSearchS1Call() {
         url = '/class_search/',
         numMaxHits = $('#num-max-hits').val(),
         pageNum = $('#page-num').val(),
-        dataset = $('#dataset-value').val();
+        //dataset = $('#dataset-value').val();
+        dataset = $('#dataset-uri').val();
 
     if (SEARCH === false) {
 
@@ -517,7 +519,7 @@ function complexSearchS1Call() {
     });
 }
 
-function guidedSearchS2Call(val) {
+function guidedSearchS2Call(val, conceptLabel) {
 
     "use strict";
     var conceptUriList = [];
@@ -526,7 +528,7 @@ function guidedSearchS2Call(val) {
     var dataset = $("#dataset-uri").val(),
         datasetLabel = $("#dataset-value").val();
 
-    window.location.href = "/search/annotation/?dataset=" + encodeURIComponent(dataset) + "&datasetLabel=" + encodeURIComponent(datasetLabel) + "&conceptClass=" + encodeURIComponent(val);
+    window.location.href = "/search/annotation/?dataset=" + encodeURIComponent(dataset) + "&datasetLabel=" + encodeURIComponent(datasetLabel) + "&conceptClass=" + encodeURIComponent(val) + "&conceptLabel="+ encodeURIComponent(conceptLabel);
 
 }
 
@@ -567,23 +569,11 @@ function guidedSearchComplexQueryCall(saveToken) {
                 var termName = $(this).find("input[name=inputTermName]").val();
                 var conceptName = $(this).find("input[name=inputConceptName]").val();
 
+                singleTerm.push(conceptUri);
+                singleTerm.push(termName);
+                singleTerm.push(conceptName);
 
-                if ($("#" + id_group + ' > .exclude').children().hasClass('active')) {
-
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-
-                    conceptUriList.push(singleTerm);
-                }
-                else {
-
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-
-                    conceptUriList.push(singleTerm);
-                }
+                conceptUriList.push(singleTerm);
 
             });
             if (conceptUriList.length !== 0) {
@@ -677,28 +667,14 @@ function datasetQueryCall(saveToken) {
                 var conceptType = $(this).find("input[class=term-type]").val();
 
 
-                if ($("#" + id_group + ' > .exclude').children().hasClass('active')) {
+                singleTerm.push(conceptUri);
+                singleTerm.push(termName);
+                singleTerm.push(conceptName);
+                singleTerm.push(conceptValue);
+                singleTerm.push(conceptOperator);
+                singleTerm.push(conceptType);
 
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-                    singleTerm.push(conceptValue);
-                    singleTerm.push(conceptOperator);
-                    singleTerm.push(conceptType);
-
-                    conceptUriList.push(singleTerm);
-                }
-                else {
-
-                    singleTerm.push(conceptUri);
-                    singleTerm.push(termName);
-                    singleTerm.push(conceptName);
-                    singleTerm.push(conceptValue);
-                    singleTerm.push(conceptOperator);
-                    singleTerm.push(conceptType);
-
-                    conceptUriList.push(singleTerm);
-                }
+                conceptUriList.push(singleTerm);
 
             });
             if (conceptUriList.length !== 0) {
@@ -758,8 +734,10 @@ function annotationSearchCall(init) {
         url = '/annotation_search/',
         numMaxHits = $('#num-max-hits').val(),
         pageNum = $('#page-num').val(),
-        dataset = $('#dataset-value').val(),
-        classConcept = $('#class-value').val();
+        //dataset = $('#dataset-value').val(),
+        dataset = $('#dataset-uri').val(),
+        classConcept = $('#class-value').val(),
+        classLabel = $('#class-label').val();
 
     if (SEARCH === false) {
 
@@ -775,7 +753,7 @@ function annotationSearchCall(init) {
     $.ajax({
         type: 'POST',
         url: url,
-        data: {input: input, dataset: dataset, classConcept: classConcept, nummaxhits: numMaxHits, pagenum: pageNum},
+        data: {input: input, dataset: dataset, classConcept: classConcept, nummaxhits: numMaxHits, pagenum: pageNum, classLabel:classLabel},
         success: function (results) {
 
             $('#wait-terms').fadeOut();
@@ -921,12 +899,13 @@ $(function () {
     /* Create new group when term is dropped in AND group*/
     function createNewGroup(item, dropTarget) {
 
+        var setAnnotationForm = $('#set-annotation-value-form');
         var datasetValue = $('#dataset-value').val();
-        var itemValue = $('#annotation-value').val();
+        var itemValue = setAnnotationForm.find('#annotation-value').val();
         var itemSetvalue = item.find(".term-value").val();
         var setAnnotationForm = $('#set-annotation-value-form');
 
-        if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined) {
+        if (datasetValue !== '' && (itemValue === '' || itemValue === undefined) && itemSetvalue === undefined) {
 
             $('#save-annotation-value').unbind('click');
             $('#set-annotation-value').modal('show');
@@ -1029,7 +1008,10 @@ $(function () {
 
     $('#set-annotation-cancel').click(function () {
 
-        $('#annotation-value').val('');
+        var setAnnotationForm = $('#set-annotation-value-form');
+        $('#annotation-value:reset').val('');
+        setAnnotationForm.find('input').remove();
+        setAnnotationForm.find('select').remove();
 
     });
 
@@ -1037,14 +1019,14 @@ $(function () {
 
         var setAnnotationForm = $('#set-annotation-value-form');
         var datasetValue = $('#dataset-value').val();
-        var itemFormValue = $('#annotation-value').val();
+        var itemFormValue = setAnnotationForm.find('#annotation-value').val();
         var operatorFormValue = setAnnotationForm.find('.operator').val();
         var textOperator = setAnnotationForm.find('.operator option:selected').text();
         var operator = $('.term-operator')
         var itemValue = item.find(".term-value");
 
 
-        if (datasetValue !== '' && itemFormValue === '') {
+        if (datasetValue !== '' && (itemFormValue === '' || itemFormValue === undefined)) {
 
             $('#save-annotation-value').unbind('click');
             $('#set-annotation-value').modal('show');
@@ -1070,8 +1052,10 @@ $(function () {
         itemValue.val(itemFormValue);
         operator.val(operatorFormValue);
         item.find('#term-value-text').text('Value '+ textOperator + " " + itemFormValue);
-        $('#annotation-value').val('');
+        $('#annotation-value:reset').val('');
         $('#set-annotation-value').modal('hide');
+        setAnnotationForm.find('input').remove();
+        setAnnotationForm.find('select').remove();
 
     }
 
@@ -1081,14 +1065,14 @@ $(function () {
         var itemCloned;
         var setAnnotationForm = $('#set-annotation-value-form');
         var datasetValue = $('#dataset-value').val();
-        var itemValue = $('#annotation-value').val();
+        var itemValue = setAnnotationForm.find('#annotation-value').val();
         var operator = setAnnotationForm.find('.operator').val();
         var textOperator = setAnnotationForm.find('.operator option:selected').text();
         var itemSetvalue = item.find(".term-value").val();
         //if term dropped is not present in group , it can be dropped
         if (!checkDuplicate(item, dropTarget)) {
 
-            if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined) {
+            if (datasetValue !== '' && (itemValue === '' || itemValue === undefined)  && itemSetvalue === undefined) {
 
                 $('#save-annotation-value').unbind('click');
                 $('#set-annotation-value').modal('show');
@@ -1135,7 +1119,9 @@ $(function () {
                     itemCloned.find('.fieldsetTerm').append("<input type='hidden' class='term-operator' value='" + operator + "'/>");
 
 
-                    $('#annotation-value').val('');
+                    $('#annotation-value:reset').val('');
+                    setAnnotationForm.find('input').remove();
+                    setAnnotationForm.find('select').remove();
                     $('#set-annotation-value').modal('hide');
 
                 }
@@ -1412,7 +1398,7 @@ $(document).on('click', '#terms-table > .term', function () {
 
     "use strict";
 
-    guidedSearchS2Call($(this).find('input[name=inputConceptUri]').val());
+    guidedSearchS2Call($(this).find('input[name=inputConceptUri]').val(), $(this).find('input[name=inputConceptLabel]').val());
 
 
 });
@@ -1512,6 +1498,9 @@ function guidedSearchReady() {
     $('#free-text').attr('placeholder', 'Filter concepts');
     $('#free-text').val('');
     $('#annotation-value').val('');
+    var setAnnotationForm = $('#set-annotation-value-form');
+    setAnnotationForm.find('input').remove();
+    setAnnotationForm.find('select').remove();
     /*** START Reset Term List ***/
     var termList = $("#terms-list-base").clone();
     $("#term-list").remove();
@@ -1576,6 +1565,9 @@ function datasetSearchReady(dataset, datasetLabel) {
     $('#free-text').attr('placeholder', 'Filter Annotations');
     $('#free-text').val('');
     $('#annotation-value').val('');
+    var setAnnotationForm = $('#set-annotation-value-form');
+    setAnnotationForm.find('input').remove();
+    setAnnotationForm.find('select').remove();
 
     /*** START Reset Term List ***/
     var termList = $("#terms-list-base").clone();

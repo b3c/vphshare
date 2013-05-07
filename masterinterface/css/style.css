@@ -21,6 +21,7 @@
 /* GENERAL ------------------------------------------------------------*/
 
 body {
+    padding-bottom: 35px;
     line-height: 1;
     background: url('/static/bg.png') no-repeat top right fixed white;
     font-size:  100%;
@@ -77,7 +78,7 @@ body {
 
 /* header --------------------------------------------------------*/
 header{
-    height: 200px;
+    height: 175px;
     z-index: 10;
     width: 100%;
     margin-left: -30px;
@@ -863,6 +864,8 @@ tr.odd {
     position: relative;
 }
 
+
+
 /*data pages*/
 a.search-data-link{
     float: left;
@@ -891,7 +894,7 @@ a.search-data-link:hover{
 }
 .popover-list{
     margin-top: 15px;
-    border-top:1px solid #e5e5e5;
+    border-bottom:1px solid #e5e5e5;
 }
 
 .row-contet{

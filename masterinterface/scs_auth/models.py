@@ -47,9 +47,11 @@ class UserProfile(models.Model):
             else:
                 user_dict[user_key[i]] = getattr(self.user, user_key[i])
 
-        user_dict['role'] = []
+        user_dict['role'] = [self.user.username]
         for value in self.roles.all().values():
             user_dict['role'].append(value['roleName'])
+        for group in self.user.groups.all():
+            user_dict['role'].append(group.name)
             #user_dict['role'] = []
             #for j in range(0, len(user_roles)):
             #    user_dict['role'].append(user_roles[j]['role'].roleName)

@@ -1,0 +1,38 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+{% block page-title %}
+    <span class="title">Browse data</span>
+    <span class="subtitle"></span>
+{% endblock%}
+
+{%  block content %}
+    <div class="navbar" style="background: transparent;">
+        <div class="navbar-inner" id="browse-navbar" style="background: transparent; border:none;">
+            <ul class="nav">
+                {% for letter in letters %}
+                <li style="width:auto;"><a href="#{{ letter }}"><strong style="color:black">{{ letter }}</strong></a></li>
+                {% endfor %}
+                <li style="width:auto;"><a href="#0-9"><strong style="color:black">0-9</strong></a></li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        {% for letter, resources in resources_by_letter.items %}
+            <div style="margin-top: 15px;">
+                <h4 id="{{ letter }}"><strong style="margin-right: 10px">{{ letter }}</strong><a href="#" class="label label-info"><span class="icon-white icon-arrow-up"></span></a></h4>
+                <ul class="unstyled">
+                {% for resource in resources %}
+                    <li class="clear" style="border-bottom: 1px solid #d3d3d3; padding-bottom: 5px; height: 25px">
+                        <div class="pull-left">{{ resource.name }}</div>
+                        <div class="pull-right"><span class="icon icon-download-alt"></span><span class="icon icon-comment"></span></div>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

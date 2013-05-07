@@ -14,6 +14,8 @@ add_user_entries = Resource(handler=add_user_to_group)
 remove_user_entries = Resource(handler=remove_user_from_group)
 group_members_entries = Resource(handler=group_members)
 user_groups_entries = Resource(handler=user_groups)
+promote_user_entries = Resource(handler=promote_user)
+downgrade_user_entries = Resource(handler=downgrade_user)
 
 urlpatterns = patterns(
     url(r'^searchuser/', search_user_entries),
@@ -33,4 +35,8 @@ urlpatterns = patterns(
     url(r'^groupmembers\.(?P<emitter_format>.+)', group_members_entries),
     url(r'^usergroups/', user_groups_entries),
     url(r'^usergroups\.(?P<emitter_format>.+)', user_groups_entries),
+    url(r'^promoteuser/', promote_user_entries),
+    url(r'^promoteuser\.(?P<emitter_format>.+)', promote_user_entries),
+    url(r'^downgradeuser/', downgrade_user_entries),
+    url(r'^downgradeuser\.(?P<emitter_format>.+)', downgrade_user_entries),
 )

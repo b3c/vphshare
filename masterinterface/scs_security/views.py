@@ -15,8 +15,10 @@ from politicizer import create_policy_file, extract_permission_map
 from configurationizer import create_configuration_file, extract_configurations
 from masterinterface.scs.utils import get_file_data
 from masterinterface.cyfronet import cloudfacade
+from masterinterface.scs.permissions import is_staff
 
 
+@is_staff()
 def index(request):
     """
         security home page
@@ -30,13 +32,13 @@ def index(request):
         RequestContext(request)
     )
 
-
+@is_staff()
 def delete_policy(request):
     """
         delete the policy file
     """
 
-    data = {'policies': cloudfacade.get_securitypolicies(request.user.username, request.COOKIES.get('vph-tkt'))}
+    data = {}
 
     if request.method == 'POST':
         policy_name = request.POST.get('name')
@@ -47,19 +49,21 @@ def delete_policy(request):
         else:
             data['errormessage'] = "Error while deleting security policy"
 
+    data['policies'] = cloudfacade.get_securitypolicies(request.user.username, request.COOKIES.get('vph-tkt'))
+
     return render_to_response(
         'scs_security/policy.html',
         data,
         RequestContext(request)
     )
 
-
+@is_staff()
 def policy(request):
     """
         get/set the policy file
     """
 
-    data = {'policies': cloudfacade.get_securitypolicies(request.user.username, request.COOKIES.get('vph-tkt'))}
+    data = {}
 
     if request.method == 'GET':
 
@@ -76,8 +80,13 @@ def policy(request):
     else:
 
         policy_name = request.POST['name']
+
+        # create a brand new one by name
+        if 'createwithname' in request.POST:
+            policy_file = create_policy_file(['read'], [policy_name])
+
         # update/set with permissions map
-        if 'sumbitwithmap' in request.POST:
+        elif 'sumbitwithmap' in request.POST:
             actions = request.POST.getlist('actions', [])
             conditions = request.POST.getlist('conditions', [])
             policy_file = create_policy_file(actions, conditions)
@@ -101,19 +110,21 @@ def policy(request):
             else:
                 data['errormessage'] = "Error while updating security policy"
 
+    data['policies'] = cloudfacade.get_securitypolicies(request.user.username, request.COOKIES.get('vph-tkt'))
+
     return render_to_response(
         'scs_security/policy.html',
         data,
         RequestContext(request)
     )
 
-
+@is_staff()
 def configuration(request):
     """
         get/set the security proxy configuration
     """
 
-    data = {'configurations': cloudfacade.get_securityproxy_configurations(request.user.username, request.COOKIES.get('vph-tkt'))}
+    data = {}
 
     if request.method == 'GET':
 
@@ -122,7 +133,11 @@ def configuration(request):
         if configuration_name:
             data['configuration_name'] = configuration_name
             data['configuration_file'] = cloudfacade.get_securityproxy_configuration_content(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name)
-            data['properties'] = extract_configurations(data['configuration_file'])
+            try:
+                data['properties'] = extract_configurations(data['configuration_file'])
+            except Exception, e:
+                data['properties'] = {}
+                data['errormessage'] = "The configuration file loaded seems not to be valid, please upload a new one"
 
     else:
 
@@ -146,16 +161,29 @@ def configuration(request):
         elif 'sumbitwithfile' in request.POST:
             configuration_file = get_file_data(request.FILES.get('fileupload'))
 
-        if "newconfiguration" in request.POST:
-            if cloudfacade.create_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name, configuration_file):
-                data['statusmessage'] = "Security configuration file correctly created"
+        # check if the file is correct or not
+        configuration_file_ok = False
+        try:
+            extract_configurations(configuration_file)
+            configuration_file_ok = True
+        except Exception, e:
+            configuration_file_ok = False
+
+        if configuration_file_ok:
+            if "newconfiguration" in request.POST:
+                if cloudfacade.create_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name, configuration_file):
+                    data['statusmessage'] = "Security configuration file correctly created."
+                else:
+                    data['errormessage'] = "Error while creating security configuration"
             else:
-                data['errormessage'] = "Error while creating security configuration"
+                if cloudfacade.update_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name, configuration_file):
+                    data['statusmessage'] = "Security Proxy configuration correctly updated."
+                else:
+                    data['errormessage'] = "Error while updating security configuration"
         else:
-            if cloudfacade.update_securityproxy_configuration(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name, configuration_file):
-                data['statusmessage'] = "Security Proxy configuration correctly updated"
-            else:
-                data['errormessage'] = "Error while updating security configuration"
+            data['errormessage'] = "The configuration file uploaded seems not to be valid"
+
+    data['configurations'] = cloudfacade.get_securityproxy_configurations(request.user.username, request.COOKIES.get('vph-tkt'))
 
     return render_to_response(
         'scs_security/configuration.html',
@@ -164,12 +192,13 @@ def configuration(request):
     )
 
 
+@is_staff()
 def delete_configuration(request):
     """
         delete the security proxy configuration file
     """
 
-    data = {'configurations': cloudfacade.get_securityproxy_configurations(request.user.username, request.COOKIES.get('vph-tkt'))}
+    data = {}
 
     if request.method == 'POST':
         configuration_name = request.POST.get('name')
@@ -179,6 +208,8 @@ def delete_configuration(request):
 
         else:
             data['errormessage'] = "Error while deleting Security Proxy configuration"
+
+    data['configurations'] = cloudfacade.get_securityproxy_configurations(request.user.username, request.COOKIES.get('vph-tkt'))
 
     return render_to_response(
         'scs_security/configuration.html',
