@@ -189,18 +189,18 @@
         </tbody>
     </table>
 
-    <h3>/api/adduser</h3>
+    <h3>/api/addtogroup</h3>
     <table class="table">
         <tbody>
         <tr>
             <td><strong>Description</strong></td>
-            <td><p>Add a user to a group. The requestor must be one of the group managers (the same user who has created the group)
+            <td><p>Add a user or a group to a group. The requestor must be one of the group managers (the same user who has created the group)
                 With the <em>recursive</em> parameter, if the group has any child group, the user will be added to them as well.
                 <span class="label label-important">Available only to group managers</span></p></td></p></td>
         </tr>
         <tr>
             <td><strong>Url structure</strong></td>
-            <td><code>{{ request.get_host }}/api/adduser?group=<strong class="text-info">&lt;group&gt;</strong>&username=<strong class="text-info">&lt;username&gt;</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
+            <td><code>{{ request.get_host }}/api/addtogroup?group=<strong class="text-info">&lt;group&gt;</strong>&name=<strong class="text-info">&lt;name_to_add&gt;</strong>&ticket=<strong class="text-info">&lt;ticket&gt;</strong></code></td>
         </tr>
         <tr>
             <td><strong>Method</strong></td>
@@ -211,7 +211,7 @@
             <td>
                 <dl>
                     <dt>group</dt><dd>the group name</dd>
-                    <dt>username</dt><dd>the user name</dd>
+                    <dt>name</dt><dd>the user name or the group name to add</dd>
                     <dt>recursive</dt><dd>if present with any non-empty value, add user to all children group<span class="label">optional</span></dd>
                     <dt>ticket</dt><dd>your authentication ticket</dd>
                 </dl>
