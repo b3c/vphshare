@@ -3,6 +3,9 @@ from masterinterface import settings
 import requests
 from lxml import etree as xml
 from datetime import datetime
+import logging
+
+log = logging.getLogger('cyfronet')
 
 class LobcderPermissions:
     def __init__(self, owner, read, write):
@@ -19,10 +22,11 @@ class LobcderEntry:
         self.owner = ''
         self.created = None
         self.modified = None
-        driSupervised = False
-        driChecksum = None
-        driValidationDate = None
-        perms = None
+        self.driSupervised = False
+        self.driChecksum = None
+        self.driValidationDate = None
+        self.perms = None
+        self.uid = None
         
 
 def getMetadata(path, ticket):
@@ -40,6 +44,7 @@ def fillInMetadata(entry, metadata):
     entry.driChecksum = found.xpath('logicalData/checksum')[0].text
     entry.driValidationDate = datetime.fromtimestamp(float(found.xpath('logicalData/lastValidationDate')[0].text)/1000)
     entry.perms = LobcderPermissions(found.xpath('permissions/owner')[0].text, found.xpath('permissions/read/text()'), found.xpath('permissions/write/text()'))
+    entry.uid = found.xpath('logicalData/uid')[0].text
 
 def lobcderEntries(files, root, currentPath, ticket):
     result = []
@@ -61,3 +66,22 @@ def lobcderEntries(files, root, currentPath, ticket):
             result.append(entry)
             result.sort(key = attrgetter('type', 'name'))
     return result
+
+def updateMetadata(uid, read, write, driSupervised, ticket):
+    perms = xml.Element('permissions')
+    if read:
+        for r in read.split(','):
+            rElement = xml.Element('read')
+            rElement.text = r.strip()
+            perms.append(rElement)
+    if write:
+        for w in write.split(','):
+            wElement = xml.Element('write')
+            wElement.text = w.strip()
+            perms.append(wElement)
+    requestBody = xml.tostring(perms, pretty_print = True)
+    headers = {'content-type': 'application/xml'}
+    response = requests.put(settings.LOBCDER_REST + '/item/permissions/' + uid, headers = headers, data = requestBody, auth = ('user', ticket))
+    log.debug('LOBCDER permission update response url, code and content: ' + response.url + ', ' + str(response.status_code) + ' - ' + response.content)
+    response = requests.put(settings.LOBCDER_REST + '/item/dri/' + uid + '/supervised/' + 'TRUE' if driSupervised else 'FALSE', auth = ('user', ticket))
+    log.debug('LOBCDER DRI supervised update response url, code and content: ' + response.url + ', ' + str(response.status_code) + ' - ' + response.content)

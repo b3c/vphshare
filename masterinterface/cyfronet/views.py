@@ -10,6 +10,7 @@ from forms import LobcderDelete
 from forms import LobcderCreateDirectory
 import easywebdav
 from lobcder import lobcderEntries
+from lobcder import updateMetadata
 import mimetypes
 from StringIO import StringIO
 import logging
@@ -96,5 +97,9 @@ def lobcderCreateDirectory(request, path = '/'):
 @login_required
 def lobcderMetadata(request, path = '/'):
     log.info('Updating LOBCDER metadata for path ' + path)
+    read = request.POST['read']
+    write = request.POST['write']
+    uid = request.POST['uid']
+    driSupervised = True if request.POST.get('driSupervised', '') else False
+    updateMetadata(uid, read, write, driSupervised, request.COOKIES.get('vph-tkt','No ticket'))
     return HttpResponse("OK")
-    
