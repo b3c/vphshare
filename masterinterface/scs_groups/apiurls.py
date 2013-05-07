@@ -10,7 +10,7 @@ search_user_entries = Resource(handler=search_user)
 search_group_entries = Resource(handler=search_group)
 create_group_entries = Resource(handler=create_group)
 delete_group_entries = Resource(handler=delete_group)
-add_user_entries = Resource(handler=add_user_to_group)
+add_to_group_entries = Resource(handler=add_to_group)
 remove_user_entries = Resource(handler=remove_user_from_group)
 group_members_entries = Resource(handler=group_members)
 user_groups_entries = Resource(handler=user_groups)
@@ -27,8 +27,8 @@ urlpatterns = patterns(
     url(r'^creategroup\.(?P<emitter_format>.+)', create_group_entries),
     url(r'^deletegroup/', delete_group_entries),
     url(r'^deletegroup\.(?P<emitter_format>.+)', delete_group_entries),
-    url(r'^adduser/', add_user_entries),
-    url(r'^adduser\.(?P<emitter_format>.+)', add_user_entries),
+    url(r'^addtogroup/', add_to_group_entries),
+    url(r'^addtogroup\.(?P<emitter_format>.+)', add_to_group_entries),
     url(r'^removeuser/', remove_user_entries),
     url(r'^removeuser\.(?P<emitter_format>.+)', remove_user_entries),
     url(r'^groupmembers/', group_members_entries),
