@@ -225,8 +225,6 @@ header #login a img{
 .navbar .nav li a {
     font-weight: bold;
     text-align: center;
-    border-left: 1px solid rgba(255,255,255,.75);
-    border-right: 1px solid rgba(0,0,0,.1);
 }
 
 .navbar .nav li:first-child a {
@@ -955,6 +953,12 @@ a.search-data-link:hover{
         -webkit-background-size: 100% 100% !important;
         -khtml-background-size: 100% 100% !important;
         -moz-background-size: 100% 100% !important;
+    }
+}
+@media (max-width: 979px){
+    .navbar .nav > li {
+        display: block;
+        width: auto;
     }
 }
 

@@ -56,9 +56,9 @@
                     </div>
                     {% block nav %}
 
-                    <div class="navbar">
+                    <div class="navbar ">
 
-                        <!--<div class="navbar-inner ">
+                        <div class="navbar-inner ">
                             <button type="button" class="btn btn-navbar collapsed btn-mobile" data-toggle="collapse" data-target=".nav-collapse">
                                 <span class="icon-bar" style="background-color: #000000"></span>
                                 <span class="icon-bar" style="background-color: #000000"></span>
@@ -74,18 +74,7 @@
                                 </ul>
                             </div>
                         </div>
-                        -->
-                        <div class="navbar-inner ">
-                            <div class="container ">
-                                <ul class="nav">
-                                    <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li>
-                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
-                                    <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
-                                    <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/">TOOLS</a></li>
-                                    <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/">SEARCH</a></li>
-                                </ul>
-                            </div>
-                        </div>
+
                     </div>
                     {% endblock %}
                     {% if not request.path|breadcrumbs|length_is:"0" %}
