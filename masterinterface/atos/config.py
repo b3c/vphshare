@@ -1,7 +1,9 @@
 """
     scs_search: config.py Module
 """
-__author__ = ''
+__author__ = 'a.saglimbeni@scsitaly.com'
+
+# Semantica api urls and configurations
 
 AUTOMATIC_SEARCH_API = \
     'http://vphshare.atosresearch.eu/semantic-retrieval/rest/data/' \
@@ -35,3 +37,15 @@ INDIVIDUALS = 'http://vphshare.atosresearch.eu/crawling/rest/schema/individuals?
 
 DATA_PROPERTIES_RANGES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/dataPropertiesRanges?datasetName=%s&' \
                          'conceptURI=%s'
+
+# Metadata api urls
+
+GLOBAL_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
+
+RESOURCE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/%s'
+
+FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/facets/%s?value=%s'
+
+FILTER_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/filter?logicalExpression=%s'
+
+FACETS_LIST = [u'type', u'name', u'description', u'author', u'category', u'tags', u'semantic_annotations', u'licence', u'rating', u'views', u'local_id']

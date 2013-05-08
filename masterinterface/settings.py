@@ -97,6 +97,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT,'img'),
     os.path.join(PROJECT_ROOT,'css'),
     os.path.join(PROJECT_ROOT,'files'),
+    os.path.join(PROJECT_ROOT,'media'),
 )
 
 # List of finder classes that know how to find static files in
@@ -153,8 +154,10 @@ INSTALLED_APPS = (
     'permissions',
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
+    'masterinterface.scs_workflows',
+    'masterinterface.atos',
     'south'
-    
+
     ##NEW_APP
 )
 
@@ -179,6 +182,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_by_name_backends',
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
+    'scs.templates_middleware.statusMessage',
     )
 
 PASSWORD_HASHERS = (
@@ -248,11 +252,16 @@ TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)
 
+
 #LOBCDER settings
 LOBCDER_HOST = '149.156.10.138'
 LOBCDER_PORT = 8081
 LOBCDER_ROOT = '/lobcder-2.1/dav'
 LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder-2.1/rest"
+
+#METADATA SERVICE URL
+ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
+
 
 ##################
 # LOCAL SETTINGS #

@@ -14,7 +14,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 
-from connector import *
+from masterinterface.atos.semantic_connector import *
 from models import Query
 from json2sparql import json2sparql
 

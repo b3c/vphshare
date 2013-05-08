@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-    scs_search: connector.py Module
+    scs_search: semantic_connector.py Module
 """
 __author__ = 'asaglimbeni'
 
@@ -13,7 +13,7 @@ from lxml import etree
 from ordereddict import OrderedDict
 from django.conf import settings
 
-from config import *
+from masterinterface.atos.config import *
 
 
 def automatic_search_connector(free_text):
