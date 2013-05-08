@@ -157,11 +157,31 @@ def search_data(request):
         {},
                               RequestContext(request))
 
+
 def upload_data(request):
     return render_to_response("scs/upload_data.html",
         {},
                               RequestContext(request))
 
+
+def manage_data(request):
+    from masterinterface.scs_workflows.models import scsWorkflow
+
+    workflows = []
+
+    try:
+        dbWorkflows = scsWorkflow.objects.all()
+        for workflow in dbWorkflows:
+            workflow.metadata = get_resource_metadata(workflow.metadataId)
+            workflows.append(workflow)
+
+    except Exception, e:
+        request.session['errormessage'] = 'Metadata server is down. Please try later'
+        pass
+
+    return render_to_response("scs/manage_data.html",
+                              {'workflows': workflows},
+                              RequestContext(request))
 
 
 @is_staff()
@@ -170,8 +190,8 @@ def users_access_admin(request):
 
     Roles = roles.objects.all()
     return render_to_response("scs/usersadmin.html",
-            {'Roles' : Roles.values()},
-        RequestContext(request))
+                              {'Roles': Roles.values()},
+                              RequestContext(request))
 
 
 def browse_data_az(request):

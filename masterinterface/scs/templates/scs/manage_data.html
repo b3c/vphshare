@@ -1,9 +1,111 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+{% extends 'scs/base.html' %}
 
-</body>
-</html>
+{%  block title %} Manage Data {% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
+
+{% block page-title %}
+    <span class="title">Manage Data</span>
+    <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="row">
+        <div class="span12">
+
+            <div class="accordion" id="accordion2">
+
+                <div class="accordion-group accordion-manage-data">
+                    <div class="accordion-heading collapse-manage-data">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#f2c84fa7-be6e-4c07-a589-5124066f6425">
+                            <h4>My Data</h4>
+                            <span class="icon-chevron-up pull-right"></span>
+                            <span class="icon-chevron-down pull-right"></span>
+                        </a>
+                    </div>
+                    <div id="f2c84fa7-be6e-4c07-a589-5124066f6425" class="accordion-body collapse">
+                        <div class="row row-manage-data">
+                            <div class="span3">Example</div>
+                            <div class="span3">Author: juanarenas</div>
+                            <div class="span3">Published: 2013-05-03 00:17</div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        </div>
+                        <div class="row row-manage-data">
+                            <div class="span3">ArchLinux-1367996837250</div>
+                            <div class="span3">Author: juanarenas</div>
+                            <div class="span3">Published: 2013-05-03 00:17</div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        </div>
+                        <div class="row row-manage-data">
+                            <div class="span3">ArchLinux-1367996837250</div>
+                            <div class="span3">Author: juanarenas</div>
+                            <div class="span3">Published: 2013-05-03 00:17</div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="accordion-group accordion-manage-data">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#af4163ea-5991-4d6b-bb7b-e8c86d894c65">
+                            <h4>My Applications</h4>
+                            <span class="icon-chevron-up pull-right"></span>
+                            <span class="icon-chevron-down pull-right"></span>
+                        </a>
+                    </div>
+                    <div id="af4163ea-5991-4d6b-bb7b-e8c86d894c65" class="accordion-body collapse">
+                        <div class="row row-manage-data">
+                            <div class="span3">Example</div>
+                            <div class="span3">Author: juanarenas</div>
+                            <div class="span3">Published: 2013-05-03 00:17</div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        </div>
+                        <div class="row row-manage-data">
+                            <div class="span3">ArchLinux-1367996837250</div>
+                            <div class="span3">Author: juanarenas</div>
+                            <div class="span3">Published: 2013-05-03 00:17</div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        </div>
+                        <div class="row row-manage-data">
+                            <div class="span3">ArchLinux-1367996837250</div>
+                            <div class="span3">Author: juanarenas</div>
+                            <div class="span3">Published: 2013-05-03 00:17</div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="accordion-group accordion-manage-data">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#b2e1c163-942d-4d4c-8199-a69a71f18495">
+                            <h4>My Workflows</h4>
+                            <span class="icon-chevron-up pull-right"></span>
+                            <span class="icon-chevron-down pull-right"></span>
+                        </a>
+                    </div>
+                    <div id="b2e1c163-942d-4d4c-8199-a69a71f18495" class="accordion-body collapse">
+                    {% for workflow in workflows %}
+                        <div class="row row-manage-data">
+                            <div class="span3">{{ workflow.title }}</div>
+                            <div class="span3">Author: {{ workflow.metadata.author }}</div>
+                            <div class="span3">Published: {{ workflow.metadata.creation_date }}</div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
