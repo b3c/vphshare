@@ -21,12 +21,12 @@
                     <p> {{ group.description }}</p>
                 </div>
                 <div class="span2">
-                    <span><span class="icon-user"></span> {{ group.user_set.all|length }}
+                    <span title="number of subscribers"><span class="icon-user"></span> {{ group.user_set.all|length }}
                     {% if not group.pending_subscriptions|length_is:0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.pending_subscriptions|length }}</span>{% endif %}</span>
                 </div>
                 {% if group.studies %}
                 <div class="span2">
-                    <span><span class="icon-book"></span> {{ group.studies|length }} {% if group.studies_actions > 0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.studies_actions }}</span>{% endif %}</span>
+                    <span title="number of studies"><span class="icon-book"></span> {{ group.studies|length }} {% if group.studies_actions > 0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.studies_actions }}</span>{% endif %}</span>
                 </div>
                 {% endif %}
             </div>
@@ -123,7 +123,7 @@
                                             <p> {{ group.selected_study.description }}</p>
                                         </div>
                                         <div class="span2">
-                                            <span><span class="icon-user"></span>{{ group.selected_study.user_set.all|length }}
+                                            <span title="number of subscribers"><span class="icon-user"></span>{{ group.selected_study.user_set.all|length }}
                                             {% if request.user in group.selected_study.principals %}<span class="badge badge-important">{{ group.selected_study.pending_subscriptions|length }}</span>{% endif %}</span>
                                         </div>
                                         <div class="span2">
