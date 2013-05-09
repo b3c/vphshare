@@ -15,11 +15,12 @@ urlpatterns = patterns(
     url(r'^data/$', data ,  name='data'),
     url(r'^data/search-data/$', search_data ,  name='search-data'),
     url(r'^data/upload-data/$', upload_data ,  name='upload-data'),
+    url(r'^data/manage-data/$', manage_data ,  name='manage-data'),
+    url(r'^data/browse/$', browse_data_az, name="browse_data_az"),
     url(r'^profile/$',profile, name='profile'),
     url(r'^login-error/$', login_error , name='login_error'),
     url(r'^services/$', services ,name='services'),
     url(r'^test/$', test , name='test'),
     url(r'^users_admin/$', users_access_admin , name='users_access_admin'),
-    url(r'^data/browse/$', browse_data_az, name="browse_data_az")
 )
 

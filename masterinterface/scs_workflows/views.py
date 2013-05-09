@@ -1,12 +1,8 @@
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
 from .models import scsWorkflowForm, scsWorkflow
-import requests
-import re
 import os
-import xmltodict
 from masterinterface.atos.metadata_connector import *
 
 @login_required

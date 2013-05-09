@@ -947,6 +947,36 @@ a.search-data-link:hover{
     padding-left: 20px;
 }
 
+.collapse-manage-data{
+    background-color: rgb(211, 211, 211);
+    position: relative;
+}
+.collapse-manage-data .icon-chevron-up{
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+
+.collapse-manage-data .icon-chevron-down{
+    position: absolute;
+    right: 20px;
+    top: 23px;
+}
+
+.accordion-manage-data .in{
+    margin-bottom: 40px;
+}
+
+.row-manage-data{
+    padding: 12px 0px 12px 25px;
+    border-bottom: 1px solid #d3d3d3;
+
+}
+
+.row-manage-data . span4:first-child{
+    margin-left: 10px;
+}
+
 @media (min-width: 1200px){
     a.search-data-link{
         height: 230px;
