@@ -44,7 +44,7 @@
     {% if selected_group %}
         {% usemacro group_details selected_group  %}
     {% endif %}
-    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All Groups</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="smart-filter" class="btn">VPH-Smart</button></li></ul></div>
+    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All Groups</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="smart-filter" class="btn">Smart Groups</button></li></ul></div>
     <div class="row">
     <ul class="groups-list">
         {% if request.user.is_superuser and pending_institutions%}
