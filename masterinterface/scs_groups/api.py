@@ -41,10 +41,12 @@ class search_user(BaseHandler):
                     term = request.GET.get('term', '')
 
                     users = User.objects.filter(
-                        Q(username__icontains=term) | Q(email__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)
+                        Q(username__icontains=term) | Q(email__icontains=term) | Q(first_name__icontains=term) | Q(
+                            last_name__icontains=term)
                     )
 
-                    return [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name), "email": user.email} for user in users]
+                    return [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name),
+                             "email": user.email} for user in users]
 
                 else:
                     response = HttpResponse(status=403)
@@ -101,8 +103,7 @@ class search_group(BaseHandler):
             return response
 
 
-def can_be_child(child,parent):
-
+def can_be_child(child, parent):
     if child == parent:
         return False
 
@@ -144,8 +145,8 @@ class create_group(BaseHandler):
 
                     # check if a user with the group name exists
                     try:
-                        User.objects.get(username=name)
-                        Group.objects.get(name=name)
+                        User.objects.get(username__iexact=name) #select case-insensitive
+                        Group.objects.get(name__iexact=name)    #select case-insensitive
                         response = HttpResponse(status=500)
                         response._is_string = True
                         return response
@@ -425,8 +426,10 @@ class group_members(BaseHandler):
                         return response
 
                     return {
-                        "users": [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name), "email": user.email} for user in group.user_set.all()],
-                        "groups": [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in VPHShareSmartGroup.objects.filter(parent=group)]
+                        "users": [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name),
+                                   "email": user.email} for user in group.user_set.all()],
+                        "groups": [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in
+                                   VPHShareSmartGroup.objects.filter(parent=group)]
                     }
 
                 else:
@@ -474,7 +477,8 @@ class user_groups(BaseHandler):
                         response._is_string = True
                         return response
 
-                    return [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in target_user.groups.all()]
+                    return [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in
+                            target_user.groups.all()]
 
                 else:
                     response = HttpResponse(status=403)
