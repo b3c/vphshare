@@ -104,11 +104,11 @@ class search_group(BaseHandler):
 
 
 def can_be_child(child, parent):
-    if child == parent:
+    if child.name == parent.name:
         return False
 
     if parent.parent:
-        can_be_child(child, parent.parent)
+        return can_be_child(child, parent.parent)
 
     return True
 
@@ -146,6 +146,14 @@ class create_group(BaseHandler):
                     # check if a user with the group name exists
                     try:
                         User.objects.get(username__iexact=name) #select case-insensitive
+                        response = HttpResponse(status=500)
+                        response._is_string = True
+                        return response
+
+                    except ObjectDoesNotExist, e:
+                        pass
+
+                    try:
                         Group.objects.get(name__iexact=name)    #select case-insensitive
                         response = HttpResponse(status=500)
                         response._is_string = True
@@ -163,13 +171,7 @@ class create_group(BaseHandler):
 
                     if parent:
                         try:
-                            group_parent = Group.objects.get(name=parent)
-                            if not can_be_child(group, parent):
-                                group.delete()
-                                response = HttpResponse(status=500, content="constraint violation circularity")
-                                response._is_string = True
-                                return response
-                            group.parent = group_parent
+                            group.parent = Group.objects.get(name=parent)
                         except ObjectDoesNotExist, e:
                             pass
 
@@ -305,7 +307,7 @@ class add_to_group(BaseHandler):
                             group_to_add.parent = group
                             group_to_add.save()
                         except ObjectDoesNotExist, e:
-                            response = HttpResponse(status=404)
+                            response = HttpResponse(status=403)
                             response._is_string = True
                             return response
 
