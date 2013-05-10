@@ -101,6 +101,17 @@ class search_group(BaseHandler):
             return response
 
 
+def can_be_child(child,parent):
+
+    if child == parent:
+        return False
+
+    if parent.parent:
+        can_be_child(child, parent.parent)
+
+    return True
+
+
 class create_group(BaseHandler):
     """
         REST service based on Django-Piston Library.\n
@@ -134,6 +145,7 @@ class create_group(BaseHandler):
                     # check if a user with the group name exists
                     try:
                         User.objects.get(username=name)
+                        Group.objects.get(name=name)
                         response = HttpResponse(status=500)
                         response._is_string = True
                         return response
@@ -150,7 +162,13 @@ class create_group(BaseHandler):
 
                     if parent:
                         try:
-                            group.parent = Group.objects.get(name=parent)
+                            group_parent = Group.objects.get(name=parent)
+                            if not can_be_child(group, parent):
+                                group.delete()
+                                response = HttpResponse(status=500, content="constraint violation circularity")
+                                response._is_string = True
+                                return response
+                            group.parent = group_parent
                         except ObjectDoesNotExist, e:
                             pass
 
@@ -233,7 +251,7 @@ class add_to_group(BaseHandler):
         REST service based on Django-Piston Library.\n
     """
 
-    def read(self, request, ticket='', group='', username=''):
+    def read(self, request, ticket='', group='', name=''):
         """
             Add a user to a smart group
             Arguments:
@@ -279,6 +297,10 @@ class add_to_group(BaseHandler):
                     except ObjectDoesNotExist, e:
                         try:
                             group_to_add = VPHShareSmartGroup.objects.get(name=request.GET.get('name'))
+                            if not can_be_child(group_to_add, group):
+                                response = HttpResponse(status=500, content="constraint violation circularity")
+                                response._is_string = True
+                                return response
                             group_to_add.parent = group
                             group_to_add.save()
                         except ObjectDoesNotExist, e:
