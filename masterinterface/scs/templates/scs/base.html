@@ -50,7 +50,27 @@
                                 <a href="/help">Help</a>
                                 <span class="divider">|</span>
                                 <a href="/about">About</a>
-                                <button class="btn btn-large">Login</button>
+                                {% block login %}
+                                    {% if not request.user.is_authenticated %}
+                                        <button id="login" href="#" class="btn btn-large" data-toggle="popover" data-placement="bottom" title="" data-original-title="Login">Login</button>
+                                        <script type="text/javascript">
+
+                                            $("#login").popover({
+                                                placement : 'bottom', //placement of the popover. also can use top, bottom, left or right
+                                                title : '', //this is the top title bar of the popover. add some basic css
+                                                html: 'true', //needed to show html of course
+                                                content : '<style>.popover {max-width:none !important;}</style><iframe id="loginFrame" src="/scs_auth/bt_loginform" width="100%" height="315px" frameborder="0" align="middle"></iframe>',
+                                                container: 'body'
+                                            });
+
+                                        </script>
+                                    {% else %}
+                                        <span style="margin-left: 20px;">Hi, {{ request.user.first_name|default:"Friend"}}!</span>
+                                        <!--<a href="/profile/">Profile</a>
+                                        <span class="divider">|</span>-->
+                                        <button  class="btn popup" rel="#overlay" href="/logout">Logout</button>
+                                    {% endif %}
+                                {% endblock %}
                             </span>
                         </div>
                     </div>
