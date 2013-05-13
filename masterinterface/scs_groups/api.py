@@ -108,7 +108,7 @@ def can_be_child(child, parent):
         return False
 
     if parent.parent:
-        return can_be_child(child, parent.parent)
+        return can_be_child(child, parent.parent.vphsharesmartgroup)
 
     return True
 
