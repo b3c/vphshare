@@ -8,6 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from urllib import quote, unquote
 from datetime import datetime
+from django.contrib.auth.models import User
+from masterinterface.scs_auth.models import UserProfile
+from permissions.models import PrincipalRoleRelation
 import json
 from lxml import etree
 from forms import PropertyForm
@@ -16,6 +19,7 @@ from configurationizer import create_configuration_file, extract_configurations
 from masterinterface.scs.utils import get_file_data
 from masterinterface.cyfronet import cloudfacade
 from masterinterface.scs.permissions import is_staff
+from masterinterface.atos.metadata_connector import get_resource_metadata
 
 
 @is_staff()
@@ -216,3 +220,34 @@ def delete_configuration(request):
         data,
         RequestContext(request)
     )
+
+
+def data_share_widget(request, global_id='f2c84fa7-be6e-4c07-a589-5124066f6425'):
+    """
+        given a data endpoint display all related information
+    """
+
+    metadata = get_resource_metadata(global_id)
+
+    # link data to the relative security configuration STATICALLY!
+    configuration_name = 'TestMatteo'
+    configuration_file = cloudfacade.get_securityproxy_configuration_content(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name)
+
+    # retrieve roles from the configuration
+    properties = extract_configurations(configuration_file)
+
+    # look for user with those roles
+    role_relations = PrincipalRoleRelation.objects.filter(role__name__exact=properties['granted_roles'])
+    groups = [r.group for r in role_relations]
+    users = [r.user for r in role_relations]
+
+    return render_to_response(
+        'scs_security/data_share_widget.html',
+        {'tkt64': request.COOKIES.get('vph-tkt'),
+         'metadata': metadata,
+         'properties': properties,
+         'users': users,
+         'groups': groups},
+        RequestContext(request)
+    )
+

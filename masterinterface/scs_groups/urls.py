@@ -17,11 +17,11 @@ urlpatterns = patterns(
     url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/studysubscribe/$', 'subscribe'),
     url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/(?P<iduser>\d+)/subscribe/$', 'subscribe'),
 
-    url(r'^subscribe/$', 'subscribe' ),    
-    url(r'^create_study/$', 'create_study' ),
-    url(r'^create_institution/$', 'create_institution' ),
-    url(r'^manage_group_request/$', 'manage_group_request' ),
-    url(r'^api/$','api_help'),
+    url(r'^subscribe/$', 'subscribe'),
+    url(r'^create_study/$', 'create_study'),
+    url(r'^create_institution/$', 'create_institution'),
+    url(r'^manage_group_request/$', 'manage_group_request'),
+    url(r'^api/$', 'api_help'),
 
     url(r'^$', 'group_details'),
 

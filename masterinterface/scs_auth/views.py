@@ -19,7 +19,8 @@ import time
 from piston.handler import BaseHandler
 import os
 from M2Crypto import DSA
-
+from permissions.models import Role
+from permissions.utils import get_roles, add_role, remove_role
 from models import *
 
 
@@ -214,7 +215,7 @@ class validate_tkt(BaseHandler):
             return response
 
 
-def validateEmail( email ):
+def validateEmail(email):
     from django.core.validators import validate_email
     from django.core.exceptions import ValidationError
 
@@ -242,7 +243,7 @@ def users_access_search(request):
             username = f.read()
 
             if username != '':
-                Roles = roles.objects.all()
+                Roles = Role.objects.all()
                 try:
                     usersRole, created = User.objects.get_or_create(username=username, email=usermail)
                 except:
@@ -256,8 +257,8 @@ def users_access_search(request):
                         resultUsers[usersRole.username] = {}
                         resultUsers[usersRole.username]['email'] = usersRole.email
                     resultUsers[usersRole.username]['roles'] = []
-                    for value in usersRole.userprofile.roles.all().values():
-                        resultUsers[usersRole.username]['roles'].append(value['roleName'])
+                    for role in get_roles(usersRole):
+                        resultUsers[usersRole.username]['roles'].append(role.name)
 
                 #If user is not present into local db
                 if username not in resultUsers:
@@ -282,7 +283,7 @@ def users_create_role(request):
         if request.method == "POST":
             if request.POST['role_name'].lower() == "":
                 return HttpResponse("FALSE")
-            newRole, created = roles.objects.get_or_create(roleName=request.POST['role_name'].lower())
+            newRole, created = Role.objects.get_or_create(name=request.POST['role_name'].lower())
             if created:
                 newRole.save()
             else:
@@ -300,7 +301,7 @@ def users_create_role(request):
 def users_remove_role(request):
     try:
         if request.method == "POST" and request.user.is_superuser:
-            newRole = roles.objects.get(roleName=request.POST['role_name'].lower())
+            newRole = Role.objects.get(name=request.POST['role_name'].lower())
             newRole.delete()
             return HttpResponse(request.POST['role_name'].lower())
 
@@ -315,22 +316,21 @@ def users_update_role_map(request):
         if request.method == "POST":
             for key, value in request.POST.iteritems():
                 if len(key.split('!')) == 3:
-
                     userinfo = key.split('!')
-                    role = roles.objects.get(roleName=userinfo[0])
-                    if not isinstance(role, roles):
+                    role = Role.objects.get(name=userinfo[0])
+                    if not isinstance(role, Role):
                         return HttpResponse('FALSE')
                     user, created = User.objects.get_or_create(username=userinfo[1], email=userinfo[2])
                     if value == 'on':
-                        user.userprofile.roles.add(role)
+                        add_role(user, role)
                     else:
-                        user.userprofile.roles.remove(role)
+                        remove_role(user, role)
 
             return HttpResponse('TRUE')
     except Exception, e:
         return HttpResponse("FALSE")
 
-    Roles = roles.objects.all()
+    Roles = Role.objects.all()
     usersRole = User.objects.order_by('username').all()
 
     resultUsers = SortedDict()
@@ -340,8 +340,8 @@ def users_update_role_map(request):
             resultUsers[usersRole[i].username] = {}
             resultUsers[usersRole[i].username]['email'] = usersRole[i].email
         resultUsers[usersRole[i].username]['roles'] = []
-        for value in usersRole[i].userprofile.roles.all().values():
-            resultUsers[usersRole[i].username]['roles'].append(value['roleName'])
+        for role in get_roles(usersRole[i]):
+            resultUsers[usersRole[i].username]['roles'].append(role.name)
 
     return render_to_response("scs_auth/users_role_map.html",
                               {
@@ -366,7 +366,7 @@ def set_security_agent(request):
                 elif key == "csrfmiddlewaretoken":
                     continue
                 else:
-                    role = roles.objects.get(roleName=key)
+                    role = Role.objects.get(name=key)
                     if not isinstance(role, roles):
                         return HttpResponse('FALSE')
                     Roles = Roles + ( key, )

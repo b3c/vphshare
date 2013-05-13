@@ -1,0 +1,69 @@
+{% extends 'scs_security/base.html' %}
+
+{% block content %}
+<div class="data-share-widget">
+
+    <h4>Share</h4>
+    <h5>{{ metadata.author }}{{ metadata.name }}</h5>
+    <p>{{ metadata.description }}</p>
+
+    <h6>Permissions</h6>
+    <dl>
+        <dt>{{ properties.granted_roles }} <span class="icon-edit"></span></dt>
+        <dd>
+            <ul>
+               <li>Users: {% for user in users %} {{ user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+               <li>Groups: {% for group in groups %} {{ group.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <hr />
+    <form id="search-form" rel="#search-results" method="get" enctype="multipart/form-data" action="/api/searchuserandgroup/" class="form-search ajax">
+        {% csrf_token %}
+        <label>Search for users and groups</label><br />
+        <input type="text" name="term" class="input-medium search-query" />
+        <input type="hidden" name="ticket" value="{{ tkt64 }}" />
+        <button type="submit" class="btn">Search</button>
+    </form>
+    <div id="search-results" class="datashare-search-results">
+    </div>
+
+    <h6>Requests</h6>
+</div>
+
+<script type="text/javascript">
+
+    function SearchAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
+
+        alert(responseText);
+        alert(jqform);
+        alert(responseText);
+    }
+
+    $(document).ready(function(){
+        $('.ajax').submit(
+            function(event){
+
+                // stop form from submitting normally
+                event.preventDefault();
+
+                // submit parameters
+                var url = $(this).attr( "action" );
+                var method = $(this).attr("method") || "get"; // default method get
+                var data = $(this).find(":input").serializeArray();
+
+                $.ajax({
+                        dataType: "json",
+                        type: method,
+                        url: url,
+                        data: data,
+                        success: SearchAjaxResponseHandler
+                    }
+                );
+            }
+        )
+    });
+
+</script>
+{% endblock %}

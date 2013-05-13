@@ -10,5 +10,6 @@ urlpatterns = patterns(
     url(r'^policy/$', 'policy' ),
     url(r'^configuration/$', 'configuration'),
     url(r'^deletepolicy/$', 'delete_policy'),
-    url(r'^deleteconfiguration/$', 'delete_configuration')
+    url(r'^deleteconfiguration/$', 'delete_configuration'),
+    url(r'^datashare/$', 'data_share_widget')
 )
