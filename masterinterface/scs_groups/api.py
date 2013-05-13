@@ -104,7 +104,7 @@ class search_group(BaseHandler):
 
 
 def can_be_child(child, parent):
-    if child.name == parent.name:
+    if str(child.name).lower() == str(parent.name).lower():
         return False
 
     if parent.parent:
@@ -231,6 +231,11 @@ class delete_group(BaseHandler):
 
                     group.active = False
                     group.remove_users()
+                    # remove this group from children parent reference
+                    for child in VPHShareSmartGroup.objects.filter(parent=group):
+                        child.parent = None
+                        child.save()
+                    group.parent = None
                     group.save()
 
                     response = HttpResponse(status=200)
@@ -247,6 +252,12 @@ class delete_group(BaseHandler):
             response = HttpResponse(status=500)
             response._is_string = True
             return response
+
+
+def add_user_to_group(user, group):
+    group.user_set.add(user)
+    for child in VPHShareSmartGroup.objects.filter(parent=group):
+        add_user_to_group(user, child)
 
 
 class add_to_group(BaseHandler):
@@ -288,12 +299,7 @@ class add_to_group(BaseHandler):
                         user_to_add = User.objects.get(username=request.GET.get('name'))
                         # add user to all children groups
                         if request.GET.get('recursive', False):
-                            while group is not None:
-                                group.user_set.add(user_to_add)
-                                try:
-                                    group = VPHShareSmartGroup.objects.get(parent=group)
-                                except ObjectDoesNotExist, e:
-                                    group = None
+                            add_user_to_group(user_to_add, group)
                         else:
                             group.user_set.add(user_to_add)
 
