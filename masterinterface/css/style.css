@@ -960,7 +960,9 @@ a.search-data-link:hover{
 .collapse-manage-data .icon-chevron-down{
     position: absolute;
     right: 20px;
-    top: 23px;
+    top: 10px;
+    color: #000000;
+    zoom: 1.3;
 }
 
 .accordion-manage-data .in{

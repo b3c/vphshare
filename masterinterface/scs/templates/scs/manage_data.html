@@ -1,5 +1,5 @@
 {% extends 'scs/base.html' %}
-
+{% load scs_extras %}
 {%  block title %} Manage Data {% endblock %}
 
 {% block extrahead %}
@@ -24,25 +24,12 @@
                     <div class="accordion-heading collapse-manage-data">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#f2c84fa7-be6e-4c07-a589-5124066f6425">
                             <h4>My Data</h4>
-                            <span class="icon-chevron-up pull-right"></span>
                             <span class="icon-chevron-down pull-right"></span>
                         </a>
                     </div>
                     <div id="f2c84fa7-be6e-4c07-a589-5124066f6425" class="accordion-body collapse">
                         <div class="row row-manage-data">
                             <div class="span3">Example</div>
-                            <div class="span3">Author: juanarenas</div>
-                            <div class="span3">Published: 2013-05-03 00:17</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
-                        </div>
-                        <div class="row row-manage-data">
-                            <div class="span3">ArchLinux-1367996837250</div>
-                            <div class="span3">Author: juanarenas</div>
-                            <div class="span3">Published: 2013-05-03 00:17</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
-                        </div>
-                        <div class="row row-manage-data">
-                            <div class="span3">ArchLinux-1367996837250</div>
                             <div class="span3">Author: juanarenas</div>
                             <div class="span3">Published: 2013-05-03 00:17</div>
                             <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
@@ -55,9 +42,9 @@
                     <div class="accordion-heading">
                         <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#af4163ea-5991-4d6b-bb7b-e8c86d894c65">
                             <h4>My Applications</h4>
-                            <span class="icon-chevron-up pull-right"></span>
-                            <span class="icon-chevron-down pull-right"></span>
+                            <span  class="icon-chevron-down pull-right"></span>
                         </a>
+
                     </div>
                     <div id="af4163ea-5991-4d6b-bb7b-e8c86d894c65" class="accordion-body collapse">
                         <div class="row row-manage-data">
@@ -70,7 +57,7 @@
                             <div class="span3">ArchLinux-1367996837250</div>
                             <div class="span3">Author: juanarenas</div>
                             <div class="span3">Published: 2013-05-03 00:17</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><a href="#myModal" role="button" class="" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a> <span class="icon  icon-group" ></span></div>
                         </div>
                         <div class="row row-manage-data">
                             <div class="span3">ArchLinux-1367996837250</div>
@@ -87,7 +74,6 @@
                     <div class="accordion-heading">
                         <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#b2e1c163-942d-4d4c-8199-a69a71f18495">
                             <h4>My Workflows</h4>
-                            <span class="icon-chevron-up pull-right"></span>
                             <span class="icon-chevron-down pull-right"></span>
                         </a>
                     </div>
@@ -97,12 +83,47 @@
                             <div class="span3">{{ workflow.title }}</div>
                             <div class="span3">Author: {{ workflow.metadata.author }}</div>
                             <div class="span3">Published: {{ workflow.metadata.creation_date }}</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                            <div class="span2">
+                                <span class="icon icon-share-alt" style="padding-right: 25px;"></span>
+                                <a href="#modal-{{ workflow.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
+                                <a href="#share-{{ workflow.id }}" role="button" data-toggle="modal"><span class="icon  icon-group" ></span></a>
+                            </div>
+                            <div id="modal-{{ workflow.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-{{ workflow.id }}-label" aria-hidden="true">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <span class="icon icon-cog pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
+                                    <div id="modal-{{ workflow.id }}-label"><p><b>Manage</b></p><p>{{ workflow.title }}</p></div>
+                                </div>
+                                <div class="modal-body">
+                                    <ul class="unstyled">
+                                        <li>Description: {{ workflow.description }}</li>
+                                    {% with  workflow.metadata.tags|split:" " as tags%}
+                                        <li>Tags:  {% for tag in tags %}<span class="label" style="margin-right: 5px;">{{ tag }}</span>{% endfor %}</li>
+                                        <li>Licence: {{ workflow.metadata.licence }}</li>
+                                        <li>Views: {{ workflow.metadata.views }}</li>
+                                    {% endwith %}
+                                    </ul>
+                                    <div class="row-fluid" style="font-size: 13px;"><div class="span4">Published: {{ workflow.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ workflow.metadata.category }}</div><div class="span4">Type: {{ workflow.metadata.type }}</div></div>
+                                </div>
+                            </div>
+                            <div id="share-{{ workflow.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <span class="icon icon-group pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
+                                    <div id="myModalLabel"><p><b>Manage</b></p><p>{{ workflow.title }}</p></div>
+                                </div>
+                                <div class="modal-body">
+                                    <ul>
+                                        <li>Permissions: <textarea></textarea> </li>
+                                        <li>Requests: <textarea></textarea></li>
+                                    </ul>
+                                    <div class="row-fluid" style="font-size: 13px;"><div class="span4">Published: {{ workflow.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ workflow.metadata.category }}</div><div class="span4">Type: {{ workflow.metadata.type }}</div></div>
+                                </div>
+                            </div>
                         </div>
                     {% endfor %}
+                    </div>
                 </div>
-
-
             </div>
         </div>
     </div>
