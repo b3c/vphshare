@@ -28,9 +28,7 @@
                         </a>
                     </div>
                     <div id="f2c84fa7-be6e-4c07-a589-5124066f6425" class="accordion-body collapse">
-                        <div class="row">
-                            &nbsp
-                        </div>
+                        &nbsp
                     </div>
                 </div>
 
@@ -44,25 +42,7 @@
 
                     </div>
                     <div id="af4163ea-5991-4d6b-bb7b-e8c86d894c65" class="accordion-body collapse">
-                        <div class="row row-manage-data">
-                            <div class="span3">Example</div>
-                            <div class="span3">Author: juanarenas</div>
-                            <div class="span3">Published: 2013-05-03 00:17</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
-                        </div>
-                        <div class="row row-manage-data">
-                            <div class="span3">ArchLinux-1367996837250</div>
-                            <div class="span3">Author: juanarenas</div>
-                            <div class="span3">Published: 2013-05-03 00:17</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><a href="#myModal" role="button" class="" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a> <span class="icon  icon-group" ></span></div>
-                        </div>
-                        <div class="row row-manage-data">
-                            <div class="span3">ArchLinux-1367996837250</div>
-                            <div class="span3">Author: juanarenas</div>
-                            <div class="span3">Published: 2013-05-03 00:17</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
-                        </div>
-
+                        &nbsp
                     </div>
                 </div>
 
@@ -75,6 +55,7 @@
                         </a>
                     </div>
                     <div id="b2e1c163-942d-4d4c-8199-a69a71f18495" class="accordion-body collapse">
+                        &nbsp
                     {% for workflow in workflows %}
                         <div class="row row-manage-data">
                             <div class="span3">{{ workflow.title }}</div>
@@ -102,7 +83,7 @@
                                             <button id="edit-description-btn" class="btn btn-mini">edit</button>
                                             <span id="edit-description-form" class="input-append hide" style="margin-bottom: 0px;">
                                                 <textarea id="edit-description-textarea" class="input-size-mini">{{ workflow.description }} </textarea>
-                                                <button id="update-description" class="btn btn-mini" type="button">update</button>
+                                                <button id="update-description" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button>
                                             </span>
                                         </li>
                                     {% with  workflow.metadata.tags|split:" " as tags%}
@@ -111,7 +92,7 @@
                                                 <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">{{ tag }}</div><div id="remove-tag" type="button" class="close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
                                             {% endfor %}
                                             <button id="enter-tag-btn" class="btn btn-mini">Enter tag</button>
-                                            <span id="enter-tag-form" class="input-append hide" style="margin-bottom: 0px;"><input id="enter-tag-input" type="text" class="input-medium input-size-mini"><button id="update-tag" class="btn btn-mini" type="button">update</button></span>
+                                            <span id="enter-tag-form" class="input-append hide" style="margin-bottom: 0px;"><input id="enter-tag-input" type="text" class="input-medium input-size-mini"><button id="update-tag" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button></span>
                                         </li>
                                         <li>Licence: <span class="label" style="margin-right: 5px;">{{ workflow.metadata.licence }}</span> <button class="btn btn-mini">Upload licence</button></li>
                                         <li>Views: {{ workflow.metadata.views }}</li>
@@ -199,6 +180,7 @@
                 this.$modalDescription.show();
                 this.$editDescriptionForm.hide();
                 this.alert("Error! Service don't not accept your request.","error");
+                this.$updateDescriptionBtn.button('reset');
             };
 
             ManageModal.prototype.updateDescriptionCallBack = function(e){
@@ -207,9 +189,11 @@
                 this.$modalDescription.show();
                 this.$editDescriptionForm.hide();
                 this.alert("Done! Description updated.","success");
+                this.$updateDescriptionBtn.button('reset');
             };
 
             ManageModal.prototype.updateDescription = function(e){
+                this.$updateDescriptionBtn.button('loading');
                 var self = this;
                 var description = this.$description.val();
 
@@ -251,6 +235,7 @@
                 this.$enterTagBtn.show();
                 this.$enterTagForm.hide();
                 this.alert("Error! Service don't not accept your request.","error");
+                this.$updateTagBtn.button('reset');
             };
 
             ManageModal.prototype.updateTagCallBack = function(tag){
@@ -261,9 +246,11 @@
                 this.$enterTagBtn.show();
                 this.$enterTagForm.hide();
                 this.alert("Done! Tags updated","success");
+                this.$updateTagBtn.button('reset');
             };
 
             ManageModal.prototype.updateTag = function(e){
+                this.$updateTagBtn.button('loading');
                 var self = this;
                 var tag = this.$tagInput.val();
 
