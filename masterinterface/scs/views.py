@@ -1,6 +1,7 @@
 from masterinterface import wsdl2mi
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -14,6 +15,10 @@ from permissions import is_staff
 from masterinterface import settings
 from masterinterface.scs_auth.models import roles
 from masterinterface.atos.metadata_connector import *
+from django.utils import simplejson
+import json
+from django.http import HttpResponse
+
 
 def home(request):
     """Home view """
@@ -216,4 +221,100 @@ def browse_data_az(request):
 
     return render_to_response("scs/browseaz.html", {"resources_by_letter": resources_by_letter, "letters": string.uppercase}, RequestContext(request))
 
+
+## Manage-data modals services ##
+
+@csrf_exempt
+def delete_tag_service(request):
+    """
+        remove tag to resource's metadata
+    """
+    try:
+        if request.method == 'POST':
+
+            removed_tag = request.POST.get('tag', "")
+            global_id = request.POST.get('global_id', "")
+
+            metadata = get_resource_metadata(global_id)
+            new_tag = {'tags': ''}
+            for tag in metadata['tags'].split():
+                if tag != removed_tag:
+                    new_tag['tags'] += "%s " % tag
+            new_tag['tags'] = new_tag['tags'].strip()
+            update_resource_metadata(global_id, new_tag)
+
+            response = HttpResponse(status=200)
+            response._is_string = True
+            return response
+
+        raise
+
+    except Exception, e:
+        response = HttpResponse(status=403)
+        response._is_string = True
+        return response
+
+
+@csrf_exempt
+def add_tag_service(request):
+    """
+        add tag to resource's metadata
+    """
+    try:
+        if request.method == 'POST':
+
+            added_tag = request.POST.get('tag', "")
+            global_id = request.POST.get('global_id', "")
+
+            metadata = get_resource_metadata(global_id)
+            if metadata['tags'] is not None:
+                for tag in metadata['tags'].split():
+                    if tag == added_tag:
+                        raise
+                new_tags = {'tags': "%s %s" % (metadata['tags'], added_tag)}
+            else:
+                new_tags = {'tags': added_tag.strip()}
+            update_resource_metadata(global_id, new_tags)
+
+            response = HttpResponse(status=200)
+            response._is_string = True
+            return response
+
+        raise
+
+    except Exception, e:
+        response = HttpResponse(status=403)
+        response._is_string = True
+        return response
+
+
+@csrf_exempt
+def edit_description_service(request):
+    """
+        add tag to resource's metadata
+    """
+    from masterinterface.scs_workflows.models import scsWorkflow
+    try:
+        if request.method == 'POST':
+
+            description = request.POST.get('description', "")
+            global_id = request.POST.get('global_id', "")
+
+            metadata = get_resource_metadata(global_id)
+
+            dbWorkflow = scsWorkflow.objects.get(metadataId=global_id)
+            dbWorkflow.description = description
+            update_resource_metadata(global_id, {'description': description})
+            dbWorkflow.save()
+
+            response = HttpResponse(status=200)
+            response._is_string = True
+            return response
+
+        raise
+
+    except Exception, e:
+        response = HttpResponse(status=403)
+        response._is_string = True
+        return response
 

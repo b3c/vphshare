@@ -28,11 +28,8 @@
                         </a>
                     </div>
                     <div id="f2c84fa7-be6e-4c07-a589-5124066f6425" class="accordion-body collapse">
-                        <div class="row row-manage-data">
-                            <div class="span3">Example</div>
-                            <div class="span3">Author: juanarenas</div>
-                            <div class="span3">Published: 2013-05-03 00:17</div>
-                            <div class="span2"><span class="icon icon-share-alt" style="padding-right: 25px;"></span><span class="icon icon-cog" style="padding-right: 25px;"></span> <span class="icon  icon-group" ></span></div>
+                        <div class="row">
+                            &nbsp
                         </div>
                     </div>
                 </div>
@@ -88,24 +85,42 @@
                                 <a href="#modal-{{ workflow.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
                                 <a href="#share-{{ workflow.id }}" role="button" data-toggle="modal"><span class="icon  icon-group" ></span></a>
                             </div>
+
                             <div id="modal-{{ workflow.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-{{ workflow.id }}-label" aria-hidden="true">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                     <span class="icon icon-cog pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
                                     <div id="modal-{{ workflow.id }}-label"><p><b>Manage</b></p><p>{{ workflow.title }}</p></div>
                                 </div>
-                                <div class="modal-body">
-                                    <ul class="unstyled">
-                                        <li>Description: {{ workflow.description }}</li>
+                                <div data-globalid="{{ workflow.metadataId }}" class="modal-body manage-modal-data">
+                                    <div class="alert hide">
+                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                        <span id="modal-message"></span>
+                                    </div>
+                                    <ul class="unstyled modal-list">
+                                        <li>Description: <span id="modal-description">{{ workflow.description }}</span>
+                                            <button id="edit-description-btn" class="btn btn-mini">edit</button>
+                                            <span id="edit-description-form" class="input-append hide" style="margin-bottom: 0px;">
+                                                <textarea id="edit-description-textarea" class="input-size-mini">{{ workflow.description }} </textarea>
+                                                <button id="update-description" class="btn btn-mini" type="button">update</button>
+                                            </span>
+                                        </li>
                                     {% with  workflow.metadata.tags|split:" " as tags%}
-                                        <li>Tags:  {% for tag in tags %}<span class="label" style="margin-right: 5px;">{{ tag }}</span>{% endfor %}</li>
-                                        <li>Licence: {{ workflow.metadata.licence }}</li>
+                                        <li>Tags:
+                                            {% for tag in tags %}
+                                                <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">{{ tag }}</div><div id="remove-tag" type="button" class="close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                                            {% endfor %}
+                                            <button id="enter-tag-btn" class="btn btn-mini">Enter tag</button>
+                                            <span id="enter-tag-form" class="input-append hide" style="margin-bottom: 0px;"><input id="enter-tag-input" type="text" class="input-medium input-size-mini"><button id="update-tag" class="btn btn-mini" type="button">update</button></span>
+                                        </li>
+                                        <li>Licence: <span class="label" style="margin-right: 5px;">{{ workflow.metadata.licence }}</span> <button class="btn btn-mini">Upload licence</button></li>
                                         <li>Views: {{ workflow.metadata.views }}</li>
                                     {% endwith %}
                                     </ul>
                                     <div class="row-fluid" style="font-size: 13px;"><div class="span4">Published: {{ workflow.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ workflow.metadata.category }}</div><div class="span4">Type: {{ workflow.metadata.type }}</div></div>
                                 </div>
                             </div>
+
                             <div id="share-{{ workflow.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -127,6 +142,150 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
 
+        (function() {
+            var global = this;
+            var $ = global.$;
+            var console = global.console || {log:function() {}};
+
+
+            var ManageModal = global.ManageModal = function(element, options) {
+                this.inizialize($(element));
+            };
+
+            ManageModal.prototype.inizialize = function(manageModal){
+                var self = this;
+                this.$globalId = manageModal.data('globalid');
+                this.$editDescriptionBtn = manageModal.find('#edit-description-btn');
+                this.$description = manageModal.find('#edit-description-textarea');
+                this.$updateDescriptionBtn = manageModal.find('#update-description');
+                this.$editDescriptionForm = manageModal.find('#edit-description-form');
+                this.$tag = manageModal.find('.tag');
+                this.$removeTag = manageModal.find('#remove-tag');
+                this.$enterTagForm = manageModal.find('#enter-tag-form');
+                this.$enterTagBtn = manageModal.find('#enter-tag-btn');
+                this.$tagInput = manageModal.find('#enter-tag-input');
+                this.$updateTagBtn = manageModal.find('#update-tag');
+                this.$modalDescription = manageModal.find('#modal-description');
+                this.$alert = manageModal.find('.alert');
+
+                this.$editDescriptionBtn.click(function(e){self.editDescription(e);});
+                this.$updateDescriptionBtn.click(function(e){self.updateDescription(e);});
+                this.$removeTag.click(function(e){self.removeTag(e,$(this).parent('.tag-label').find('.tag'));});
+                this.$enterTagBtn.click(function(e){self.enterTag(e);});
+                this.$updateTagBtn.click(function(e){self.updateTag(e);});
+
+            };
+
+            ManageModal.prototype.alert = function(message,style){
+                style = "alert-"+style;
+
+                this.$alert.find('#modal-message').text(message);
+                this.$alert.addClass(style);
+                this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                    $(this).removeClass(style).find('#modal-message').text('');
+                });
+            };
+
+            ManageModal.prototype.editDescription = function(e){
+                this.$editDescriptionBtn.hide();
+                this.$modalDescription.hide();
+                this.$editDescriptionForm.show();
+            };
+
+            ManageModal.prototype.updateDescriptionError = function(e){
+                this.$editDescriptionBtn.show();
+                this.$modalDescription.show();
+                this.$editDescriptionForm.hide();
+                this.alert("Error! Service don't not accept your request.","error");
+            };
+
+            ManageModal.prototype.updateDescriptionCallBack = function(e){
+                this.$modalDescription.text(this.$description.val());
+                this.$editDescriptionBtn.show();
+                this.$modalDescription.show();
+                this.$editDescriptionForm.hide();
+                this.alert("Done! Description updated.","success");
+            };
+
+            ManageModal.prototype.updateDescription = function(e){
+                var self = this;
+                var description = this.$description.val();
+
+                $.ajax('/update_description/', {
+                    data: {global_id:self.$globalId, description: description},
+                    type: 'POST',
+                    success: function(data) { self.updateDescriptionCallBack(data); },
+                    error: function(data) { self.updateDescriptionError(data); }
+                });
+            };
+
+            ManageModal.prototype.removeTagError = function(e){
+                this.alert("Error! Service don't not accept your request.","error");
+            };
+
+            ManageModal.prototype.removeTagCallBack = function(e, tag){
+                tag.parent('.tag-label').remove();
+                this.alert("Done! Tag removed.","success");
+            };
+
+            ManageModal.prototype.removeTag = function(e, tag){
+                var self = this;
+                var removedTag = tag.text();
+
+                $.ajax('/delete_tag/', {
+                    data: {global_id:self.$globalId, tag: removedTag},
+                    type: 'POST',
+                    success: function(data) { self.removeTagCallBack(data, tag); },
+                    error: function(data) { self.removeTagError(data); }
+                });
+            };
+
+            ManageModal.prototype.enterTag = function(e){
+                this.$enterTagBtn.hide();
+                this.$enterTagForm.show();
+            };
+
+            ManageModal.prototype.updateTagError = function(e){
+                this.$enterTagBtn.show();
+                this.$enterTagForm.hide();
+                this.alert("Error! Service don't not accept your request.","error");
+            };
+
+            ManageModal.prototype.updateTagCallBack = function(tag){
+                var self = this;
+                var newTag = $("<span class=\"label tag-label\" style=\"vertical-align: middle;margin-right: 5px;\"><div class=\"tag pull-left\">"+tag+"</div><div id=\"remove-tag\" type=\"button\" class=\"close pull-rigth\" style=\"margin-left:5px;line-height: 14px\">×</div></span>");
+                newTag.insertBefore(this.$enterTagBtn);
+                newTag.find('#remove-tag').click(function(e){self.removeTag(e,$(this).parent('.tag-label').find('.tag'));});
+                this.$enterTagBtn.show();
+                this.$enterTagForm.hide();
+                this.alert("Done! Tags updated","success");
+            };
+
+            ManageModal.prototype.updateTag = function(e){
+                var self = this;
+                var tag = this.$tagInput.val();
+
+                $.ajax('/update_tag/', {
+                    data: {global_id:self.$globalId, tag: tag},
+                    type: 'POST',
+                    success: function(data) { self.updateTagCallBack(tag); },
+                    error: function(data) { self.updateTagError(data); }
+                });
+            };
+
+
+            ManageModal.autoDiscover = function() {
+                $('.manage-modal-data').each(function(index, element) {
+                    new ManageModal(element);
+                });
+
+            };
+            ManageModal.autoDiscover();
+        }).call(this);
+
+
+    </script>
 
 {% endblock %}
