@@ -1,5 +1,5 @@
 from django import template
-
+from datetime import datetime
 # get a register Library instance
 register = template.Library()
 
@@ -22,6 +22,16 @@ def breadcrumbs(path):
     return crumbs
 
 
+def split(string, sep=" "):
+    if string is not None:
+        return str(string).split(sep)
+    return []
+
+
+def strTodate(date):
+    return datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
 # register filters
 register.filter('breadcrumbs', breadcrumbs)
 register.filter('basepath', basepath)
+register.filter('split', split)
+register.filter('strTodate', strTodate)

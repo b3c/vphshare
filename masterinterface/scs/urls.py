@@ -22,5 +22,9 @@ urlpatterns = patterns(
     url(r'^services/$', services ,name='services'),
     url(r'^test/$', test , name='test'),
     url(r'^users_admin/$', users_access_admin , name='users_access_admin'),
+    # manage-data modal services
+    url(r'^delete_tag/$', delete_tag_service,  name='delete-tag'),
+    url(r'^update_tag/$', add_tag_service,  name='update-tag'),
+    url(r'^update_description/$', edit_description_service,  name='update-description'),
 )
 

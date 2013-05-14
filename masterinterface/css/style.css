@@ -960,7 +960,9 @@ a.search-data-link:hover{
 .collapse-manage-data .icon-chevron-down{
     position: absolute;
     right: 20px;
-    top: 23px;
+    top: 10px;
+    color: #000000;
+    zoom: 1.3;
 }
 
 .accordion-manage-data .in{
@@ -975,6 +977,24 @@ a.search-data-link:hover{
 
 .row-manage-data . span4:first-child{
     margin-left: 10px;
+}
+
+.input-size-mini{
+    padding: 0 6px !important;
+    font-size: 10.5px !important;
+    -webkit-border-radius: 3px !important;
+    -moz-border-radius: 3px !important;
+    border-radius: 3px !important;
+    margin-bottom: 0px !important;
+}
+
+.modal-list li{
+    margin-bottom: 10px;
+}
+
+#edit-description-textarea{
+    min-width: 60%;
+    min-height: 100px;
 }
 
 @media (min-width: 1200px){
