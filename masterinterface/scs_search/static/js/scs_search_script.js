@@ -899,12 +899,13 @@ $(function () {
     /* Create new group when term is dropped in AND group*/
     function createNewGroup(item, dropTarget) {
 
+        var setAnnotationForm = $('#set-annotation-value-form');
         var datasetValue = $('#dataset-value').val();
-        var itemValue = $('#annotation-value').val();
+        var itemValue = setAnnotationForm.find('#annotation-value').val();
         var itemSetvalue = item.find(".term-value").val();
         var setAnnotationForm = $('#set-annotation-value-form');
 
-        if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined) {
+        if (datasetValue !== '' && (itemValue === '' || itemValue === undefined) && itemSetvalue === undefined) {
 
             $('#save-annotation-value').unbind('click');
             $('#set-annotation-value').modal('show');
@@ -1018,14 +1019,14 @@ $(function () {
 
         var setAnnotationForm = $('#set-annotation-value-form');
         var datasetValue = $('#dataset-value').val();
-        var itemFormValue = $('#annotation-value').val();
+        var itemFormValue = setAnnotationForm.find('#annotation-value').val();
         var operatorFormValue = setAnnotationForm.find('.operator').val();
         var textOperator = setAnnotationForm.find('.operator option:selected').text();
         var operator = $('.term-operator')
         var itemValue = item.find(".term-value");
 
 
-        if (datasetValue !== '' && itemFormValue === '') {
+        if (datasetValue !== '' && (itemFormValue === '' || itemFormValue === undefined)) {
 
             $('#save-annotation-value').unbind('click');
             $('#set-annotation-value').modal('show');
@@ -1064,14 +1065,14 @@ $(function () {
         var itemCloned;
         var setAnnotationForm = $('#set-annotation-value-form');
         var datasetValue = $('#dataset-value').val();
-        var itemValue = $('#annotation-value').val();
+        var itemValue = setAnnotationForm.find('#annotation-value').val();
         var operator = setAnnotationForm.find('.operator').val();
         var textOperator = setAnnotationForm.find('.operator option:selected').text();
         var itemSetvalue = item.find(".term-value").val();
         //if term dropped is not present in group , it can be dropped
         if (!checkDuplicate(item, dropTarget)) {
 
-            if (datasetValue !== '' && itemValue === '' && itemSetvalue === undefined) {
+            if (datasetValue !== '' && (itemValue === '' || itemValue === undefined)  && itemSetvalue === undefined) {
 
                 $('#save-annotation-value').unbind('click');
                 $('#set-annotation-value').modal('show');
@@ -1497,6 +1498,9 @@ function guidedSearchReady() {
     $('#free-text').attr('placeholder', 'Filter concepts');
     $('#free-text').val('');
     $('#annotation-value').val('');
+    var setAnnotationForm = $('#set-annotation-value-form');
+    setAnnotationForm.find('input').remove();
+    setAnnotationForm.find('select').remove();
     /*** START Reset Term List ***/
     var termList = $("#terms-list-base").clone();
     $("#term-list").remove();
@@ -1561,6 +1565,9 @@ function datasetSearchReady(dataset, datasetLabel) {
     $('#free-text').attr('placeholder', 'Filter Annotations');
     $('#free-text').val('');
     $('#annotation-value').val('');
+    var setAnnotationForm = $('#set-annotation-value-form');
+    setAnnotationForm.find('input').remove();
+    setAnnotationForm.find('select').remove();
 
     /*** START Reset Term List ***/
     var termList = $("#terms-list-base").clone();

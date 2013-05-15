@@ -1,5 +1,5 @@
 # Create your views here.
-from django.db.models import ObjectDoesNotExist
+from django.db.models import ObjectDoesNotExist, Q
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.admin.models import User
@@ -51,7 +51,7 @@ def temp_fix_institution_managers():
             institution.user_set.add(manager)
             for study in institution.study_set.all():
                 add_local_role(study, manager, group_manager)
-                study.principals.add(manager)
+                study.managers.add(manager)
 
     for smartgroup in smartgroups:
         for manager in smartgroup.managers.all():
@@ -115,9 +115,11 @@ def group_details(request, idGroup=None, idStudy=None):
             if idStudy is not None and study.pk == int(idStudy):
                 selected_group.selected_study = study
 
+    institutions_studies_pk = [i.pk for i in Institution.objects.all()] + [i.pk for i in Study.objects.all()]
+
     if not request.user.is_authenticated():
         other_institutions = institutions
-        other_groups = VPHShareSmartGroup.objects.filter(active=True)
+        other_groups = VPHShareSmartGroup.objects.filter(active=True).exclude(pk__in=institutions_studies_pk)
     else:
         for institution in institutions:
             if request.user in institution.user_set.all() or request.user in institution.managers.all():
@@ -125,7 +127,7 @@ def group_details(request, idGroup=None, idStudy=None):
             else:
                 other_institutions.append(institution)
 
-        for vphgroup in VPHShareSmartGroup.objects.filter(active=True):
+        for vphgroup in VPHShareSmartGroup.objects.filter(active=True).exclude(pk__in=institutions_studies_pk):
             join_group_subscription(request.user, vphgroup)
             vphgroup.studies_actions = 0
             vphgroup.state = True

@@ -9,6 +9,7 @@ class VPHShareSmartGroup(Group):
     managers = models.ManyToManyField(User)
     parent = models.ForeignKey(Group, related_name='+', blank=True, null=True)
     active = models.BooleanField(blank=False, default=True)
+    description = models.CharField(max_length=255, blank=True)
 
     class Meta:
         verbose_name_plural = "VPHShareSmartGroups"
@@ -52,9 +53,8 @@ class VPHShareSmartGroup(Group):
         return False
 
 
-class Institution(Group):
+class Institution(VPHShareSmartGroup):
 
-    description = models.CharField(max_length=255, blank=False, help_text='Institution description')
     address = models.CharField(max_length=64, blank=False, help_text='Address')
     country = models.CharField(max_length=64, blank=False, help_text='Country')
     logo = models.ImageField(blank=True, help_text='Institution logo image', upload_to='logos')
@@ -77,8 +77,6 @@ class Institution(Group):
     breach_phone = models.CharField(max_length=64, blank=True, help_text='Breach contact phone number')
     breach_email = models.EmailField(max_length=64, blank=True, help_text='Breach contact email')
 
-    managers = models.ManyToManyField(User)
-
     class Meta:
         verbose_name_plural = "Institutions"
         ordering = ['name']
@@ -86,21 +84,14 @@ class Institution(Group):
             ('can_add_user_to_institution', 'Can add user to Institution'),
         )
 
-    def __unicode__(self):
-        return self.name
 
-
-class Study(Group):
+class Study(VPHShareSmartGroup):
 
     title = models.CharField(max_length=255, blank=False, help_text='Study title')
-    description = models.CharField(max_length=255, blank=False, help_text='Study description')
-
-    start_date = models.DateField(blank=False, help_text='Study start date')
-    finish_date = models.DateField(blank=False, help_text='Study finish date')
+    start_date = models.DateField(blank=False, help_text='Study start date', auto_now=True)
+    finish_date = models.DateField(blank=False, help_text='Study finish date', auto_now=True)
 
     institution = models.ForeignKey(Institution)
-
-    principals = models.ManyToManyField(User)
 
     class Meta:
         verbose_name_plural = "Studies"
@@ -108,9 +99,6 @@ class Study(Group):
         permissions = (
             ('can_add_user_to_study', 'Can add user to Study'),
         )
-
-    def __unicode__(self):
-        return self.name
 
 
 class AuditLog(models.Model):

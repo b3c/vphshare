@@ -18,14 +18,14 @@ MANAGERS = ADMINS
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-DEFAULT_DB = {
-   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
-    'USER': '',                      # Not used with sqlite3.
-    'PASSWORD': '',                  # Not used with sqlite3.
-    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-}
+#DEFAULT_DB = {
+#   'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#    'NAME': os.path.join(PROJECT_ROOT, 'vphshare.db'),                      # Or path to database file if using sqlite3.
+#    'USER': '',                      # Not used with sqlite3.
+#    'PASSWORD': '',                  # Not used with sqlite3.
+#    'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+#    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#}
 
 # Cyfronet Database
 CYFRONET_DB = {
@@ -39,7 +39,14 @@ CYFRONET_DB = {
 
 
 DATABASES = {
-    'default': DEFAULT_DB
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
+        'USER': 'vph',                      # Not used with sqlite3.
+        'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
 }
 
 #Define class where extened user profile
@@ -97,6 +104,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT,'img'),
     os.path.join(PROJECT_ROOT,'css'),
     os.path.join(PROJECT_ROOT,'files'),
+    os.path.join(PROJECT_ROOT,'media'),
 )
 
 # List of finder classes that know how to find static files in
@@ -153,6 +161,8 @@ INSTALLED_APPS = (
     'permissions',
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
+    'masterinterface.scs_workflows',
+    'masterinterface.atos',
     'south'
     
     ##NEW_APP
@@ -179,6 +189,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_by_name_backends',
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
+    'scs.templates_middleware.statusMessage',
     )
 
 PASSWORD_HASHERS = (
@@ -253,6 +264,8 @@ LOBCDER_HOST = '149.156.10.138'
 LOBCDER_PORT = 8081
 LOBCDER_ROOT = '/lobcder-2.1/dav'
 LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder-2.1/rest"
+#METADATA SERVICE URL
+ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
 
 ##################
 # LOCAL SETTINGS #
