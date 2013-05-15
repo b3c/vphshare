@@ -42,8 +42,12 @@
 		    		<td>{{ entry.created|date:"d M Y" }}</td>
 		    		<td>{{ entry.size }}</td>
 		    		<td>
-		    			<a class="lobcder-delete" href="/cyfronet/lobcderdelete{{ entry.path }}">Delete</a>
-		    			<button class="btn btn-link show-metadata" data-path="{{ entry.path }}">Metadata</button>
+		    			<a class="btn btn-danger lobcder-delete has_left_tooltip" href="/cyfronet/lobcderdelete{{ entry.path }}" title="Delete">
+                <i class="icon-trash cwhite"></i>
+              </a>
+		    			<button class="btn show-metadata has_right_tooltip" data-toggle="button" data-path="{{ entry.path }}" title="Metadata">
+                <i class="icon-magic"></i>
+              </button>
 		    			<div class="hide metadata-popover-content" data-path="{{ entry.path }}">
 		    				<form action="/cyfronet/lobcdermetadata{{ entry.path }}" method="POST" class="lobcder-metadata-form">
 		    					{% csrf_token %}
@@ -73,11 +77,11 @@
 			var serialized = f.serialize();
 			var paramMap = {}
 			var pairs = serialized.split('&')
-			
+
 			for(pair in pairs) {
 				paramMap[pairs[pair].split('=')[0]] = decodeURIComponent(decodeURIComponent(pairs[pair].split('=')[1]));
 			}
-			
+
 			jQuery.post(url, serialized, function(data) {
 				if(data == 'OK') {
 					f.find('div.alert').addClass('alert-success').removeClass('fade').html('<strong>Done!</strong> Metadata saved.');
@@ -85,7 +89,7 @@
 					original = jQuery('div.metadata-popover-content form[action="' + url + '"]');
 					original.find('input[name="read"]').attr('value', paramMap['read']);
 					original.find('input[name="write"]').attr('value', paramMap['write']);
-					
+
 					if(paramMap['driSupervised'] !== undefined) {
 						original.find('input[name="driSupervised"]').attr('checked', 'true');
 					} else {
@@ -102,7 +106,7 @@
 					return false;
 				}
 			});
-			jQuery('.btn.btn-link.show-metadata').popover({
+			jQuery('.show-metadata').popover({
 				html: true,
 				title: function() {
 					return 'Metadata for ' + jQuery(this).attr('data-path');

@@ -164,7 +164,7 @@ INSTALLED_APPS = (
     'masterinterface.scs_workflows',
     'masterinterface.atos',
     'south'
-    
+
     ##NEW_APP
 )
 
