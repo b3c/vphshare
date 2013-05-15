@@ -203,21 +203,25 @@ def browse_data_az(request):
     """
         browse data in alphabetical order
     """
+    resources_by_letter = {}
+    try:
+        all_resources = get_all_resources_metadata()
+        resources_by_letter = ordereddict.OrderedDict()
 
-    all_resources = get_all_resources_metadata()
-    resources_by_letter = ordereddict.OrderedDict()
+        for letter in string.uppercase:
+            resources_by_letter[letter] = []
 
-    for letter in string.uppercase:
-        resources_by_letter[letter] = []
+        resources_by_letter['0-9'] = []
 
-    resources_by_letter['0-9'] = []
-
-    for r in all_resources:
-        key = str(r.get('name', ' ')).upper()[0]
-        if key in resources_by_letter:
-            resources_by_letter[key].append(r)
-        else:
-            resources_by_letter['0-9'].append(r)
+        for r in all_resources:
+            key = str(r.get('name', ' ')).upper()[0]
+            if key in resources_by_letter:
+                resources_by_letter[key].append(r)
+            else:
+                resources_by_letter['0-9'].append(r)
+    except Exception, e:
+        request.session['errormessage'] = 'Metadata server is down. Please try later'
+        pass
 
     return render_to_response("scs/browseaz.html", {"resources_by_letter": resources_by_letter, "letters": string.uppercase}, RequestContext(request))
 
