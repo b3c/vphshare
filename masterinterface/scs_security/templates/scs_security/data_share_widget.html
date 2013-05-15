@@ -1,24 +1,31 @@
 {% extends 'scs_security/base.html' %}
 
 {% block content %}
+
 <div class="data-share-widget">
+    <div id="alert-container"></div>
 
     <h4>Share</h4>
     <h5>{{ metadata.author }}{{ metadata.name }}</h5>
     <p>{{ metadata.description }}</p>
 
     <h6>Permissions</h6>
-    <dl>
-        <dt>{{ properties.granted_roles }} <span class="icon-edit"></span></dt>
-        <dd>
-            <ul>
-               <li>Users: {% for user in users %} {{ user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
-               <li>Groups: {% for group in groups %} {{ group.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
-            </ul>
+    <div class="well-small">
+        <button id="new-role" class="btn btn-success btn-mini" data-toggle="button" data-loading-text="processing..."><span class="icon-white icon-edit"></span> add a new role</button>
+    </div>
+    <dl id="roles-list">
+        <dt>{{ properties.granted_roles }}</dt>
+        <dd class="well-small ui-droppable granted-role" id="{{ properties.granted_roles }}">
+            {% for user in users %} <span class="ui-draggable label label-info" rel="{{ properties.granted_roles }}" id="{{ user.username }}"> {{ user.first_name}} {{ user.last_name}} </span>{% endfor %}
+            {% for group in groups %} <span class="ui-draggable label label-success" rel="{{ properties.granted_roles }}" id="{{ group.name }}"> {{ group.name }} </span>{% endfor %}
         </dd>
     </dl>
 
-    <hr />
+    <div class="well-small revoke-role span2 pull-right">
+        <button title="drag here to revoke role from users" class="btn btn-danger btn-mini"><span class="icon-white icon-trash"></span> drop here to revoke role</button></dt>
+    </div>
+
+    <br /><hr />
     <form id="search-form" rel="#search-results" method="get" enctype="multipart/form-data" action="/api/searchuserandgroup/" class="form-search ajax">
         {% csrf_token %}
         <label>Search for users and groups</label><br />
@@ -26,23 +33,166 @@
         <input type="hidden" name="ticket" value="{{ tkt64 }}" />
         <button type="submit" class="btn">Search</button>
     </form>
-    <div id="search-results" class="datashare-search-results">
+    <div id="search-results" class="datashare-search-results invisible">
+        <dl>
+            <dt>Users</dt>
+            <dd id="users-result" class="well-small"></dd>
+            <dt>Groups</dt>
+            <dd id="groups-result" class="well-small"></dd>
+        </dl>
     </div>
 
     <h6>Requests</h6>
+    {% for request in requests %}
+    {% empty %}
+        <p> There are no pending requests for this resource </p>
+    {% endfor %}
 </div>
 
 <script type="text/javascript">
 
+    function CreateRoleAjaxResponseHandler(responseText, statusText, xhr, jqform){
+        $("#alert-container").empty();
+        $("<div/>", {
+          "class": "alert fade in " +responseText.alertclass,
+          html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
+        })
+        .alert()
+        .appendTo("#alert-container");
+
+        $('#new-role').button('reset');
+
+        if (responseText.status == 'OK'){
+            $("<dt/>",
+                    {html: responseText.rolename}
+            ).appendTo("#roles-list");
+            $("<dt/>",
+                    {"class": "well-small ui-droppable granted-role",
+                    "id": responseText.rolename}
+            ).droppable({
+                activeClass: "ui-state-hover",
+                accept: ".can-be-granted",
+                drop: function( event, ui ){
+                    var already_there = $(this).find("#"+ui.draggable.attr("id")).length == 0;
+                    if (already_there){
+                        $("#alert-message").alert("close");
+                        grant_role(ui.draggable.attr("id"), $(this).attr("id"));
+                        ui.draggable
+                        .clone()
+                        .attr("rel",$(this).attr("id"))
+                        .addClass("can-be-revoked")
+                        .removeClass("can-be-granted")
+                        .draggable({ revert: "invalid", helper: "clone" })
+                        .appendTo(this);
+                    }
+                }
+            })
+            .appendTo("#roles-list");
+        }
+    }
+
+    function create_role(){
+        $("#new-role").button('loading');
+        var form = $("#create-role-form");
+        var url = $(form).attr( "action" );
+        var method = $(form).attr("method") || "get"; // default method get
+        var data = $(form).find(":input").serializeArray();
+
+        $.ajax({
+                dataType: "json",
+                type: method,
+                url: url,
+                data: data,
+                success: CreateRoleAjaxResponseHandler,
+                error: CreateRoleAjaxResponseHandler
+            }
+        );
+
+        $('#new-role').popover('hide');
+    }
+
+    function RoleAjaxResponseHandler(responseText, statusText, xhr, jqform){
+        $("#alert-container").empty();
+        $("<div/>", {
+          "class": "alert fade in " +responseText.alertclass,
+          html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
+        })
+        .alert()
+        .appendTo("#alert-container")
+    }
+
+    function grant_role(name, role){
+
+        var csrfmiddlewaretoken = $("body").find("input[name=csrfmiddlewaretoken]").val();
+
+        $.ajax({
+            dataType: "json",
+            url: '/security/grantrole',
+            method: 'get',
+            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken},
+            success: RoleAjaxResponseHandler,
+            error: RoleAjaxResponseHandler
+        });
+    }
+
+    function revoke_role(name, role){
+
+        var csrfmiddlewaretoken = $("body").find("input[name=csrfmiddlewaretoken]").val();
+
+        $.ajax({
+            dataType: "json",
+            url: '/security/revokerole',
+            method: 'get',
+            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken},
+            success: RoleAjaxResponseHandler,
+            error: RoleAjaxResponseHandler
+        });
+    }
+
     function SearchAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
 
-        alert(responseText);
-        alert(jqform);
-        alert(responseText);
+        $("#search-results").removeClass("invisible");
+        $("#users-result").empty();
+        $("#groups-result").empty();
+
+        var groups = []
+
+        $.each(responseText.users,
+                function(i, user) {
+                    $('<span/>',{
+                        'class': "label label-info ui-draggable can-be-granted",
+                        'id': user.username,
+                        'uid': user.username,
+                        html: user.fullname
+                    })
+                    .css("cursor","pointer")
+                    .css("margin-left","2px")
+                    .draggable({ revert: "invalid", helper: "clone" })
+                    .appendTo("#users-result");
+            }
+        );
+
+        $.each(responseText.groups,
+                function(i, group) {
+                    $('<span/>',{
+                        'class': "label label-success ui-draggable can-be-granted",
+                        'id': group.groupname,
+                        'uid': group.groupname,
+                        html: group.groupname
+                    })
+                    .css("cursor","pointer")
+                    .css("margin-left","2px")
+                    .draggable({ revert: "invalid", helper: "clone" })
+                    .appendTo("#groups-result");
+        });
+
     }
 
     $(document).ready(function(){
-        $('.ajax').submit(
+
+        $(".ui-draggable").css("cursor","pointer").addClass("can-be-revoked").draggable({ revert: "invalid", helper: "clone" });
+
+        $('#search-form').submit(
             function(event){
 
                 // stop form from submitting normally
@@ -63,7 +213,39 @@
                 );
             }
         )
+
+
+    $("#new-role").popover({html: true, title: "Add a new role", content: "<form id=\"create-role-form\" class=\"form-inline ajax\" action=\"/security/createrole/\">{% csrf_token %}<div class=\"input-append\"><input name=\"role\" class=\"input-medium\" type=\"text\"><button type=\"button\" onclick=\"event.preventDefault();create_role();\" class=\"btn\"><span class=\"icon-plus\"></span></button></div></form>"});
+
+    $(".granted-role").droppable({
+        activeClass: "ui-state-hover",
+        accept: ".can-be-granted",
+        drop: function( event, ui ){
+            var already_there = $(this).find("#"+ui.draggable.attr("id")).length == 0;
+            if (already_there){
+                $("#alert-message").alert("close");
+                grant_role(ui.draggable.attr("id"), $(this).attr("id"));
+                ui.draggable
+                        .clone()
+                        .attr("rel",$(this).attr("id"))
+                        .addClass("can-be-revoked")
+                        .removeClass("can-be-granted")
+                        .draggable({ revert: "invalid", helper: "clone" })
+                        .appendTo(this);
+            }
+        }
     });
 
+    $(".revoke-role").droppable({
+        activeClass: "ui-state-hover",
+        accept: ".can-be-revoked",
+        drop: function( event, ui ){
+            $("#alert-message").alert("close");
+            revoke_role(ui.draggable.attr("id"), ui.draggable.attr("rel"));
+            ui.draggable.remove();
+        }
+    });
+
+});
 </script>
 {% endblock %}

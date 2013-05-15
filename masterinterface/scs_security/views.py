@@ -8,9 +8,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from urllib import quote, unquote
 from datetime import datetime
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+from django.db.models import ObjectDoesNotExist
 from masterinterface.scs_auth.models import UserProfile
-from permissions.models import PrincipalRoleRelation
+from permissions.models import PrincipalRoleRelation, Role
+from permissions.utils import add_role, remove_role, has_permission
 import json
 from lxml import etree
 from forms import PropertyForm
@@ -227,7 +229,9 @@ def data_share_widget(request, global_id='f2c84fa7-be6e-4c07-a589-5124066f6425')
         given a data endpoint display all related information
     """
 
-    metadata = get_resource_metadata(global_id)
+    # metadata = get_resource_metadata(global_id)
+
+    metadata = {'author': 'mbalasso', 'name': 'Test Resource', 'description': 'test description'}
 
     # link data to the relative security configuration STATICALLY!
     configuration_name = 'TestMatteo'
@@ -238,8 +242,8 @@ def data_share_widget(request, global_id='f2c84fa7-be6e-4c07-a589-5124066f6425')
 
     # look for user with those roles
     role_relations = PrincipalRoleRelation.objects.filter(role__name__exact=properties['granted_roles'])
-    groups = [r.group for r in role_relations]
-    users = [r.user for r in role_relations]
+    groups = [r.group for r in role_relations if r.group is not None]
+    users = [r.user for r in role_relations if r.user is not None]
 
     return render_to_response(
         'scs_security/data_share_widget.html',
@@ -247,7 +251,80 @@ def data_share_widget(request, global_id='f2c84fa7-be6e-4c07-a589-5124066f6425')
          'metadata': metadata,
          'properties': properties,
          'users': users,
+         'requests': [],
          'groups': groups},
         RequestContext(request)
     )
 
+
+def alert_user_by_email(user, resource, action="granted"):
+    """
+        send an email to alert user
+    """
+
+
+def grant_role(request):
+    """
+        grant role to user or group
+    """
+
+    # if has_permission(request.user, "Manage sharing"):
+    name = request.GET.get('name')
+    role = Role.objects.get(name=request.GET.get('role'))
+
+    try:
+        actor = User.objects.get(username=name)
+    except ObjectDoesNotExist, e:
+        actor = Group.objects.get(name=name)
+
+    add_role(actor, role)
+
+    response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
+    response = HttpResponse(content=response_body, content_type='application/json')
+    return response
+
+
+def revoke_role(request):
+    """
+        revoke role from user or group
+    """
+
+    # if has_permission(request.user, "Manage sharing"):
+    name = request.GET.get('name')
+    role = Role.objects.get(name=request.GET.get('role'))
+
+    try:
+        actor = User.objects.get(username=name)
+    except ObjectDoesNotExist, e:
+        actor = Group.objects.get(name=name)
+
+    remove_role(actor, role)
+
+    response_body = json.dumps({"status": "OK", "message": "Role revoked correctly", "alertclass": "alert-success"})
+    response = HttpResponse(content=response_body, content_type='application/json')
+    return response
+
+
+def create_role(request):
+    """
+        create the requested role and the relative security
+    """
+
+    # if has_permission(request.user, "Create new role"):
+    role_name = request.GET.get('role')
+    role, created = Role.objects.get_or_create(name=role_name)
+    if not created:
+        # role with that name already exists
+        response_body = json.dumps({"status": "KO", "message": "Role with name %s already exists" % role_name, "alertclass": "alert-error"})
+        response = HttpResponse(content=response_body, content_type='application/json')
+        return response
+
+    policy_file = create_policy_file(['read'], [role_name])
+    if cloudfacade.create_securitypolicy(request.user.username, request.COOKIES.get('vph-tkt'), role_name, policy_file):
+        response_body = json.dumps({"status": "OK", "message": "Role created correctly", "alertclass": "alert-success", "rolename": role_name})
+        response = HttpResponse(content=response_body, content_type='application/json')
+        return response
+    else:
+        response_body = json.dumps({"status": "KO", "message": "Interaction with security agent failed", "alertclass": "alert-error"})
+        response = HttpResponse(content=response_body, content_type='application/json')
+        return response

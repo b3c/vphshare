@@ -283,14 +283,14 @@ def users_create_role(request):
         if request.method == "POST":
             if request.POST['role_name'].lower() == "":
                 return HttpResponse("FALSE")
-            newRole, created = Role.objects.get_or_create(name=request.POST['role_name'].lower())
+            newRole, created = Role.objects.get_or_create(name=request.POST['role_name'])
             if created:
                 newRole.save()
             else:
                 return HttpResponse("FALSE")
             return HttpResponse('<li id="' + request.POST['role_name'].lower() + '">' + request.POST[
                 'role_name'].lower() + ' <input  name="' + request.POST[
-                                    'role_name'].lower() + '" type="checkbox" ></li>')
+                                    'role_name'] + '" type="checkbox" ></li>')
 
     except  Exception, e:
         return HttpResponse("FALSE")
