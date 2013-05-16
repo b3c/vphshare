@@ -58,8 +58,8 @@
                         &nbsp
                     {% for workflow in workflows %}
                         <div class="row row-manage-data">
-                            <div class="span3">{{ workflow.title }}</div>
-                            <div class="span3">Author: {{ workflow.metadata.author }}</div>
+                            <div class="span3">{{ workflow.metadata.name }}</div>
+                            <div class="span3">Author: {{ workflow.metadata.author }} </div>
                             <div class="span3">Published: {{ workflow.metadata.creation_date }}</div>
                             <div class="span2">
                                 <span class="icon icon-share-alt" style="padding-right: 25px;"></span>
@@ -73,16 +73,16 @@
                                     <span class="icon icon-cog pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
                                     <div id="modal-{{ workflow.id }}-label"><p><b>Manage</b></p><p>{{ workflow.title }}</p></div>
                                 </div>
-                                <div data-globalid="{{ workflow.metadataId }}" class="modal-body manage-modal-data">
+                                <div data-globalid="{{ workflow.global_id }}" class="modal-body manage-modal-data">
                                     <div class="alert hide">
                                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                                         <span id="modal-message"></span>
                                     </div>
                                     <ul class="unstyled modal-list">
-                                        <li>Description: <span id="modal-description">{{ workflow.description }}</span>
+                                        <li>Description: <span id="modal-description">{{ workflow.metadata.description }}</span>
                                             <button id="edit-description-btn" class="btn btn-mini">edit</button>
                                             <span id="edit-description-form" class="input-append hide" style="margin-bottom: 0px;">
-                                                <textarea id="edit-description-textarea" class="input-size-mini">{{ workflow.description }} </textarea>
+                                                <textarea id="edit-description-textarea" class="input-size-mini">{{ workflow.metadata.description }} </textarea>
                                                 <button id="update-description" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button>
                                             </span>
                                         </li>
@@ -106,7 +106,7 @@
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                     <span class="icon icon-group pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
-                                    <div id="myModalLabel"><p><b>Manage</b></p><p>{{ workflow.title }}</p></div>
+                                    <div id="myModalLabel"><p><b>Manage</b></p><p>{{ workflow.metadata.name }}</p></div>
                                 </div>
                                 <div class="modal-body">
                                     <ul>

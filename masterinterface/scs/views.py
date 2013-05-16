@@ -170,14 +170,13 @@ def upload_data(request):
 
 
 def manage_data(request):
-    from masterinterface.scs_workflows.models import scsWorkflow
+    from masterinterface.scs_resources.models import Workflow
 
     workflows = []
 
     try:
-        dbWorkflows = scsWorkflow.objects.all()
+        dbWorkflows = Workflow.objects.all()
         for workflow in dbWorkflows:
-            workflow.metadata = get_resource_metadata(workflow.metadataId)
             workflows.append(workflow)
 
     except Exception, e:
@@ -297,19 +296,13 @@ def edit_description_service(request):
     """
         add tag to resource's metadata
     """
-    from masterinterface.scs_workflows.models import scsWorkflow
+    from masterinterface.scs_resources.models import Workflow
     try:
         if request.method == 'POST':
 
             description = request.POST.get('description', "")
             global_id = request.POST.get('global_id', "")
-
-            metadata = get_resource_metadata(global_id)
-
-            dbWorkflow = scsWorkflow.objects.get(metadataId=global_id)
-            dbWorkflow.description = description
             update_resource_metadata(global_id, {'description': description})
-            dbWorkflow.save()
 
             response = HttpResponse(status=200)
             response._is_string = True
