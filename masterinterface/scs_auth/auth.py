@@ -43,6 +43,13 @@ def getUserTokens(user):
     for role in get_roles(user):
         tokens.append(role.name)
 
+    review_resources = []
+
+    # TODO REMOVE HACK!
+    for resource in review_resources:
+        for role in get_roles(user, resource):
+            tokens.append(role.name)
+
     for group in user.groups.all():
         try:
             # check if there is a corresponding vphshare group and if it is active

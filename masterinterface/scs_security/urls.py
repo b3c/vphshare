@@ -11,8 +11,4 @@ urlpatterns = patterns(
     url(r'^configuration/$', 'configuration'),
     url(r'^deletepolicy/$', 'delete_policy'),
     url(r'^deleteconfiguration/$', 'delete_configuration'),
-    url(r'^datashare/$', 'data_share_widget'),
-    url(r'^grantrole/$', 'grant_role'),
-    url(r'^revokerole/$', 'revoke_role'),
-    url(r'^createrole/$', 'create_role')
 )
