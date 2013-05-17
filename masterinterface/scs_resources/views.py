@@ -7,52 +7,41 @@ from django.template import RequestContext
 from django.contrib.auth.models import User, Group
 from django.db.models import ObjectDoesNotExist
 from permissions.models import PrincipalRoleRelation, Role
-from permissions.utils import add_role, remove_role, has_permission
+from permissions.utils import add_role, remove_role, has_local_role, has_permission, add_local_role, remove_local_role
 import json
 from masterinterface.scs_security.politicizer import create_policy_file, extract_permission_map
 from masterinterface.scs_security.configurationizer import create_configuration_file, extract_configurations
 from masterinterface.cyfronet import cloudfacade
 from masterinterface.atos.metadata_connector import get_resource_metadata, AtosServiceException
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from .models import Workflow
+from .models import Resource, Workflow
 from forms import WorkflowForm
-import os
 from masterinterface.atos.metadata_connector import *
+from utils import get_permissions_map
 
-
-def resource_share_widget(request, global_id='f2c84fa7-be6e-4c07-a589-5124066f6425'):
+def resource_share_widget(request, global_id='84152af8-2588-417b-ab7d-2eb8ed0b2f31'):
     """
         given a data endpoint display all related information
     """
 
-    try:
-        metadata = get_resource_metadata(global_id)
-    except AtosServiceException, e:
-        metadata = {'author': 'mbalasso', 'name': 'Test Resource', 'description': 'test description'}
+    resource = Resource.objects.get(global_id=global_id)
 
     # link data to the relative security configuration STATICALLY!
-    configuration_name = 'TestMatteo'
-    configuration_file = cloudfacade.get_securityproxy_configuration_content(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name)
+    # configuration_name = 'TestMatteo'
+    # configuration_file = cloudfacade.get_securityproxy_configuration_content(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name)
 
     # retrieve roles from the configuration
-    properties = extract_configurations(configuration_file)
+    # properties = extract_configurations(configuration_file)
 
-    # look for user with those roles
-    role_relations = PrincipalRoleRelation.objects.filter(role__name__exact=properties['granted_roles'])
-    groups = [r.group for r in role_relations if r.group is not None]
-    users = [r.user for r in role_relations if r.user is not None]
+    resource.permissions_map = get_permissions_map(global_id)
 
     return render_to_response(
-        '/scs_resources/templates/share_widget.html',
+        'scs_resources/share_widget.html',
         {'tkt64': request.COOKIES.get('vph-tkt'),
-         'metadata': metadata,
-         'properties': properties,
-         'users': users,
+         'resource': resource,
          'requests': [],
-         'groups': groups},
+         },
         RequestContext(request)
     )
 
@@ -71,13 +60,17 @@ def grant_role(request):
     # if has_permission(request.user, "Manage sharing"):
     name = request.GET.get('name')
     role = Role.objects.get(name=request.GET.get('role'))
+    resource = Resource.objects.get(global_id=request.GET.get('global_id'))
 
     try:
-        actor = User.objects.get(username=name)
+        principal = User.objects.get(username=name)
     except ObjectDoesNotExist, e:
-        actor = Group.objects.get(name=name)
+        principal = Group.objects.get(name=name)
 
-    add_role(actor, role)
+    # TODO ADD GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
+    # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+    # add_role(principal, global_role)
+    add_local_role(resource, principal, role)
 
     response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')
@@ -92,13 +85,17 @@ def revoke_role(request):
     # if has_permission(request.user, "Manage sharing"):
     name = request.GET.get('name')
     role = Role.objects.get(name=request.GET.get('role'))
+    resource = Resource.objects.get(global_id=request.GET.get('global_id'))
 
     try:
-        actor = User.objects.get(username=name)
+        principal = User.objects.get(username=name)
     except ObjectDoesNotExist, e:
-        actor = Group.objects.get(name=name)
+        principal = Group.objects.get(name=name)
 
-    remove_role(actor, role)
+    # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
+    # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+    # remove_role(principal, global_role)
+    remove_local_role(resource, principal, role)
 
     response_body = json.dumps({"status": "OK", "message": "Role revoked correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')

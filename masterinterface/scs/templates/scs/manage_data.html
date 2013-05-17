@@ -56,37 +56,37 @@
                     </div>
                     <div id="b2e1c163-942d-4d4c-8199-a69a71f18495" class="accordion-body collapse">
                         &nbsp
-                    {% for workflow in workflows %}
+                    {% for resource in workflows %}
                         <div class="row row-manage-data">
-                            <div class="span3">{{ workflow.metadata.name }}</div>
-                            <div class="span3">Author: {{ workflow.metadata.author }} </div>
-                            <div class="span3">Published: {{ workflow.metadata.creation_date }}</div>
+                            <div class="span3">{{ resource.metadata.name }}</div>
+                            <div class="span3">Author: {{ resource.metadata.author }} </div>
+                            <div class="span3">Published: {{ resource.metadata.creation_date }}</div>
                             <div class="span2">
                                 <span class="icon icon-share-alt" style="padding-right: 25px;"></span>
-                                <a href="#modal-{{ workflow.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
-                                <a href="#share-{{ workflow.id }}" role="button" data-toggle="modal"><span class="icon  icon-group" ></span></a>
+                                <a href="#modal-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
+                                <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group" ></span></a>
                             </div>
 
-                            <div id="modal-{{ workflow.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-{{ workflow.id }}-label" aria-hidden="true">
+                            <div id="modal-{{ resource.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-{{ resource.id }}-label" aria-hidden="true">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                     <span class="icon icon-cog pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
-                                    <div id="modal-{{ workflow.id }}-label"><p><b>Manage</b></p><p>{{ workflow.title }}</p></div>
+                                    <div id="modal-{{ resource.id }}-label"><p><b>Manage</b></p><p>{{ resource.title }}</p></div>
                                 </div>
-                                <div data-globalid="{{ workflow.global_id }}" class="modal-body manage-modal-data">
+                                <div data-globalid="{{ resource.global_id }}" class="modal-body manage-modal-data">
                                     <div class="alert hide">
                                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                                         <span id="modal-message"></span>
                                     </div>
                                     <ul class="unstyled modal-list">
-                                        <li>Description: <span id="modal-description">{{ workflow.metadata.description }}</span>
+                                        <li>Description: <span id="modal-description">{{ resource.metadata.description }}</span>
                                             <button id="edit-description-btn" class="btn btn-mini">edit</button>
                                             <span id="edit-description-form" class="input-append hide" style="margin-bottom: 0px;">
-                                                <textarea id="edit-description-textarea" class="input-size-mini">{{ workflow.metadata.description }} </textarea>
+                                                <textarea id="edit-description-textarea" class="input-size-mini">{{ resource.metadata.description }} </textarea>
                                                 <button id="update-description" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button>
                                             </span>
                                         </li>
-                                    {% with  workflow.metadata.tags|split:" " as tags%}
+                                    {% with  resource.metadata.tags|split:" " as tags%}
                                         <li>Tags:
                                             {% for tag in tags %}
                                                 <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">{{ tag }}</div><div id="remove-tag" type="button" class="close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
@@ -94,26 +94,22 @@
                                             <button id="enter-tag-btn" class="btn btn-mini">Enter tag</button>
                                             <span id="enter-tag-form" class="input-append hide" style="margin-bottom: 0px;"><input id="enter-tag-input" type="text" class="input-medium input-size-mini"><button id="update-tag" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button></span>
                                         </li>
-                                        <li>Licence: <span class="label" style="margin-right: 5px;">{{ workflow.metadata.licence }}</span> <button class="btn btn-mini">Upload licence</button></li>
-                                        <li>Views: {{ workflow.metadata.views }}</li>
+                                        <li>Licence: <span class="label" style="margin-right: 5px;">{{ resource.metadata.licence }}</span> <button class="btn btn-mini">Upload licence</button></li>
+                                        <li>Views: {{ resource.metadata.views }}</li>
                                     {% endwith %}
                                     </ul>
-                                    <div class="row-fluid" style="font-size: 13px;"><div class="span4">Published: {{ workflow.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ workflow.metadata.category }}</div><div class="span4">Type: {{ workflow.metadata.type }}</div></div>
+                                    <div class="row-fluid" style="font-size: 13px;"><div class="span4">Published: {{ resource.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ resource.metadata.category }}</div><div class="span4">Type: {{ resource.metadata.type }}</div></div>
                                 </div>
                             </div>
 
-                            <div id="share-{{ workflow.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div id="share-{{ resource.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                     <span class="icon icon-group pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
-                                    <div id="myModalLabel"><p><b>Manage</b></p><p>{{ workflow.metadata.name }}</p></div>
+                                    <div id="myModalLabel"><p><b>Manage</b></p><p>{{ resource.metadata.name }}</p></div>
                                 </div>
                                 <div class="modal-body">
-                                    <ul>
-                                        <li>Permissions: <textarea></textarea> </li>
-                                        <li>Requests: <textarea></textarea></li>
-                                    </ul>
-                                    <div class="row-fluid" style="font-size: 13px;"><div class="span4">Published: {{ workflow.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ workflow.metadata.category }}</div><div class="span4">Type: {{ workflow.metadata.type }}</div></div>
+                                    {% include 'scs_resources/share_widget.html' %}
                                 </div>
                             </div>
                         </div>

@@ -12,7 +12,7 @@ from django.core.validators import URLValidator
 
 from scs_auth import __version__ as version
 from django.conf import settings
-from masterinterface.scs.permissions import is_staff
+from masterinterface.scs.utils import is_staff
 from masterinterface.scs_auth.auth import calculate_sign
 import urllib2
 import time

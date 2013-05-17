@@ -11,10 +11,11 @@ from django.core.exceptions import ValidationError
 import string
 import ordereddict
 from scs import __version__ as version
-from permissions import is_staff
+from permissions.models import Role
+from utils import is_staff
 from masterinterface import settings
-from masterinterface.scs_auth.models import roles
 from masterinterface.atos.metadata_connector import *
+from masterinterface.scs_resources.utils import get_permissions_map
 from django.utils import simplejson
 import json
 from django.http import HttpResponse
@@ -177,6 +178,7 @@ def manage_data(request):
     try:
         dbWorkflows = Workflow.objects.all()
         for workflow in dbWorkflows:
+            workflow.permissions_map = get_permissions_map(workflow.global_id)
             workflows.append(workflow)
 
     except Exception, e:
@@ -184,7 +186,8 @@ def manage_data(request):
         pass
 
     return render_to_response("scs/manage_data.html",
-                              {'workflows': workflows},
+                              {'workflows': workflows,
+                               'tkt64': request.COOKIES.get('vph-tkt')},
                               RequestContext(request))
 
 
@@ -192,7 +195,7 @@ def manage_data(request):
 def users_access_admin(request):
 
 
-    Roles = roles.objects.all()
+    Roles = Role.objects.all()
     return render_to_response("scs/usersadmin.html",
                               {'Roles': Roles.values()},
                               RequestContext(request))

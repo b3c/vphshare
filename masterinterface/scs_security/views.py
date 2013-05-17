@@ -20,7 +20,7 @@ from politicizer import create_policy_file, extract_permission_map
 from configurationizer import create_configuration_file, extract_configurations
 from masterinterface.scs.utils import get_file_data
 from masterinterface.cyfronet import cloudfacade
-from masterinterface.scs.permissions import is_staff
+from masterinterface.scs.utils import is_staff
 from masterinterface.atos.metadata_connector import get_resource_metadata
 
 

@@ -41,7 +41,7 @@
 
 
     <fieldset class="span8">
-        <legend>Create a new role</legend>
+        <legend>Create a new global role</legend>
         <form id="users_create_role" class="form-inline" action="{% url users_create_role %}">
             {% csrf_token %}
             <input name="role_name" class="input-medium" type="text">
@@ -52,7 +52,7 @@
 
     <div id="usersList" class="span8">
         <fieldset>
-            <legend>Assign Roles to users</legend>
+            <legend>Assign Global Roles to users</legend>
             <form id ="users_update_role_map" action="{%   url users_update_role_map %}">
                 {% csrf_token %}
             <table>
@@ -67,7 +67,7 @@
         </fieldset>
     </div>
     <div><img class="invisible" src="/static/tiny-ajax-loader.gif" id="users_update_role_mapLOADIMG"></div>
-    <div class="span8">
+    <div class="span8 invisible">
         <div class="errormessage"><span id="set_security_agent_errormessage" style="color: #000000;">{{ errormessage  }}</span></div>
         <div class="statusmessage"><span id="set_security_agent_statusmessage" style="color: #000000;">{{ statusmessage  }}</span></div>
 

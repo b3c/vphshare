@@ -1,34 +1,31 @@
-{% extends 'scs_security/base.html' %}
-
-{% block content %}
-
-<div class="data-share-widget">
+<div>
     <div id="alert-container"></div>
 
-    <h4>Share</h4>
-    <h5>{{ metadata.author }}{{ metadata.name }}</h5>
-    <p>{{ metadata.description }}</p>
-
     <h6>Permissions</h6>
-    <div class="well-small">
+    <!--<div class="well-small">
         <button id="new-role" class="btn btn-success btn-mini" data-toggle="button" data-loading-text="processing..."><span class="icon-white icon-edit"></span> add a new role</button>
-    </div>
+    </div>-->
     <dl id="roles-list">
-        <dt>{{ properties.granted_roles }}</dt>
-        <dd class="well-small ui-droppable granted-role" id="{{ properties.granted_roles }}">
-            {% for user in users %} <span class="ui-draggable label label-info" rel="{{ properties.granted_roles }}" id="{{ user.username }}"> {{ user.first_name}} {{ user.last_name}} </span>{% endfor %}
-            {% for group in groups %} <span class="ui-draggable label label-success" rel="{{ properties.granted_roles }}" id="{{ group.name }}"> {{ group.name }} </span>{% endfor %}
+        {% for role in resource.permissions_map %}
+        <dt>{{ role.name }}</dt>
+        <dd class="well-small ui-droppable granted-role" id="{{ role.name }}" rel={{ resource.global_id }}>
+            {% for user in role.users %} <span class="ui-draggable label label-info" rel="{{ role.name }}" id="{{ user.username }}"> {{ user.first_name}} {{ user.last_name}} </span>{% endfor %}
+            {% for group in role.groups %} <span class="ui-draggable label label-success" rel="{{ role.name }}" id="{{ group.name }}"> {{ group.name }} </span>{% endfor %}
+            {% if not role.users and not role.groups %}
+                <p class=".noone">No one has been granted to the this role yet.</p>
+            {% endif %}
         </dd>
+        {% endfor %}
     </dl>
 
-    <div class="well-small revoke-role span2 pull-right">
+    <div class="well-small revoke-role span2 pull-right" rel={{ resource.global_id }}>
         <button title="drag here to revoke role from users" class="btn btn-danger btn-mini"><span class="icon-white icon-trash"></span> drop here to revoke role</button></dt>
     </div>
 
-    <br /><hr />
+    <br />
     <form id="search-form" rel="#search-results" method="get" enctype="multipart/form-data" action="/api/searchuserandgroup/" class="form-search ajax">
         {% csrf_token %}
-        <label>Search for users and groups</label><br />
+        <label>Search for <span class="ui-draggable label label-info">users</span> and <span class="ui-draggable label label-success">groups</span></label>
         <input type="text" name="term" class="input-medium search-query" />
         <input type="hidden" name="ticket" value="{{ tkt64 }}" />
         <button type="submit" class="btn">Search</button>
@@ -41,12 +38,13 @@
             <dd id="groups-result" class="well-small"></dd>
         </dl>
     </div>
-
+    <hr />
     <h6>Requests</h6>
-    {% for request in requests %}
+    {% for request in resource.requests %}
     {% empty %}
         <p> There are no pending requests for this resource </p>
     {% endfor %}
+    <br />
 </div>
 
 <script type="text/javascript">
@@ -118,32 +116,37 @@
           html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
         })
         .alert()
+        .fadeIn()
+        .delay(3000)
+        .fadeOut(1000, function(){
+                $(this).removeClass(style).find('#modal-message').text('');
+        })
         .appendTo("#alert-container")
     }
 
-    function grant_role(name, role){
+    function grant_role(name, role, global_id){
 
         var csrfmiddlewaretoken = $("body").find("input[name=csrfmiddlewaretoken]").val();
 
         $.ajax({
             dataType: "json",
-            url: '/security/grantrole',
+            url: '/grantrole',
             method: 'get',
-            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken},
+            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken, global_id: global_id},
             success: RoleAjaxResponseHandler,
             error: RoleAjaxResponseHandler
         });
     }
 
-    function revoke_role(name, role){
+    function revoke_role(name, role, global_id){
 
         var csrfmiddlewaretoken = $("body").find("input[name=csrfmiddlewaretoken]").val();
 
         $.ajax({
             dataType: "json",
-            url: '/security/revokerole',
+            url: '/revokerole',
             method: 'get',
-            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken},
+            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken, global_id: global_id},
             success: RoleAjaxResponseHandler,
             error: RoleAjaxResponseHandler
         });
@@ -215,16 +218,17 @@
         )
 
 
-    $("#new-role").popover({html: true, title: "Add a new role", content: "<form id=\"create-role-form\" class=\"form-inline ajax\" action=\"/security/createrole/\">{% csrf_token %}<div class=\"input-append\"><input name=\"role\" class=\"input-medium\" type=\"text\"><button type=\"button\" onclick=\"event.preventDefault();create_role();\" class=\"btn\"><span class=\"icon-plus\"></span></button></div></form>"});
+    //$("#new-role").popover({html: true, title: "Add a new role", content: "<form id=\"create-role-form\" class=\"form-inline ajax\" action=\"/security/createrole/\">{% csrf_token %}<div class=\"input-append\"><input name=\"role\" class=\"input-medium\" type=\"text\"><button type=\"button\" onclick=\"event.preventDefault();create_role();\" class=\"btn\"><span class=\"icon-plus\"></span></button></div></form>"});
 
     $(".granted-role").droppable({
         activeClass: "ui-state-hover",
         accept: ".can-be-granted",
         drop: function( event, ui ){
+            $(this).find("p").remove();
             var already_there = $(this).find("#"+ui.draggable.attr("id")).length == 0;
             if (already_there){
                 $("#alert-message").alert("close");
-                grant_role(ui.draggable.attr("id"), $(this).attr("id"));
+                grant_role(ui.draggable.attr("id"), $(this).attr("id"), $(this).attr("rel"));
                 ui.draggable
                         .clone()
                         .attr("rel",$(this).attr("id"))
@@ -241,11 +245,10 @@
         accept: ".can-be-revoked",
         drop: function( event, ui ){
             $("#alert-message").alert("close");
-            revoke_role(ui.draggable.attr("id"), ui.draggable.attr("rel"));
+            revoke_role(ui.draggable.attr("id"), ui.draggable.attr("rel"), $(this).attr("rel"));
             ui.draggable.remove();
         }
     });
 
 });
 </script>
-{% endblock %}
