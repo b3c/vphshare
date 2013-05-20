@@ -8,6 +8,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models import ObjectDoesNotExist
 from permissions.models import PrincipalRoleRelation, Role
 from permissions.utils import add_role, remove_role, has_local_role, has_permission, add_local_role, remove_local_role
+from workflows.utils import get_state
 import json
 from masterinterface.scs_security.politicizer import create_policy_file, extract_permission_map
 from masterinterface.scs_security.configurationizer import create_configuration_file, extract_configurations
@@ -20,12 +21,35 @@ from forms import WorkflowForm
 from masterinterface.atos.metadata_connector import *
 from utils import get_permissions_map
 
-def resource_share_widget(request, global_id='84152af8-2588-417b-ab7d-2eb8ed0b2f31'):
+
+def resource_detailed_view(request, id='1'):
+    """
+        return the detailed view for a given resource
+    """
+
+    resource = Resource.objects.get(id=id)
+
+    # INJECT DEFAULT VALUES
+    resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": "doi:12.34567/891011.0004.23"}]
+    resource.status = "Published"
+    resource.language = "English"
+    resource.version = "1.0"
+    resource.related = []
+    
+    return render_to_response(
+        'scs_resources/resource_details.html',
+        {'resource': resource,
+         'requests': []},
+        RequestContext(request)
+    )
+
+
+def resource_share_widget(request, id='1'):
     """
         given a data endpoint display all related information
     """
 
-    resource = Resource.objects.get(global_id=global_id)
+    resource = Resource.objects.get(id=id)
 
     # link data to the relative security configuration STATICALLY!
     # configuration_name = 'TestMatteo'
@@ -34,7 +58,7 @@ def resource_share_widget(request, global_id='84152af8-2588-417b-ab7d-2eb8ed0b2f
     # retrieve roles from the configuration
     # properties = extract_configurations(configuration_file)
 
-    resource.permissions_map = get_permissions_map(global_id)
+    resource.permissions_map = get_permissions_map(resource.global_id)
 
     return render_to_response(
         'scs_resources/share_widget.html',

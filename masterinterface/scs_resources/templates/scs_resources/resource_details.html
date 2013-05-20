@@ -1,0 +1,75 @@
+{% extends 'scs/base.html' %}
+
+{% load scs_extras %}
+{% load permissions_tags %}
+
+{%  block content %}
+    <div class="span7">
+        <div class="resource-title">
+            <h2> {{ resource.metadata.name }}</h2>
+            <dl class="dl-horizontal">
+                <dt>Description</dt>
+                <dd>{{ resource.metadata.description }}</dd>
+            </dl>
+        </div>
+        <div class="resource-details">
+            <dl class="dl-horizontal">
+                <dt>Date Created:</dt>
+                <dd>{{ resource.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }}</dd>
+                <dt>Language:</dt>
+                <dd>{{ resource.language }}</dd>
+                <dt>Status:</dt>
+                <dd>{{ resource.status}}</dd>
+                <br />
+                <dt>Citations:</dt>
+                {% for citation in resource.citations %}
+                    <dd> {{ citation.citation }}<br /><a href="#">{{ citation.link }}</a></dd>
+                {% endfor %}
+                <dt>Related</dt>
+                {% for related in resource.related %}<dd></dd>{% endfor %}
+            </dl>
+        </div>
+    </div>
+    <div class="span4">
+        <div class="resource-actions">
+            <p><strong>Type:</strong> {{ resource.metadata.type }}</p>
+            <p><strong>Views:</strong> {{ resource.metadata.views }}</p>
+            <p><strong>Version: </strong> {{ resource.version }}</p>
+            <br /> <br />
+            <p><strong>Tags</strong></p>
+            {% with  resource.metadata.tags|split:" " as tags%}
+                <ul class="inline">
+                    {% for tag in tags %}
+                        <li><span class="label">{{ tag }}</span></li>
+                    {% endfor %}
+                </ul>
+            {% endwith %}
+            <br /> <br />
+            <p><strong>Licence:</strong></p>
+            <ul class="inline">
+                <li><span class="label">{{ resource.metadata.licence }}</span></li>
+                <li><a href="#">Download</a></li>
+            </ul>
+            <br /> <br />
+            <p><strong>Semantic Annotations:</strong></p>
+            {% with  resource.metadata.semantic_annotations|split:" " as annotations%}
+                <ul class="inline">
+                    {% for annotation in annotations%}
+                        <li><span class="label">{{ annotation}}</span></li>
+                    {% empty %}
+                        <li>This resource has not semantic annotations.</li>
+                    {% endfor %}
+                </ul>
+            {% endwith %}
+            {% if request.user.is_authenticated %}
+            {% ifhasperm 'can_read_resource' %}
+                <button class="btn btn-block btn-large btn-success">Download</button>
+            {% else %}
+                <button class="btn btn-block btn-large btn-warning">Request for sharing</button>
+            {% endifhasperm %}
+            {% else %}
+                <button class="btn btn-block btn-large btn-danger" onclick="$('#login').popover('show');">Please login to access to this resource</button>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

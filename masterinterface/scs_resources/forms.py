@@ -12,10 +12,10 @@ class ResourceForm(forms.ModelForm):
 
     name = forms.CharField(label="Resource Name", required=True)
     description = forms.CharField(label="Resource Description", required=True, widget=forms.Textarea)
-    category = forms.CharField(help_text="Workflow Category", required=True, label="Category *")
-    tags = forms.CharField(help_text="Add tags,separated by comma", required=False, label="Tags")
-    semantic_annotations = forms.CharField(help_text="Add the annotations uri, separated by comma ", required=False, label="Semantic annotations")
-    licence = forms.CharField(help_text="licence type for this workflow, es. GPL, BSD, MIT .. ", required=True, label='Licence *')
+    category = forms.CharField(help_text="Resource Category", required=False, label="Category")
+    tags = forms.CharField(help_text="Tags (separated by comma)", required=False, label="Tags")
+    semantic_annotations = forms.CharField(help_text="The annotations uri (separated by comma)", required=False, label="Semantic annotations")
+    licence = forms.CharField(help_text="Licence type (es. GPL, BSD, MIT, ..)", required=True, label='Licence *')
 
     class Meta:
         model = Resource
