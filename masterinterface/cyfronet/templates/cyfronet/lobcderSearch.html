@@ -76,5 +76,7 @@
 				<div class="span2">{{ entry.modified|date:"d M Y" }}</div>
 			</div>
 		{% endfor %}
+	{% else %}
+		No entries
 	{% endif %}
 {% endblock %}
