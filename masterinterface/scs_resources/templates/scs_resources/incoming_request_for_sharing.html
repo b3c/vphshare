@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <p>Dear {{ resource.owner.first_name }}, you have received a new request for sharing!</p>
+
+    <ul>
+        <li>Resource: {{ resource.metadata.name }}</li>
+        <li>Requestor: {{ requestor.first_name }} {{ requestor.last_name }}</li>
+        <li>Message: {{ message }}</li>
+    </ul>
+
+    <p>Please visit your dashboard to manage this request.</p>
+
+    <p>Best regards, <br /> The VPH-Share Staff</p>
+
+</body>
+</html>

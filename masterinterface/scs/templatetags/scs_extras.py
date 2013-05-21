@@ -1,5 +1,6 @@
 from django import template
 from datetime import datetime
+from permissions.utils import has_permission
 # get a register Library instance
 register = template.Library()
 
@@ -30,8 +31,15 @@ def split(string, sep=" "):
 
 def strTodate(date):
     return datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+
+
+def can_read(user, resource):
+    return has_permission(resource, user, 'can_read_resource')
+
+
 # register filters
 register.filter('breadcrumbs', breadcrumbs)
 register.filter('basepath', basepath)
 register.filter('split', split)
 register.filter('strTodate', strTodate)
+register.filter('can_read',can_read)

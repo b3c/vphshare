@@ -3,12 +3,14 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.template import loader
 from django.template import RequestContext
 from django.contrib.auth.models import User, Group
 from django.db.models import ObjectDoesNotExist
+from django.core.mail import EmailMultiAlternatives
 from permissions.models import PrincipalRoleRelation, Role
 from permissions.utils import add_role, remove_role, has_local_role, has_permission, add_local_role, remove_local_role
-from workflows.utils import get_state
+from workflows.utils import get_state, set_workflow, set_state, do_transition
 import json
 from masterinterface.scs_security.politicizer import create_policy_file, extract_permission_map
 from masterinterface.scs_security.configurationizer import create_configuration_file, extract_configurations
@@ -16,10 +18,24 @@ from masterinterface.cyfronet import cloudfacade
 from masterinterface.atos.metadata_connector import get_resource_metadata, AtosServiceException
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from .models import Resource, Workflow
+from .models import Resource, Workflow, ResourceRequest
+from config import ResourceRequestWorkflow, request_pending, request_accept_transition
 from forms import WorkflowForm
 from masterinterface.atos.metadata_connector import *
-from utils import get_permissions_map
+from utils import get_permissions_map, get_pending_requests, is_request_pending
+
+
+def alert_user_by_email(mail_from, mail_to, subject, mail_template, args={}):
+    """
+        send an email to alert user
+    """
+
+    text_content = loader.render_to_string('scs_resources/%s.txt' % mail_template, dictionary=args)
+    html_content = loader.render_to_string('scs_resources/%s.html' % mail_template, dictionary=args)
+    msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
+    msg.attach_alternative(html_content, "text/html")
+    msg.content_subtype = "html"
+    # msg.send()
 
 
 def resource_detailed_view(request, id='1'):
@@ -35,11 +51,92 @@ def resource_detailed_view(request, id='1'):
     resource.language = "English"
     resource.version = "1.0"
     resource.related = []
+
+    # check if the resource has been already requested by user
+    if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
+        try:
+            resource_request = ResourceRequest.objects.get(resource=resource, requestor=request.user)
+            resource_request_state = get_state(resource_request)
+            if resource_request_state.name in ['Pending', 'Refused']:
+                resource.already_requested = True
+                resource.request_status = resource_request_state.name
+        except ObjectDoesNotExist, e:
+            resource.already_requested = False
     
     return render_to_response(
         'scs_resources/resource_details.html',
         {'resource': resource,
          'requests': []},
+        RequestContext(request)
+    )
+
+
+def request_for_sharing(request):
+    """
+        send a request for sharing to resource owner
+    """
+
+    resource = Resource.objects.get(id=request.GET.get('id'))
+    resource_request = ResourceRequest(resource=resource, requestor=request.user)
+    resource_request.save()
+
+    # TODO these actions should be not necessary
+    # Check int the models package
+    # set_workflow_for_model(ContentType.objects.get_for_model(ResourceRequest), ResourceRequestWorkflow)
+    set_workflow(resource_request, ResourceRequestWorkflow)
+    set_state(resource_request, request_pending)
+
+    # alert owner by email
+    alert_user_by_email(
+        mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+        mail_to='%s %s <%s>' % (resource.owner.first_name, resource.owner.last_name, resource.owner.email),
+        subject='[VPH-Share] You have receive a request for sharing',
+        mail_template='incoming_request_for_sharing',
+        args={
+            'message': request.GET.get('requestmessage', ''),
+            'resource': resource,
+            'requestor': request.user
+        }
+    )
+
+    # alert requestor by email
+    alert_user_by_email(
+        mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+        mail_to='%s %s <%s>' % (request.user.first_name, request.user.last_name, request.user.email),
+        mail_template='request_for_sharing_sent',
+        subject='[VPH-Share] Your request for sharing has been delivered to resource owner'
+    )
+
+    # return to requestor
+    response_body = json.dumps({"status": "OK", "message": "The Resource owner has received your request."})
+    response = HttpResponse(content=response_body, content_type='application/json')
+    return response
+
+
+def manage_resources(request):
+    from masterinterface.scs_resources.models import Workflow
+
+    workflows = []
+    datas = []
+    applications = []
+
+    try:
+        db_workflows = Workflow.objects.all()
+        for workflow in db_workflows:
+            workflow.permissions_map = get_permissions_map(workflow)
+            workflow.requests = get_pending_requests(workflow)
+            workflows.append(workflow)
+
+    except AtosServiceException, e:
+        request.session['errormessage'] = 'Metadata server is down. Please try later'
+        pass
+
+    return render_to_response(
+        "scs_resources/manage_resources.html",
+        {'workflows': workflows,
+         'datas': datas,
+         'applications': applications,
+        'tkt64': request.COOKIES.get('vph-tkt')},
         RequestContext(request)
     )
 
@@ -58,7 +155,7 @@ def resource_share_widget(request, id='1'):
     # retrieve roles from the configuration
     # properties = extract_configurations(configuration_file)
 
-    resource.permissions_map = get_permissions_map(resource.global_id)
+    resource.permissions_map = get_permissions_map(resource)
 
     return render_to_response(
         'scs_resources/share_widget.html',
@@ -68,12 +165,6 @@ def resource_share_widget(request, id='1'):
          },
         RequestContext(request)
     )
-
-
-def alert_user_by_email(user, resource, action="granted"):
-    """
-        send an email to alert user
-    """
 
 
 def grant_role(request):
@@ -95,6 +186,16 @@ def grant_role(request):
     # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
     # add_role(principal, global_role)
     add_local_role(resource, principal, role)
+
+    # change request state if exists
+    try:
+        resource_request = ResourceRequest.objects.get(requestor=principal, resource=resource)
+        if is_request_pending(resource_request):
+            do_transition(resource_request, request_accept_transition, request.user)
+    except ObjectDoesNotExist, e:
+        pass
+    except Exception, e:
+        pass
 
     response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')
