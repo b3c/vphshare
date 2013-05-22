@@ -100,7 +100,6 @@ div.k-treeview {
     -mox-border-radius: 5px;
     border-radius: 5px;
     height: 100%;
-    width: 100%;
 }
 
 .wait {
@@ -204,8 +203,6 @@ div.k-treeview {
 /* START overwrite jquery-ui classes */
 
 .navbar-inner {
-
-    min-height: 65px;
 
 }
 
