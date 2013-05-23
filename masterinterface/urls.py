@@ -38,7 +38,7 @@ urlpatterns = patterns('',
     url(r'', include('masterinterface.scs_auth.urls')),
     url(r'scs_auth/', include('masterinterface.scs_auth.urls')),
     url(r'', include('masterinterface.scs_search.urls')),
-    url(r'', include('masterinterface.scs_workflows.urls')),
+    url(r'', include('masterinterface.scs_resources.urls')),
 
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',
          {'document_root': settings.MEDIA_ROOT, 'show_indexes': True })
