@@ -12,6 +12,8 @@ __author__ = "Alfredo Saglimbeni (a.saglimbeni@scsitaly.com)"
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from permissions.models import Role
+from permissions.utils import get_roles
 
 
 class roles(models.Model):
@@ -33,7 +35,7 @@ class UserProfile(models.Model):
     country = models.CharField(max_length=20, default="")
     fullname = models.CharField(max_length=30, default="")
     language = models.CharField(max_length=10, default="")
-    roles = models.ManyToManyField(roles)
+    # roles = models.ManyToManyField(roles)
 
     def to_dict(self):
 
@@ -48,20 +50,10 @@ class UserProfile(models.Model):
                 user_dict[user_key[i]] = getattr(self.user, user_key[i])
 
         user_dict['role'] = [self.user.username]
-        for value in self.roles.all().values():
-            user_dict['role'].append(value['roleName'])
+        for role in get_roles(self.user):
+            user_dict['role'].append(role.name)
         for group in self.user.groups.all():
             user_dict['role'].append(group.name)
-            #user_dict['role'] = []
-            #for j in range(0, len(user_roles)):
-            #    user_dict['role'].append(user_roles[j]['role'].roleName)
-
-            #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-            #if user_dict['username']=='mi_testuser':
-            #    user_dict['role'] = []
-            #else:
-            #    user_dict['role'] = ['developer']
-            #######
         return user_dict
 
 
