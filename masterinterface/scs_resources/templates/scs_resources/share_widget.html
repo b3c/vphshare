@@ -2,12 +2,11 @@
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <span class="icon icon-group pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
-        <div id="myModalLabel"><p><b>Manage</b></p><p>{{ resource.metadata.name }}</p></div>
+        <div id="myModalLabel"><p><b>Manage Permissions</b></p><p>{{ resource.metadata.name }}</p></div>
     </div>
     <div class="modal-body">
     <div id="alert-container"></div>
 
-    <h6>Permissions</h6>
     <!--<div class="well-small">
         <button id="new-role" class="btn btn-success btn-mini" data-toggle="button" data-loading-text="processing..."><span class="icon-white icon-edit"></span> add a new role</button>
     </div>-->
@@ -29,19 +28,19 @@
     </div>
 
     <br />
-    <form id="search-form" rel="#search-results" method="get" enctype="multipart/form-data" action="/api/searchuserandgroup/" class="form-search ajax">
+    <form id="search-results-form-{{ resource.id }}" method="get" enctype="multipart/form-data" action="/api/searchuserandgroup/" class="form-search ajax">
         {% csrf_token %}
         <label>Search for <span class="ui-draggable label label-info">users</span> and <span class="ui-draggable label label-success">groups</span></label>
         <input type="text" name="term" class="input-medium search-query" />
         <input type="hidden" name="ticket" value="{{ tkt64 }}" />
         <button type="submit" class="btn">Search</button>
     </form>
-    <div id="search-results" class="datashare-search-results invisible">
+    <div id="search-results-{{ resource.id }}" class="datashare-search-results invisible">
         <dl>
             <dt>Users</dt>
-            <dd id="users-result" class="well-small"></dd>
+            <dd id="users-result-{{ resource.id }}" class="well-small"></dd>
             <dt>Groups</dt>
-            <dd id="groups-result" class="well-small"></dd>
+            <dd id="groups-result-{{ resource.id }}" class="well-small"></dd>
         </dl>
     </div>
     <hr />
@@ -57,66 +56,6 @@
 </div>
 
 <script type="text/javascript">
-
-    function CreateRoleAjaxResponseHandler(responseText, statusText, xhr, jqform){
-        $("#alert-container").empty();
-        $("<div/>", {
-          "class": "alert fade in " +responseText.alertclass,
-          html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
-        })
-        .alert()
-        .appendTo("#alert-container");
-
-        $('#new-role').button('reset');
-
-        if (responseText.status == 'OK'){
-            $("<dt/>",
-                    {html: responseText.rolename}
-            ).appendTo("#roles-list");
-            $("<dt/>",
-                    {"class": "well-small ui-droppable granted-role",
-                    "id": responseText.rolename}
-            ).droppable({
-                activeClass: "ui-state-hover",
-                accept: ".can-be-granted",
-                drop: function( event, ui ){
-                    var already_there = $(this).find("#"+ui.draggable.attr("id")).length == 0;
-                    if (already_there){
-                        $("#alert-message").alert("close");
-                        grant_role(ui.draggable.attr("id"), $(this).attr("id"));
-                        ui.draggable
-                        .clone()
-                        .attr("rel",$(this).attr("id"))
-                        .addClass("can-be-revoked")
-                        .removeClass("can-be-granted")
-                        .draggable({ revert: "invalid", helper: "clone" })
-                        .appendTo(this);
-                    }
-                }
-            })
-            .appendTo("#roles-list");
-        }
-    }
-
-    function create_role(){
-        $("#new-role").button('loading');
-        var form = $("#create-role-form");
-        var url = $(form).attr( "action" );
-        var method = $(form).attr("method") || "get"; // default method get
-        var data = $(form).find(":input").serializeArray();
-
-        $.ajax({
-                dataType: "json",
-                type: method,
-                url: url,
-                data: data,
-                success: CreateRoleAjaxResponseHandler,
-                error: CreateRoleAjaxResponseHandler
-            }
-        );
-
-        $('#new-role').popover('hide');
-    }
 
     function RoleAjaxResponseHandler(responseText, statusText, xhr, jqform){
         $("#alert-container").empty();
@@ -163,9 +102,9 @@
 
     function SearchAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
 
-        $("#search-results").removeClass("invisible");
-        $("#users-result").empty();
-        $("#groups-result").empty();
+        $("#search-results-{{ resource.id }}").removeClass('invisible');
+        $("#users-result-{{ resource.id }}").empty();
+        $("#groups-result-{{ resource.id }}").empty();
 
         var groups = []
 
@@ -180,7 +119,7 @@
                     .css("cursor","pointer")
                     .css("margin-left","2px")
                     .draggable({ revert: "invalid", helper: "clone" })
-                    .appendTo("#users-result");
+                    .appendTo("#users-result-{{ resource.id }}");
             }
         );
 
@@ -195,7 +134,7 @@
                     .css("cursor","pointer")
                     .css("margin-left","2px")
                     .draggable({ revert: "invalid", helper: "clone" })
-                    .appendTo("#groups-result");
+                    .appendTo("#groups-result-{{ resource.id }}");
         });
 
     }
@@ -204,7 +143,7 @@
 
         $(".ui-draggable").css("cursor","pointer").addClass("can-be-revoked").draggable({ revert: "invalid", helper: "clone" });
 
-        $('#search-form').submit(
+        $('#search-results-form-{{ resource.id }}').submit(
             function(event){
 
                 // stop form from submitting normally
