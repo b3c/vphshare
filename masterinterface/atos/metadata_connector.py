@@ -6,6 +6,7 @@ import requests
 import xmltodict
 from masterinterface.atos.config import *
 from exceptions import AtosServiceException
+from ordereddict import OrderedDict
 
 
 def from_dict_to_payload(metadata):
@@ -183,10 +184,49 @@ def filter_resources_by_text(text):
 
     return resources
 
+logicalExpressionBase = '(name:"%s" OR description:"%s")'
+
 
 def filter_resources_by_expression(expression):
     """
 
     """
+    logicalExpression = logicalExpressionBase % (expression['search_text'], expression['search_text'])
+    for key, values in expression.items():
+        if type(values) is list and len(values) > 0:
+            logicalExpression += ' AND ('
+            for value in values:
+                logicalExpression += ' %s:"%s" OR' % (key, value)
+            logicalExpression = logicalExpression[:-2]
+            logicalExpression += ')'
 
-    return []
+    try:
+        response = requests.get(FILTER_METADATA_API % logicalExpression)
+
+        if response.status_code != 200:
+            raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
+
+        resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]["resource_metadata"]
+        results = OrderedDict()
+        for resource in resources:
+            position = str(resource.values()).count(expression['search_text'])
+
+            if position not in results:
+                results[position] = []
+            results[position].append(resource)
+
+        keys = results.keys()
+        keys.sort(reverse=True)
+        resources = []
+        countType = {}
+        for key in keys:
+            for resource in results[key]:
+                if resource['type'] not in countType:
+                    countType[resource['type']] = 0
+                countType[resource['type']] += 1
+                resources.append(resource)
+
+        return resources, countType
+
+    except BaseException, e:
+        return [],{}
