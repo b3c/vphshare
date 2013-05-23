@@ -1,0 +1,5 @@
+Dear {{ requestor.first_name }}, your request for sharing has been deliverd to the resource owner!
+You will receive an email as soon as the resource owner will manage your request.
+
+Best regards,
+The VPH-Share Staff

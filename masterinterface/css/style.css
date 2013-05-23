@@ -1155,6 +1155,9 @@ a.search-data-link:hover{
 /*end search pages*/
 
 @media (min-width: 1200px){
+    .resource-actions{
+        margin-left: -30px;
+    }
     a.search-data-link{
         height: 230px;
         width: 230px;
@@ -1215,4 +1218,41 @@ a.search-data-link:hover{
     .navbar .nav>li>a {
         padding: 10px 0px 10px;
     }
+}
+
+.resource-title {
+    padding:20px 10px;
+    height: 10%;
+}
+
+.resource-details{
+    margin: 20px auto 20px auto;
+    padding:20px 10px;
+    background-color: #fafafa;
+    border-bottom: 1px dotted #d3d3d3;
+    border-top: 1px dotted #d3d3d3;
+    height: 45%;
+}
+
+.resource-title dl dt, .resource-details dl dt{
+    text-align: left;
+    color: #949599;
+    font-weight: normal;
+
+}
+
+.resource-actions{
+    padding: 10px;
+    border-left: 1px solid #bdbec1;
+    background-color: #fafafa;
+}
+
+.resource-actions ul li span.label {
+    padding: 3px 10px;
+    background-color: transparent;
+    color: #949599;
+    font-weight: normal;
+    text-shadow: none;
+    border: 1px solid #bdbec1;
+    margin-top: 5px;
 }
