@@ -70,7 +70,11 @@
                 {% if result.type in search.filterby or search.filterby|length_is:'0' %}
                 <div class="popover-list result-item">
                     <div class="popover-content">
-                        <p><i class="icon-th"></i><b> {{ result.name }}</b></p>
+                        {% if result.type != 'User' %}
+                            <p><i class="icon-th"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b>{{ result.name }}</b></a></p>
+                        {% else %}
+                            <p><i class="icon-th"></i><b> {{ result.name }}</b></p>
+                        {% endif %}
                         <p style="font-size: 13px"> {{ result.description|strCut:'100' }}</p>
                     </div>
                 </div>

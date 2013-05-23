@@ -43,7 +43,25 @@ def resource_detailed_view(request, id='1'):
         return the detailed view for a given resource
     """
 
-    resource = Resource.objects.get(id=id)
+    try:
+        resource = Resource.objects.get(global_id=id)
+    except ObjectDoesNotExist, e:
+        # create into local database the resource
+        metadata = get_resource_metadata(id)
+        # look for resource owner, if he exists locally
+        try:
+            resource_owner = User.objects.get(username=metadata['author'])
+            # TODO create a particular type of resource rather than a Resource
+            resource = Resource(global_id=id, owner=resource_owner)
+            resource.save()
+
+        except ObjectDoesNotExist, e:
+            # TODO create a new user or assign resource temporarly to the President :-)
+            resource = Resource(global_id=id, owner=User.objects.get(username='mbalasso'))
+            resource.save()
+
+        finally:
+            resource.metadata = metadata
 
     # INJECT DEFAULT VALUES
     resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": "doi:12.34567/891011.0004.23"}]

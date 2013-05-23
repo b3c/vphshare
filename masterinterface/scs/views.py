@@ -15,6 +15,7 @@ from permissions.models import Role
 from utils import is_staff
 from masterinterface import settings
 from masterinterface.atos.metadata_connector import *
+from masterinterface.scs_resources.utils import get_pending_requests_by_user
 from django.utils import simplejson
 import json
 from django.http import HttpResponse
