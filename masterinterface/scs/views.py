@@ -15,7 +15,7 @@ from permissions.models import Role
 from utils import is_staff
 from masterinterface import settings
 from masterinterface.atos.metadata_connector import *
-from masterinterface.scs_resources.utils import get_permissions_map
+from masterinterface.scs_resources.utils import get_permissions_map, get_pending_requests_by_user
 from django.utils import simplejson
 import json
 from django.http import HttpResponse
@@ -28,8 +28,13 @@ def home(request):
     if request.user.is_authenticated():
         data['last_login'] = request.session.get('social_auth_last_login_backend')
 
+        # check if the user has pending requests to process
+        pending_requests = get_pending_requests_by_user(request.user)
+        if pending_requests:
+            data['statusmessage'] = 'Dear %s, you have %s pending request(s) waiting for your action.' % (request.user.first_name, len(pending_requests))
+
     if not request.user.is_authenticated() and request.GET.get('loggedout') is not None:
-        data['statusmessage']='Logout done.'
+        data['statusmessage'] = 'Logout done.'
 
     return render_to_response(
         'scs/index.html',

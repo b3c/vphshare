@@ -1,6 +1,6 @@
 from django import template
 from datetime import datetime
-from permissions.utils import has_permission
+from permissions.utils import has_local_role
 # get a register Library instance
 register = template.Library()
 
@@ -34,7 +34,8 @@ def strTodate(date):
 
 
 def can_read(user, resource):
-    return has_permission(resource, user, 'can_read_resource')
+    # TODO check permissions rather than roles!
+    return has_local_role(user, 'Reader', resource) or has_local_role(user, 'Editor', resource) or has_local_role(user, 'Manager', resource) or has_local_role(user, 'Owner', resource)
 
 
 # register filters

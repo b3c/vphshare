@@ -48,7 +48,7 @@
     <h6>Requests</h6>
     <ul class="unstyled">
     {% for r in resource.requests %}
-        <li><span class="ui-draggable label label-info can-be-granted" id="{{ r.requestor.username }}"> {{ r.requestor.first_name}} {{ r.requestor.last_name}} </span></li>
+        <li><span class="ui-draggable label label-info can-be-granted" id="{{ r.requestor.username }}"> {{ r.requestor.first_name}} {{ r.requestor.last_name}} </span>, <span>{{ r.date }}</span></li>
     {% empty %}
         <li> There are no pending requests for this resource </li>
     {% endfor %}

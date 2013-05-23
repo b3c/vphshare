@@ -22,7 +22,7 @@ from .models import Resource, Workflow, ResourceRequest
 from config import ResourceRequestWorkflow, request_pending, request_accept_transition
 from forms import WorkflowForm
 from masterinterface.atos.metadata_connector import *
-from utils import get_permissions_map, get_pending_requests, is_request_pending
+from utils import get_permissions_map, get_pending_requests_by_resource, is_request_pending
 
 
 def alert_user_by_email(mail_from, mail_to, subject, mail_template, args={}):
@@ -35,7 +35,7 @@ def alert_user_by_email(mail_from, mail_to, subject, mail_template, args={}):
     msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
     msg.attach_alternative(html_content, "text/html")
     msg.content_subtype = "html"
-    # msg.send()
+    msg.send()
 
 
 def resource_detailed_view(request, id='1'):
@@ -114,17 +114,16 @@ def request_for_sharing(request):
 
 
 def manage_resources(request):
-    from masterinterface.scs_resources.models import Workflow
 
     workflows = []
     datas = []
     applications = []
 
     try:
-        db_workflows = Workflow.objects.all()
+        db_workflows = Resource.objects.all()
         for workflow in db_workflows:
             workflow.permissions_map = get_permissions_map(workflow)
-            workflow.requests = get_pending_requests(workflow)
+            workflow.requests = get_pending_requests_by_resource(workflow)
             workflows.append(workflow)
 
     except AtosServiceException, e:
