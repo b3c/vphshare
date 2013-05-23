@@ -1,6 +1,6 @@
 
 <fieldset style="overflow-x: scroll;">
-    <legend>Assign Roles to users</legend>
+    <legend>Assign Global Roles to users</legend>
     {% if not resultUsers  %}
         <p>No User find.</p>
     {% else %}
@@ -12,9 +12,9 @@
             <tr><th>Username</th><th>Email</th>
                 {% for role in Roles %}
                         {% if request.user.is_superuser %}
-                            <th onmouseout="$('#{{role.roleName}}DELETE').hide();" onmouseover="$('#{{role.roleName}}DELETE').show();" onclick="users_remove_role( '{% url users_remove_role %}','{{role.roleName}}');">{{role.roleName}}<img style="position: absolute;padding-left:4px;float: right;" class="invisible" src="/static/delete.png" id="{{role.roleName}}DELETE"></th>
+                            <th onclick="users_remove_role( '{% url users_remove_role %}','{{role.name}}');">{{role.name}}<img style="position: absolute;padding-left:4px;float: right;" src="/static/delete.png" id="{{role.name}}DELETE"></th>
                         {% else%}
-                            <th >{{role.roleName}}<img style="position: absolute;padding-left:4px;float: right;" class="invisible" src="/static/delete.png" id="{{role.roleName}}DELETE"></th>
+                            <th>{{role.name}}</th>
                         {% endif  %}
                 {%  endfor %}
             </tr>
@@ -24,10 +24,10 @@
                 <tr>
                     <td>{{  username }}</td><td>{{  userInfo.email }}</td>
                     {% for role in Roles %}
-                        {% if role.roleName in userInfo.roles %}
-                        <td><input  name="{{  role.roleName}}!{{ username }}!{{  userInfo.email }}" type="checkbox" checked ></td>
+                        {% if role.name in userInfo.roles %}
+                        <td><input  name="{{  role.name}}!{{ username }}!{{  userInfo.email }}" type="checkbox" checked ></td>
                         {% else %}
-                        <td><input  name="{{  role.roleName}}!{{ username }}!{{  userInfo.email }}" type="checkbox" ></td>
+                        <td><input  name="{{  role.name}}!{{ username }}!{{  userInfo.email }}" type="checkbox" ></td>
                         {% endif %}
                     {%  endfor %}
                 </tr>

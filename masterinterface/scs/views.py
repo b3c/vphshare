@@ -11,13 +11,15 @@ from django.core.exceptions import ValidationError
 import string
 import ordereddict
 from scs import __version__ as version
-from permissions import is_staff
+from permissions.models import Role
+from utils import is_staff
 from masterinterface import settings
-from masterinterface.scs_auth.models import roles
 from masterinterface.atos.metadata_connector import *
+from masterinterface.scs_resources.utils import get_pending_requests_by_user
 from django.utils import simplejson
 import json
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 
 
 def home(request):
@@ -27,8 +29,13 @@ def home(request):
     if request.user.is_authenticated():
         data['last_login'] = request.session.get('social_auth_last_login_backend')
 
+        # check if the user has pending requests to process
+        pending_requests = get_pending_requests_by_user(request.user)
+        if pending_requests:
+            data['statusmessage'] = 'Dear %s, you have %s pending request(s) waiting for your action.' % (request.user.first_name, len(pending_requests))
+
     if not request.user.is_authenticated() and request.GET.get('loggedout') is not None:
-        data['statusmessage']='Logout done.'
+        data['statusmessage'] = 'Logout done.'
 
     return render_to_response(
         'scs/index.html',
@@ -170,14 +177,14 @@ def upload_data(request):
 
 
 def manage_data(request):
-    from masterinterface.scs_workflows.models import scsWorkflow
+    from masterinterface.scs_resources.models import Workflow
 
     workflows = []
 
     try:
-        dbWorkflows = scsWorkflow.objects.all()
+        dbWorkflows = Workflow.objects.all()
         for workflow in dbWorkflows:
-            workflow.metadata = get_resource_metadata(workflow.metadataId)
+            workflow.permissions_map = get_permissions_map(workflow.global_id)
             workflows.append(workflow)
 
     except Exception, e:
@@ -185,15 +192,109 @@ def manage_data(request):
         pass
 
     return render_to_response("scs/manage_data.html",
-                              {'workflows': workflows},
+                              {'workflows': workflows,
+                               'tkt64': request.COOKIES.get('vph-tkt')},
                               RequestContext(request))
 
+@csrf_exempt
+def search_service(request):
+
+    if request.method == 'POST':
+        min = int(request.POST['min'])
+        max = int(request.POST['max'])
+        filterby = request.POST.get('filterby', None)
+        if filterby == '[]':
+            numResults = len(request.session['results'])
+            results = request.session['results'][min:max]
+        else:
+            filterby = json.loads(filterby)
+            results = []
+            numResults = 0
+            for filter in filterby:
+                numResults += request.session['types'].get(filter,0)
+            for result in request.session['results']:
+                if result['type'] in filterby:
+                    results.append(result)
+
+        resultsRender = render_to_string("scs/search_results.html", {"results": results})
+
+        return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender, 'numResults': str(numResults)}, sort_keys=False),
+                            content_type='application/json')
+
+    response = HttpResponse(status=403)
+    response._is_string = True
+    return response
+
+
+def search(request):
+
+    if request.GET.get('search_text', None):
+        search_text = request.GET.get('search_text', '')
+        types = request.GET.get('types', [])
+        if type(types) in (str, unicode):
+            types = types.split(',')[:-1]
+        filterby = request.GET.get('filterby', [])
+        if type(filterby) in (str, unicode):
+            filterby = filterby.split(',')[:-1]
+        categories = request.GET.get('categories', [])
+        if type(categories) in (str, unicode):
+            categories = categories.split(',')[:-1]
+        authors = request.GET.get('authors', [])
+        if type(authors) in (str, unicode):
+            authors = authors.split(',')[:-1]
+        licences = request.GET.get('licences', [])
+        if type(licences) in (str, unicode):
+            licences = licences.split(',')[:-1]
+        tags = request.GET.get('tags', [])
+        if type(tags) in (str, unicode):
+            tags = tags.split(',')[:-1]
+
+        search = {
+            'search_text': search_text,
+            'type': types,
+            'categories': categories,
+            'authors': authors,
+            'licences': licences,
+            'tags': tags,
+            'filterby': filterby
+        }
+        expression = {
+            'search_text': search_text,
+            'type': types,
+            'category': categories,
+            'author': authors,
+            'licence': licences,
+            'tags': tags
+        }
+        results, countType = filter_resources_by_expression(expression)
+        if filterby == [] or 'User' in filterby:
+            from django.db.models import Q
+            from django.contrib.auth.models import User
+            users = User.objects.filter(
+                Q(username__icontains=search_text) | Q(email__icontains=search_text) | Q(first_name__icontains=search_text) | Q(last_name__icontains=search_text)
+            )
+            users = [{"description": user.username, "name": "%s %s" % (user.first_name, user.last_name), "email": user.email , "type":'User'} for user in users]
+            results += users
+            if 'User' not in countType:
+                countType['User'] = len(users)
+        request.session['results'] = results
+        request.session['types'] = countType
+        return render_to_response("scs/search.html",
+                                  {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
+                                  'types': ['Dataset', 'Workflow', 'Atomic Sevice', 'File', 'SWS', 'Application', 'User']},
+                                  RequestContext(request))
+
+    return render_to_response("scs/search.html",
+                              {'search': {}, "results": [], "numresults": 0, 'countType': {},
+                               'types': ['Dataset', 'Workflow', 'Atomic Sevice', 'File', 'SWS', 'Application', 'User']},
+                              RequestContext(request))
 
 @is_staff()
 def users_access_admin(request):
 
 
-    Roles = roles.objects.all()
+    Roles = Role.objects.all()
     return render_to_response("scs/usersadmin.html",
                               {'Roles': Roles.values()},
                               RequestContext(request))
@@ -203,21 +304,25 @@ def browse_data_az(request):
     """
         browse data in alphabetical order
     """
+    resources_by_letter = {}
+    try:
+        all_resources = get_all_resources_metadata()
+        resources_by_letter = ordereddict.OrderedDict()
 
-    all_resources = get_all_resources_metadata()
-    resources_by_letter = ordereddict.OrderedDict()
+        for letter in string.uppercase:
+            resources_by_letter[letter] = []
 
-    for letter in string.uppercase:
-        resources_by_letter[letter] = []
+        resources_by_letter['0-9'] = []
 
-    resources_by_letter['0-9'] = []
-
-    for r in all_resources:
-        key = str(r.get('name', ' ')).upper()[0]
-        if key in resources_by_letter:
-            resources_by_letter[key].append(r)
-        else:
-            resources_by_letter['0-9'].append(r)
+        for r in all_resources:
+            key = str(r.get('name', ' ')).upper()[0]
+            if key in resources_by_letter:
+                resources_by_letter[key].append(r)
+            else:
+                resources_by_letter['0-9'].append(r)
+    except Exception, e:
+        request.session['errormessage'] = 'Metadata server is down. Please try later'
+        pass
 
     return render_to_response("scs/browseaz.html", {"resources_by_letter": resources_by_letter, "letters": string.uppercase}, RequestContext(request))
 
@@ -293,19 +398,13 @@ def edit_description_service(request):
     """
         add tag to resource's metadata
     """
-    from masterinterface.scs_workflows.models import scsWorkflow
+    from masterinterface.scs_resources.models import Workflow
     try:
         if request.method == 'POST':
 
             description = request.POST.get('description', "")
             global_id = request.POST.get('global_id', "")
-
-            metadata = get_resource_metadata(global_id)
-
-            dbWorkflow = scsWorkflow.objects.get(metadataId=global_id)
-            dbWorkflow.description = description
             update_resource_metadata(global_id, {'description': description})
-            dbWorkflow.save()
 
             response = HttpResponse(status=200)
             response._is_string = True

@@ -1,0 +1,125 @@
+{% extends 'scs/base.html' %}
+
+{% load scs_extras %}
+{% load permissions_tags %}
+
+{%  block content %}
+    <div id="alert-container"></div>
+    <div class="span7">
+        <div class="resource-title">
+            <h2> {{ resource.metadata.name }}</h2>
+            <dl class="dl-horizontal">
+                <dt>Description</dt>
+                <dd>{{ resource.metadata.description }}</dd>
+            </dl>
+        </div>
+        <div class="resource-details">
+            <dl class="dl-horizontal">
+                <dt>Date Created:</dt>
+                <dd>{{ resource.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }}</dd>
+                <dt>Language:</dt>
+                <dd>{{ resource.language }}</dd>
+                <dt>Status:</dt>
+                <dd>{{ resource.status}}</dd>
+                <br />
+                <dt>Citations:</dt>
+                {% for citation in resource.citations %}
+                    <dd> {{ citation.citation }}<br /><a href="#">{{ citation.link }}</a></dd>
+                {% endfor %}
+                <dt>Related</dt>
+                {% for related in resource.related %}<dd></dd>{% endfor %}
+            </dl>
+        </div>
+    </div>
+    <div class="span4">
+        <div class="resource-actions">
+            <p><strong>Type:</strong> {{ resource.metadata.type }}</p>
+            <p><strong>Views:</strong> {{ resource.metadata.views }}</p>
+            <p><strong>Version: </strong> {{ resource.version }}</p>
+            <br /> <br />
+            <p><strong>Tags</strong></p>
+            {% with  resource.metadata.tags|split:" " as tags%}
+                <ul class="inline">
+                    {% for tag in tags %}
+                        <li><span class="label">{{ tag }}</span></li>
+                    {% endfor %}
+                </ul>
+            {% endwith %}
+            <br /> <br />
+            <p><strong>Licence:</strong></p>
+            <ul class="inline">
+                <li><span class="label">{{ resource.metadata.licence }}</span></li>
+                <li><a href="#">Download</a></li>
+            </ul>
+            <br /> <br />
+            <p><strong>Semantic Annotations:</strong></p>
+            {% with  resource.metadata.semantic_annotations|split:" " as annotations%}
+                <ul class="inline">
+                    {% for annotation in annotations%}
+                        <li><span class="label">{{ annotation}}</span></li>
+                    {% empty %}
+                        <li>This resource has not semantic annotations.</li>
+                    {% endfor %}
+                </ul>
+            {% endwith %}
+
+            {% if request.user.is_authenticated %}
+            {% if request.user|can_read:resource %}
+                <button class="btn btn-block btn-large btn-success">Download</button>
+            {% else %}
+                {% if not resource.already_requested %}
+                <button id="request-for-sharing-btn" data-toggle="button" class="btn btn-block btn-large btn-warning" onclick="request_for_sharing();">Request for sharing</button>
+                <form id="request-for-sharing-form" method="GET" action="/resources/request_for_sharing/">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ resource.id }}" />
+                    <input type="hidden" name="message" value="my custom message" />
+                </form>
+                {% else %}
+                    <button id="request-for-sharing-btn" class="btn btn-block btn-large btn-warning disabled">You have already requested this resource</button>
+                {% endif %}
+            {% endif %}
+            {% else %}
+                <button class="btn btn-block btn-large btn-danger" onclick="$('#login').popover('show');">Please login to access to this resource</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        function request_for_sharing(){
+            $("#request-for-sharing-btn").button('loading');
+            var form = $("#request-for-sharing-form");
+            var url = $(form).attr( "action" );
+            var method = $(form).attr("method") || "get"; // default method get
+            var data = $(form).find(":input").serializeArray();
+
+            $.ajax({
+                    dataType: "json",
+                    type: method,
+                    url: url,
+                    data: data,
+                    success: RequestForSharingAjaxResponseHandler,
+                    error: RequestForSharingAjaxResponseHandler
+                }
+            );
+
+            $('#new-role').popover('hide');
+        }
+
+        function RequestForSharingAjaxResponseHandler(responseText, statusText, xhr, jqform){
+            $("#alert-container").empty();
+            $("<div/>", {
+              "class": "alert fade in " +responseText.alertclass,
+              html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
+            })
+            .alert()
+            .fadeIn()
+            .delay(3000)
+            .fadeOut(1000, function(){
+                    $(this).find('#modal-message').text('');
+            })
+            .appendTo("#alert-container");
+            $("#request-for-sharing-btn").addClass('disabled').bind('onclick',function(){return true;}).text('Request sent.');
+        }
+    </script>
+{% endblock %}

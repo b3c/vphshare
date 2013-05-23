@@ -8,6 +8,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from urllib import quote, unquote
 from datetime import datetime
+from django.contrib.auth.models import User, Group
+from django.db.models import ObjectDoesNotExist
+from masterinterface.scs_auth.models import UserProfile
+from permissions.models import PrincipalRoleRelation, Role
+from permissions.utils import add_role, remove_role, has_permission
 import json
 from lxml import etree
 from forms import PropertyForm
@@ -15,7 +20,8 @@ from politicizer import create_policy_file, extract_permission_map
 from configurationizer import create_configuration_file, extract_configurations
 from masterinterface.scs.utils import get_file_data
 from masterinterface.cyfronet import cloudfacade
-from masterinterface.scs.permissions import is_staff
+from masterinterface.scs.utils import is_staff
+from masterinterface.atos.metadata_connector import get_resource_metadata
 
 
 @is_staff()
@@ -216,3 +222,5 @@ def delete_configuration(request):
         data,
         RequestContext(request)
     )
+
+

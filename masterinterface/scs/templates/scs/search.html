@@ -1,0 +1,352 @@
+{% extends 'scs/base.html' %}
+{% load scs_extras %}
+{%  block title %} Manage Data {% endblock %}
+
+{% block extrahead %}
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
+
+{% block page-title %}
+    <span class="title">Search</span>
+    <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="row">
+        <div class="span12 text-center search-box" style="{% if results %}padding: 5px;{% endif %}">
+            <form id="form-search" class="form-search">
+            <div class="input-prepend input-append">
+                <div class="btn-group">
+                    <div class="btn-group">
+                        <button class="btn dropdown-toggle search-btn-left" data-toggle="dropdown">
+                            All resources
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu text-left">
+
+                            {% for type in types %}
+                                <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">{{ type }}
+                                    <span class="pull-right {% if type in search.type %} icon-ok {% endif %}"></span></a></li>
+                            {% endfor %}                            
+                            <div class="clearfix"></div>
+                        </ul>
+                    </div>
+                </div>
+                <input class="span4 search-query" id="search_text" type="text" name="serach_text" value="{{ search.search_text }}">
+                <button type="submit" class="btn search-btn-right">Search</button>
+                <div style="font-size: 12px;padding-top: 5px;text-align: right;">Or use <a href="/semantic-search/">Semantic search</a></div>
+            </div>
+            </form>
+        </div>
+    </div>
+    {% if results %}
+    <div class="row row-contet" style="min-height: 566px;">
+        <div class="span9 left-list search-list">
+            <div class="popover-list ">
+                <div class="popover-content">
+                    {% for type in search.type %}
+                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{{ type }}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
+                    {% endfor %}
+                    {% for category in search.categories %}
+                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >Category: {{ category }}</div><div data-value="{{ category }}" data-field="categories" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
+                    {% endfor %}
+                    {% for author in search.authors %}
+                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Author: {{ author }}</div><div data-value="{{ author }}" data-field="authors"  type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
+                    {% endfor %}
+                    {% for licence in search.licences %}
+                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Licence: {{ licence }}</div><div data-value="{{ licence }}" data-field="licences" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
+                    {% endfor %}
+                    {% for tags in search.tags %}
+                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Tags: {{ tags }}</div><div data-value="{{ tags }}" data-field="tags" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
+                    {% endfor %}
+                    <p>We've found {{ numresults }} results</p>
+                </div>
+            </div>
+            {% for result in results %}
+                {% if result.type in search.filterby or search.filterby|length_is:'0' %}
+                <div class="popover-list result-item">
+                    <div class="popover-content">
+                        {% if result.type != 'User' %}
+                            <p><i class="icon-th"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b>{{ result.name }}</b></a></p>
+                        {% else %}
+                            <p><i class="icon-th"></i><b> {{ result.name }}</b></p>
+                        {% endif %}
+                        <p style="font-size: 13px"> {{ result.description|strCut:'100' }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            <div class="popover-list loading">
+                <div  class="popover-content">
+                    <div id="loading-message" class="hide"><span><b> Loading results </b><div class="wait-img"></div></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="span3 rigth-list" style="margin-left: 0px;border-left: 1px solid #e5e5e5;top: 0px;" >
+        <!--- TODO  fixed rigth bar, to-top button -->
+            <div class="totop" style="display: none;">
+                <div class="gototop">
+                    <div class="arrowgototop "><i class="icon-chevron-up icon-white" style="color: #ffffff;"></i></div>
+                </div>
+            </div>
+            <div class="popover-list">
+                <div class="popover-content">
+                    <p><b>Filter By</b></p>
+                    {% for type in types %}
+                        <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">{{ type }}<span class="badge pull-right {{ type }}-bkgr text-center">{{countType|keyvalue:type}}</span></div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="popover-list">
+                <div class="popover-content">
+                    <p><b>Refine</b></p>
+                    <div class="well well-small well-white">Category<input id="categories" class="input-refine pull-right" type="text"></div>
+                    <div class="well well-small well-white">Author<input id="authors" class="input-refine pull-right" type="text"></div>
+                    <div class="well well-small well-white">Licence<input id="licences" class="input-refine pull-right" type="text"></div>
+                    <div class="well well-small well-white">Tags<input id="tags"  class="input-refine pull-right" type="text"></div>
+                    <!--<div class="btn-group well well-small well-white btn-refine">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            Service Type
+                            <span class="caret pull-right"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>Type1</li>
+                        </ul>
+                    </div>
+                    <div class="btn-group well well-small well-white btn-refine">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            Application Type
+                            <span class="caret pull-right"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>Type1</li>
+                        </ul>
+                    </div>
+                    <div class="btn-group well well-small well-white btn-refine">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            Workflow Engine
+                            <span class="caret pull-right"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>Type1</li>
+                        </ul>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <script type="text/javascript">
+        (function() {
+            var global = this;
+            var $ = global.$;
+            var console = global.console || {log:function() {}};
+
+
+            var SearchController = global.SearchController = function() {
+                this.inizialize();
+            };
+
+            SearchController.prototype.inizialize = function(){
+                var self = this;
+
+               //init multicheck dropdown menu
+                this.$form = $('#form-search');
+                this.$search_text = $('#search_text');
+                this.$atomic = false;
+                this.$min = 20;
+                this.$max = 40;
+                this.$numResults = {{ numresults }};
+                this.$loadingBox = $('.loading');
+                this.$rigthList = $('.rigth-list');
+                $('.totop').click(function(){$('html, body').animate({ scrollTop: 0 }, 'slow');});
+                this.$rigthList.scrollToFixed({
+                    unfixed : function() {
+                        $(this).css({'top':'0px'});
+                        $('.totop').fadeOut();
+                    },
+                    fixed : function() {
+                        $('.totop').fadeIn();
+                    }
+
+                });
+                // event when add some refine input
+                $('.input-refine').keypress(function(e){self.refine($(this),e);});
+                this.tooltipMessage($('.input-refine'),'Type enter to send','focus');
+                $('.multicheck').click(function(e){self.multicheck($(this),e)});
+
+                this.$form.on('submit',function(e){self.submit();return false;});
+                $('.remove-tag').click(function(e){self.removeTag(e,$(this).data('value'),$(this).data('field'));});
+                $('.filter').click(function(e){self.filter($(this),$(this).data('value'));});
+                $(window).scroll(function() {
+                    if($(window).scrollTop() + $(window).height() >= self.$loadingBox.position().top+300 && self.$atomic == false && self.$min < self.$numResults) {
+                        self.$atomic = true;
+                        $('#loading-message').show();
+                        self.loading();
+                    }
+                });
+
+                this.$request = {types:[{% for types in search.type %}'{{ types }}',{% endfor %}],
+                           filterby:[{% for filterby in search.filterby %}'{{ filterby }}',{% endfor %}],
+                           search_text:'{{ search.search_text }}',
+                           categories:[{% for categories in search.categories %}'{{ categories }}',{% endfor %}],
+                           authors:[{% for authors in search.authors %}'{{ authors }}',{% endfor %}],
+                           licences:[{% for licences in search.licences %}'{{ licences }}',{% endfor %}],
+                           tags:[{% for tags in search.tags %}'{{ tags }}',{% endfor %}]
+                };
+            };
+
+            SearchController.prototype.tooltipMessage = function(where, message, trigger){
+                where.tooltip({
+                    placement: 'right',
+                    trigger : trigger,
+                    title:message,
+                    container: 'body'
+                });
+            };
+
+            SearchController.prototype.loadingError = function(data){
+
+
+
+            };
+
+            SearchController.prototype.loadingCallBack = function(data,self){
+
+                $(data['data']).insertBefore(self.$loadingBox);
+                self.$numResults = data['numResults'];
+                self.$loadingBox.find('#loading-message').hide();
+                self.$max = self.$max+20;
+                self.$min = self.$min+20;
+                self.$atomic = false;
+
+            };
+
+            SearchController.prototype.loading = function(){
+
+                var self = this;
+
+                $.ajax('/search_results/', {
+                    data: {max:self.$max, min: self.$min, filterby:JSON.stringify(self.$request.filterby)},
+                    type: 'POST',
+                    success: function(data) { self.loadingCallBack(data,self); },
+                    error: function(data) { self.loadingError(data); }
+                });
+
+            };
+
+            SearchController.prototype.filter = function(button, filter){
+
+                var self = this;
+                $('.result-item').remove();
+                button.toggleClass("filtred");
+                var index = $.inArray(filter,this.$request.filterby);
+                if (index<0){
+                    this.$request.filterby.push(filter);
+                }else if (index>=0){
+                    this.$request.filterby.splice(index,1);
+                }
+                self.$min = 0;
+                self.$max = 20;
+                self.$atomic = true;
+                $('#loading-message').show();
+                this.loading();
+            };
+
+            SearchController.prototype.submit = function(){
+
+                if (this.$search_text.val().trim() == '')
+                    return false;
+
+                this.$request.search_text = this.$search_text.val();
+                var types = '',categories ='',authors='',licences='';
+                var url_submit = "/search?search_text="+this.$request.search_text;
+                var i;
+                if(this.$request.types.length>0){
+                    url_submit += '&types=';
+                    for(i = 0; i < this.$request.types.length; i++){
+                        url_submit += this.$request.types[i]+',';
+                    }
+                }
+
+                if(this.$request.categories.length>0){
+                    url_submit += '&categories=';
+                    for(i = 0; i < this.$request.categories.length; i++){
+                        url_submit += this.$request.categories[i]+',';
+                    }
+                }
+                if(this.$request.authors.length>0){
+                    url_submit += '&authors=';
+                    for(i = 0; i < this.$request.authors.length; i++){
+                        url_submit += this.$request.authors[i]+',';
+                    }
+                }
+                if(this.$request.licences.length>0){
+                    url_submit += '&licences=';
+                    for(i = 0; i < this.$request.licences.length; i++){
+                        url_submit += this.$request.licences[i]+',';
+                    }
+                }
+                if(this.$request.tags.length>0){
+                    url_submit += '&tags=';
+                    for(i = 0; i < this.$request.tags.length; i++){
+                        url_submit += this.$request.tags[i]+',';
+                    }
+                }
+                if(this.$request.filterby.length>0){
+                    url_submit += '&filterby=';
+                    for(i = 0; i < this.$request.filterby.length; i++){
+                        url_submit += this.$request.filterby[i]+',';
+                    }
+                }
+                window.location.href = url_submit;
+                return false;
+
+            };
+
+            SearchController.prototype.removeTag = function(e, value, key){
+                this.$request[key].splice($.inArray(value,this.$request[key]),1);
+                this.submit();
+            };
+
+            SearchController.prototype.refine = function(input, e){
+
+                if(e.keyCode == 13)
+                {
+                    var value = input.val().trim();
+                    var key = input.attr('id');
+                    if ( value == '')
+                        return false;
+                    if ($.inArray(value,this.$request[key]) >= 0)
+                        return false;
+
+                    this.$request[key].push(value);
+                    this.submit();
+
+                }
+                return true
+            };
+
+            SearchController.prototype.multicheck = function(type, e){
+                type.toggleClass("checked");
+                type.find("span").toggleClass("icon-ok");
+                var index = $.inArray(type.attr('id'),this.$request.types);
+                if(type.hasClass("checked")){
+                    if (index<0)
+                        this.$request.types.push(type.attr('id'));
+                }else{
+                    if (index>=0)
+                        this.$request.types.splice(index,1);
+                }
+                return false;
+            };
+
+            new SearchController();
+        }).call(this);
+    </script>
+
+{% endblock %}

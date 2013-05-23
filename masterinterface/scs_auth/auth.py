@@ -4,6 +4,7 @@ from django.contrib.auth import get_backends
 from django.conf import settings
 from django.db.models import ObjectDoesNotExist
 from masterinterface.scs_groups.models import VPHShareSmartGroup
+from permissions.utils import get_roles
 import time
 import binascii
 import base64
@@ -39,8 +40,15 @@ def getUserTokens(user):
 
     tokens = []
 
-    for value in user.userprofile.roles.all().values():
-        tokens.append(value['roleName'])
+    for role in get_roles(user):
+        tokens.append(role.name)
+
+    review_resources = []
+
+    # TODO REMOVE HACK!
+    for resource in review_resources:
+        for role in get_roles(user, resource):
+            tokens.append(role.name)
 
     for group in user.groups.all():
         try:

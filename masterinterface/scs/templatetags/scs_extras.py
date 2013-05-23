@@ -1,5 +1,6 @@
 from django import template
 from datetime import datetime
+from permissions.utils import has_local_role
 # get a register Library instance
 register = template.Library()
 
@@ -30,8 +31,28 @@ def split(string, sep=" "):
 
 def strTodate(date):
     return datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+
+@register.filter
+def strCut(string, lenght):
+    if len(string) > int(lenght):
+        return string[:int(lenght)] + '....'
+    return string
+
+@register.filter
+def keyvalue(dict, key):
+    if key in dict:
+        return dict[key]
+    return '0'
+
+
+def can_read(user, resource):
+    # TODO check permissions rather than roles!
+    return has_local_role(user, 'Reader', resource) or has_local_role(user, 'Editor', resource) or has_local_role(user, 'Manager', resource) or has_local_role(user, 'Owner', resource)
+
+
 # register filters
 register.filter('breadcrumbs', breadcrumbs)
 register.filter('basepath', basepath)
 register.filter('split', split)
 register.filter('strTodate', strTodate)
+register.filter('can_read',can_read)

@@ -161,7 +161,7 @@ INSTALLED_APPS = (
     'permissions',
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
-    'masterinterface.scs_workflows',
+    'masterinterface.scs_resources',
     'masterinterface.atos',
     'south'
     
