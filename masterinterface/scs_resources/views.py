@@ -52,7 +52,10 @@ def resource_detailed_view(request, id='1'):
         try:
             resource_owner = User.objects.get(username=metadata['author'])
             # TODO create a particular type of resource rather than a Resource
-            resource = Resource(global_id=id, owner=resource_owner)
+            if str(metadata['type']).lower() == "workflow":
+                resource = Workflow(global_id=id, owner=resource_owner)
+            else:
+                resource = Resource(global_id=id, owner=resource_owner)
             resource.save()
 
         except ObjectDoesNotExist, e:
@@ -95,7 +98,7 @@ def request_for_sharing(request):
     """
 
     resource = Resource.objects.get(id=request.GET.get('id'))
-    resource_request = ResourceRequest(resource=resource, requestor=request.user)
+    resource_request, created = ResourceRequest.objects.get_or_create(resource=resource, requestor=request.user)
     resource_request.save()
 
     # TODO these actions should be not necessary
@@ -131,6 +134,7 @@ def request_for_sharing(request):
     return response
 
 
+@login_required
 def manage_resources(request):
 
     workflows = []
@@ -138,11 +142,16 @@ def manage_resources(request):
     applications = []
 
     try:
-        db_workflows = Resource.objects.all()
+        db_workflows = Workflow.objects.filter(owner=request.user)
         for workflow in db_workflows:
-            workflow.permissions_map = get_permissions_map(workflow)
-            workflow.requests = get_pending_requests_by_resource(workflow)
-            workflows.append(workflow)
+            resource = Resource.objects.get(global_id=workflow.global_id)
+
+            if has_local_role(request.user, 'Owner', resource) or has_local_role(request.user, 'Manager', resource):
+                resource.permissions_map = get_permissions_map(resource)
+                resource.requests = get_pending_requests_by_resource(resource)
+                workflows.append(resource)
+
+        # TODO for all types of resources
 
     except AtosServiceException, e:
         request.session['errormessage'] = 'Metadata server is down. Please try later'
