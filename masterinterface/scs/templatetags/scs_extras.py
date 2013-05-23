@@ -30,6 +30,19 @@ def split(string, sep=" "):
 
 def strTodate(date):
     return datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+
+@register.filter
+def strCut(string, lenght):
+    if len(string) > int(lenght):
+        return string[:int(lenght)] + '....'
+    return string
+
+@register.filter
+def keyvalue(dict, key):
+    if key in dict:
+        return dict[key]
+    return '0'
+
 # register filters
 register.filter('breadcrumbs', breadcrumbs)
 register.filter('basepath', basepath)

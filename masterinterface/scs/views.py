@@ -19,6 +19,7 @@ from masterinterface.scs_resources.utils import get_permissions_map
 from django.utils import simplejson
 import json
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 
 
 def home(request):
@@ -190,6 +191,99 @@ def manage_data(request):
                                'tkt64': request.COOKIES.get('vph-tkt')},
                               RequestContext(request))
 
+@csrf_exempt
+def search_service(request):
+
+    if request.method == 'POST':
+        min = int(request.POST['min'])
+        max = int(request.POST['max'])
+        filterby = request.POST.get('filterby', None)
+        if filterby == '[]':
+            numResults = len(request.session['results'])
+            results = request.session['results'][min:max]
+        else:
+            filterby = json.loads(filterby)
+            results = []
+            numResults = 0
+            for filter in filterby:
+                numResults += request.session['types'].get(filter,0)
+            for result in request.session['results']:
+                if result['type'] in filterby:
+                    results.append(result)
+
+        resultsRender = render_to_string("scs/search_results.html", {"results": results})
+
+        return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender, 'numResults': str(numResults)}, sort_keys=False),
+                            content_type='application/json')
+
+    response = HttpResponse(status=403)
+    response._is_string = True
+    return response
+
+
+def search(request):
+
+    if request.GET.get('search_text', None):
+        search_text = request.GET.get('search_text', '')
+        types = request.GET.get('types', [])
+        if type(types) in (str, unicode):
+            types = types.split(',')[:-1]
+        filterby = request.GET.get('filterby', [])
+        if type(filterby) in (str, unicode):
+            filterby = filterby.split(',')[:-1]
+        categories = request.GET.get('categories', [])
+        if type(categories) in (str, unicode):
+            categories = categories.split(',')[:-1]
+        authors = request.GET.get('authors', [])
+        if type(authors) in (str, unicode):
+            authors = authors.split(',')[:-1]
+        licences = request.GET.get('licences', [])
+        if type(licences) in (str, unicode):
+            licences = licences.split(',')[:-1]
+        tags = request.GET.get('tags', [])
+        if type(tags) in (str, unicode):
+            tags = tags.split(',')[:-1]
+
+        search = {
+            'search_text': search_text,
+            'type': types,
+            'categories': categories,
+            'authors': authors,
+            'licences': licences,
+            'tags': tags,
+            'filterby': filterby
+        }
+        expression = {
+            'search_text': search_text,
+            'type': types,
+            'category': categories,
+            'author': authors,
+            'licence': licences,
+            'tags': tags
+        }
+        results, countType = filter_resources_by_expression(expression)
+        if filterby == [] or 'User' in filterby:
+            from django.db.models import Q
+            from django.contrib.auth.models import User
+            users = User.objects.filter(
+                Q(username__icontains=search_text) | Q(email__icontains=search_text) | Q(first_name__icontains=search_text) | Q(last_name__icontains=search_text)
+            )
+            users = [{"description": user.username, "name": "%s %s" % (user.first_name, user.last_name), "email": user.email , "type":'User'} for user in users]
+            results += users
+            if 'User' not in countType:
+                countType['User'] = len(users)
+        request.session['results'] = results
+        request.session['types'] = countType
+        return render_to_response("scs/search.html",
+                                  {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
+                                  'types': ['Dataset', 'Workflow', 'Atomic Sevice', 'File', 'SWS', 'Application', 'User']},
+                                  RequestContext(request))
+
+    return render_to_response("scs/search.html",
+                              {'search': {}, "results": [], "numresults": 0, 'countType': {},
+                               'types': ['Dataset', 'Workflow', 'Atomic Sevice', 'File', 'SWS', 'Application', 'User']},
+                              RequestContext(request))
 
 @is_staff()
 def users_access_admin(request):

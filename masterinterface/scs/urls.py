@@ -26,5 +26,7 @@ urlpatterns = patterns(
     url(r'^delete_tag/$', delete_tag_service,  name='delete-tag'),
     url(r'^update_tag/$', add_tag_service,  name='update-tag'),
     url(r'^update_description/$', edit_description_service,  name='update-description'),
+    url(r'^search/$', search, name="search"),
+    url(r'^search_results/$', search_service, name="search_results"),
 )
 
