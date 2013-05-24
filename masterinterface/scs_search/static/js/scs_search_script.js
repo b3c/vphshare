@@ -39,7 +39,7 @@ function resultsCallback(results) {
                     datasetItem.find('.dataset-label').text(datasetLabel);
                     datasetItem.find('.dataset-description').text('Match : ' + numMatch);
                     //conceptItem.find( '.link-to-data' ).attr( 'onclick', "datasetSearchReady( '"+rdfLink+"', '"+datasetLabel+"' );" );
-                    datasetItem.find('.link-to-data').attr('href', "/search/concept/?dataset=" + encodeURIComponent(rdfLink) + "&datasetLabel=" + encodeURIComponent(datasetLabel));
+                    datasetItem.find('.link-to-data').attr('href', "/semantic-search/concept/?dataset=" + encodeURIComponent(rdfLink) + "&datasetLabel=" + encodeURIComponent(datasetLabel));
                     datasetItem.insertAfter(datasetItemBase);
 
                 }
@@ -530,7 +530,7 @@ function guidedSearchS2Call(val, conceptLabel) {
     var dataset = $("#dataset-uri").val(),
         datasetLabel = $("#dataset-value").val();
 
-    window.location.href = "/search/annotation/?dataset=" + encodeURIComponent(dataset) + "&datasetLabel=" + encodeURIComponent(datasetLabel) + "&conceptClass=" + encodeURIComponent(val) + "&conceptLabel="+ encodeURIComponent(conceptLabel);
+    window.location.href = "/semantic-search/annotation/?dataset=" + encodeURIComponent(dataset) + "&datasetLabel=" + encodeURIComponent(datasetLabel) + "&conceptClass=" + encodeURIComponent(val) + "&conceptLabel="+ encodeURIComponent(conceptLabel);
 
 }
 
@@ -1346,7 +1346,7 @@ function loadLatestQuery() {
     "use strict";
 
     var url;
-    url = '/search/complex/latest/';
+    url = '/semantic-search/complex/latest/';
     $.ajax({
         type: 'POST',
         url: url,
