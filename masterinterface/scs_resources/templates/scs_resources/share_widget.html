@@ -100,13 +100,13 @@
         });
     }
 
-    function SearchAjaxResponseHandler( responseText, statusText, xhr, jqform ) {
+    function SearchAjaxResponseHandler{{ resource.id }}( responseText, statusText, xhr, jqform ) {
 
         $("#search-results-{{ resource.id }}").removeClass('invisible');
         $("#users-result-{{ resource.id }}").empty();
         $("#groups-result-{{ resource.id }}").empty();
 
-        var groups = []
+        var groups = [];
 
         $.each(responseText.users,
                 function(i, user) {
@@ -159,7 +159,7 @@
                         type: method,
                         url: url,
                         data: data,
-                        success: SearchAjaxResponseHandler
+                        success: SearchAjaxResponseHandler{{ resource.id }}
                     }
                 );
             }
@@ -200,5 +200,4 @@
 
 });
 </script>
-</div>
 </div>

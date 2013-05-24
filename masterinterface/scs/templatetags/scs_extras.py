@@ -47,7 +47,11 @@ def keyvalue(dict, key):
 
 def can_read(user, resource):
     # TODO check permissions rather than roles!
-    return has_local_role(user, 'Reader', resource) or has_local_role(user, 'Editor', resource) or has_local_role(user, 'Manager', resource) or has_local_role(user, 'Owner', resource)
+    if resource.__class__.__name__ == "Resource":
+        return has_local_role(user, 'Reader', resource) or has_local_role(user, 'Editor', resource) or has_local_role(user, 'Manager', resource) or has_local_role(user, 'Owner', resource)
+    else:
+        parent = resource.resource_ptr
+        return has_local_role(user, 'Reader', parent) or has_local_role(user, 'Editor', parent) or has_local_role(user, 'Manager', parent) or has_local_role(user, 'Owner', parent)
 
 
 # register filters
