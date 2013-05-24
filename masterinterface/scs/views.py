@@ -268,7 +268,7 @@ def search(request):
             'tags': tags
         }
         results, countType = filter_resources_by_expression(expression)
-        if filterby == [] or 'User' in filterby:
+        if types == [] and (filterby == [] or 'User' in filterby):
             from django.db.models import Q
             from django.contrib.auth.models import User
             users = User.objects.filter(
