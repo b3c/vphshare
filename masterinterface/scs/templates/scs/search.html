@@ -21,20 +21,18 @@
             <form id="form-search" class="form-search">
             <div class="input-prepend input-append">
                 <div class="btn-group">
-                    <div class="btn-group">
-                        <button class="btn dropdown-toggle search-btn-left" data-toggle="dropdown">
-                            All resources
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu text-left">
+                    <button class="btn dropdown-toggle search-btn-left" data-toggle="dropdown">
+                        All resources
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu text-left">
 
-                            {% for type in types %}
-                                <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">{{ type }}
-                                    <span class="pull-right {% if type in search.type %} icon-ok {% endif %}"></span></a></li>
-                            {% endfor %}                            
-                            <div class="clearfix"></div>
-                        </ul>
-                    </div>
+                        {% for type in types %}
+                            <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">{{ type }}
+                                <span class="pull-right {% if type in search.type %} icon-ok {% endif %}"></span></a></li>
+                        {% endfor %}
+                        <div class="clearfix"></div>
+                    </ul>
                 </div>
                 <input class="span4 search-query" id="search_text" type="text" name="serach_text" value="{{ search.search_text }}">
                 <button type="submit" class="btn search-btn-right">Search</button>
@@ -71,9 +69,9 @@
                 <div class="popover-list result-item">
                     <div class="popover-content">
                         {% if result.type != 'User' %}
-                            <p><i class="icon-th"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b>{{ result.name }}</b></a></p>
+                            <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b>{{ result.name }}</b></a></p>
                         {% else %}
-                            <p><i class="icon-th"></i><b> {{ result.name }}</b></p>
+                            <p><i class="icon-th {{ result.type }}-color"></i><b> {{ result.name }}</b></p>
                         {% endif %}
                         <p style="font-size: 13px"> {{ result.description|strCut:'100' }}</p>
                     </div>
@@ -157,6 +155,20 @@
                //init multicheck dropdown menu
                 this.$form = $('#form-search');
                 this.$search_text = $('#search_text');
+                this.$search_text.keypress(
+                    function(e){
+                        if(e.keyCode == 13)
+                        {
+                            var input = $(this);
+                            var value = input.val().trim();
+                            var key = input.attr('id');
+                            if ( value == '')
+                                return false;
+                            self.$form.submit();
+                        }
+                        return true;
+                    }
+                );
                 this.$atomic = false;
                 this.$min = 20;
                 this.$max = 40;

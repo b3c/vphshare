@@ -142,14 +142,14 @@ def manage_resources(request):
     applications = []
 
     try:
-        db_workflows = Workflow.objects.filter(owner=request.user)
+        db_workflows = Workflow.objects.all()
         for workflow in db_workflows:
-            resource = Resource.objects.get(global_id=workflow.global_id)
+            resource = workflow.resource_ptr
 
             if has_local_role(request.user, 'Owner', resource) or has_local_role(request.user, 'Manager', resource):
-                resource.permissions_map = get_permissions_map(resource)
-                resource.requests = get_pending_requests_by_resource(resource)
-                workflows.append(resource)
+                workflow.permissions_map = get_permissions_map(resource)
+                workflow.requests = get_pending_requests_by_resource(resource)
+                workflows.append(workflow)
 
         # TODO for all types of resources
 

@@ -1082,6 +1082,42 @@ a.search-data-link:hover{
     min-width: 15px;
 }
 
+/*text color*/
+.Dataset-color{
+    color: #3eb6b5;
+
+}
+
+.Workflow-color{
+    color: #4eb8e4;
+
+}
+
+.Service-color{
+    color: #675c9c;
+
+}
+
+.File-color{
+    color: #c26aa3;
+
+}
+
+.SWS-color{
+    color: #c2bb51;
+
+}
+
+.Application-color{
+    color: #e4675e;
+
+}
+
+.User-color{
+    color: #6cae4e;
+
+}
+
 
 .input-refine {
     height: 18px !important;

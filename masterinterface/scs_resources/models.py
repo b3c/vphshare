@@ -37,7 +37,10 @@ class Resource(models.Model):
         super(Resource, self).save(force_insert=force_insert, force_update=force_update, using=using)
         update_resource_metadata(self.global_id, {'local_id': self.id, 'type': self.__class__.__name__})
         # grant Owner role to owner
-        add_local_role(self, self.owner, resource_owner)
+        if self.__class__.__name__ == "Resource":
+            add_local_role(self, self.owner, resource_owner)
+        else:
+            add_local_role(self.resource_ptr, self.owner, resource_owner)
 
     def __unicode__(self):
         return "%s" % self.global_id
