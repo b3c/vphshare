@@ -6,6 +6,7 @@ from urlparse import urlparse
 import xml.etree.cElementTree as xml
 from collections import namedtuple
 from cStringIO import StringIO
+import urllib
 
 class WebdavException(Exception):
     pass
@@ -28,7 +29,7 @@ def prop(elem, name, default=None):
 
 def elem2file(elem):
     return File(
-        prop(elem, 'href'),
+        urllib.unquote(prop(elem, 'href')),
         int(prop(elem, 'getcontentlength', 0)),
         prop(elem, 'getlastmodified', ''),
         prop(elem, 'creationdate', ''),

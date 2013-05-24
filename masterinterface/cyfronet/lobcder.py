@@ -36,15 +36,19 @@ def getMetadata(path, ticket):
 def fillInMetadata(entry, metadata):
     doc = xml.XML(metadata)
     #find logicalDataWrapped element whose path element contains entry.path
-    found = doc.xpath('//path[text()="' + entry.path.rstrip('/') + '"]/..|//path[text()="/' + entry.path.rstrip('/').lstrip('/').replace('/', '//') + '"]/..')[0]
-    entry.owner = found.xpath('logicalData/owner')[0].text
-    entry.created = datetime.fromtimestamp(float(found.xpath('logicalData/createDate')[0].text)/1000)
-    entry.modified = datetime.fromtimestamp(float(found.xpath('logicalData/modifiedDate')[0].text)/1000)
-    entry.driSupervised = found.xpath('logicalData/supervised')[0].text.lower() == 'true'
-    entry.driChecksum = found.xpath('logicalData/checksum')[0].text
-    entry.driValidationDate = datetime.fromtimestamp(float(found.xpath('logicalData/lastValidationDate')[0].text)/1000)
-    entry.perms = LobcderPermissions(found.xpath('permissions/owner')[0].text, found.xpath('permissions/read/text()'), found.xpath('permissions/write/text()'))
-    entry.uid = found.xpath('logicalData/uid')[0].text
+    foundElements = doc.xpath('//path[text()="' + entry.path.rstrip('/') + '"]/..|//path[text()="/' + entry.path.rstrip('/').lstrip('/').replace('/', '//') + '"]/..')
+    if len(foundElements) > 0:
+        found = foundElements[0]
+        entry.owner = found.xpath('logicalData/owner')[0].text
+        entry.created = datetime.fromtimestamp(float(found.xpath('logicalData/createDate')[0].text)/1000)
+        entry.modified = datetime.fromtimestamp(float(found.xpath('logicalData/modifiedDate')[0].text)/1000)
+        entry.driSupervised = found.xpath('logicalData/supervised')[0].text.lower() == 'true'
+        entry.driChecksum = found.xpath('logicalData/checksum')[0].text
+        entry.driValidationDate = datetime.fromtimestamp(float(found.xpath('logicalData/lastValidationDate')[0].text)/1000)
+        entry.perms = LobcderPermissions(found.xpath('permissions/owner')[0].text, found.xpath('permissions/read/text()'), found.xpath('permissions/write/text()'))
+        entry.uid = found.xpath('logicalData/uid')[0].text
+    else:
+        log.warn('Could not find LOBCDER metadata for ' + entry.path)
 
 def lobcderEntries(files, root, currentPath, ticket):
     result = []
