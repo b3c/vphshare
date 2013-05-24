@@ -63,8 +63,12 @@
                                     <li>Views: {{ workflow.metadata.views }}</li>
                                 </ul>
                                 </p>
-                                <a class="btn" href="{{ workflow.t2flow.url }}">Taverna workflow</a>
-                                <a class="btn" href="{{ workflow.xml.url }}" target="_blank">xml file</a>
+                                {% if workflow.t2flow %}
+                                    <a class="btn" href="{{ workflow.t2flow.url }}">Taverna workflow</a>
+                                {% endif %}
+                                {% if workflow.xml %}
+                                    <a class="btn" href="{{ workflow.xml.url }}" target="_blank">xml file</a>
+                                {% endif %}
                                 {% if workflow.owner == request.user %}<a class="btn" href="/workflows/edit/{{ workflow.id }}">Edit Workflow</a>{% endif %}
                             </div>
                         </div>
