@@ -83,7 +83,12 @@ def resource_detailed_view(request, id='1'):
                 resource.request_status = resource_request_state.name
         except ObjectDoesNotExist, e:
             resource.already_requested = False
-    
+
+    try:
+        resource = Workflow.objects.get(global_id=id)
+    except ObjectDoesNotExist, e:
+        resource = Resource.objects.get(global_id=id)
+
     return render_to_response(
         'scs_resources/resource_details.html',
         {'resource': resource,

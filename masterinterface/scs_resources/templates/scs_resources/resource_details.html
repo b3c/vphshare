@@ -65,7 +65,11 @@
 
             {% if request.user.is_authenticated %}
             {% if request.user|can_read:resource %}
-                <button class="btn btn-block btn-large btn-success">Download</button>
+                {% if resource.t2flow %}
+                    <a target="_blank" href="{{  resource.t2flow.url }}" class="btn btn-block btn-large btn-success">Download</a>
+                {% else %}
+                    <a  href="#" class="btn btn-block btn-large btn-success">Download</a>
+                {% endif %}
             {% else %}
                 {% if not resource.already_requested %}
                 <button id="request-for-sharing-btn" data-toggle="button" class="btn btn-block btn-large btn-warning" onclick="request_for_sharing();">Request for sharing</button>
