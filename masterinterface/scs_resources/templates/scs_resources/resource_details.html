@@ -3,6 +3,18 @@
 {% load scs_extras %}
 {% load permissions_tags %}
 
+{% block breadcrumbs %}
+    <div id="breadcrumbs-wrapper">
+        <ul id="breadcrumbs" class="breadcrumb">
+            <li><a href="/" title="Home">home</a><span class="divider">|</span></li>
+
+            <li><a href="/resources/" title="resources">resources</a><span class="divider">|</span></li>
+
+            <li class="active"><a href="/resources/{{ resource.global_id }}/" title="{{ resource.metadata.name }}">{{ resource.metadata.name }}</a></li>
+
+        </ul>
+    </div>
+{% endblock %}
 {%  block content %}
     <div id="alert-container"></div>
     <div class="span7">

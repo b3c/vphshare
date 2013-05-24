@@ -97,6 +97,7 @@
 
                     </div>
                     {% endblock %}
+                    {% block breadcrumbs %}
                     {% if not request.path|breadcrumbs|length_is:"0" %}
                     <div id="breadcrumbs-wrapper">
                         <ul id="breadcrumbs" class="breadcrumb">
@@ -107,6 +108,7 @@
                         </ul>
                     </div>
                     {% endif %}
+                    {% endblock %}
             {% endblock %}
         {% endif %}
         {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
