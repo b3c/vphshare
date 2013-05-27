@@ -41,10 +41,12 @@ class search_user(BaseHandler):
                     term = request.GET.get('term', '')
 
                     users = User.objects.filter(
-                        Q(username__icontains=term) | Q(email__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)
+                        Q(username__icontains=term) | Q(email__icontains=term) | Q(first_name__icontains=term) | Q(
+                            last_name__icontains=term)
                     )
 
-                    return [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name), "email": user.email} for user in users]
+                    return [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name),
+                             "email": user.email} for user in users]
 
                 else:
                     response = HttpResponse(status=403)
@@ -152,6 +154,16 @@ class search_group(BaseHandler):
             return response
 
 
+def can_be_child(child, parent):
+    if str(child.name).lower() == str(parent.name).lower():
+        return False
+
+    if parent.parent:
+        return can_be_child(child, parent.parent.vphsharesmartgroup)
+
+    return True
+
+
 class create_group(BaseHandler):
     """
         REST service based on Django-Piston Library.\n
@@ -184,7 +196,16 @@ class create_group(BaseHandler):
 
                     # check if a user with the group name exists
                     try:
-                        User.objects.get(username=name)
+                        User.objects.get(username__iexact=name) #select case-insensitive
+                        response = HttpResponse(status=500)
+                        response._is_string = True
+                        return response
+
+                    except ObjectDoesNotExist, e:
+                        pass
+
+                    try:
+                        Group.objects.get(name__iexact=name)    #select case-insensitive
                         response = HttpResponse(status=500)
                         response._is_string = True
                         return response
@@ -261,6 +282,11 @@ class delete_group(BaseHandler):
 
                     group.active = False
                     group.remove_users()
+                    # remove this group from children parent reference
+                    for child in VPHShareSmartGroup.objects.filter(parent=group):
+                        child.parent = None
+                        child.save()
+                    group.parent = None
                     group.save()
 
                     response = HttpResponse(status=200)
@@ -279,12 +305,18 @@ class delete_group(BaseHandler):
             return response
 
 
+def add_user_to_group(user, group):
+    group.user_set.add(user)
+    for child in VPHShareSmartGroup.objects.filter(parent=group):
+        add_user_to_group(user, child)
+
+
 class add_to_group(BaseHandler):
     """
         REST service based on Django-Piston Library.\n
     """
 
-    def read(self, request, ticket='', group='', username=''):
+    def read(self, request, ticket='', group='', name=''):
         """
             Add a user to a smart group
             Arguments:
@@ -318,22 +350,21 @@ class add_to_group(BaseHandler):
                         user_to_add = User.objects.get(username=request.GET.get('name'))
                         # add user to all children groups
                         if request.GET.get('recursive', False):
-                            while group is not None:
-                                group.user_set.add(user_to_add)
-                                try:
-                                    group = VPHShareSmartGroup.objects.get(parent=group)
-                                except ObjectDoesNotExist, e:
-                                    group = None
+                            add_user_to_group(user_to_add, group)
                         else:
                             group.user_set.add(user_to_add)
 
                     except ObjectDoesNotExist, e:
                         try:
                             group_to_add = VPHShareSmartGroup.objects.get(name=request.GET.get('name'))
+                            if not can_be_child(group_to_add, group):
+                                response = HttpResponse(status=500, content="constraint violation circularity")
+                                response._is_string = True
+                                return response
                             group_to_add.parent = group
                             group_to_add.save()
                         except ObjectDoesNotExist, e:
-                            response = HttpResponse(status=404)
+                            response = HttpResponse(status=403)
                             response._is_string = True
                             return response
 
@@ -454,8 +485,10 @@ class group_members(BaseHandler):
                         return response
 
                     return {
-                        "users": [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name), "email": user.email} for user in group.user_set.all()],
-                        "groups": [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in VPHShareSmartGroup.objects.filter(parent=group)]
+                        "users": [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name),
+                                   "email": user.email} for user in group.user_set.all()],
+                        "groups": [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in
+                                   VPHShareSmartGroup.objects.filter(parent=group)]
                     }
 
                 else:
@@ -503,7 +536,8 @@ class user_groups(BaseHandler):
                         response._is_string = True
                         return response
 
-                    return [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in target_user.groups.all()]
+                    return [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in
+                            target_user.groups.all()]
 
                 else:
                     response = HttpResponse(status=403)
