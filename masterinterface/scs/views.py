@@ -286,7 +286,7 @@ def search(request):
                                   RequestContext(request))
 
     return render_to_response("scs/search.html",
-                              {'search': {}, "results": [], "numresults": 0, 'countType': {},
+                              {'search': {}, "results": None, "numresults": 0, 'countType': {},
                                'types': ['Dataset', 'Workflow', 'Atomic Sevice', 'File', 'SWS', 'Application', 'User']},
                               RequestContext(request))
 

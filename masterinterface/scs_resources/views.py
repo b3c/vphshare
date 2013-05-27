@@ -56,12 +56,12 @@ def resource_detailed_view(request, id='1'):
                 resource = Workflow(global_id=id, owner=resource_owner)
             else:
                 resource = Resource(global_id=id, owner=resource_owner)
-            resource.save()
+            resource.save(metadata=metadata)
 
         except ObjectDoesNotExist, e:
             # TODO create a new user or assign resource temporarly to the President :-)
             resource = Resource(global_id=id, owner=User.objects.get(username='mbalasso'))
-            resource.save()
+            resource.save(metadata=metadata)
 
         finally:
             resource.metadata = metadata
@@ -316,17 +316,7 @@ def edit_workflow(request, id=False):
             form = WorkflowForm(request.POST, request.FILES, instance=dbWorkflow)
 
             if form.is_valid():
-                workflow = form.save(commit=False)
-                workflow.owner = request.user
-
-                metadata_payload = {'name': form.data['title'], 'description': form.data['description'],
-                                    'author': request.user.username, 'category': form.data['category'],
-                                    'tags': form.data['tags'], 'type': 'Workflow',
-                                    'semantic_annotations': form.data['semantic_annotations'],
-                                    'licence': form.data['licence'], 'local_id': workflow.id}
-
-                update_resource_metadata(dbWorkflow.global_id, metadata_payload)
-
+                workflow = form.save(commit=False, owner=dbWorkflow.owner)
                 workflow.save()
                 request.session['statusmessage'] = 'Changes were successful'
                 return redirect('/workflows')
@@ -341,7 +331,7 @@ def edit_workflow(request, id=False):
                                   RequestContext(request))
 
     except Exception, e:
-        if not request.session['errormessage']:
+        if not request.session.get('errormessage', False):
             request.session['errormessage'] = 'Some errors occurs, please try later. '
         return redirect('/workflows')
 

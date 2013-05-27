@@ -17,7 +17,7 @@
 
 {%  block content %}
     <div class="row">
-        <div class="span12 text-center search-box" style="{% if results %}padding: 5px;{% endif %}">
+        <div class="span12 text-center search-box" style="{% if results != None %}padding: 5px;{% endif %}">
             <form id="form-search" class="form-search">
             <div class="input-prepend input-append">
                 <div class="btn-group">
@@ -41,7 +41,7 @@
             </form>
         </div>
     </div>
-    {% if results %}
+    {% if results != None %}
     <div class="row row-contet" style="min-height: 566px;">
         <div class="span9 left-list search-list">
             <div class="popover-list ">
