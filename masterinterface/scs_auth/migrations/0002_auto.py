@@ -19,7 +19,8 @@ class Migration(SchemaMigration):
             user_profile = orm.UserProfile.objects.get(pk=user.pk)
             try:
                 for role in user_profile.roles.all():
-                    add_role(user, role.roleName)
+                    new_role = Role.objects.get(name=role.roleName)
+                    add_role(user, new_role)
             except Exception, e:
                 pass
 
