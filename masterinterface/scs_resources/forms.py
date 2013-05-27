@@ -32,10 +32,13 @@ class ResourceForm(forms.ModelForm):
             'semantic_annotations': self.data['semantic_annotations'],
             'licence': self.data['licence'],
             'local_id': '',
-            'type': ''
+            'type': resource.__class__.__name__
         }
-        resource.global_id = set_resource_metadata(metadata_payload)
-        resource.owner = owner
+        if self.instance:
+            update_resource_metadata(self.instance.global_id, metadata_payload)
+        else:
+            resource.global_id = set_resource_metadata(metadata_payload)
+            resource.owner = owner
         if commit:
             resource.save()
         return resource

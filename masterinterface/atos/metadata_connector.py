@@ -207,6 +207,8 @@ def filter_resources_by_expression(expression):
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
         resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]["resource_metadata"]
+        if type(resources) is dict:
+            resources = [resources]
         results = OrderedDict()
         for resource in resources:
             position = str(resource.values()).count(expression['search_text'])
