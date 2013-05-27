@@ -25,20 +25,22 @@ function resultsCallback(results) {
         if (results.hasOwnProperty(conceptUri)) {
 
             conceptItem = conceptItemBase.clone();
+            var datasetItemBase = conceptItem.find('.dataset-item');
             conceptItem.attr('id', 'concept-uri');
             conceptItem.find('.concept-label').text(conceptUri);
             dataset = results[conceptUri];
             for (datasetLabel  in dataset) {
 
                 if (dataset.hasOwnProperty(datasetLabel)) {
-
+                    var datasetItem =  datasetItemBase.clone();
                     numMatch = dataset[datasetLabel][0];
                     rdfLink = dataset[datasetLabel][1];
-                    conceptItem.find('.dataset-item').show();
-                    conceptItem.find('.dataset-label').text(datasetLabel);
-                    conceptItem.find('.dataset-description').text('Match : ' + numMatch);
+                    datasetItem.show();
+                    datasetItem.find('.dataset-label').text(datasetLabel);
+                    datasetItem.find('.dataset-description').text('Match : ' + numMatch);
                     //conceptItem.find( '.link-to-data' ).attr( 'onclick', "datasetSearchReady( '"+rdfLink+"', '"+datasetLabel+"' );" );
-                    conceptItem.find('.link-to-data').attr('href', "/search/concept/?dataset=" + encodeURIComponent(rdfLink) + "&datasetLabel=" + encodeURIComponent(datasetLabel));
+                    datasetItem.find('.link-to-data').attr('href', "/search/concept/?dataset=" + encodeURIComponent(rdfLink) + "&datasetLabel=" + encodeURIComponent(datasetLabel));
+                    datasetItem.insertAfter(datasetItemBase);
 
                 }
 

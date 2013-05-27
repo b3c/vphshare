@@ -16,10 +16,13 @@ group_members_entries = Resource(handler=group_members)
 user_groups_entries = Resource(handler=user_groups)
 promote_user_entries = Resource(handler=promote_user)
 downgrade_user_entries = Resource(handler=downgrade_user)
+search_userandgroup_entries = Resource(handler=search_userandgroup)
 
 urlpatterns = patterns(
     url(r'^searchuser/', search_user_entries),
     url(r'^searchuser/', search_user_entries),
+    url(r'^searchuserandgroup/', search_userandgroup_entries),
+    url(r'^searchuserandgroup/', search_userandgroup_entries),
     url(r'^searchuser\.(?P<emitter_format>.+)', search_user_entries),
     url(r'^searchgroup/', search_group_entries),
     url(r'^searchgroup\.(?P<emitter_format>.+)', search_group_entries),

@@ -59,6 +59,57 @@ class search_user(BaseHandler):
             return response
 
 
+class search_userandgroup(BaseHandler):
+    """
+        REST service based on Django-Piston Library.\n
+    """
+
+    def read(self, request, ticket='', term=''):
+        """
+            Process a search user request.
+            Arguments:
+
+            request (HTTP request istance): HTTP request send from client.
+            ticket (string) : base 64 ticket.
+            term (string) : search term
+
+            Return:
+
+            Successes - Json/xml/yaml format response
+            Failure - 403 error
+
+        """
+        try:
+            if request.GET.get('ticket'):
+                client_address = request.META['REMOTE_ADDR']
+                user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
+
+                if user is not None:
+
+                    term = request.GET.get('term', '')
+
+                    users = User.objects.filter(
+                        Q(username__icontains=term) | Q(email__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)
+                    )
+
+                    groups = Group.objects.filter(name__icontains=term)
+
+                    return {
+                        "users": [{"username": user.username, "fullname": "%s %s" % (user.first_name, user.last_name)} for user in users],
+                        "groups": [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in groups],
+                    }
+
+                else:
+                    response = HttpResponse(status=403)
+                    response._is_string = True
+                    return response
+
+        except Exception, e:
+            response = HttpResponse(status=500)
+            response._is_string = True
+            return response
+
+
 class search_group(BaseHandler):
     """
         REST service based on Django-Piston Library.\n

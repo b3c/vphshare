@@ -161,7 +161,7 @@ INSTALLED_APPS = (
     'permissions',
     'masterinterface.scs_groups',
     'masterinterface.scs_security',
-    'masterinterface.scs_workflows',
+    'masterinterface.scs_resources',
     'masterinterface.atos',
     'south'
 
@@ -261,9 +261,10 @@ TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 
 #LOBCDER settings
 LOBCDER_HOST = '149.156.10.138'
-LOBCDER_PORT = 8081
-LOBCDER_ROOT = '/lobcder-2.1/dav'
-LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder-2.1/rest"
+LOBCDER_PORT = 8080
+LOBCDER_ROOT = '/lobcder/dav'
+LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder/rest"
+
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
 

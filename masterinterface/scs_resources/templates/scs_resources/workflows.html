@@ -42,13 +42,13 @@
             {% for workflow in workflows %}
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{ workflow.metadata.global_id }}">
-                                <h4>{{ workflow.title }}</h4>
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{ workflow.global_id }}">
+                                <h4>{{ workflow.metadata.name }}</h4>
                             </a>
                         </div>
-                        <div id="{{ workflow.metadata.global_id }}" class="accordion-body collapse">
+                        <div id="{{ workflow.global_id }}" class="accordion-body collapse">
                             <div class="accordion-inner">
-                                <p style="text-align: justify; max-width: 90%;">{{ workflow.description }}</p>
+                                <p style="text-align: justify; max-width: 90%;">{{ workflow.metadata.description }}</p>
                                 <p><b>Metadata</b>
                                 <ul>
                                     <li>Author: {{ workflow.metadata.author }}</li>
@@ -65,7 +65,7 @@
                                 </p>
                                 <a class="btn" href="{{ workflow.t2flow.url }}">Taverna workflow</a>
                                 <a class="btn" href="{{ workflow.xml.url }}" target="_blank">xml file</a>
-                                {% if workflow.user == request.user %}<a class="btn" href="/workflows/edit/{{ workflow.id }}">Edit Workflow</a>{% endif %}
+                                {% if workflow.owner == request.user %}<a class="btn" href="/workflows/edit/{{ workflow.id }}">Edit Workflow</a>{% endif %}
                             </div>
                         </div>
                     </div>
