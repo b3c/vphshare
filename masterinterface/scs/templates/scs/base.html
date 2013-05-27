@@ -77,8 +77,11 @@
                                     <li class="list-parent"><a href="/search/"><i class="icon-search icon-white"></i>Semantic search</a></li>
                                 {% if request.user.is_staff %}
                                     <li class="list-parent"><a href="/scs/users_admin/"><i class="icon-share icon-white"></i>Share</a></li>
+                                {% endif %}
                                     <li class="list-parent"><a href="/cyfronet/cloudmanager/"><i class="icon-th-large icon-white"></i>Cloud Management</a></li>
-                                    <li class="list-parent"><a href="/cyfronet/datamanager/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
+                                    <li class="list-parent"><a href="/cyfronet/lobcder/"><i class="icon-th-list icon-white"></i>Data Management</a></li>
+                                    <li class="list-parent"><a href="/cyfronet/lobcderquery"><i class="icon-th-list icon-white"></i>Data Search</a></li>
+                                {% if request.user.is_staff %}
                                     <li class="list-parent"><a href="/security/"><i class="icon-fire icon-white"></i>Security</a></li>
                                 {% endif %}
                                 <li class="list-parent"><a href="/workflows/"><i class="icon-tasks icon-white"></i>Workflows</a></li>
@@ -146,6 +149,7 @@
   ga('send', 'pageview');
 
 </script>
+{% block endbodyextra %}{% endblock %}
 </body>
 </html>
 

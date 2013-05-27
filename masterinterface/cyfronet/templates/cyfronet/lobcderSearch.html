@@ -1,0 +1,82 @@
+{% extends 'cyfronet/base.html' %}
+
+{%  block title %} LOBCDER {% endblock %}
+
+{% block page-title %}
+    <span class="title">LOBCDER</span>
+    <span class="subtitle">Search LOBCDER resources</span>
+{% endblock%}
+
+{% block content %}
+	<form action="/cyfronet/lobcderquery" method="POST" class="form-horizontal">
+		{% csrf_token %}
+		<div class="control-group">
+			<label class="control-label" for="resourceName">Resource name</label>
+			<div class="controls">
+				<input id="resourceName" type="text" name="resourceName" placeholder="Resource name" value="{{ request.POST.resourceName }}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="createdAfter">Created after</label>
+			<div class="controls">
+				<input id="createdAfter" type="text" name="createdAfter" placeholder="Created after" class="datepicker" value="{{ request.POST.createdAfter }}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="createdBefore">Created before</label>
+			<div class="controls">
+				<input id="createdBefore" type="text" name="createdBefore" placeholder="Created before" class="datepicker" value="{{ request.POST.createdBefore }}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="modifiedAfter">Modified after</label>
+			<div class="controls">
+				<input id="modifiedAfter" type="text" name="modifiedAfter" placeholder="Modified after" class="datepicker" value="{{ request.POST.modifiedAfter }}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="modifiedBefore">Modified before</label>
+			<div class="controls">
+				<input id="modifiedBefore" type="text" name="modifiedBefore" placeholder="Modified before" class="datepicker" value="{{ request.POST.modifiedBefore }}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="controls">
+				<button type="submit" class="btn">Search LOBCDER</button>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript">
+		jQuery(document).ready(function() {
+			jQuery('.datepicker').datepicker({
+				autoclose: true,
+				format: 'mm-dd-yyyy'
+			});
+		});
+	</script>
+	{% if entries %}
+		<div class="row">
+			<div class="span3"><strong>Name</strong></div>
+			<div class="span2"><strong>Path</strong></div>
+			<div class="span2"><strong>Created</strong></div>
+			<div class="span2"><strong>Modified</strong></div>
+		</div>
+		{% for entry in entries %}
+			<div class="row">
+				<div class="span3">
+					{% if entry.type == 'directory' %}
+	    				<i class="icon-folder-close"></i>
+	    			{% else %}
+	    				<i class="icon-file"></i>
+	    			{% endif %}
+	    			<a href="/cyfronet/lobcder{{ entry.path }}">{{ entry.name }}</a>
+		    	</div>
+		    	<div class="span2">{{ entry.path }}</div> 
+				<div class="span2">{{ entry.created|date:"d M Y" }}</div>
+				<div class="span2">{{ entry.modified|date:"d M Y" }}</div>
+			</div>
+		{% endfor %}
+	{% else %}
+		No entries
+	{% endif %}
+{% endblock %}

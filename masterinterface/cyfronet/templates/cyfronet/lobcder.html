@@ -1,0 +1,138 @@
+{% extends 'cyfronet/base.html' %}
+
+{%  block title %} LOBCDER {% endblock %}
+
+{% block page-title %}
+    <span class="title">LOBCDER</span>
+    <span class="subtitle">Manage LOBCDER resources</span>
+{% endblock%}
+
+{% block content %}
+	<form action="/cyfronet/lobcder{{ path }}" method="POST" class="form-inline">
+    	{% csrf_token %}
+    	<div class="input-append">
+	    	<input id="id_name" type="text" name="name" placeholder="Directory name"/>
+			<button type="submit" class="btn" name="createDirectory">Create directory</button>
+		</div>
+		<span style="color: red;">{{ createDirectoryForm.name.errors }}</span>
+    </form>
+	{% if entries %}
+    <table class="table table-hover">
+    	<thead>
+    		<tr>
+    			<th>Name</th>
+    			<th>Owner</th>
+    			<th>Created</th>
+    			<th>Size (B)</th>
+    			<th>Actions</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+		    {% for entry in entries %}
+		    	<tr>
+		    		<td>
+		    			{% if entry.type == 'directory' %}
+		    				<i class="icon-folder-close"></i>
+		    			{% else %}
+		    				<i class="icon-file"></i>
+		    			{% endif %}
+		    			<a href="/cyfronet/lobcder{{ entry.path }}">{{ entry.name }}</a>
+		    		</td>
+		    		<td>{{ entry.owner }}</td>
+		    		<td>{{ entry.created|date:"d M Y" }}</td>
+		    		<td>{{ entry.size }}</td>
+		    		<td>
+		    			<a class="btn btn-danger lobcder-delete has_left_tooltip" href="/cyfronet/lobcderdelete{{ entry.path }}" title="Delete">
+                <i class="icon-trash cwhite"></i>
+              </a>
+		    			<button class="btn show-metadata has_right_tooltip" data-toggle="button" data-path="{{ entry.path }}" title="Metadata">
+                <i class="icon-magic"></i>
+              </button>
+		    			<div class="hide metadata-popover-content" data-path="{{ entry.path }}">
+		    				<form action="/cyfronet/lobcdermetadata{{ entry.path }}" method="POST" class="lobcder-metadata-form">
+		    					{% csrf_token %}
+		    					<input type="hidden" name="uid" value="{{ entry.uid }}"/>
+		    					<input type="hidden" name="owner" value="{{ entry.perms.owner }}"/>
+	    						<label class="control-label" for="readPerms">Read permissions</label>
+	    						<input name="read" type="text" id="readPerms" placeholder="Read permissions" style="width: 180px;" value="{{ entry.perms.read|join:',' }}"/>
+	    						<label class="control-label" for="writePerms">Write permissions</label>
+	    						<input name="write" type="text" id="writePerms" placeholder="Write permissions" style="width: 180px;" value="{{ entry.perms.write|join:',' }}"/>
+	    						<label class="checkbox">
+	    							<input name="driSupervised" type="checkbox" {% if entry.driSupervised %}checked="true"{% endif %}>
+	    							DRI Supervised
+	    						</label>
+		    					<button type="button" class="btn" style="margin: 20px auto; display: block;" onclick="submitLobcderMetadata(this.parentNode)">Update metadata</button>
+		    					<div class="alert fade">&nbsp;</div>
+		    				</form>
+		    			</div>
+		    		</td>
+		    	</tr>
+		    {% endfor %}
+    	</tbody>
+    </table>
+    <script type="text/javascript">
+    	function submitLobcderMetadata(form) {
+			var f = jQuery(form);
+			var url = f.attr('action');
+			var serialized = f.serialize();
+			var paramMap = {}
+			var pairs = serialized.split('&')
+
+			for(pair in pairs) {
+				paramMap[pairs[pair].split('=')[0]] = decodeURIComponent(decodeURIComponent(pairs[pair].split('=')[1]));
+			}
+
+			jQuery.post(url, serialized, function(data) {
+				if(data == 'OK') {
+					f.find('div.alert').addClass('alert-success').removeClass('fade').html('<strong>Done!</strong> Metadata saved.');
+					//modifying the original form so the values stay the same
+					original = jQuery('div.metadata-popover-content form[action="' + url + '"]');
+					original.find('input[name="read"]').attr('value', paramMap['read']);
+					original.find('input[name="write"]').attr('value', paramMap['write']);
+
+					if(paramMap['driSupervised'] !== undefined) {
+						original.find('input[name="driSupervised"]').attr('checked', 'true');
+					} else {
+						original.find('input[name="driSupervised"]').removeAttr('checked');
+					}
+				} else {
+					f.find('div.alert').addClass('alert-error').removeClass('fade').html('<strong>Error!</strong> ' + data);
+				}
+			});
+    	}
+		jQuery(document).ready(function() {
+			jQuery('.lobcder-delete').click(function() {
+				if(!confirm("Are you sure you would like to remove one of LOBCDER resources?")) {
+					return false;
+				}
+			});
+			jQuery('.show-metadata').popover({
+				html: true,
+				title: function() {
+					return 'Metadata for ' + jQuery(this).attr('data-path');
+				},
+				content: function() {
+					return jQuery('.metadata-popover-content[data-path="' + jQuery(this).attr('data-path') + '"]').html();
+				}
+			});
+		});
+	</script>
+    {% else %}
+    	no files
+    {% endif %}
+    <form id="fileupload" action="/cyfronet/lobcder{{ path }}" method="POST" enctype="multipart/form-data" style="float: left; width: 100%;">
+    	{% csrf_token %}
+        <div class="row fileupload-buttonbar">
+            <div class="span7">
+                <span class="btn btn-success fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <span>Add files...</span>
+                    <input type="file" name="files" multiple>
+                </span>
+            </div>
+            <div id="progress" class="progress progress-success progress-striped fade" style="display: block; clear: both; margin-left: 30px;">
+		        <div class="bar"></div>
+		    </div>
+        </div>
+    </form>
+{% endblock %}

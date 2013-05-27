@@ -1,3 +1,11 @@
 iframe#cloudmanagerframe {
 	width: 100%;
 }
+
+.cred {
+  color: #D12F19;
+}
+
+.cwhite {
+  color: white;
+}
