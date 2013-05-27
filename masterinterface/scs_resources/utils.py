@@ -26,8 +26,8 @@ def get_permissions_map(resource_of_any_type):
         role_relations = PrincipalRoleRelation.objects.filter(role__name__exact=role.name)
         permissions_map.append({
             'name': role.name,
-            'groups': [r.group for r in role_relations if r.group is not None and has_local_role(r.group, role, resource)],
-            'users': [r.user for r in role_relations if r.user is not None and has_local_role(r.user, role, resource)]
+            'groups': [r.group for r in role_relations if r.group is not None and r.content_id == resource.id and has_local_role(r.group, role, resource)],
+            'users': [r.user for r in role_relations if r.user is not None and r.content_id == resource.id and has_local_role(r.user, role, resource)]
         }
         )
 
