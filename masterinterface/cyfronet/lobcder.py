@@ -27,7 +27,7 @@ class LobcderEntry:
         self.driValidationDate = None
         self.perms = None
         self.uid = None
-        
+
 
 def getMetadata(path, ticket):
     response = requests.get(settings.LOBCDER_REST + '/items/query?path=' + path, auth = ('user', ticket))
@@ -43,12 +43,16 @@ def fillInMetadata(entry, metadata):
         entry.created = datetime.fromtimestamp(float(found.xpath('logicalData/createDate')[0].text)/1000)
         entry.modified = datetime.fromtimestamp(float(found.xpath('logicalData/modifiedDate')[0].text)/1000)
         entry.driSupervised = found.xpath('logicalData/supervised')[0].text.lower() == 'true'
-        entry.driChecksum = found.xpath('logicalData/checksum')[0].text
-        entry.driValidationDate = datetime.fromtimestamp(float(found.xpath('logicalData/lastValidationDate')[0].text)/1000)
+        entry.driChecksum = _get_first_tag_text(found, 'logicalData/checksum')
+        entry.driValidationDate = datetime.fromtimestamp(float(_get_first_tag_text(found, 'logicalData/lastValidationDate'))/1000)
         entry.perms = LobcderPermissions(found.xpath('permissions/owner')[0].text, found.xpath('permissions/read/text()'), found.xpath('permissions/write/text()'))
         entry.uid = found.xpath('logicalData/uid')[0].text
     else:
         log.warn('Could not find LOBCDER metadata for ' + entry.path)
+
+def _get_first_tag_text(doc, xpath_expression):
+    elements = doc.xpath(xpath_expression)
+    return elements[0].text if len(elements) > 0 else None
 
 def lobcderEntries(files, root, currentPath, ticket):
     result = []
