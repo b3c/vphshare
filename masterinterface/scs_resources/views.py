@@ -66,6 +66,9 @@ def resource_detailed_view(request, id='1'):
         finally:
             resource.metadata = metadata
 
+    # Count visit hit
+    resource.metadata['views'] = resource.update_views_counter()
+
     # INJECT DEFAULT VALUES
     resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": "doi:12.34567/891011.0004.23"}]
     resource.status = "Published"
@@ -227,6 +230,18 @@ def grant_role(request):
         pass
     except Exception, e:
         pass
+
+    alert_user_by_email(
+        mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+        mail_to='%s %s <%s>' % (principal.first_name, principal.last_name, principal.email),
+        subject='[VPH-Share] Your request for sharing has been accepted',
+        mail_template='request_for_sharing_accepted',
+        args={
+            'message': request.GET.get('requestmessage', ''),
+            'resource': resource,
+            'requestor': principal
+        }
+    )
 
     response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')

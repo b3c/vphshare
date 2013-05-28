@@ -44,6 +44,16 @@ class Resource(models.Model):
     def __unicode__(self):
         return "%s" % self.global_id
 
+    def update_views_counter(self):
+        metadata = get_resource_metadata(self.global_id)
+        try:
+            views = int(metadata['views']) + 1
+        except ValueError, e:
+            views = 1
+        update_resource_metadata(self.global_id, {'views': str(views)})
+        return views
+
+
 
 class ResourceRequest(models.Model):
 
