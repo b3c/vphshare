@@ -253,7 +253,221 @@
             ManageModal.autoDiscover();
         }).call(this);
 
+        (function() {
+            var global = this;
+            var $ = global.$;
+            var console = global.console || {log:function() {}};
 
+
+            var ShareModal = global.ShareModal = function(element, options) {
+                this.inizialize($(element));
+            };
+
+            ShareModal.prototype.inizialize = function(shareModal){
+                var self = this;
+                this.$globalId = shareModal.data('globalid');
+                this.$textInput = shareModal.find('#enter-text-input');
+                this.$searchBtn = shareModal.find('#search-btn');
+                this.$dataSearchResults = shareModal.find('#datashare-search-results');
+                this.$searchResults = shareModal.find('#search-results');
+                this.$csrfmiddlewaretoken = shareModal.find("input[name=csrfmiddlewaretoken]").val();
+                this.$shareModal = shareModal;
+                this.permissionMap = [];
+
+                shareModal.find('.grant').each(function(index,element){
+                    self.grantEvent(element);
+                });
+
+                this.$searchBtn.click(function(e){self.searchUsersGroups(e);});
+                this.$alert = shareModal.find('.alert');
+            };
+            ShareModal.prototype.grantEvent = function(element){
+                var self = this;
+                var grant = $(element);
+                var name = grant.data('name');
+                var role = grant.data('rolename');
+                if (this.permissionMap[name] == undefined) {
+                    this.permissionMap[name] = [role];
+                }else if ($.inArray(role,this.permissionMap[name])<0){
+                    this.permissionMap[name].push(role);
+                }
+                grant.click(function(e){
+                    self.popupRole(e,$(this));
+                });
+            };
+
+            ShareModal.prototype.alert = function(message,style){
+                style = "alert-"+style;
+
+                this.$alert.find('#modal-message').text(message);
+                this.$alert.addClass(style);
+                this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                    $(this).removeClass(style).find('#modal-message').text('');
+                });
+            };
+
+            ShareModal.prototype.searchUsersGroupsError = function(e){
+
+            };
+
+            ShareModal.prototype.searchUsersGroupsCallBack = function(data){
+                var self = this;
+                this.$dataSearchResults.show();
+                this.$searchResults.empty();
+
+                var groups = [];
+
+                $.each(data.users,
+                        function(i, user) {
+                            $('<span/>',{
+                                'class': "label label-info grant",
+                                'data-name': user.username,
+                                html: user.fullname
+                            })
+                                    .css("margin-left","2px")
+                                    .click(function(e){self.grantEvent(this)})
+                                    .appendTo(self.$searchResults);
+                        }
+                );
+
+                $.each(data.groups,
+                        function(i, group) {
+                            $('<span/>',{
+                                'class': "label label-success grant",
+                                'data-name': group.groupname,
+                                html: group.groupname
+                            })
+                                    .css("margin-left","2px")
+                                    .click(function(e){self.grantEvent(this)})
+                                    .appendTo(self.$searchResults);
+                        }
+                );
+
+            };
+
+            ShareModal.prototype.searchUsersGroups = function(e){
+                var self = this;
+                $.ajax({
+                            dataType: "json",
+                            type: 'get',
+                            url: '/api/searchuserandgroup/',
+                            data: {term:self.$textInput.val(),ticket:'{{ tkt64 }}',csrfmiddlewaretoken:self.$csrfmiddlewaretoken},
+                            success: function(data){self.searchUsersGroupsCallBack(data)},
+                            error: function(data){self.searchUsersGroupsError(data)}
+                        }
+                );
+            };
+
+            ShareModal.prototype.popupRole = function(e, element){
+
+                var self = this;
+                e.preventDefault();
+                if (this.$popoveractive != undefined && this.$popoveractive[0] != element[0]){
+                    this.$popoveractive.popover('destroy');
+                    this.$popoveractive = undefined;
+                }
+                if (this.$popoveractive != undefined && this.$popoveractive[0] == element[0]){
+                    var popover = element.parent().find('.popover');
+                    if (!popover.hasClass('hide')){
+                        popover.addClass('hide');
+                        popover.css('display','none');
+                    }else{
+                        popover.removeClass('hide');
+                        popover.css('display','block');
+                    }
+                    return true;
+                }
+
+                var content = $('<div class="btn-group" ><button type="button" class="btn btn-primary">Editor</button><button type="button" class="btn btn-primary">Manager</button><button type="button" class="btn btn-primary">Reader</button></div>');
+                content.find('.btn').each(function(i,btn){
+                    var btn = $(btn);
+                    if ($.inArray(btn.text(),self.permissionMap[element.data('name')])>=0){
+                        btn.addClass('active');
+                    }
+                    var style = "label-info";
+                    if (element.hasClass('label-success')){
+                        style = 'label-success';
+                    }
+                    btn.click(function(e){self.setGrant(element.data('name'), btn,style);});
+                });
+
+                element.popover({
+                    html:true,
+                    placement: 'top',
+                    title: 'Set Permissions',
+                    content : content,
+                    trigger : 'manual'
+                });
+                element.popover('show');
+                this.$popoveractive = element;
+            };
+
+            ShareModal.prototype.setGrantError = function(data){
+                this.$popoveractive.popover('hide');
+            };
+
+            ShareModal.prototype.setGrantCallBack = function(data, revoke, name, role,style){
+                var self = this;
+                this.$popoveractive.popover('destroy');
+                this.$popoveractive = undefined;
+                if (revoke){
+                    $('#'+role+'-'+name).remove();
+                    var index = $.inArray(role,self.permissionMap[name]);
+                    this.permissionMap[name].splice(index,1);
+                    if (self.$shareModal.find('#'+role).find('.grant') == 0)
+                        self.$shareModal.find('#'+role).find('.noone').show();
+                }else{
+                    self.$shareModal.find('#'+role).find('.noone').hide();
+                    $('<span/>',{
+                        'class': "label "+style+" grant",
+                        'id':role+'-'+name,
+                        'data-name': name,
+                        html: name
+                    })
+                            .css("margin-left","2px")
+                            .click(function(e){self.grantEvent(this)})
+                            .appendTo(self.$shareModal.find('#'+role));
+                    if (this.permissionMap[name] == undefined) {
+                        this.permissionMap[name] = [role];
+                    }else if ($.inArray(role,this.permissionMap[name])<0){
+                        this.permissionMap[name].push(role);
+                    }
+                }
+
+            };
+
+            ShareModal.prototype.setGrant = function(setTo, roleBtn,style){
+                var self = this;
+                var roleToset = roleBtn.text();
+                var url = '/grantrole';
+                var revoke = false;
+                if (roleBtn.hasClass('active')){
+                    url = '/revokerole';
+                    revoke = true;
+                }
+
+
+                $.ajax({
+                    dataType: "json",
+                    url: url,
+                    method: 'get',
+                    data: {name: setTo, role: roleToset, csrfmiddlewaretoken: self.$csrfmiddlewaretoken, global_id: this.$globalId},
+                    success: function(data){self.setGrantCallBack(data,revoke,setTo,roleToset,style);},
+                    error: function(data){self.setGrantError(data);}
+                });
+
+            };
+
+
+
+            ShareModal.autoDiscover = function() {
+                $('.share-modal').each(function(index, element) {
+                    new ShareModal(element);
+                });
+
+            };
+            ShareModal.autoDiscover();
+        }).call(this);
     </script>
 
 {% endblock %}
