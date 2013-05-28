@@ -194,11 +194,11 @@ def filter_resources_by_expression(expression):
     logicalExpression = logicalExpressionBase % (expression['search_text'], expression['search_text'])
     for key, values in expression.items():
         if type(values) is list and len(values) > 0:
-            logicalExpression += ' AND ('
+            logicalExpression += '('
             for value in values:
-                logicalExpression += ' %s:"%s" OR' % (key, value)
+                logicalExpression += ' %s="%s" OR' % (key, value)
             logicalExpression = logicalExpression[:-2]
-            logicalExpression += ')'
+            logicalExpression += ') AND '
 
     try:
         response = requests.get(FILTER_METADATA_API % logicalExpression)
@@ -232,3 +232,38 @@ def filter_resources_by_expression(expression):
 
     except BaseException, e:
         return [],{}
+
+
+def search_resource(text, filters = {}):
+
+    try:
+        request_url = SEARCH_METADATA_API % text
+        filters_url = "&filters="
+        for key, values in filters.items():
+            if type(values) is list and len(values) > 0:
+                filters_url += '('
+                for value in values:
+                    filters_url += ' %s:"%s" OR' % (key, value)
+                filters_url = filters_url[:-2]
+                filters_url += ') AND '
+        filters_url = filters_url[:-5]
+
+        response = requests.get(request_url + filters_url)
+
+        if response.status_code != 200:
+            raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
+
+        resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]["resource_metadata"]
+        countType = {}
+        if type(resources) is dict:
+            resources = [resources]
+
+        for resource in resources:
+            if resource['type'] not in countType:
+                countType[resource['type']] = 0
+            countType[resource['type']] += 1
+
+        return resources, countType
+
+    except BaseException, e:
+        return [], {}

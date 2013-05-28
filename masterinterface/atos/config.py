@@ -48,4 +48,6 @@ FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/m
 
 FILTER_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/filter?logicalExpression=%s'
 
+SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/multifield?text=%s'
+
 FACETS_LIST = [u'type', u'name', u'description', u'author', u'category', u'tags', u'semantic_annotations', u'licence', u'rating', u'views', u'local_id']
