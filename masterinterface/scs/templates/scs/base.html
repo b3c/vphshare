@@ -66,8 +66,8 @@
                                         </script>
                                     {% else %}
                                         <span style="margin-left: 20px;">Hi, {{ request.user.first_name|default:"Friend"}}!</span>
-                                        <!--<a href="/profile/">Profile</a>
-                                        <span class="divider">|</span>-->
+                                        <span class="divider">|</span>
+                                        <a href="/profile/">Profile</a>
                                         <button  class="btn popup" rel="#overlay" href="/logout">Logout</button>
                                     {% endif %}
                                 {% endblock %}
