@@ -13,6 +13,11 @@
                     return;
                 }
 
+                if( ! $("#privacy-ok").attr("checked") ) {
+                    $("#privacy-question").addClass("alert-error");
+                    return;
+                }
+
                 $("#login-form-bt").submit();
 
             }
@@ -106,10 +111,15 @@
                     <button type="submit" class="btn btn-primary" type="button" onclick="event.preventDefault();checkCookie();">login</button>
                 </div>
             </form>
-            <div class="well">
-                <p>This site uses cookies to store information on your computer.</p>
-                <p>By using our site you accept the terms of our <a href="/" target="_blank">Privacy Policy</a>.</p>
-                <div id="cookie-question" class="alert"><label class="checkbox"><input type="checkbox" id="cookie-ok" /> I agree</label></div>
+            <div class="well-small" style="font-size: 90%;">
+                <div id="cookie-question" class="alert">
+                    <p>This site uses cookies to store information on your computer.</p>
+                    <label class="checkbox"><input type="checkbox" id="cookie-ok" /> I agree</label>
+                </div>
+                <div id="privacy-question" class="alert">
+                    <p>By using our site you accept the terms of our <a href="/" target="_blank">Privacy Policy</a>.</p>
+                    <label class="checkbox"><input type="checkbox" id="privacy-ok" /> I accept</label>
+                </div>
             </div>
         </p>
     </body>
