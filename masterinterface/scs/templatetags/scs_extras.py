@@ -34,9 +34,13 @@ def strTodate(date):
 
 @register.filter
 def strCut(string, lenght):
-    if len(string) > int(lenght):
-        return string[:int(lenght)] + '....'
-    return string
+    try:
+        if len(string) > int(lenght):
+            return string[:int(lenght)] + '....'
+        return string
+    except Exception, e:
+        return ''
+
 
 @register.filter
 def keyvalue(dict, key):
