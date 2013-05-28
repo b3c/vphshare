@@ -30,7 +30,9 @@
                 {% for resource in resources %}
                     <li class="clear" style="border-bottom: 1px solid #d3d3d3; padding-bottom: 5px; height: 25px">
                         <div class="pull-left">{{ resource.name }}</div>
-                        <div class="pull-right"><span class="icon icon-download-alt"></span><span class="icon icon-comment"></span></div>
+                        <div class="pull-right">
+                            <a href="/resources/{{ resource.global_id }}" target="_blank"><span class="icon icon-share-alt"></span></a>
+                        </div>
                     </li>
                 {% endfor %}
                 </ul>
