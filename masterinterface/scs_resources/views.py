@@ -283,7 +283,6 @@ def create_role(request):
         return response
 
 
-@login_required
 def workflowsView(request):
 
     workflows = []

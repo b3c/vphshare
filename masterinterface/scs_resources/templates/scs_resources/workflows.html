@@ -1,7 +1,15 @@
 {% extends 'scs/base.html' %}
+{% load scs_extras %}
 
+{% block extrahead %}
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
 
-{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+{%  block title %} VPH-Share Workflows {% endblock %}
 
 {% block page-title %}
     <span class="title">Workflows</span>
@@ -37,45 +45,31 @@
         </form>
 
         {% else %}
-            <a class="btn btn-link" href="/workflows/new">New Workflow</a>
-            <div class="accordion" id="accordion2">
-            {% for workflow in workflows %}
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{ workflow.global_id }}">
-                                <h4>{{ workflow.metadata.name }}</h4>
-                            </a>
-                        </div>
-                        <div id="{{ workflow.global_id }}" class="accordion-body collapse">
-                            <div class="accordion-inner">
-                                <p style="text-align: justify; max-width: 90%;">{{ workflow.metadata.description }}</p>
-                                <p><b>Metadata</b>
-                                <ul>
-                                    <li>Author: {{ workflow.metadata.author }}</li>
-                                    <li>Category: {{ workflow.metadata.category }}</li>
-                                    <li>Licence: {{ workflow.metadata.licence }}</li>
-                                    <li>Type: {{ workflow.metadata.type }}</li>
-                                    <li>Tags: {{ workflow.metadata.tags }}</li>
-                                    <li>Semantic Annotations: {{ workflow.metadata.semantic_annotations }}</li>
-                                    <li>Created:{{ workflow.metadata.creation_date }}</li>
-                                    <li>Last update: {{ workflow.metadata.update_date }}</li>
-                                    <li>Rating: {{ workflow.metadata.rating }}</li>
-                                    <li>Views: {{ workflow.metadata.views }}</li>
-                                </ul>
-                                </p>
-                                {% if workflow.t2flow %}
-                                    <a class="btn" href="{{ workflow.t2flow.url }}">Taverna workflow</a>
-                                {% endif %}
-                                {% if workflow.xml %}
-                                    <a class="btn" href="{{ workflow.xml.url }}" target="_blank">xml file</a>
-                                {% endif %}
-                                {% if workflow.owner == request.user %}<a class="btn" href="/workflows/edit/{{ workflow.id }}">Edit Workflow</a>{% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-            {% endfor %}
+        <div class="span9 left-list search-list" style="margin-top: 50px">
+            <div class="popover-list ">
+                <div class="popover-content">
+                    <p>We've found {{ workflows|length }} workflows</p>
+                </div>
             </div>
+            {% for result in workflows %}
+
+                <div class="popover-list result-item">
+                    <div class="popover-content">
+                        <p><i class="icon-th Workflow-color"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b>{{ result.metadata.name }}</b></a></p>
+                        <p style="font-size: 13px"> {{ result.metadata.description|strCut:'100' }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if request.user.is_authenticated %}
+            <div class="well" style="margin: 50px 20px;">
+                <p>To upload a new workflow <a class="btn btn-link" href="/workflows/new">click here</a></p>
+            </div>
+            {% endif %}
+
+        </div>
+            
+
     {% endif %}
     </div>
 {% endblock %}
