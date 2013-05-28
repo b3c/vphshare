@@ -1292,3 +1292,7 @@ a.search-data-link:hover{
     border: 1px solid #bdbec1;
     margin-top: 5px;
 }
+
+.grant{
+    cursor: pointer;
+}

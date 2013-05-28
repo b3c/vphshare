@@ -77,8 +77,8 @@
 
             {% if request.user.is_authenticated %}
             {% if request.user|can_read:resource %}
-                {% if resource.t2flow %}
-                    <a target="_blank" href="{{  resource.t2flow.url }}" class="btn btn-block btn-large btn-success">Download</a>
+                {% if workflow and workflow.t2flow %}
+                    <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download</a>
                 {% else %}
                     <a  href="#" class="btn btn-block btn-large btn-success">Download</a>
                 {% endif %}

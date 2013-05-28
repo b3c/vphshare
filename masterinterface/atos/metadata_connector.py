@@ -63,7 +63,7 @@ def get_resource_metadata(global_id):
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
-        metadata = xmltodict.parse(response.text.encode())
+        metadata = xmltodict.parse(response.text.encode('utf-8'))
 
         return metadata['resource_metadata']
 
@@ -256,7 +256,7 @@ def search_resource(text, filters = {}):
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
         resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]["resource_metadata"]
-        countType = {}
+        countType = {'Dataset': 0, 'Workflow': 0, 'Atomic Sevice': 0, 'File': 0, 'SWS': 0, 'Application': 0}
         if type(resources) is dict:
             resources = [resources]
 

@@ -25,13 +25,13 @@ from masterinterface.atos.metadata_connector import *
 from utils import get_permissions_map, get_pending_requests_by_resource, is_request_pending
 
 
-def alert_user_by_email(mail_from, mail_to, subject, mail_template, args={}):
+def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={}):
     """
         send an email to alert user
     """
 
-    text_content = loader.render_to_string('scs_resources/%s.txt' % mail_template, dictionary=args)
-    html_content = loader.render_to_string('scs_resources/%s.html' % mail_template, dictionary=args)
+    text_content = loader.render_to_string('scs_resources/%s.txt' % mail_template, dictionary=dictionary)
+    html_content = loader.render_to_string('scs_resources/%s.html' % mail_template, dictionary=dictionary)
     msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
     msg.attach_alternative(html_content, "text/html")
     msg.content_subtype = "html"
@@ -88,13 +88,14 @@ def resource_detailed_view(request, id='1'):
             resource.already_requested = False
 
     try:
-        resource = Workflow.objects.get(global_id=id)
+        workflow = Workflow.objects.get(global_id=id)
     except ObjectDoesNotExist, e:
-        resource = Resource.objects.get(global_id=id)
+        workflow = None
 
     return render_to_response(
         'scs_resources/resource_details.html',
         {'resource': resource,
+         'workflow': workflow,
          'requests': []},
         RequestContext(request)
     )
@@ -121,7 +122,7 @@ def request_for_sharing(request):
         mail_to='%s %s <%s>' % (resource.owner.first_name, resource.owner.last_name, resource.owner.email),
         subject='[VPH-Share] You have receive a request for sharing',
         mail_template='incoming_request_for_sharing',
-        args={
+        dictionary={
             'message': request.GET.get('requestmessage', ''),
             'resource': resource,
             'requestor': request.user
@@ -133,7 +134,10 @@ def request_for_sharing(request):
         mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
         mail_to='%s %s <%s>' % (request.user.first_name, request.user.last_name, request.user.email),
         mail_template='request_for_sharing_sent',
-        subject='[VPH-Share] Your request for sharing has been delivered to resource owner'
+        subject='[VPH-Share] Your request for sharing has been delivered to resource owner',
+        dictionary={
+            'requestor': request.user
+        }
     )
 
     # return to requestor
@@ -236,7 +240,7 @@ def grant_role(request):
         mail_to='%s %s <%s>' % (principal.first_name, principal.last_name, principal.email),
         subject='[VPH-Share] Your request for sharing has been accepted',
         mail_template='request_for_sharing_accepted',
-        args={
+        dictionary={
             'message': request.GET.get('requestmessage', ''),
             'resource': resource,
             'requestor': principal

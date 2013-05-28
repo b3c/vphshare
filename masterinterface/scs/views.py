@@ -281,7 +281,7 @@ def search(request):
         request.session['types'] = countType
         return render_to_response("scs/search.html",
                                   {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
-                                  'types': ['Dataset', 'Workflow', 'Atomic Sevice', 'File', 'SWS', 'Application', 'User']},
+                                  'types': countType.keys()},
                                   RequestContext(request))
 
     return render_to_response("scs/search.html",

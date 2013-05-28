@@ -1,4 +1,4 @@
-Dear User, your request for sharing the resource {{ resource.metadata.name }} has been accepted!
+Dear {{ requestor.first_name }}, your request for sharing the resource {{ resource.metadata.name }} has been accepted!
 
 Best regards,
 The VPH-Share Staff
