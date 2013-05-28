@@ -164,7 +164,7 @@ INSTALLED_APPS = (
     'masterinterface.scs_resources',
     'masterinterface.atos',
     'south'
-    
+
     ##NEW_APP
 )
 
@@ -214,7 +214,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
     },
     'loggers': {
         'django.request': {
@@ -222,6 +222,9 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'cyfronet': {
+            'level': 'DEBUG'
+        }
     }
 }
 
@@ -255,6 +258,12 @@ TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)
+
+#LOBCDER settings
+LOBCDER_HOST = '149.156.10.138'
+LOBCDER_PORT = 8080
+LOBCDER_ROOT = '/lobcder/dav'
+LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder/rest"
 
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
