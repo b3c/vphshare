@@ -6,7 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     'cyfronet.views',
     url(r'^cloudmanager/$', 'cloudmanager'),
-    url(r'^tools$', 'cloudmanager'),
+    url(r'^tools/$', 'cloudmanager'),
     url(r'^datamanager/$', 'datamanager'),
     url(r'^policymanager/$', 'policymanager'),
 
