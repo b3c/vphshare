@@ -6,6 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     'cyfronet.views',
     url(r'^cloudmanager/$', 'cloudmanager'),
+    url(r'^tools$', 'cloudmanager'),
     url(r'^datamanager/$', 'datamanager'),
     url(r'^policymanager/$', 'policymanager'),
 
@@ -14,6 +15,4 @@ urlpatterns = patterns(
     url(r'^lobcderdelete(.*)$', 'lobcderDelete'),
     url(r'^lobcder(.*)$', 'lobcder'),
 
-    # default rollback to cloudmanager
-    url(r'', 'index'),
 )

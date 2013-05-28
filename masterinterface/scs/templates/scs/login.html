@@ -12,15 +12,16 @@
 {%  block content %}
 
     {% if not request.user.is_authenticated %}
-
-        <h3>A valid user is required!</h3>
-        <p>In order to access to the requested resource you must login.</p>
-        <p>Please choose your Identity Provider from the above list.</p>
+        <div class="well" style="margin:50px;">
+            <div class="alert alert-danger"><h3>A valid user is required!</h3></div>
+            <p>Please login to access to the requested resource by clicking <button onclick="$('#login').popover('show');" class="btn btn-link">here</button>.</p>
+        </div>
         
     {% else %}
-        
-        <h3>Thanks, {{ request.user.first_name|default:"Friend"}}</h3>
-        <p>If not redirect automatically, continue to the requested resource by clicking <a href="{{ next }}">here</a></p>
+        <div class="well" style="margin:50px;">
+            <div class="alert alert-success"><h3>Thanks, {{ request.user.first_name|default:"Friend"}}</h3></div>
+            <p>If not redirect automatically, continue to the requested resource by clicking <a href="{{ next }}">here</a></p>
+        </div>
         
     {% endif %}
 
