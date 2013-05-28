@@ -130,9 +130,11 @@ def filter_resources_by_facet(facet, value):
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
-        metadata = xmltodict.parse(response.text.encode())
-
-        return metadata["resource_metadata_list"]['resource_metadata']
+        metadata = xmltodict.parse(response.text.encode('utf-8'))
+        try:
+            return metadata["resource_metadata_list"]['resource_metadata']
+        except Exception, e:
+            return []
 
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)

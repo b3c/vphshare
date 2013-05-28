@@ -306,7 +306,10 @@ def browse_data_az(request):
     """
     resources_by_letter = {}
     try:
-        all_resources = get_all_resources_metadata()
+        all_resources = []
+        all_resources.extend(filter_resources_by_type('File'))
+        all_resources.extend(filter_resources_by_type('Dataset'))
+
         resources_by_letter = ordereddict.OrderedDict()
 
         for letter in string.uppercase:
