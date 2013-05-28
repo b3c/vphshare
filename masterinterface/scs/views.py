@@ -260,14 +260,13 @@ def search(request):
             'filterby': filterby
         }
         expression = {
-            'search_text': search_text,
             'type': types,
             'category': categories,
             'author': authors,
             'licence': licences,
             'tags': tags
         }
-        results, countType = filter_resources_by_expression(expression)
+        results, countType = search_resource(search_text, expression)
         if types == [] and (filterby == [] or 'User' in filterby):
             from django.db.models import Q
             from django.contrib.auth.models import User

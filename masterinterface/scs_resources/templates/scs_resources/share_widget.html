@@ -1,203 +1,54 @@
-<div id="share-{{ resource.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div  id="share-{{ resource.id }}" class="share-modal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-globalid="{{ resource.global_id }}">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <span class="icon icon-group pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
         <div id="myModalLabel"><p><b>Manage Permissions</b></p><p>{{ resource.metadata.name }}</p></div>
     </div>
-    <div class="modal-body">
-    <div id="alert-container"></div>
-
-    <!--<div class="well-small">
-        <button id="new-role" class="btn btn-success btn-mini" data-toggle="button" data-loading-text="processing..."><span class="icon-white icon-edit"></span> add a new role</button>
-    </div>-->
+    <div class="modal-body" style="overflow-y: visible !important;overflow-x: visible !important;">
+        <div class="alert hide">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <span id="modal-message"></span>
+        </div>
     <dl id="roles-list">
         {% for role in resource.permissions_map %}
         <dt>{{ role.name }}</dt>
-        <dd class="well-small ui-droppable granted-role" id="{{ role.name }}" rel={{ resource.global_id }}>
-            {% for user in role.users %} <span class="ui-draggable label label-info" rel="{{ role.name }}" id="{{ user.username }}"> {{ user.first_name}} {{ user.last_name}} </span>{% endfor %}
-            {% for group in role.groups %} <span class="ui-draggable label label-success" rel="{{ role.name }}" id="{{ group.name }}"> {{ group.name }} </span>{% endfor %}
-            {% if not role.users and not role.groups %}
-                <p class=".noone">No one has been granted to this role yet.</p>
-            {% endif %}
+        <dd class="well-small granted-role" id="{{ role.name }}" >
+            {% for user in role.users %}
+                <span id="{{ role.name }}-{{ user.username }}" class="label label-info grant" data-rolename="{{ role.name }}" data-name="{{ user.username }}">
+                    {{ user.first_name}} {{ user.last_name}}
+                </span>
+            {% endfor %}
+            {% for group in role.groups %}
+                <span id="{{ role.name }}-{{ group.name }}" class="label label-success grant" data-rolename="{{ role.name }}" data-name="{{ group.name }}">
+                    {{ group.name }}
+                </span>
+            {% endfor %}
+
+            <p class="noone {% if  role.users or  role.groups %}hide{% endif %}">No one has been granted to this role yet.</p>
+
         </dd>
         {% endfor %}
     </dl>
-
-    <div class="well-small revoke-role span2 pull-right" rel={{ resource.global_id }}>
-        <button title="drag here to revoke role from users" class="btn btn-danger btn-mini"><span class="icon-white icon-trash"></span> drop here to revoke role</button></dt>
-    </div>
-
     <br />
-    <form id="search-results-form-{{ resource.id }}" method="get" enctype="multipart/form-data" action="/api/searchuserandgroup/" class="form-search ajax">
-        {% csrf_token %}
-        <label>Search for <span class="ui-draggable label label-info">users</span> and <span class="ui-draggable label label-success">groups</span></label>
-        <input type="text" name="term" class="input-medium search-query" />
-        <input type="hidden" name="ticket" value="{{ tkt64 }}" />
-        <button type="submit" class="btn">Search</button>
-    </form>
-    <div id="search-results-{{ resource.id }}" class="datashare-search-results invisible">
+        <label>Search for <span class="label label-info can-be-revoked" style="cursor: pointer;">users</span> and <span class="label label-success can-be-revoked" style="cursor: pointer;">groups</span></label>
+    <span id="search-usersgroups-form" class="input-append" style="margin-bottom: 0px;"><input id="enter-text-input" type="text" class="input-medium input-size-mini"><button id="search-btn" class="btn btn-mini" type="button" data-loading-text="Searching...">Search</button></span>
+    {% csrf_token %}
+    <div id="datashare-search-results"  class="datashare-search-results hide">
         <dl>
-            <dt>Users</dt>
-            <dd id="users-result-{{ resource.id }}" class="well-small"></dd>
-            <dt>Groups</dt>
-            <dd id="groups-result-{{ resource.id }}" class="well-small"></dd>
+            <dt>Users and Groups found:</dt>
+            <dd id="search-results" class="search-result well-small"></dd>
         </dl>
     </div>
     <hr />
+    {% if resource.requests %}
     <h6>Requests</h6>
     <ul class="unstyled">
     {% for r in resource.requests %}
-        <li><span class="ui-draggable label label-info can-be-granted" id="{{ r.requestor.username }}"> {{ r.requestor.first_name}} {{ r.requestor.last_name}} </span>, <span>{{ r.date }}</span></li>
-    {% empty %}
-        <li> There are no pending requests for this resource </li>
+        <li><span class="label label-info grant" data-name="{{ r.requestor.username }}"> {{ r.requestor.first_name}} {{ r.requestor.last_name}} </span>, <span>{{ r.date }}</span></li>
     {% endfor %}
     </ul>
+    {% endif %}
     <br />
 </div>
 
-<script type="text/javascript">
-
-    function RoleAjaxResponseHandler(responseText, statusText, xhr, jqform){
-        $("#alert-container").empty();
-        $("<div/>", {
-          "class": "alert fade in " +responseText.alertclass,
-          html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
-        })
-        .alert()
-        .fadeIn()
-        .delay(3000)
-        .fadeOut(1000, function(){
-                $(this).removeClass(style).find('#modal-message').text('');
-        })
-        .appendTo("#alert-container")
-    }
-
-    function grant_role(name, role, global_id){
-
-        var csrfmiddlewaretoken = $("body").find("input[name=csrfmiddlewaretoken]").val();
-
-        $.ajax({
-            dataType: "json",
-            url: '/grantrole',
-            method: 'get',
-            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken, global_id: global_id},
-            success: RoleAjaxResponseHandler,
-            error: RoleAjaxResponseHandler
-        });
-    }
-
-    function revoke_role(name, role, global_id){
-
-        var csrfmiddlewaretoken = $("body").find("input[name=csrfmiddlewaretoken]").val();
-
-        $.ajax({
-            dataType: "json",
-            url: '/revokerole',
-            method: 'get',
-            data: {name: name, role: role, csrfmiddlewaretoken: csrfmiddlewaretoken, global_id: global_id},
-            success: RoleAjaxResponseHandler,
-            error: RoleAjaxResponseHandler
-        });
-    }
-
-    function SearchAjaxResponseHandler{{ resource.id }}( responseText, statusText, xhr, jqform ) {
-
-        $("#search-results-{{ resource.id }}").removeClass('invisible');
-        $("#users-result-{{ resource.id }}").empty();
-        $("#groups-result-{{ resource.id }}").empty();
-
-        var groups = [];
-
-        $.each(responseText.users,
-                function(i, user) {
-                    $('<span/>',{
-                        'class': "label label-info ui-draggable can-be-granted",
-                        'id': user.username,
-                        'uid': user.username,
-                        html: user.fullname
-                    })
-                    .css("cursor","pointer")
-                    .css("margin-left","2px")
-                    .draggable({ revert: "invalid", helper: "clone" })
-                    .appendTo("#users-result-{{ resource.id }}");
-            }
-        );
-
-        $.each(responseText.groups,
-                function(i, group) {
-                    $('<span/>',{
-                        'class': "label label-success ui-draggable can-be-granted",
-                        'id': group.groupname,
-                        'uid': group.groupname,
-                        html: group.groupname
-                    })
-                    .css("cursor","pointer")
-                    .css("margin-left","2px")
-                    .draggable({ revert: "invalid", helper: "clone" })
-                    .appendTo("#groups-result-{{ resource.id }}");
-        });
-
-    }
-
-    $(document).ready(function(){
-
-        $(".ui-draggable").css("cursor","pointer").addClass("can-be-revoked").draggable({ revert: "invalid", helper: "clone" });
-
-        $('#search-results-form-{{ resource.id }}').submit(
-            function(event){
-
-                // stop form from submitting normally
-                event.preventDefault();
-
-                // submit parameters
-                var url = $(this).attr( "action" );
-                var method = $(this).attr("method") || "get"; // default method get
-                var data = $(this).find(":input").serializeArray();
-
-                $.ajax({
-                        dataType: "json",
-                        type: method,
-                        url: url,
-                        data: data,
-                        success: SearchAjaxResponseHandler{{ resource.id }}
-                    }
-                );
-            }
-        )
-
-
-    //$("#new-role").popover({html: true, title: "Add a new role", content: "<form id=\"create-role-form\" class=\"form-inline ajax\" action=\"/security/createrole/\">{% csrf_token %}<div class=\"input-append\"><input name=\"role\" class=\"input-medium\" type=\"text\"><button type=\"button\" onclick=\"event.preventDefault();create_role();\" class=\"btn\"><span class=\"icon-plus\"></span></button></div></form>"});
-
-    $(".granted-role").droppable({
-        activeClass: "ui-state-hover",
-        accept: ".can-be-granted",
-        drop: function( event, ui ){
-            $(this).find("p").remove();
-            var already_there = $(this).find("#"+ui.draggable.attr("id")).length == 0;
-            if (already_there){
-                $("#alert-message").alert("close");
-                grant_role(ui.draggable.attr("id"), $(this).attr("id"), $(this).attr("rel"));
-                ui.draggable
-                        .clone()
-                        .attr("rel",$(this).attr("id"))
-                        .addClass("can-be-revoked")
-                        .removeClass("can-be-granted")
-                        .draggable({ revert: "invalid", helper: "clone" })
-                        .appendTo(this);
-            }
-        }
-    });
-
-    $(".revoke-role").droppable({
-        activeClass: "ui-state-hover",
-        accept: ".can-be-revoked",
-        drop: function( event, ui ){
-            $("#alert-message").alert("close");
-            revoke_role(ui.draggable.attr("id"), ui.draggable.attr("rel"), $(this).attr("rel"));
-            ui.draggable.remove();
-        }
-    });
-
-});
-</script>
 </div>
