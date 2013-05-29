@@ -414,6 +414,9 @@ function datasetQueryCallback(results) {
 
     }
 
+    // update resource counter
+    $('#resource-count-label').text(results.length + " Resources match your query");
+
     $("#dataset-table-block").show();
     $("#dataset-results").show();
 
