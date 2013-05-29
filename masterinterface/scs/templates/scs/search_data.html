@@ -1,5 +1,5 @@
 {% extends 'scs/base.html' %}
-
+{% load scs_extras %}
 {%  block title %} Search Data {% endblock %}
 
 
@@ -8,6 +8,29 @@
     <span class="title">Search Data</span>
     <span class="subtitle">&nbsp</span>
 {% endblock%}
+
+{% block breadcrumbs %}
+    {% if not request.path|breadcrumbs|length_is:"0" %}
+        <div id="breadcrumbs-wrapper">
+            <ul id="breadcrumbs" class="breadcrumb">
+                <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
+                {%  for crumb in request.path|breadcrumbs %}
+                    <li {% if forloop.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>{% if not forloop.last %}<span class="divider">|</span>{% endif %}</li>
+                {% endfor %}
+                <li class="pull-right"><form id="form-search" class="form-search" action="/search/">
+                    <div class="input-append">
+                        <input class="span3 search-query input-size-mini" style="-webkit-border-radius: 14px 0 0 14px !important;-moz-border-radius: 14px 0 0 14px!important;border-radius: 14px 0 0 14px!important;"  type="text" name="search_text" value="" placeholder="Search Data...">
+                        <input id="types" type="hidden" name="types" value="Dataset,">
+                        <button type="submit" class="btn btn-mini search-btn-right">Search</button>
+                    </div>
+                </form></li>
+            </ul>
+
+        </div>
+    {% endif %}
+{% endblock %}
+
+
 
 {%  block content %}
     <div class="row"><div class="span12"><h6 >Browse or search VPH-Share’s data library to discover and use resources from from hundreds of VPH projects. Each data set includes a description of its contents, details of its parent project and information on how to access it.</h6></div></div>
