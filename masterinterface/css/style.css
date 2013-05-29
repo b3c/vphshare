@@ -1300,3 +1300,6 @@ a.search-data-link:hover{
 .well.active{
 background-color: rgba(0, 173, 14, 0.63);
 }
+.well.filter{
+    cursor: pointer;
+}

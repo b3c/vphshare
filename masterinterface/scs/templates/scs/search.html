@@ -28,8 +28,10 @@
                     <ul class="dropdown-menu text-left">
 
                         {% for type in types %}
+                            {% if type != 'Other' %}
                             <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">{{ type }}
                                 <span class="pull-right {% if type in search.type %} icon-ok {% endif %}"></span></a></li>
+                            {% endif %}
                         {% endfor %}
                         <div class="clearfix"></div>
                     </ul>

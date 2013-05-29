@@ -213,6 +213,8 @@ def search_service(request):
             for filter in filterby:
                 numResults += request.session['types'].get(filter,0)
             for result in request.session['results']:
+                if result['type'] not in ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User'] and 'Other' in filterby:
+                    results.append(result)
                 if result['type'] in filterby:
                     results.append(result)
 
@@ -281,12 +283,12 @@ def search(request):
         request.session['types'] = countType
         return render_to_response("scs/search.html",
                                   {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
-                                  'types': countType.keys()},
+                                  'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Other']},
                                   RequestContext(request))
 
     return render_to_response("scs/search.html",
                               {'search': {}, "results": None, "numresults": 0, 'countType': {},
-                               'types': ['Dataset', 'Workflow', 'Atomic Sevice', 'File', 'SWS', 'Application', 'User']},
+                               'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Other']},
                               RequestContext(request))
 
 @is_staff()
