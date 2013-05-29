@@ -149,13 +149,15 @@ def request_for_sharing(request):
 @login_required
 def manage_resources(request):
 
-    resources = filter_resources_by_author(request.user.username)
+
 
     workflows = []
     datas = []
     applications = []
 
     try:
+        resources = filter_resources_by_author(request.user.username)
+
         for resource_from_service in resources:
 
             resource, created = Resource.objects.get_or_create(global_id=resource_from_service['global_id'], owner=request.user)
