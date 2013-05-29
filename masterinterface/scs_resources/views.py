@@ -22,7 +22,7 @@ from .models import Resource, Workflow, ResourceRequest
 from config import ResourceRequestWorkflow, request_pending, request_accept_transition
 from forms import WorkflowForm
 from masterinterface.atos.metadata_connector import *
-from utils import get_permissions_map, get_pending_requests_by_resource, is_request_pending
+from utils import *
 
 
 def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={}):
@@ -149,19 +149,43 @@ def request_for_sharing(request):
 @login_required
 def manage_resources(request):
 
+    resources = filter_resources_by_author(request.user.username)
+
     workflows = []
     datas = []
     applications = []
 
     try:
-        db_workflows = Workflow.objects.all()
-        for workflow in db_workflows:
-            resource = workflow.resource_ptr
+        for resource_from_service in resources:
+
+            resource, created = Resource.objects.get_or_create(global_id=resource_from_service['global_id'], owner=request.user)
+            resource.metadata = get_resource_metadata(resource.global_id)
+
+            if created:
+                resource.save()
+
+            # look if there are group with the resource name and grant them the local role
+            global_role_names = {'read': 'Reader', 'readwrite': 'Editor', 'admin': 'Manager'}
+            for role in get_resource_local_roles():
+                group_name = get_resource_global_group_name(resource, role.name)
+                try:
+                    group = Group.objects.get(name=group_name)
+                    add_local_role(resource, group, role)
+                except ObjectDoesNotExist, e:
+                    pass
 
             if has_local_role(request.user, 'Owner', resource) or has_local_role(request.user, 'Manager', resource):
-                workflow.permissions_map = get_permissions_map(resource)
-                workflow.requests = get_pending_requests_by_resource(resource)
-                workflows.append(workflow)
+                resource.permissions_map = get_permissions_map(resource)
+                resource.requests = get_pending_requests_by_resource(resource)
+
+            if str(resource.metadata['type']).lower() in ['dataset', 'file']:
+                datas.append(resource)
+
+            if str(resource.metadata['type']).lower() in ['application', 'atomicservice', 'atomic service', 'sws']:
+                applications.append(resource)
+
+            if str(resource.metadata['type']).lower() == 'workflow':
+                workflows.append(resource)
 
         # TODO for all types of resources
 
@@ -221,8 +245,19 @@ def grant_role(request):
         principal = Group.objects.get(name=name)
 
     # TODO ADD GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
-    # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-    # add_role(principal, global_role)
+    try:
+        # look for a group with the dataset name
+        group_name = get_resource_global_group_name(resource, role)
+        group = Group.objects.get(name=group_name)
+        group.user_set.add(principal)
+        group.save()
+
+    except ObjectDoesNotExist, e:
+        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+        # add_role(principal, global_role)
+        pass
+
+    # grant local role to the user
     add_local_role(resource, principal, role)
 
     # change request state if exists
@@ -230,22 +265,24 @@ def grant_role(request):
         resource_request = ResourceRequest.objects.get(requestor=principal, resource=resource)
         if is_request_pending(resource_request):
             do_transition(resource_request, request_accept_transition, request.user)
+
+            # alert requestor
+            alert_user_by_email(
+                mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+                mail_to='%s %s <%s>' % (principal.first_name, principal.last_name, principal.email),
+                subject='[VPH-Share] Your request for sharing has been accepted',
+                mail_template='request_for_sharing_accepted',
+                dictionary={
+                    'message': request.GET.get('requestmessage', ''),
+                    'resource': resource,
+                    'requestor': principal
+                }
+            )
+
     except ObjectDoesNotExist, e:
         pass
     except Exception, e:
         pass
-
-    alert_user_by_email(
-        mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
-        mail_to='%s %s <%s>' % (principal.first_name, principal.last_name, principal.email),
-        subject='[VPH-Share] Your request for sharing has been accepted',
-        mail_template='request_for_sharing_accepted',
-        dictionary={
-            'message': request.GET.get('requestmessage', ''),
-            'resource': resource,
-            'requestor': principal
-        }
-    )
 
     response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')

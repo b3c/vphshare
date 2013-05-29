@@ -38,6 +38,8 @@ class Resource(models.Model):
         if self.__class__.__name__ == 'Resource':
             add_local_role(self, self.owner, resource_owner)
         else:
+            # TODO this action should be performed only for workflows!
+            # now it is ok since we have only Resource and Workflow
             update_resource_metadata(self.global_id, {'local_id': self.id, 'type': self.__class__.__name__})
             add_local_role(self.resource_ptr, self.owner, resource_owner)
 
