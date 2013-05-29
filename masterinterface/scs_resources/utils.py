@@ -7,11 +7,16 @@ from masterinterface.scs_resources.config import request_pending
 from masterinterface.scs_resources.models import ResourceRequest, Resource
 
 
-def get_resource_local_roles(resource):
+def get_resource_local_roles(resource=None):
 
     # TODO HACK! role list is now static :-(
 
     return Role.objects.filter(name__in=['Reader', 'Editor', 'Manager'])
+
+
+def get_resource_global_group_name(resource, local_role_name='read'):
+    global_role_name = {'Reader': 'read', 'Editor': 'readwrite', 'Manager': 'admin'}
+    return "%s_%s_%s" % (resource.metadata['name'], str(resource.metadata['type']).lower(), global_role_name.get(local_role_name, 'read'))
 
 
 def get_permissions_map(resource_of_any_type):
