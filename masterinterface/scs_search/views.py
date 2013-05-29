@@ -396,7 +396,7 @@ def dataset_query_service( request ):
         r = re.compile('sparqlEndpoint=(.*?)&')
         endpoint_url = r.search(endpoint)
 
-        connector = json.dumps(dataset_query_connector(query_sparql, endpoint_url), sort_keys=False)
+        connector = json.dumps(dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', '')), sort_keys=False)
 
         response = HttpResponse(content=connector,
                                 content_type='application/json ')
