@@ -248,7 +248,7 @@ def complex_query_service(request):
             query_obj.save()
             query_obj.user.add(user)
         except Exception, e:
-            return
+            pass
             ############################
 
         connector = json.dumps(complex_query_connector(load_groups), sort_keys=False)
