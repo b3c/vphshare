@@ -607,10 +607,9 @@ def dataset_query_connector(query, endpoint_url, username='', ticket=''):
     print "query:\n"
     print query
     print "\nrequest:\n"
-    print endpoint_url.group(1).replace('http', 'https') + "?query=" + quote(query)
+    print endpoint_url.group(1) + "?query=" + quote(query)
     try:
-        endpoint = endpoint_url.group(1).replace('http', 'https')
-        response = requests.get(endpoint + "?query=" + quote(query), verify=False, auth=(username, ticket))
+        response = requests.get(endpoint_url.group(1) + "?query=" + quote(query), verify=False, auth=(username, ticket))
         concept_list = etree.fromstring(
             response.text.encode().replace('xmlns="http://www.w3.org/2005/sparql-results#"', ''))
 
