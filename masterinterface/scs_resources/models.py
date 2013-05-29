@@ -56,13 +56,15 @@ class Resource(models.Model):
         return views
 
 
-
 class ResourceRequest(models.Model):
 
     resource = models.ForeignKey(Resource)
     requestor = models.ForeignKey(User)
     date = models.DateTimeField(auto_now=True)
     message = models.TextField(blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.resource.id, self.requestor.username)
 
     def accept(self, initiator):
         if do_transition(self, request_accept_transition, initiator):
