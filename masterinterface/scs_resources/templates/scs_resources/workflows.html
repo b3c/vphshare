@@ -51,12 +51,17 @@
                     <p>We've found {{ workflows|length }} workflows</p>
                 </div>
             </div>
-            {% for result in workflows %}
+            {% for workflow in workflows %}
 
                 <div class="popover-list result-item">
                     <div class="popover-content">
-                        <p><i class="icon-th Workflow-color"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b>{{ result.metadata.name }}</b></a></p>
-                        <p style="font-size: 13px"> {{ result.metadata.description|strCut:'100' }}</p>
+                        <p>
+                            <i class="icon-th Workflow-color"></i><a target="_blank" href="/resources/{{ workflow.global_id}}"><b>{{ workflow.metadata.name }}</b></a>
+                            {% if workflow.owner.username == request.user.username %}
+                            <a class="pull-right" target="_blank" href="/workflows/edit/{{ workflow.id }}"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
+                            {% endif %}
+                        </p>
+                        <p style="font-size: 13px"> {{ workflow.metadata.description|strCut:'100' }}</p>
                     </div>
                 </div>
             {% endfor %}

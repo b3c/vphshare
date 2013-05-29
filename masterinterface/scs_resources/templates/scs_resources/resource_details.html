@@ -39,7 +39,7 @@
                     <dd> {{ citation.citation }}<br /><a href="#">{{ citation.link }}</a></dd>
                 {% endfor %}
                 <dt>Related Resources:</dt>
-                {% for related in resource.related %}<dd></dd>{% endfor %}
+                {% for related in resource.related %}<dd>{{ related|safe }}</dd>{% endfor %}
             </dl>
         </div>
     </div>

@@ -34,11 +34,13 @@ class ResourceForm(forms.ModelForm):
             'local_id': '',
             'type': resource.__class__.__name__
         }
-        if self.instance:
+
+        try:
             update_resource_metadata(self.instance.global_id, metadata_payload)
-        else:
+        except Exception, e:
             resource.global_id = set_resource_metadata(metadata_payload)
             resource.owner = owner
+
         if commit:
             resource.save()
         return resource
