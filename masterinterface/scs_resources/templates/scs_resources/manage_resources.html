@@ -281,6 +281,7 @@
                 this.$searchBtn.click(function(e){self.searchUsersGroups(e);});
                 this.$alert = shareModal.find('.alert');
             };
+
             ShareModal.prototype.grantEvent = function(element){
                 var self = this;
                 var grant = $(element);
@@ -307,11 +308,12 @@
             };
 
             ShareModal.prototype.searchUsersGroupsError = function(e){
-
+                this.alert('Users and groups search don\'t work now, please try later.','error');
             };
 
             ShareModal.prototype.searchUsersGroupsCallBack = function(data){
                 var self = this;
+                this.$searchBtn.button('reset');
                 this.$dataSearchResults.show();
                 this.$searchResults.empty();
 
@@ -319,34 +321,36 @@
 
                 $.each(data.users,
                         function(i, user) {
-                            $('<span/>',{
+                            var span = $('<span/>',{
                                 'class': "label label-info grant",
                                 'data-name': user.username,
                                 html: user.fullname
                             })
                                     .css("margin-left","2px")
-                                    .click(function(e){self.grantEvent(this)})
                                     .appendTo(self.$searchResults);
+                            self.grantEvent(span);
                         }
                 );
 
                 $.each(data.groups,
                         function(i, group) {
-                            $('<span/>',{
+                            var span = $('<span/>',{
                                 'class': "label label-success grant",
                                 'data-name': group.groupname,
                                 html: group.groupname
                             })
                                     .css("margin-left","2px")
-                                    .click(function(e){self.grantEvent(this)})
                                     .appendTo(self.$searchResults);
+                            self.grantEvent(span);
                         }
+
                 );
 
             };
 
             ShareModal.prototype.searchUsersGroups = function(e){
                 var self = this;
+                this.$searchBtn.button('loading');
                 $.ajax({
                             dataType: "json",
                             type: 'get',
@@ -378,8 +382,8 @@
                     return true;
                 }
 
-                var content = $('<div class="btn-group" ><button type="button" class="btn btn-primary">Editor</button><button type="button" class="btn btn-primary">Manager</button><button type="button" class="btn btn-primary">Reader</button></div>');
-                content.find('.btn').each(function(i,btn){
+                var content = $('<div class="btn-group" ><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Editor</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Manager</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Reader</button></div>');
+                content.find('.well').each(function(i,btn){
                     var btn = $(btn);
                     if ($.inArray(btn.text(),self.permissionMap[element.data('name')])>=0){
                         btn.addClass('active');
@@ -388,7 +392,7 @@
                     if (element.hasClass('label-success')){
                         style = 'label-success';
                     }
-                    btn.click(function(e){self.setGrant(element.data('name'), btn,style);});
+                    btn.click(function(e){self.setGrant(element.data('name'),element.text(), btn,style);});
                 });
 
                 element.popover({
@@ -403,30 +407,34 @@
             };
 
             ShareModal.prototype.setGrantError = function(data){
-                this.$popoveractive.popover('hide');
+                this.$popoveractive.popover('destroy');
+                this.$popoveractive = undefined;
+                this.alert('Error while setting the permission, try again or contact the Administrator.','error');
             };
 
-            ShareModal.prototype.setGrantCallBack = function(data, revoke, name, role,style){
+            ShareModal.prototype.setGrantCallBack = function(data, revoke, name, role, style, contentLabel){
                 var self = this;
                 this.$popoveractive.popover('destroy');
                 this.$popoveractive = undefined;
                 if (revoke){
+                    this.alert('Grant revoked successful','success');
                     $('#'+role+'-'+name).remove();
                     var index = $.inArray(role,self.permissionMap[name]);
                     this.permissionMap[name].splice(index,1);
                     if (self.$shareModal.find('#'+role).find('.grant') == 0)
                         self.$shareModal.find('#'+role).find('.noone').show();
                 }else{
+                    this.alert('Grant sets successful.','success');
                     self.$shareModal.find('#'+role).find('.noone').hide();
-                    $('<span/>',{
+                    var span = $('<span/>',{
                         'class': "label "+style+" grant",
                         'id':role+'-'+name,
                         'data-name': name,
-                        html: name
+                        html: contentLabel
                     })
                             .css("margin-left","2px")
-                            .click(function(e){self.grantEvent(this)})
                             .appendTo(self.$shareModal.find('#'+role));
+                    self.grantEvent(span);
                     if (this.permissionMap[name] == undefined) {
                         this.permissionMap[name] = [role];
                     }else if ($.inArray(role,this.permissionMap[name])<0){
@@ -436,9 +444,10 @@
 
             };
 
-            ShareModal.prototype.setGrant = function(setTo, roleBtn,style){
+            ShareModal.prototype.setGrant = function(setTo, contentLabel, roleBtn,style){
                 var self = this;
                 var roleToset = roleBtn.text();
+                roleBtn.button('loading');
                 var url = '/grantrole';
                 var revoke = false;
                 if (roleBtn.hasClass('active')){
@@ -446,19 +455,16 @@
                     revoke = true;
                 }
 
-
                 $.ajax({
                     dataType: "json",
                     url: url,
                     method: 'get',
                     data: {name: setTo, role: roleToset, csrfmiddlewaretoken: self.$csrfmiddlewaretoken, global_id: this.$globalId},
-                    success: function(data){self.setGrantCallBack(data,revoke,setTo,roleToset,style);},
+                    success: function(data){self.setGrantCallBack(data,revoke,setTo,roleToset,style, contentLabel);},
                     error: function(data){self.setGrantError(data);}
                 });
 
             };
-
-
 
             ShareModal.autoDiscover = function() {
                 $('.share-modal').each(function(index, element) {

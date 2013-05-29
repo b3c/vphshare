@@ -157,10 +157,10 @@ header #login a img{
     background: url('/static/square.png') repeat top right, -webkit-gradient(linear, 0 0, 0 100%, from(#c5deea), to(#066dab)); /* Webkit */
     background: url('/static/square.png') repeat top right, -webkit-linear-gradient(top, #c5deea, #066dab); /* Webkit */
     background: url('/static/square.png') repeat top right, linear-gradient(to right, #c5deea 0%,#8abbd7 31%,#066dab 100%); /* W3C */
+    height: 90px;
 }
 #page-title{
     background: transparent;
-    overflow: hidden;
     text-align: right;
     position:relative;
 }
@@ -190,7 +190,7 @@ header #login a img{
     display: block;
     float: right;
     margin-right: 30px;
-    line-height: 90px;
+    padding-top: 39px;
     font-size: 20px;
     color: white;
 }
@@ -1295,4 +1295,8 @@ a.search-data-link:hover{
 
 .grant{
     cursor: pointer;
+}
+
+.well.active{
+background-color: rgba(0, 173, 14, 0.63);
 }

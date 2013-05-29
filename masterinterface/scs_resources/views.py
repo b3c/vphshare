@@ -35,7 +35,7 @@ def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={
     msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
     msg.attach_alternative(html_content, "text/html")
     msg.content_subtype = "html"
-    msg.send()
+    #msg.send()
 
 
 def resource_detailed_view(request, id='1'):

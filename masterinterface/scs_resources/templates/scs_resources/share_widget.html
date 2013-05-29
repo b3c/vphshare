@@ -30,7 +30,8 @@
         {% endfor %}
     </dl>
     <br />
-        <label>Search for <span class="label label-info can-be-revoked" style="cursor: pointer;">users</span> and <span class="label label-success can-be-revoked" style="cursor: pointer;">groups</span></label>
+        <label><span id="modal-help" data-toggle="tooltip" data-placement="left" title="" data-original-title="Click on User or Groups to set the permissions">
+            <script type="text/javascript">$('#modal-help').tooltip();</script><i class="icon-question-sign"></i></span>Search for <span class="label label-info can-be-revoked" >users</span> and <span class="label label-success can-be-revoked" >groups</span></label>
     <span id="search-usersgroups-form" class="input-append" style="margin-bottom: 0px;"><input id="enter-text-input" type="text" class="input-medium input-size-mini"><button id="search-btn" class="btn btn-mini" type="button" data-loading-text="Searching...">Search</button></span>
     {% csrf_token %}
     <div id="datashare-search-results"  class="datashare-search-results hide">
