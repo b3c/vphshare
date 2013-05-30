@@ -239,18 +239,20 @@ def filter_resources_by_expression(expression):
 def search_resource(text, filters = {}):
 
     try:
-        request_url = SEARCH_METADATA_API % text
-        filters_url = "&filters="
+        request_url = SEARCH_METADATA_API % (text, text)
+        filters_expressions = []
         for key, values in filters.items():
             if type(values) is list and len(values) > 0:
-                filters_url += '('
+                filter_expression = []
                 for value in values:
-                    filters_url += ' %s:"%s" OR' % (key, value)
-                filters_url = filters_url[:-2]
-                filters_url += ') AND '
-        filters_url = filters_url[:-5]
+                    filter_expression.append("%s:%s" % (key, value))
 
-        response = requests.get(request_url + filters_url)
+                filters_expressions.append("(%s)" % " OR ".join(filter_expression))
+
+        if len(filters_expressions):
+            response = requests.get(request_url + " AND " + " AND ".join(filters_expressions))
+        else:
+            response = requests.get(request_url)
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
