@@ -37,7 +37,7 @@
                                 <div class="span2">
                                     <a href="/resources/{{ resource.global_id }}" target="_blank"><span class="icon icon-share-alt" style="padding-right: 25px;"></span></a>
                                     <a href="#modal-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
-                                    <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group" ></span></a>
+                                    <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group"></span>{% if resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}</a>
                                 </div>
 
                                 {% include 'scs_resources/manage_widget.html' %}
@@ -64,7 +64,7 @@
                                 <div class="span2">
                                     <a href="/resources/{{ resource.global_id }}" target="_blank"><span class="icon icon-share-alt" style="padding-right: 25px;"></span></a>
                                     <a href="#modal-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
-                                    <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group" ></span></a>
+                                    <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group"></span>{% if resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}</a>
                                 </div>
 
                                 {% include 'scs_resources/manage_widget.html' %}
