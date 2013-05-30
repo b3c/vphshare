@@ -381,12 +381,12 @@ def edit_workflow(request, id=False):
                 return redirect('/workflows')
 
         return render_to_response("scs_resources/workflows.html",
-                                  {'form': form},
+                                  {},
                                   RequestContext(request))
     except AtosServiceException, e:
         request.session['errormessage'] = 'Metadata service not work, please try later.'
         return render_to_response("scs_resources/workflows.html",
-                                  {'form': form},
+                                  {},
                                   RequestContext(request))
 
     except Exception, e:
