@@ -63,7 +63,7 @@
                     {% for tags in search.tags %}
                         <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Tags: {{ tags }}</div><div data-value="{{ tags }}" data-field="tags" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
                     {% endfor %}
-                    <p>We've found {{ numresults }} results</p>
+                    <p>We've found {{ numresults }} repository results</p>
                 </div>
             </div>
             {% for result in results %}
@@ -71,9 +71,9 @@
                 <div class="popover-list result-item">
                     <div class="popover-content">
                         {% if result.type != 'User' %}
-                            <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b>{{ result.name }}</b></a></p>
+                            <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
                         {% else %}
-                            <p><i class="icon-th {{ result.type }}-color"></i><b> {{ result.name }}</b></p>
+                            <p><i class="icon-th {{ result.type }}-color"></i><b class="{{ result.type }}-color"> {{ result.name }}</b></p>
                         {% endif %}
                         <p style="font-size: 13px"> {{ result.description|strCut:'100' }}</p>
                     </div>

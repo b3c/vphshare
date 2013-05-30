@@ -53,7 +53,7 @@
             {% with  resource.metadata.tags|split:" " as tags%}
                 <ul class="inline">
                     {% for tag in tags %}
-                        <li><span class="label">{{ tag }}</span></li>
+                        <li><span class="label"><a target="_blank" href="/search/?search_text=*&amp;tags={{ tag }},">{{ tag }}</a></span></li>
                     {% endfor %}
                 </ul>
             {% endwith %}

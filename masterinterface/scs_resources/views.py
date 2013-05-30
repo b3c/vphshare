@@ -70,7 +70,7 @@ def resource_detailed_view(request, id='1'):
     resource.metadata['views'] = resource.update_views_counter()
 
     # INJECT DEFAULT VALUES
-    resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": "doi:12.34567/891011.0004.23"}]
+    resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
     resource.status = "Published"
     resource.language = "English"
     resource.version = "1.0"

@@ -1,5 +1,6 @@
 __author__ = 'm.balasso@scsitaly.com'
 
+import random
 from permissions.models import Role, PrincipalRoleRelation
 from permissions.utils import has_local_role
 from workflows.utils import get_state
@@ -61,3 +62,10 @@ def get_pending_requests_by_resource(resource):
         if is_request_pending(r):
             pending_requests.append(r)
     return pending_requests
+
+
+def susheel_random(digits):
+    return '{0}'.format(str(random.randint(0,int("9"*digits))).zfill(digits))
+
+def get_random_citation_link():
+    return "".join(['doi:', susheel_random(2), '.', susheel_random(5), '/SHAR', susheel_random(2),'.', susheel_random(4), '.', susheel_random(2)])
