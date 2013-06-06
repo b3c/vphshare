@@ -12,6 +12,7 @@ import requests
 from lxml import etree
 from ordereddict import OrderedDict
 from django.conf import settings
+from exceptions import AtosPermissionException
 
 from masterinterface.atos.config import *
 
@@ -617,5 +618,5 @@ def dataset_query_connector(query, endpoint_url, username='', ticket=''):
             results.append(concept_elem.text)
 
     except Exception, e:
-        pass
+        raise AtosPermissionException, e
     return results

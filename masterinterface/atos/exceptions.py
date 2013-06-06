@@ -5,3 +5,7 @@ class AtosServiceException(Exception):
     """
         Atos Service Exception
     """
+class AtosPermissionException(Exception):
+    """
+        Atos Service Exception
+    """

@@ -47,3 +47,8 @@ urlpatterns = patterns('',
 
     ##NEW_URL
 )
+
+handler400 = 'scs.views.page400'
+handler403 = 'scs.views.page403'
+handler404 = 'scs.views.page404'
+handler500 = 'scs.views.page500'

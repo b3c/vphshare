@@ -20,6 +20,10 @@ urlpatterns = patterns(
     url(r'^login-error/$', login_error , name='login_error'),
     url(r'^services/$', services ,name='services'),
     url(r'^test/$', test , name='test'),
+    url(r'^400/$', page400 , name='bad_request'),
+    url(r'^403/$', page403 , name='bad_request'),
+    url(r'^404/$', page404 , name='bad_request'),
+    url(r'^500/$', page500 , name='bad_request'),
     url(r'^users_admin/$', users_access_admin , name='users_access_admin'),
     # manage-data modal services
     url(r'^delete_tag/$', delete_tag_service,  name='delete-tag'),
@@ -27,5 +31,6 @@ urlpatterns = patterns(
     url(r'^update_description/$', edit_description_service,  name='update-description'),
     url(r'^search/$', search, name="search"),
     url(r'^search_results/$', search_service, name="search_results"),
+
 )
 
