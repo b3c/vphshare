@@ -257,7 +257,7 @@ def search_resource(text, filters = {}):
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
         resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]["resource_metadata"]
-        countType = {'Dataset': 0, 'Workflow': 0, 'Atomic Service': 0, 'File': 0, 'SWS': 0, 'Application': 0}
+        countType = {'Dataset': 0, 'Workflow': 0, 'Atomic Service': 0, 'File': 0, 'SWS': 0, 'Application': 0, 'AtomicService': 0}
         if type(resources) is dict:
             resources = [resources]
 
@@ -267,8 +267,11 @@ def search_resource(text, filters = {}):
             if resource['type'] not in countType and 'Other' in countType:
                 countType['Other'] += 1
                 continue
+            if resource['type'] == 'AtomicService':
+                resource['type'] = 'Atomic Service'
             countType[resource['type']] += 1
 
+        del countType['AtomicService']
         return resources, countType
 
     except BaseException, e:
