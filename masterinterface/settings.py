@@ -3,7 +3,7 @@
 import os
 from mod_auth import SignedTicket, Ticket
 
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG
 
