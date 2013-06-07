@@ -76,7 +76,7 @@
             {% endwith %}
 
             {% if request.user.is_authenticated %}
-            {% if request.user|can_read:resource %}
+            {% if request.user|can_read:resource or resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service"%}
                 {% if workflow and workflow.t2flow %}
                     <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
                 {% else %}
@@ -84,6 +84,7 @@
                         <a  href="/semantic-search/concept/?dataset=sparqlEndpoint%3D{{ resource.metadata.local_id }}/sparql%26&datasetLabel={{ resource.metadata.local_id }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
                     {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
                         <a  href="#" class="btn btn-block btn-large btn-success">Invoke service</a>
+                        <p class="help-inline">This functionality is currently under development.</p>
                     {% elif resource.metadata.type == "Workflow" %}
                         <a  href="#" class="btn btn-block btn-large btn-success">Download workflow file</a>
                     {% elif resource.metadata.type == "File"%}
