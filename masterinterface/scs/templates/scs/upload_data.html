@@ -41,7 +41,11 @@
             <div class="popover-list">
                 <div class="popover-content">
                     <p><i class="icon-th"></i><b>Applications</b></p>
-                    <p>Data Publications Suite</p>
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/static/Data Publication Suite v1.1-b3.msi">Data Publications Suite</a></p>
+                    {% else %}
+                    <p>Data Publications Suite (login required)</p>
+                    {% endif %}
                     <p><a href="/lobcder">LOBCDER</a></p>
                     <p><a href="/lobcderquery">LOBCDER Search</a></p>
                 </div>
