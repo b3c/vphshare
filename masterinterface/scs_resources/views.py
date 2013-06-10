@@ -7,6 +7,7 @@ from django.template import loader
 from django.template import RequestContext
 from django.contrib.auth.models import User, Group
 from django.db.models import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.mail import EmailMultiAlternatives
 from permissions.models import PrincipalRoleRelation, Role
 from permissions.utils import add_role, remove_role, has_local_role, has_permission, add_local_role, remove_local_role
@@ -65,6 +66,18 @@ def resource_detailed_view(request, id='1'):
 
         finally:
             resource.metadata = metadata
+
+    except MultipleObjectsReturned:
+
+        # seems like the President has stolen something :-)
+        resources = Resource.objects.filter(global_id=id)
+        metadata = get_resource_metadata(global_id=id)
+        for r in resources:
+            if r.owner.username != metadata['author']:
+                r.delete()
+
+        resource = Resource.objects.get(global_id=id)
+        resource.metadata = metadata
 
     # Count visit hit
     resource.metadata['views'] = resource.update_views_counter()
