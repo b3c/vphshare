@@ -12,6 +12,7 @@ import requests
 from lxml import etree
 from ordereddict import OrderedDict
 from django.conf import settings
+from exceptions import AtosPermissionException
 
 from masterinterface.atos.config import *
 
@@ -610,12 +611,15 @@ def dataset_query_connector(query, endpoint_url, username='', ticket=''):
     print endpoint_url.group(1) + "?query=" + quote(query)
     try:
         response = requests.get(endpoint_url.group(1) + "?query=" + quote(query), verify=False, auth=(username, ticket))
+        if response.status_code == 401:
+            raise AtosPermissionException
         concept_list = etree.fromstring(
             response.text.encode().replace('xmlns="http://www.w3.org/2005/sparql-results#"', ''))
 
         for concept_elem in concept_list.getiterator('uri'):
             results.append(concept_elem.text)
-
+    except AtosPermissionException, e:
+        raise AtosPermissionException, "User don't have permission to query the dataset"
     except Exception, e:
         pass
     return results

@@ -330,6 +330,24 @@ def browse_data_az(request):
 
     return render_to_response("scs/browseaz.html", {"resources_by_letter": resources_by_letter, "letters": string.uppercase}, RequestContext(request))
 
+def page400(request):
+
+    return render_to_response("scs/400.html", {}, RequestContext(request))
+
+
+def page403(request):
+
+    return render_to_response("scs/403.html", {}, RequestContext(request))
+
+
+def page404(request):
+
+    return render_to_response("scs/404.html", {}, RequestContext(request))
+
+
+def page500(request):
+
+    return render_to_response("scs/500.html", {}, RequestContext(request))
 
 ## Manage-data modals services ##
 
