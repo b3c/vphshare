@@ -149,7 +149,7 @@ def group_details(request, idGroup=None, idStudy=None):
     else:
         exclude = []
     studyUserFinder = None
-    if selected_group and selected_group.selected_study:
+    if selected_group and getattr(selected_group, 'selected_study', False) :
         excludeFromStudy = [getattr(selected_group.selected_study, 'pending_subscriptions', []), selected_group.selected_study.user_set.all()]
         userList = selected_group.user_set.all()
         studyUserFinder = StudyUserFinder(list=userList,exclude=excludeFromStudy)
