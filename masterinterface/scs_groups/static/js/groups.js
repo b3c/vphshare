@@ -20,9 +20,12 @@
         this.$allButton = $('#all-filter');
         this.$institutionButton = $('#institution-filter');
         this.$smartButton = $('#smart-filter');
+        this.$studiesButton = $('#studies-filter');
+
         this.$allButton.click(function(e){self.allFilter(e);});
         this.$institutionButton.click(function(e){self.institutionFilter(e);});
         this.$smartButton.click(function(e){self.smartFilter(e);});
+        this.$studiesButton.click(function(e){self.studiesFilter(e);});
         $('a[data-toggle="tab"]').on('shown',self.hideTab3);
 
     };
@@ -60,6 +63,15 @@
         var self = this;
         this.$destinationList.quicksand(
             self.$groups.find('.group-smart'),
+            { duration: 1000 }
+        );
+        e.preventDefault();
+    };
+
+    GroupsList.prototype.studiesFilter = function(e){
+        var self = this;
+        this.$destinationList.quicksand(
+            self.$groups.find('.group-study'),
             { duration: 1000 }
         );
         e.preventDefault();
