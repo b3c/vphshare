@@ -281,7 +281,7 @@ def search(request):
             if 'User' not in countType:
                 countType['User'] = len(users)
 
-        if types == [] and (filterby == [] or 'Institution' in filterby):
+        if (types == [] or 'Institution' in types) and (filterby == [] or 'Institution' in filterby or 'Institution' in types):
             from scs_groups.models import Institution
             institutions = Institution.objects.filter(
                 Q(name__icontains=search_text) | Q(description__icontains=search_text)

@@ -12,6 +12,13 @@
             <li><a href="/groups"  title="groups">groups</a><span class="divider">|</span></li>
             {% if selected_group %}<li><a href="/groups/{{ selected_group.id }}"  title="{{ selected_group.name }}">{{ selected_group.name }}</a><span class="divider">|</span></li>{% endif %}
             {% if selected_group.selected_study %}<li><a href="/groups/{{ selected_group.selected_study.id }}"  title="{{ selected_group.selected_study.name }}">{{ selected_group.selected_study.name }}</a></li>{% endif %}
+            <li class="pull-right"><form id="form-search" class="form-search" action="/search/">
+                <div class="input-append">
+                    <input class="span3 search-query input-size-mini" style="-webkit-border-radius: 14px 0 0 14px !important;-moz-border-radius: 14px 0 0 14px!important;border-radius: 14px 0 0 14px!important;"  type="text" name="search_text" value="" placeholder="Search Institutions...">
+                    <input id="types" type="hidden" name="types" value="Institution,">
+                    <button type="submit" class="btn btn-mini search-btn-right">Search</button>
+                </div>
+            </form></li>
         </ul>
     </div>
 
