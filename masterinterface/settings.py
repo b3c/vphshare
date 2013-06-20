@@ -163,7 +163,9 @@ INSTALLED_APPS = (
     'masterinterface.scs_security',
     'masterinterface.scs_resources',
     'masterinterface.atos',
-    'south'
+    'south',
+    'datetimewidget',
+    'django_select2'
 
     ##NEW_APP
 )
