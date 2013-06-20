@@ -1,13 +1,14 @@
 # Create your views here.
-from django.db.models import ObjectDoesNotExist, Q
+from django.db.models import ObjectDoesNotExist
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.admin.models import User
+from django.contrib.auth.decorators import login_required
 from workflows.utils import get_state, set_workflow, set_state, do_transition
 from permissions.utils import add_local_role
 from config import *
-from models import SubscriptionRequest, Study, Institution, AuditLog, VPHShareSmartGroup
-from forms import StudyForm, InstitutionForm
+from models import SubscriptionRequest, Study, Institution, VPHShareSmartGroup
+from forms import StudyForm, InstitutionForm, UserFinder, StudyUserFinder
 
 
 def get_group_by_name(name):
@@ -78,6 +79,7 @@ def join_group_subscription(user, group):
         group.is_subscription_refused = True
 
 
+@login_required
 def group_details(request, idGroup=None, idStudy=None):
 
     #temp_fix_institution_managers()
@@ -112,6 +114,7 @@ def group_details(request, idGroup=None, idStudy=None):
         for study in institution.studies:
             join_group_subscription(request.user, study)
             institution.studies_actions += len(study.pending_subscriptions)
+            study.studies_actions = len(study.pending_subscriptions)
             if idStudy is not None and study.pk == int(idStudy):
                 selected_group.selected_study = study
 
@@ -139,6 +142,16 @@ def group_details(request, idGroup=None, idStudy=None):
             else:
                 other_groups.append(vphgroup)
 
+    if selected_group:
+        exclude = [getattr(selected_group, 'pending_subscriptions', []), selected_group.user_set.all()]
+    else:
+        exclude = []
+    studyUserFinder = None
+    if selected_group and selected_group.selected_study:
+        excludeFromStudy = [getattr(selected_group.selected_study, 'pending_subscriptions', []), selected_group.selected_study.user_set.all()]
+        userList = selected_group.user_set.all()
+        studyUserFinder = StudyUserFinder(list=userList,exclude=excludeFromStudy)
+
     return render_to_response(
         'scs_groups/institutions.html',
         {'user_institutions': user_institutions,
@@ -146,11 +159,14 @@ def group_details(request, idGroup=None, idStudy=None):
          'other_institutions': other_institutions,
          'other_groups': other_groups,
          'user_groups': user_groups,
-         'selected_group': selected_group},
+         'selected_group': selected_group,
+         'UserFinder': UserFinder(exclude=exclude),
+         'StudyUserFinder': studyUserFinder},
         RequestContext(request)
     )
 
 
+@login_required
 def manage_group_request(request):
     """
         accept or refuse an instution request
@@ -168,7 +184,34 @@ def manage_group_request(request):
         return redirect('/groups/%s/' % group.pk)
     return redirect('/groups/')
 
+@login_required
+def add_to_group(request, idGroup=None, idStudy=None):
+    if request.method == 'POST':
 
+        if idStudy is not None:
+            group, gtype = get_group_by_id(idStudy)
+            input = request.POST['StudyUsersinput']
+        else:
+            group, gtype = get_group_by_id(idGroup)
+            input = request.POST['Usersinput']
+
+        if request.user in group.managers.all():
+            users = User.objects.filter(id__in = input)
+
+            if request.POST['operation'] == 'accept':
+                for user in users:
+                    group.user_set.add(user)
+                    if request.POST.get('areManagers', '') == 'on':
+                        group.managers.add(user)
+        if gtype == 1:
+            return redirect('/groups/%s/%s/' % (idGroup, idStudy))
+        else:
+            return redirect('/groups/%s/' % idGroup)
+
+    return redirect('/groups')
+
+
+@login_required
 def subscribe(request, idGroup=None, idStudy=None, iduser=None):
     """
         create a subscription_pending subscription to an institution
@@ -186,15 +229,17 @@ def subscribe(request, idGroup=None, idStudy=None, iduser=None):
             subscription.save()
             set_workflow(subscription, SubscriptionRequestWorkflow)
             set_state(subscription, subscription_pending)
-        else:
+        elif request.user in group.managers.all():
             user = User.objects.get(pk=iduser)
             subscription = SubscriptionRequest.objects.get(user=user, group=group)
 
             if request.POST['operation'] == 'accept':
                 if do_transition(subscription, subscription_accept_subscription, request.user):
                     group.user_set.add(user)
+                    subscription.delete()
             else:
                 do_transition(subscription, subscription_refuse_subscription, request.user)
+                subscription.delete()
 
         if gtype == 1:
             return redirect('/groups/%s/%s/' % (idGroup, idStudy))
@@ -204,17 +249,57 @@ def subscribe(request, idGroup=None, idStudy=None, iduser=None):
     return redirect('/groups')
 
 
+def unsubscribe(request, idGroup=None, idStudy=None, iduser=None):
+    """
+        remove user subscription from an institutions
+    """
+
+    if request.method == 'POST':
+
+        if idStudy is not None:
+            group, gtype = get_group_by_id(idStudy)
+        else:
+            group, gtype = get_group_by_id(idGroup)
+
+        if request.user in group.managers.all():
+            user = User.objects.get(pk=iduser)
+
+            if request.POST['operation'] == 'remove':
+                if user in group.user_set.all():
+                    if gtype != 1:
+                        studies = Study.objects.filter(user=user)
+                        for study in studies:
+                            study.remove_users(users=[user])
+                            if user in study.managers.all():
+                                study.managers.remove(user)
+                    if user in group.managers.all():
+                        group.managers.remove(user)
+                    group.remove_users(users=[user])
+        if gtype == 1:
+            return redirect('/groups/%s/%s/' % (idGroup, idStudy))
+        else:
+            return redirect('/groups/%s/' % idGroup)
+
+    return redirect('/groups')
+
+@login_required
 def create_study(request):
     """
         create a new study for the given instution
     """
 
     if request.method == 'POST':
-        request.POST['institution'] = int(request.POST['institution'])
-        form = StudyForm(request.POST)
+        institution_pk = request.POST['institution']
+        institution = Institution.objects.get(pk=institution_pk)
+
+        if request.user.id not in request.POST.getlist('managers'):
+            request.POST.appendlist('managers', unicode(request.user.id))
+
+        form = StudyForm(usersset=institution.user_set.all(), data=request.POST, initial={'institution': institution_pk})
 
         if form.is_valid():
-            form.save()
+            study = form.save(commit=False)
+            study.save()
             return redirect('/groups/%s/%s/' % (request.POST['institution'], form.instance.id))
         else:
             institution = Institution.objects.get(pk=request.POST['institution'])
@@ -226,13 +311,13 @@ def create_study(request):
             )
     else:
         institution_pk = request.GET['institution']
-
         institution = Institution.objects.get(pk=institution_pk)
         if not request.user in institution.managers.all():
             return redirect('/groups/%s/' % institution_pk)
 
-        form = StudyForm(initial={'institution': institution_pk})
+        form = StudyForm(usersset=institution.user_set.all(),  initial={'institution': institution_pk})
         form.Meta.model.institution = institution
+
         return render_to_response(
             'scs_groups/createstudy.html',
             {'form': form,
@@ -241,13 +326,18 @@ def create_study(request):
         )
 
 
+@login_required
 def create_institution(request):
     """
         submit a request to create an institution
     """
 
     if request.method == 'POST':
-        form = InstitutionForm(request.POST)
+
+        if request.user.id not in request.POST.getlist('managers'):
+            request.POST.appendlist('managers', unicode(request.user.id))
+
+        form = InstitutionForm(request.POST, request.FILES)
 
         if form.is_valid():
             group = form.save(commit=False)

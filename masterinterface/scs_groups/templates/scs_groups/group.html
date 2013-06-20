@@ -1,7 +1,11 @@
 {% load macros %}
 {% macro display_group group type need_action %}
     <li data-id="{{ group.id }}" class="well group-item group-{{ type }}">
-        <a href="/groups/{{ group.id }}/">
+        {% if type == 'study' %}
+            <a href="/groups/{{ group.institution.id }}/{{ group.id }}/">
+        {% else %}
+            <a href="/groups/{{ group.id }}/">
+        {% endif %}
         <div class="row">
             {% if need_action %}
                 <span class="badge badge-important badge-alert"><strong style="font-size: 18px;">!</strong></span>
@@ -14,10 +18,19 @@
             {% elif request.user in group.user_set.all %}
                 <span class="badge badge-success badge-alert"><span class="icon-ok icon-white"></span></span>
             {% endif %}
+            {% for pending in group.pending_subscriptions %}
+                {% if request.user == pending.user %}
+                    <span class="badge badge-important badge-alert"><strong style="font-size: 18px;">!</strong></span>
+                {% endif %}
+            {% endfor %}
 
             {% if type == 'institution' %}
                 <div class="span1">
+                {% if group.logo %}
+                    <img src="{{ group.logo.url }}" class="img-polaroid" alt="logo">
+                {% else %}
                     <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                {% endif %}
                 </div>
             {% endif %}
             <div class="span1">

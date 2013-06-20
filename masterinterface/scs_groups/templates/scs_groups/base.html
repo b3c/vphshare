@@ -4,6 +4,19 @@
     VPH-Share Institutions
 {% endblock %}
 
+{% block breadcrumbs %}
+
+    <div id="breadcrumbs-wrapper">
+        <ul id="breadcrumbs" class="breadcrumb">
+            <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
+            <li><a href="/groups"  title="groups">groups</a><span class="divider">|</span></li>
+            {% if selected_group %}<li><a href="/groups/{{ selected_group.id }}"  title="{{ selected_group.name }}">{{ selected_group.name }}</a><span class="divider">|</span></li>{% endif %}
+            {% if selected_group.selected_study %}<li><a href="/groups/{{ selected_group.selected_study.id }}"  title="{{ selected_group.selected_study.name }}">{{ selected_group.selected_study.name }}</a></li>{% endif %}
+        </ul>
+    </div>
+
+{% endblock %}
+
 {% block page-title %}
     <span class="title" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">Institutions</span>
     <span class="subtitle">&nbsp;</span>
