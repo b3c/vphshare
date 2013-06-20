@@ -72,6 +72,13 @@
         {% for institution in other_institutions %}
             {% usemacro display_group institution 'institution' 0 %}
         {% endfor %}
+        {% if request.user.is_authenticated %}
+            {% for institution in other_institutions %}
+                {% for study in institution.studies %}
+                    {% usemacro display_group study 'study' 0 %}
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
         {% for group in other_groups %}
             {% if request.user.is_superuser or request.user in group.managers.all  %}
                 {% usemacro display_group group 'smart' 0 %}

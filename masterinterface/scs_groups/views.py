@@ -79,7 +79,6 @@ def join_group_subscription(user, group):
         group.is_subscription_refused = True
 
 
-@login_required
 def group_details(request, idGroup=None, idStudy=None):
 
     #temp_fix_institution_managers()
@@ -96,7 +95,8 @@ def group_details(request, idGroup=None, idStudy=None):
 
     for institution in Institution.objects.all():
         state = get_state(institution)
-        join_group_subscription(request.user, institution)
+        if request.user.is_authenticated():
+            join_group_subscription(request.user, institution)
         if state is None or state.name == 'Accepted':
             institution.state = True
             institutions.append(institution)
@@ -112,9 +112,10 @@ def group_details(request, idGroup=None, idStudy=None):
             selected_group.selected_study = None
             selected_group.type = 'institution'
         for study in institution.studies:
-            join_group_subscription(request.user, study)
-            institution.studies_actions += len(study.pending_subscriptions)
-            study.studies_actions = len(study.pending_subscriptions)
+            if request.user.is_authenticated():
+                join_group_subscription(request.user, study)
+                institution.studies_actions += len(study.pending_subscriptions)
+                study.studies_actions = len(study.pending_subscriptions)
             if idStudy is not None and study.pk == int(idStudy):
                 selected_group.selected_study = study
 
@@ -131,7 +132,8 @@ def group_details(request, idGroup=None, idStudy=None):
                 other_institutions.append(institution)
 
         for vphgroup in VPHShareSmartGroup.objects.filter(active=True).exclude(pk__in=institutions_studies_pk):
-            join_group_subscription(request.user, vphgroup)
+            if request.user.is_authenticated():
+                join_group_subscription(request.user, vphgroup)
             vphgroup.studies_actions = 0
             vphgroup.state = True
             if idGroup is not None and vphgroup.pk == int(idGroup):

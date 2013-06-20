@@ -213,7 +213,7 @@ def search_service(request):
             for filter in filterby:
                 numResults += request.session['types'].get(filter,0)
             for result in request.session['results']:
-                if result['type'] not in ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User'] and 'Other' in filterby:
+                if result['type'] not in ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution'] and 'Other' in filterby:
                     results.append(result)
                 if result['type'] in filterby:
                     results.append(result)
@@ -269,26 +269,48 @@ def search(request):
             'tags': tags
         }
         results, countType = search_resource(search_text, expression)
+
+        from django.db.models import Q
         if types == [] and (filterby == [] or 'User' in filterby):
-            from django.db.models import Q
             from django.contrib.auth.models import User
             users = User.objects.filter(
                 Q(username__icontains=search_text) | Q(email__icontains=search_text) | Q(first_name__icontains=search_text) | Q(last_name__icontains=search_text)
             )
-            users = [{"description": user.username, "name": "%s %s" % (user.first_name, user.last_name), "email": user.email , "type":'User'} for user in users]
+            users = [{"description": user.username, "name": "%s %s" % (user.first_name, user.last_name), "email": user.email, "type": 'User'} for user in users]
             results += users
             if 'User' not in countType:
                 countType['User'] = len(users)
+
+        if types == [] and (filterby == [] or 'Institution' in filterby):
+            from scs_groups.models import Institution
+            institutions = Institution.objects.filter(
+                Q(name__icontains=search_text) | Q(description__icontains=search_text)
+            )
+            institutions = [{"description": institution.description, "name": institution.name, "id": institution.id, "type":'Institution'} for institution in institutions]
+            results += institutions
+            if 'Institution' not in countType:
+                countType['Institution'] = len(institutions)
+
+        #if types == [] and (filterby == [] or 'Study' in filterby):
+        #    from scs_groups.models import Study
+        #    studies = Study.objects.filter(
+        #        Q(name__icontains=search_text) | Q(description__icontains=search_text)
+        #    )
+        #    studies = [{"description": studie.description, "name": studie.name, "id": studie.id, 'institution': studie.institution.id,  "type":'Study'} for studie in studies]
+        #    results += studies
+        #    if 'Study' not in countType:
+        #        countType['Study'] = len(studies)
+
         request.session['results'] = results
         request.session['types'] = countType
         return render_to_response("scs/search.html",
                                   {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
-                                  'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Other']},
+                                  'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                                   RequestContext(request))
 
     return render_to_response("scs/search.html",
                               {'search': {}, "results": None, "numresults": 0, 'countType': {},
-                               'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Other']},
+                               'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                               RequestContext(request))
 
 @is_staff()
