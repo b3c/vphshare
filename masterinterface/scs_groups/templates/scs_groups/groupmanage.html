@@ -86,6 +86,7 @@
             </div>
             {% if request.user in group.managers.all and group.type == 'institution'%}
                 <a href="/groups/create_study?institution={{ group.pk }}"><strong class="btn btn-link btn-block">create a new study</strong></a>
+                <a href="mailto:support@vph-share.eu"><strong class="btn btn-link btn-block">Contact us to delete</strong></a>
             {% endif %}
         </li>
         {% if request.user  in group.user_set.all %}
