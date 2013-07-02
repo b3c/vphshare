@@ -9,6 +9,7 @@ from permissions.utils import add_local_role
 from config import *
 from models import SubscriptionRequest, Study, Institution, VPHShareSmartGroup
 from forms import StudyForm, InstitutionForm, UserFinder, StudyUserFinder
+from masterinterface.scs.models import message
 
 
 def get_group_by_name(name):
@@ -79,6 +80,22 @@ def join_group_subscription(user, group):
         group.is_subscription_refused = True
 
 
+def is_pending_action(request, m):
+    for scs_group in VPHShareSmartGroup.objects.all():
+        join_group_subscription(request.user, scs_group)
+        if scs_group.pending_subscriptions and request.user in scs_group.managers.all():
+            return True
+    return False
+
+
+def is_pending_institution(request, m):
+    for institution in Institution.objects.all():
+        state = get_state(institution)
+        if not(state is None or state.name == 'Accepted') and request.user.is_superuser:
+            return True
+    return False
+
+
 def group_details(request, idGroup=None, idStudy=None):
 
     #temp_fix_institution_managers()
@@ -93,7 +110,9 @@ def group_details(request, idGroup=None, idStudy=None):
     pending_institutions = []
     selected_group = None
 
-    for institution in Institution.objects.all():
+    studies = []
+
+    for institution in Institution.objects.all().order_by('name'):
         state = get_state(institution)
         if request.user.is_authenticated():
             join_group_subscription(request.user, institution)
@@ -118,6 +137,13 @@ def group_details(request, idGroup=None, idStudy=None):
                 study.studies_actions = len(study.pending_subscriptions)
             if idStudy is not None and study.pk == int(idStudy):
                 selected_group.selected_study = study
+
+    for dbstudy in Study.objects.all().order_by('name'):
+        dbstudy.studies_actions = 0
+        if request.user.is_authenticated():
+            join_group_subscription(request.user, dbstudy)
+            dbstudy.studies_actions += len(dbstudy.pending_subscriptions)
+        studies.append(dbstudy)
 
     institutions_studies_pk = [i.pk for i in Institution.objects.all()] + [i.pk for i in Study.objects.all()]
 
@@ -163,7 +189,8 @@ def group_details(request, idGroup=None, idStudy=None):
          'user_groups': user_groups,
          'selected_group': selected_group,
          'UserFinder': UserFinder(exclude=exclude),
-         'StudyUserFinder': studyUserFinder},
+         'StudyUserFinder': studyUserFinder,
+         'Studies': studies},
         RequestContext(request)
     )
 
@@ -192,10 +219,10 @@ def add_to_group(request, idGroup=None, idStudy=None):
 
         if idStudy is not None:
             group, gtype = get_group_by_id(idStudy)
-            input = request.POST['StudyUsersinput']
+            input = request.POST.getlist('StudyUsersinput')
         else:
             group, gtype = get_group_by_id(idGroup)
-            input = request.POST['Usersinput']
+            input = request.POST.getlist('Usersinput')
 
         if request.user in group.managers.all():
             users = User.objects.filter(id__in = input)
@@ -231,6 +258,7 @@ def subscribe(request, idGroup=None, idStudy=None, iduser=None):
             subscription.save()
             set_workflow(subscription, SubscriptionRequestWorkflow)
             set_state(subscription, subscription_pending)
+
         elif request.user in group.managers.all():
             user = User.objects.get(pk=iduser)
             subscription = SubscriptionRequest.objects.get(user=user, group=group)
@@ -293,7 +321,7 @@ def create_study(request):
     if request.method == 'POST':
         institution_pk = request.POST['institution']
         institution = Institution.objects.get(pk=institution_pk)
-
+        test = request.POST.getlist('managers')
         if request.user.id not in request.POST.getlist('managers'):
             request.POST.appendlist('managers', unicode(request.user.id))
 
