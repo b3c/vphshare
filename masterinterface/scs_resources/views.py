@@ -20,7 +20,7 @@ from masterinterface.atos.metadata_connector import get_resource_metadata, AtosS
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import Resource, Workflow, ResourceRequest
-from config import ResourceRequestWorkflow, request_pending, request_accept_transition
+from config import ResourceRequestWorkflow, request_pending, request_accept_transition, ResourceWorkflow
 from forms import WorkflowForm
 from masterinterface.atos.metadata_connector import *
 from utils import *
@@ -66,6 +66,8 @@ def resource_detailed_view(request, id='1'):
 
         finally:
             resource.metadata = metadata
+            # TODO set resource workflow
+            # set_workflow(resource, ResourceWorkflow)
 
     except MultipleObjectsReturned:
 
@@ -164,13 +166,12 @@ def request_for_sharing(request):
 @login_required
 def manage_resources(request):
 
-
-
     workflows = []
     datas = []
     applications = []
 
     try:
+        # update resources list
         resources = filter_resources_by_author(request.user.username)
 
         for resource_from_service in resources:
@@ -180,9 +181,15 @@ def manage_resources(request):
 
             if created:
                 resource.save()
+                # TODO set resource workflow
+                # set_workflow(resource, ResourceWorkflow)
+
+        managed_resources = get_managed_resources(request.user)
+        for resource in managed_resources:
+            if getattr(resource, 'metadata', None) is None:
+                resource.metadata = get_resource_metadata(resource.global_id)
 
             # look if there are group with the resource name and grant them the local role
-            global_role_names = {'read': 'Reader', 'readwrite': 'Editor', 'admin': 'Manager'}
             for role in get_resource_local_roles():
                 group_name = get_resource_global_group_name(resource, role.name)
                 try:
@@ -191,9 +198,8 @@ def manage_resources(request):
                 except ObjectDoesNotExist, e:
                     pass
 
-            if has_local_role(request.user, 'Owner', resource) or has_local_role(request.user, 'Manager', resource):
-                resource.permissions_map = get_permissions_map(resource)
-                resource.requests = get_pending_requests_by_resource(resource)
+            resource.permissions_map = get_permissions_map(resource)
+            resource.requests = get_pending_requests_by_resource(resource)
 
             if str(resource.metadata['type']).lower() in ['dataset', 'file']:
                 datas.append(resource)

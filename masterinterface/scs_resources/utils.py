@@ -1,8 +1,9 @@
 __author__ = 'm.balasso@scsitaly.com'
 
 import random
+from django.db.models import Q
 from permissions.models import Role, PrincipalRoleRelation
-from permissions.utils import has_local_role
+from permissions.utils import has_local_role, has_permission
 from workflows.utils import get_state
 from masterinterface.scs_resources.config import request_pending
 from masterinterface.scs_resources.models import ResourceRequest, Resource
@@ -67,5 +68,18 @@ def get_pending_requests_by_resource(resource):
 def susheel_random(digits):
     return '{0}'.format(str(random.randint(0,int("9"*digits))).zfill(digits))
 
+
 def get_random_citation_link():
     return "".join(['doi:', susheel_random(2), '.', susheel_random(5), '/SHAR', susheel_random(2),'.', susheel_random(4), '.', susheel_random(2)])
+
+
+def get_managed_resources(user):
+
+    role_relations = PrincipalRoleRelation.objects.filter(
+        Q(user=user) | Q(group__in=user.groups.all()),
+        role__name__in=['Manager', 'Owner']
+    )
+
+    managed_resources = [r.content for r in role_relations if r.content is not None]
+
+    return managed_resources
