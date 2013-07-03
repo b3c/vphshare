@@ -1,5 +1,8 @@
 {% extends 'scs_groups/base.html' %}
 
+{% load staticfiles %}
+{% load django_select2_tags %}
+
 {% block extrahead %}
     <script type="text/javascript">
         $(document).ready(
@@ -10,6 +13,17 @@
         );
 
     </script>
+    <style type="text/css">
+    .select2-container.select2-container-multi {
+        width: 220px !important;
+    }
+    </style>
+
+    {{ form.media }}
+    {% import_django_select2_js %}
+    {% import_django_select2_css %}
+    <!-- For testing importing it again, but with another tag and light=1 -->
+    {% import_django_select2_js_css light=1 %}
 {% endblock %}
 
 {% block content %}
@@ -22,14 +36,17 @@
         {% for field in form.visible_fields %}
             <div class="control-group{% if field.errors %}{% endif %}">
                 <label class="control-label" for="{{ field.id }}">
-               {{ field.label }} {% if field.errors %}<span class="badge badge-important" title="{{ field.errors|first }}">!</span>{% endif %}</label>
+               {{ field.label }}{% if field.field.required %}*{% endif %} {% if field.errors %}<span class="badge badge-important" title="{{ field.errors|first }}">!</span>{% endif %}</label>
                 <div class="controls">
                     {{ field }}
-                    <span class="help-inline">{{ field.help_text }}</span>
+                    <span class="help-inline">{% if field.errors %}{{ field.errors }}{% else %}{{ field.help_text }} {% endif %}</span>
                 </div>
 
             </div>
         {% endfor %}
+            <div class="control-group{% if field.errors %}{% endif %}">
+                <div style="font-size: 11px;"> * Requred field.</div>
+            </div>
         <input type="submit" class="btn btn-primary" value="create study" />
     </form>
 {% endblock %}

@@ -421,6 +421,27 @@ function datasetQueryCallback(results) {
     $("#dataset-results").show();
 
 }
+
+function datasetQueryError() {
+
+    "use strict";
+
+    var item;
+    var term = $("#dataset-table-base > .term").clone();
+    var termList = $("#dataset-table-base").clone();
+
+    $("#dataset-table").remove();
+    $("#dataset-table-block").append(termList);
+    termList.attr('id', 'dataset-table');
+
+
+    // update resource counter
+    $('#resource-count-label').text("You need permission to query this Dataset.");
+
+    $("#dataset-table-block").show();
+    $("#dataset-results").show();
+
+}
 /* END AJAX callback */
 
 /* START AJAX call  */
@@ -444,11 +465,12 @@ function automaticSearchCall() {
             $('#wait').fadeOut();
             automaticSearchCallback(results);
         },
-        error: function (error) {
+        error: function (jqXHR, textStatus, errorThrown) {
 
             $('#wait').fadeOut();
 
         }
+
     });
 }
 
@@ -725,6 +747,7 @@ function datasetQueryCall(saveToken) {
             error: function (error) {
 
                 $('#wait').fadeOut();
+                datasetQueryError();
 
             }
         });

@@ -22,14 +22,13 @@
     float: left;
     width: 180px;
     height: 100%;
-    overflow: ;
     padding: 10px !important;
     margin: 0 10px 10px 0 !important;
 }
 
 .main-item-tab2 {
     height: 100%;
-    width: 350px;
+    width: 400px;
 }
 
 .main-item-tab3 {
@@ -53,6 +52,14 @@
     background: rgba(196, 233, 198, 0.61) !important;
 }
 
+.group-study {
+background: rgba(174, 214, 233, 0.60) !important;
+}
+
+.well {
+    min-height: 89px !important;
+}
+
 ul.inline,
 ol.inline {
     list-style: none;
@@ -65,4 +72,13 @@ ol.inline > li {
     padding-right: 5px;
     padding-left: 5px;
     *zoom: 1;
+}
+
+.select2-container.select2-container-multi {
+    width: 190px !important;
+}
+
+.form-inline > #id_areManagers {
+    margin-right: 7px;
+    margin-left: 8px;
 }

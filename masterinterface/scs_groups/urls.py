@@ -12,10 +12,15 @@ urlpatterns = patterns(
     #subscription to group
     url(r'^(?P<idGroup>\d+)/subscribe/$', 'subscribe'),
     url(r'^(?P<idGroup>\d+)/(?P<iduser>\d+)/subscribe/$', 'subscribe'),
+    url(r'^(?P<idGroup>\d+)/(?P<iduser>\d+)/unsubscribe/$', 'unsubscribe'),
+    url(r'^(?P<idGroup>\d+)/addtogroup/$', 'add_to_group'),
 
     #subscription to study
     url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/studysubscribe/$', 'subscribe'),
     url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/(?P<iduser>\d+)/subscribe/$', 'subscribe'),
+    url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/(?P<iduser>\d+)/unsubscribe/$', 'unsubscribe'),
+    url(r'^(?P<idGroup>\d+)/(?P<idStudy>\d+)/addtogroup/$', 'add_to_group'),
+
 
     url(r'^subscribe/$', 'subscribe'),
     url(r'^create_study/$', 'create_study'),

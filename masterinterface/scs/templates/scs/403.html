@@ -1,0 +1,20 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Oops - Forbidden. {% endblock %}
+
+
+
+{% block page-title %}
+        <span class="title">Forbidden</span>
+        <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="row"><div class="span6"><h3>Forbidden</h3>
+        <h6 style="color: black;">
+            It’s looking like you may have taken a wrong turn.<br/>
+            Don't worry... it happens to the best of us.<br/>
+            For any informations please contact us at <a href="mailto:support@vph-share.eu">support@vph-share.eu.</a>
+        </h6></div><div class=" pull-right"><img class="img-rounded" src="/static/img/error403.png"/></div>
+    </div>
+{% endblock %}

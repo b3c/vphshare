@@ -37,6 +37,7 @@
     <li><strong>PostCode:</strong> <span>{{ request.user.userprofile.postcode }}</span></li>
     <li><strong>Last login time:</strong> <span>{{ request.user.last_login }}</span></li>
     <li><a class="btn" id="copy-description" href="#copied">Copy your Authentication Ticket to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
+    <li><a class="btn" href="/groups">Groups</a><br/></li>
   </ul>
     <span class="invisible"><div id="copy" class="invisible">{{ tkt64 }}</div></span></li>
 </fieldset>
