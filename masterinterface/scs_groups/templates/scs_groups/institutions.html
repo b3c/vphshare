@@ -50,7 +50,7 @@
     {% if selected_group %}
         {% usemacro group_details selected_group  %}
     {% endif %}
-    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All Groups</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="studies-filter" class="btn">Studies</button></li></ul></div>
+    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="studies-filter" class="btn">Studies</button></li>{% if request.user.is_authenticated %}<li class="pull-right"><a href="/groups/create_institution"><strong class="btn btn-link">Request a new institution</strong></a></li>{% endif %}</ul></div>
     <div class="row">
     <ul class="groups-list">
         {% if pending_institutions%}
@@ -63,35 +63,24 @@
         {% for institution in user_institutions %}
             {% usemacro display_group institution 'institution' 0 %}
         {% endfor %}
-        {% for institution in user_institutions %}
-            {% for study in institution.studies %}
-                {% usemacro display_group study 'study' 0 %}
-            {% endfor %}
+        {% for institution in Studies %}
+            {% if request.user in institution.user_set.all %}
+                {% usemacro display_group institution 'study' 0 %}
+            {% endif %}
         {% endfor %}
-         <!--for group in user_groups usemacro display_group group 'smart' 0 endfor --!>
+         <!--for group in user_groups usemacro display_group group 'smart' 0 endfor -->
         {% for institution in other_institutions %}
             {% usemacro display_group institution 'institution' 0 %}
         {% endfor %}
         {% if request.user.is_authenticated %}
-            {% for institution in other_institutions %}
-                {% for study in institution.studies %}
-                    {% usemacro display_group study 'study' 0 %}
-                {% endfor %}
+            {% for institution in Studies %}
+            {% if request.user not in institution.user_set.all %}
+                {% usemacro display_group institution 'study' 0 %}
+            {% endif %}
             {% endfor %}
         {% endif %}
-        {% for group in other_groups %}
-            {% if request.user.is_superuser or request.user in group.managers.all  %}
-                {% usemacro display_group group 'smart' 0 %}
-            {% endif %}
-        {% endfor %}
 
     </ul>
-    <ul>
-        {% if request.user.is_authenticated %}
-            <a href="/groups/create_institution"><strong class="btn btn-link">Request a new institution</strong></a>
-        {% endif %}
-    </ul>
-
     </div>
 
 {% endblock %}

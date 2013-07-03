@@ -126,8 +126,8 @@
                     {% endblock %}
             {% endblock %}
         {% endif %}
-        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
-        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{{ statusmessage  }}</span></div>{% endif %}
+        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
+        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
         {% block content %} {% endblock %}
     </div>
 

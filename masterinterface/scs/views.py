@@ -1,6 +1,6 @@
-from masterinterface import wsdl2mi
-from django.http import HttpResponseRedirect
-from django.contrib.auth import logout as auth_logout
+import string
+import json
+
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -8,19 +8,18 @@ from django.shortcuts import render_to_response
 from django.contrib.messages.api import get_messages
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-import string
 import ordereddict
 from scs import __version__ as version
 from permissions.models import Role
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+
+from masterinterface import wsdl2mi
 from utils import is_staff
 from masterinterface import settings
 from masterinterface.atos.metadata_connector import *
 from masterinterface.scs_resources.utils import get_pending_requests_by_user
-from django.utils import simplejson
-import json
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-
+from masterinterface.scs_groups.views import is_pending_institution, is_pending_action
 
 def home(request):
     """Home view """
@@ -33,6 +32,13 @@ def home(request):
         pending_requests = get_pending_requests_by_user(request.user)
         if pending_requests:
             data['statusmessage'] = 'Dear %s, you have %s pending request(s) waiting for your action.' % (request.user.first_name, len(pending_requests))
+
+        if is_pending_institution(request, None):
+            data['errormessage'] = 'Dear %s, you have pending Intitution(s) waiting for your action <a href="/groups">go here</a>.' % request.user.first_name
+
+        if is_pending_action(request, None):
+            data['errormessage'] = 'Dear %s, you have pending user(s) waiting for your action <a href="/groups">go here</a>.' % request.user.first_name
+
 
     if not request.user.is_authenticated() and request.GET.get('loggedout') is not None:
         data['statusmessage'] = 'Logout done.'
@@ -442,7 +448,6 @@ def edit_description_service(request):
     """
         add tag to resource's metadata
     """
-    from masterinterface.scs_resources.models import Workflow
     try:
         if request.method == 'POST':
 
