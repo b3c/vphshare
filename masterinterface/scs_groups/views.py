@@ -9,7 +9,6 @@ from permissions.utils import add_local_role
 from config import *
 from models import SubscriptionRequest, Study, Institution, VPHShareSmartGroup
 from forms import StudyForm, InstitutionForm, UserFinder, StudyUserFinder
-from masterinterface.scs.models import message
 
 
 def get_group_by_name(name):
