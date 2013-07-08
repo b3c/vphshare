@@ -1,6 +1,8 @@
 {% extends 'scs_groups/base.html' %}
 
 {% load staticfiles %}
+{% load django_select2_tags %}
+
 {% load macros %}
 {% loadmacros 'scs_groups/group.html' %}
 {% loadmacros 'scs_groups/groupmanage.html' %}
@@ -29,6 +31,10 @@
             GroupsList.autoDiscover();
         });
     </script>
+    {% import_django_select2_js %}
+	{% import_django_select2_css %}
+	<!-- For testing importing it again, but with another tag and light=1 -->
+	{% import_django_select2_js_css light=1 %}
 {% endblock %}
 
 {% block title %}
@@ -44,34 +50,37 @@
     {% if selected_group %}
         {% usemacro group_details selected_group  %}
     {% endif %}
-    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All Groups</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="smart-filter" class="btn">Smart Groups</button></li></ul></div>
+    <div class="row"> <ul class="inline"> <li><i class="icon-filter"></i> :</li> <li><button id="all-filter" class="btn">All</button></li> <li><button id="institution-filter" class="btn">Institutions</button></li> <li><button id="studies-filter" class="btn">Studies</button></li>{% if request.user.is_authenticated %}<li class="pull-right"><a href="/groups/create_institution"><strong class="btn btn-link">Request a new institution</strong></a></li>{% endif %}</ul></div>
     <div class="row">
     <ul class="groups-list">
-        {% if request.user.is_superuser and pending_institutions%}
+        {% if pending_institutions%}
             {% for institution in pending_institutions %}
-                {% usemacro display_group institution 'institution' 1 %}
+                {% if request.user.is_superuser or request.user in institution.user_set.all %}
+                    {% usemacro display_group institution 'institution' 1 %}
+                {% endif %}
             {% endfor %}
         {% endif %}
         {% for institution in user_institutions %}
             {% usemacro display_group institution 'institution' 0 %}
         {% endfor %}
-        {% for group in user_groups %}
-            {% usemacro display_group group 'smart' 0 %}
+        {% for institution in Studies %}
+            {% if request.user in institution.user_set.all %}
+                {% usemacro display_group institution 'study' 0 %}
+            {% endif %}
         {% endfor %}
+         <!--for group in user_groups usemacro display_group group 'smart' 0 endfor -->
         {% for institution in other_institutions %}
             {% usemacro display_group institution 'institution' 0 %}
         {% endfor %}
-        {% for group in other_groups %}
-            {% usemacro display_group group 'smart' 0 %}
-        {% endfor %}
-
-    </ul>
-    <ul>
         {% if request.user.is_authenticated %}
-            <a href="/groups/create_institution"><strong class="btn btn-link">Request a new institution</strong></a>
+            {% for institution in Studies %}
+            {% if request.user not in institution.user_set.all %}
+                {% usemacro display_group institution 'study' 0 %}
+            {% endif %}
+            {% endfor %}
         {% endif %}
-    </ul>
 
+    </ul>
     </div>
 
 {% endblock %}

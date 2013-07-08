@@ -1,14 +1,19 @@
 {% load macros %}
+{% load django_select2_tags %}
 {% macro group_details group %}
 {% if group.state %}
 <div class="row" style="height: 100%;">
-    <ul style="height: 300px;">
+    <ul style="min-height: 300px;">
         <li class="main-item">
             <div class="row">
                 {% if group.logo %}
-                <div class="span1">
-                    <img src="/static/logo.png" class="img-polaroid" alt="logo">
-                </div>
+                    <div class="span1">
+                        <img src="{{ group.logo.url }}" class="img-polaroid" alt="logo">
+                    </div>
+                {% else %}
+                    <div class="span1">
+                        <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                    </div>
                 {% endif %}
                 <div class="span1">
                     <strong>{{ group.name }}</strong>
@@ -20,6 +25,55 @@
                     <strong>Description:</strong>
                     <p> {{ group.description }}</p>
                 </div>
+                {% if group.type == 'institution' %}
+                    <div class="span2">
+                        <strong>Address:</strong>
+                        <p> {{ group.address }}</p>
+                    </div>
+                    <div class="span2">
+                            <strong>Admin: </strong>{{ group.admin_fullname }} <div style="display: inline-block;cursor: pointer"><i id="admin-info" class="icon-info-sign"></i></div>
+                    </div>
+                    <script type="text/javascript">
+                        $('#admin-info').popover({
+                            html: true,
+                            content: "<ul><li> Full name: {{ group.admin_fullname }} </li> <li> Address: {{ group.admin_address }}</li><li> Phone: {{ group.admin_phone }}</li><li> E-mail: {{ group.admin_email }}</li></ul>",
+                            title: "Administrator info"
+                        });
+                    </script>
+                    {% if  group.formal_fullname %}
+                        <div class="span2">
+                                <strong>Formal: </strong>{{ group.formal_fullname }} <div style="display: inline-block;cursor: pointer"><i id="formal-info" class="icon-info-sign"></i></div>
+                        </div>
+                        <script type="text/javascript">
+                            $('#formal-info').popover({
+                                html: true,
+                                content: "<ul><li> Full name: {{ group.formal_fullname }} </li> <li> Address: {{ group.formal_address }}</li><li> Phone: {{ group.formal_phone }}</li><li> E-mail: {{ group.formal_email }}</li></ul>",
+                                title: "Formal info"
+                            });
+                        </script>
+                    {% endif %}
+                    {% if  group.breach_fullname %}
+                        <div class="span2">
+                                <strong>Breach: </strong>{{ group.breach_fullname }} <div style="display: inline-block;cursor: pointer"><i id="breach-info" class="icon-info-sign"></i></div>
+                        </div>
+                        <script type="text/javascript">
+                            $('#breach-info').popover({
+                                html: true,
+                                content: "<ul><li> Full name: {{ group.breach_fullname }} </li> <li> Address: {{ group.breach_address }}</li><li> Phone: {{ group.breach_phone }}</li><li> E-mail: {{ group.breach_email }}</li></ul>",
+                                title: "Breach info"
+                            });
+                        </script>
+                    {% endif %}
+                    <div class="span2">
+                        <strong>DSA: </strong> {% if group.signed_dsa  %} Yes {% else %} No {% endif %}
+                    </div>
+                    {% if  group.policies_url %}
+                        <div class="span2">
+                            <strong><a href="{{ group.policies_url }}">Policies link</a></strong>
+                        </div>
+                    {% endif %}
+
+                    {% endif %}
                 <div class="span2">
                     <span title="number of subscribers"><span class="icon-user"></span> {{ group.user_set.all|length }}
                     {% if not group.pending_subscriptions|length_is:0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.pending_subscriptions|length }}</span>{% endif %}</span>
@@ -32,6 +86,7 @@
             </div>
             {% if request.user in group.managers.all and group.type == 'institution'%}
                 <a href="/groups/create_study?institution={{ group.pk }}"><strong class="btn btn-link btn-block">create a new study</strong></a>
+                <a href="mailto:support@vph-share.eu"><strong class="btn btn-link btn-block">Contact us to delete</strong></a>
             {% endif %}
         </li>
         {% if request.user  in group.user_set.all %}
@@ -45,6 +100,11 @@
                         <div class="tab-pane {% if not group.selected_study and 'studies' not in request.get_full_path%}active{% endif %} nano" id="lA">
                             <div class="content">
                                 {% if request.user in group.managers.all %}
+                                    <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/addtogroup/" enctype="multipart/form-data" method="post">
+                                        {% csrf_token %}
+                                        {{ UserFinder }}
+                                        <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept"><span class="icon-plus icon-white"></span></button>
+                                    </form>
                                     {% if group.pending_subscriptions %}
                                         <table class="table table-condensed">
                                             <thead>
@@ -79,12 +139,21 @@
                                         {% for subscriber in group.user_set.all %}
                                             <tr>
                                                 <td style="vertical-align: middle;">
+                                                    {% if subscriber in group.managers.all %}<i class="icon-user" style="vertical-align: middle;"></i>{% endif %}
                                                     {{ subscriber.first_name }} {{ subscriber.last_name }}
                                                     <span class="muted">({{ subscriber.username }})</span>
-                                                    <!--<form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ subscriber.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                                                    <form id="group_remove_{{ subscriber.username }}" class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ subscriber.id }}/unsubscribe/" enctype="multipart/form-data" method="post">
                                                         {% csrf_token %}
-                                                        <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse">Delete</button>
-                                                    </form>-->
+                                                        <button id="group_user_remove_{{ subscriber.username }}" class="btn  btn-mini btn-danger" type="button" ><span class="icon-remove icon-white"></span></button>
+                                                        <script type="text/javascript">
+                                                            $('#group_user_remove_{{ subscriber.username }}').popover({
+                                                                html: true,
+                                                                container: 'body',
+                                                                content: '<p>By removing the user from the group will also be removed from all studies.</p><button id="user_remove" style="margin-top:5px;" class="btn  btn-mini btn-danger" type="submit" name="operation" value="remove" form="group_remove_{{ subscriber.username }}">Yes remove</button>',
+                                                                title: "Warning!"
+                                                            });
+                                                        </script>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -100,7 +169,8 @@
                                     <tbody>
                                     {% for subscriber in group.user_set.all %}
                                         <tr>
-                                            <td>{{ subscriber.first_name }} {{ subscriber.last_name }}
+                                            <td>{% if subscriber in group.managers.all %}<i class="icon-user" style="vertical-align: middle;"></i>{% endif %}
+                                                {{ subscriber.first_name }} {{ subscriber.last_name }}
                                             <span class="muted">({{ subscriber.username }})</span></td>
                                         </tr>
                                     {% endfor %}
@@ -115,16 +185,19 @@
                             {% if group.selected_study %}
 
                                     <div class="row">
-                                        <div class="span1">
-                                            <a class="btn btn-mini btn-primary btn-link" type="submit" style="color: #fff;" name="operation" value="accept" href="/groups/{{ group.id }}/?studies"><span class="icon-arrow-left icon-white" style="height: 17px;vertical-align: middle;"></span>Studies</a> <strong>{{ group.selected_study.name }}</strong>
+                                        <div class="span2">
+                                            <a class="btn btn-mini btn-primary btn-link" type="submit"  name="operation" value="accept" href="/groups/{{ group.id }}/?studies"><span class="icon-arrow-left " style="height: 17px;vertical-align: middle;"></span>Back to studies</a>
+                                        </div>
+                                        <div class="span2">
+                                            <strong>{{ group.selected_study.name }}</strong>
                                         </div>
                                         <div class="span2">
                                             <strong>Description:</strong>
                                             <p> {{ group.selected_study.description }}</p>
                                         </div>
                                         <div class="span2">
-                                            <span title="number of subscribers"><span class="icon-user"></span>{{ group.selected_study.user_set.all|length }}
-                                            {% if request.user in group.selected_study.principals %}<span class="badge badge-important">{{ group.selected_study.pending_subscriptions|length }}</span>{% endif %}</span>
+                                            <span title="number of subscribers"><span class="icon-user" style="vertical-align: middle;"></span>{{ group.selected_study.user_set.all|length }}
+                                            {% if request.user in group.selected_study.managers %}<span class="badge badge-important">{{ group.selected_study.pending_subscriptions|length }}</span>{% endif %}</span>
                                         </div>
                                         <div class="span2">
                                             <div><span class="icon-time"></span> Star time: {{ group.selected_study.start_date }} </div>
@@ -144,7 +217,7 @@
                                             <td>
                                                 <a href="/groups/{{ group.id }}/{{ study.id }}/">{{  study.name }}
                                                 {% if request.user in study.user_set.all %}<span class="badge badge-success"><span class="icon-ok icon-white"></span></span>{% endif %}
-                                                {% if request.user in study.principals.all and not study.pending_subscriptions|length_is:0 %}<span class="badge badge-important">{{ study.pending_subscriptions|length }}</span>{% endif %}
+                                                {% if request.user in study.managers.all and not study.pending_subscriptions|length_is:0 %}<span class="badge badge-important">{{ study.pending_subscriptions|length }}</span>{% endif %}
                                                 </a>
                                             </td>
                                         </tr>
@@ -161,9 +234,14 @@
             </li>
             {% if group.selected_study %}
             <li class="main-item main-item-tab3 nano">
-                {% if request.user in group.selected_study.user_set.all or request.user in group.selected_study.principals.all %}
+                {% if request.user in group.selected_study.user_set.all or request.user in group.selected_study.managers.all %}
                     <div class="content">
-                        {% if request.user in group.selected_study.principals.all %}
+                        {% if request.user in group.selected_study.managers.all %}
+                            <form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ group.selected_study.id }}/addtogroup/" enctype="multipart/form-data" method="post">
+                                        {% csrf_token %}
+                                        {{ StudyUserFinder }}
+                                        <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept"><span class="icon-plus icon-white"></span></button>
+                            </form>
                             {% if group.selected_study.pending_subscriptions %}
                                 <table class="table table-condensed">
                                     <thead>
@@ -198,12 +276,21 @@
                                 {% for subscriber in group.selected_study.user_set.all %}
                                     <tr>
                                         <td style="vertical-align: middle;">
+                                            {% if subscriber in group.selected_study.managers.all %}<i class="icon-user" style="vertical-align: middle;"></i>{% endif %}
                                             {{ subscriber.first_name }} {{ subscriber.last_name }}
                                             <span class="muted">({{ subscriber.username }})</span>
-                                            <!--<form class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ group.selected_study.id }}/{{ subscriber.id }}/subscribe/" enctype="multipart/form-data" method="post">
+                                            <form id="remove_{{ subscriber.username }}" class="form-inline" style=" float:right;margin:0px; display: inline;" action="/groups/{{ group.id }}/{{ group.selected_study.id }}/{{ subscriber.id }}/unsubscribe/" enctype="multipart/form-data" method="post">
                                                 {% csrf_token %}
-                                                <button class="btn  btn-mini btn-danger" type="submit" name="operation" value="refuse">Delete</button>
-                                            </form>-->
+                                                <button id="user_remove_{{ subscriber.username }}" class="btn  btn-mini btn-danger" type="button" ><span class="icon-remove icon-white"></span></button>
+                                                <script type="text/javascript">
+                                                    $('#user_remove_{{ subscriber.username }}').popover({
+                                                        html: true,
+                                                        container: 'body',
+                                                        content: '<button id="user_remove" class="btn  btn-mini btn-danger" type="submit" name="operation" value="remove" form="remove_{{ subscriber.username }}">Yes remove</button>',
+                                                        title: "Remove confirmation"
+                                                    });
+                                                </script>
+                                            </form>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -219,7 +306,8 @@
                                 <tbody>
                                 {% for subscriber in group.selected_study.user_set.all %}
                                     <tr>
-                                        <td>{{ subscriber.first_name }} {{ subscriber.last_name }}
+                                        <td>{% if subscriber in group.selected_study.managers.all %}<i class="icon-user" style="vertical-align: middle;"></i>{% endif %}
+                                            {{ subscriber.first_name }} {{ subscriber.last_name }}
                                             <span class="muted">({{ subscriber.username }})</span></td>
                                     </tr>
                                 {% endfor %}
@@ -267,7 +355,11 @@
                 <div class="row">
                     {% if group.logo %}
                         <div class="span1">
-                            <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                            {% if group.logo %}
+                                <img src="{{ group.logo.url }}" class="img-polaroid" alt="logo">
+                            {% else %}
+                                <img src="/static/logo.png" class="img-polaroid" alt="logo">
+                            {% endif %}
                         </div>
                     {% endif %}
                     <div class="span1">
@@ -280,6 +372,54 @@
                         <strong>Description:</strong>
                         <p> {{ group.description }}</p>
                     </div>
+                    {% if group.type == 'institution' %}
+                        <div class="span2">
+                            <strong>Address:</strong>
+                            <p> {{ group.address }}</p>
+                        </div>
+                        <div class="span2">
+                                <strong>Admin: </strong>{{ group.admin_fullname }} <div style="display: inline-block;cursor: pointer"><i id="admin-info" class="icon-info-sign"></i></div>
+                        </div>
+                        <script type="text/javascript">
+                            $('#admin-info').popover({
+                                html: true,
+                                content: "<ul><li> Full name: {{ group.admin_fullname }} </li> <li> Address: {{ group.admin_address }}</li><li> Phone: {{ group.admin_phone }}</li><li> E-mail: {{ group.admin_email }}</li></ul>",
+                                title: "Administrator info"
+                            });
+                        </script>
+                        {% if  group.formal_fullname %}
+                            <div class="span2">
+                                    <strong>Formal: </strong>{{ group.formal_fullname }} <div style="display: inline-block;cursor: pointer"><i id="formal-info" class="icon-info-sign"></i></div>
+                            </div>
+                            <script type="text/javascript">
+                                $('#formal-info').popover({
+                                    html: true,
+                                    content: "<ul><li> Full name: {{ group.formal_fullname }} </li> <li> Address: {{ group.formal_address }}</li><li> Phone: {{ group.formal_phone }}</li><li> E-mail: {{ group.formal_email }}</li></ul>",
+                                    title: "Formal info"
+                                });
+                            </script>
+                        {% endif %}
+                        {% if  group.breach_fullname %}
+                            <div class="span2">
+                                    <strong>Breach: </strong>{{ group.breach_fullname }} <div style="display: inline-block;cursor: pointer"><i id="breach-info" class="icon-info-sign"></i></div>
+                            </div>
+                            <script type="text/javascript">
+                                $('#breach-info').popover({
+                                    html: true,
+                                    content: "<ul><li> Full name: {{ group.breach_fullname }} </li> <li> Address: {{ group.breach_address }}</li><li> Phone: {{ group.breach_phone }}</li><li> E-mail: {{ group.breach_email }}</li></ul>",
+                                    title: "Breach info"
+                                });
+                            </script>
+                        {% endif %}
+                        <div class="span2">
+                            <strong>DSA: </strong> {% if group.signed_dsa  %} Yes {% else %} No {% endif %}
+                        </div>
+                        {% if  group.policies_url %}
+                            <div class="span2">
+                                <strong><a href="{{ group.policies_url }}">Policies link</a></strong>
+                            </div>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </li>
             {% if request.user.is_superuser %}
@@ -290,6 +430,12 @@
                     <button class="btn btn-success" type="submit" name="operation" value="accept">Accept</button>
                     <button class="btn btn-danger" type="submit" name="operation" value="refuse">Refuse</button>
                 </form>
+            </li>
+            {% else %}
+            <li class="main-item main-item-tab3" style="vertical-align: middle;">
+                <div class="form-inline" style="padding: 120px 20px;">
+                    Waiting for approval.
+                </div>
             </li>
             {% endif %}
         </ul>

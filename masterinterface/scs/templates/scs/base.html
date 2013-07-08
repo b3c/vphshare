@@ -43,6 +43,12 @@
     <div class="container">
         {% if not request.is_ajax %}
             {% block header %}
+                    {% if not request.user.is_authenticated %}
+                    <div class="alert alert-error" style="text-align: center">
+                            <strong>BETA!</strong>
+                            The Portal is now accessible only by the VPH-Share Consortium. Please contact <a href="mailto:support@vph-share.eu">our support service</a> if you like to join our Beta User Program.
+                    </div>
+                    {% endif %}
                     <div id="page-title-wrapper">
                         <a href="/"><div id="logo-left" ></div></a>
                         <div id="page-title">
@@ -120,8 +126,8 @@
                     {% endblock %}
             {% endblock %}
         {% endif %}
-        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{{ errormessage  }}</span></div>{% endif %}
-        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{{ statusmessage  }}</span></div>{% endif %}
+        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
+        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
         {% block content %} {% endblock %}
     </div>
 

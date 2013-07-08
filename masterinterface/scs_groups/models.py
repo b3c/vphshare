@@ -87,9 +87,8 @@ class Institution(VPHShareSmartGroup):
 
 class Study(VPHShareSmartGroup):
 
-    title = models.CharField(max_length=255, blank=False, help_text='Study title')
-    start_date = models.DateField(blank=False, help_text='Study start date', auto_now=True)
-    finish_date = models.DateField(blank=False, help_text='Study finish date', auto_now=True)
+    start_date = models.DateField(null=True, blank=True, help_text='Study start date')
+    finish_date = models.DateField(null=True, blank=True, help_text='Study finish date')
 
     institution = models.ForeignKey(Institution)
 

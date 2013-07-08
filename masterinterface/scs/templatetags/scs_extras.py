@@ -1,6 +1,8 @@
 from django import template
+from django.db.models import Q
 from datetime import datetime
-from permissions.utils import has_local_role
+from permissions.models import PrincipalRoleRelation
+
 # get a register Library instance
 register = template.Library()
 
@@ -54,11 +56,23 @@ def keyvalue(dict, key):
 
 def can_read(user, resource):
     # TODO check permissions rather than roles!
-    if resource.__class__.__name__ == "Resource":
-        return has_local_role(user, 'Reader', resource) or has_local_role(user, 'Editor', resource) or has_local_role(user, 'Manager', resource) or has_local_role(user, 'Owner', resource)
-    else:
-        parent = resource.resource_ptr
-        return has_local_role(user, 'Reader', parent) or has_local_role(user, 'Editor', parent) or has_local_role(user, 'Manager', parent) or has_local_role(user, 'Owner', parent)
+    # if resource.__class__.__name__ == "Resource":
+    #     return has_permission(resource, user, 'can_read_resource')
+    # else:
+    #     parent = resource.resource_ptr
+    #     return has_permission(parent, user, 'can_read_resource')
+
+    role_relations = PrincipalRoleRelation.objects.filter(
+        Q(user=user) | Q(group__in=user.groups.all()),
+        content_id=resource.id
+    )
+
+    if role_relations.count() > 0:
+        return True
+
+    return False
+
+
 
 
 # register filters

@@ -1082,6 +1082,16 @@ a.search-data-link:hover{
     min-width: 15px;
 }
 
+.Institution-bkgr{
+    background-color: #35BD70 ;
+    min-width: 15px;
+}
+
+.Study-bkgr{
+    background-color: #06F ;
+    min-width: 15px;
+}
+
 /*text color*/
 .Dataset-color{
     color: #3eb6b5;
@@ -1115,7 +1125,14 @@ a.search-data-link:hover{
 
 .User-color{
     color: #6cae4e;
+}
 
+.Institution-color{
+    color: #35BD70 ;
+}
+
+.Study-color{
+    color: #06F ;
 }
 
 
