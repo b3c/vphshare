@@ -58,7 +58,9 @@
                                 <a href="/about">About</a>
                                 {% block login %}
                                     {% if not request.user.is_authenticated %}
-                                        <button id="login" href="#" class="btn btn-large" data-toggle="popover" data-placement="bottom" title="" data-original-title="Login">Login</button>
+                                        <a id="login" href="#"  data-toggle="popover" data-placement="bottom" title="" data-original-title="Login" style="padding-left: 35px;">Login</a>
+                                        <span class="divider">|</span>
+                                        <a href="/registration">Registration</a>
                                         <script type="text/javascript">
 
                                             $("#login").popover({

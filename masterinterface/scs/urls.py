@@ -10,6 +10,7 @@ urlpatterns = patterns(
     url(r'^$', 'home' ),
     url(r'^about/$', TemplateView.as_view(template_name='scs/about.html')),
     url(r'^login/$', login , name='login'),
+    url(r'^registration/$', registration , name='registration'),
     url(r'^contacts/$', contacts ,  name='contacts'),
     url(r'^help/$', help ,  name='help'),
     url(r'^data/$', data ,  name='data'),

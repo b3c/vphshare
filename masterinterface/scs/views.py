@@ -4,7 +4,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.contrib.messages.api import get_messages
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -56,6 +56,17 @@ def login(request):
     return render_to_response(
         'scs/login.html',
         {'version': version, 'next': request.GET.get('next','/')},
+        RequestContext(request)
+    )
+
+
+def registration(request):
+    """Login view"""
+    if request.user.is_authenticated():
+        return redirect('/profile/')
+    return render_to_response(
+        'scs/registration.html',
+        {'version': version},
         RequestContext(request)
     )
 
