@@ -29,11 +29,32 @@
     <!-- END bootstrap  -->
 
     <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/style-dev.css" type="text/css" media="screen" />
 
     <style type="text/css">
         body{
             font-family: 'Ubuntu','sans-serif';
         }
+        <style type="text/css" media="screen">
+        @-webkit-keyframes fade-in {
+          0%   { opacity: 0; }
+          50%  { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        
+        @-webkit-keyframes fade-out {
+          0%   { opacity: 1; }
+          50%  { opacity: 1; }
+          100% { opacity: 0; }
+        }
+    
+        @-webkit-keyframes network-fade-in {
+          0%   { opacity: 0; top: -20px; }
+          60%   { opacity: 0; top: -20px; }
+          100% { opacity: 1; top: 0; }
+        }
+        
+        @-webkit-keyframes disco { 0% { background: url('/static/square.png') repeat top right, #066DAB; }2% { background: url('/static/square.png') repeat top right, #8f4; }4% { background: url('/static/square.png') repeat top right, #86c; }6% { background: url('/static/square.png') repeat top right, #7f4; }8% { background: url('/static/square.png') repeat top right, #8af; }10% { background: url('/static/square.png') repeat top right, #a84; }12% { background: url('/static/square.png') repeat top right, #c60; }14% { background: url('/static/square.png') repeat top right, #319; }16% { background: url('/static/square.png') repeat top right, #0a9; }18% { background: url('/static/square.png') repeat top right, #301; }20% { background: url('/static/square.png') repeat top right, #775; }22% { background: url('/static/square.png') repeat top right, #df5; }24% { background: url('/static/square.png') repeat top right, #27b; }26% { background: url('/static/square.png') repeat top right, #ffa; }28% { background: url('/static/square.png') repeat top right, #474; }30% { background: url('/static/square.png') repeat top right, #41d; }32% { background: url('/static/square.png') repeat top right, #8d4; }34% { background: url('/static/square.png') repeat top right, #816; }36% { background: url('/static/square.png') repeat top right, #110; }38% { background: url('/static/square.png') repeat top right, #b50; }40% { background: url('/static/square.png') repeat top right, #dc7; }42% { background: url('/static/square.png') repeat top right, #2a7; }44% { background: url('/static/square.png') repeat top right, #7ce; }46% { background: url('/static/square.png') repeat top right, #3bd; }48% { background: url('/static/square.png') repeat top right, #ef4; }50% { background: url('/static/square.png') repeat top right, #336; }52% { background: url('/static/square.png') repeat top right, #1c4; }54% { background: url('/static/square.png') repeat top right, #555; }56% { background: url('/static/square.png') repeat top right, #b77; }58% { background: url('/static/square.png') repeat top right, #b3c; }60% { background: url('/static/square.png') repeat top right, #c09; }62% { background: url('/static/square.png') repeat top right, #433; }64% { background: url('/static/square.png') repeat top right, #bbf; }66% { background: url('/static/square.png') repeat top right, #afb; }68% { background: url('/static/square.png') repeat top right, #8db; }70% { background: url('/static/square.png') repeat top right, #d1e; }72% { background: url('/static/square.png') repeat top right, #42b; }74% { background: url('/static/square.png') repeat top right, #871; }76% { background: url('/static/square.png') repeat top right, #e38; }78% { background: url('/static/square.png') repeat top right, #5fc; }80% { background: url('/static/square.png') repeat top right, #2cc; }82% { background: url('/static/square.png') repeat top right, #c10; }84% { background: url('/static/square.png') repeat top right, #fcc; }86% { background: url('/static/square.png') repeat top right, #f7b; }88% { background: url('/static/square.png') repeat top right, #a09; }90% { background: url('/static/square.png') repeat top right, #5da; }92% { background: url('/static/square.png') repeat top right, #41c; }94% { background: url('/static/square.png') repeat top right, #0a4; }96% { background: url('/static/square.png') repeat top right, #187; }98% { background: url('/static/square.png') repeat top right, #ae7; }100% { background: url('/static/square.png') repeat top right, #613; } }
     </style>
     {% block javascripts %} {% endblock %}
 
@@ -49,7 +70,7 @@
                             The Portal is now accessible only by the VPH-Share Consortium. Please contact <a href="mailto:support@vph-share.eu">our support service</a> if you like to join our Beta User Program.
                     </div>
                     {% endif %}
-                    <div id="page-title-wrapper">
+                    <div id="page-title-wrapper" class="dev-page-title-wrapper">
                         <a href="/"><div id="logo-left" ></div></a>
                         <div id="page-title">
                             <span id="page-title-links">

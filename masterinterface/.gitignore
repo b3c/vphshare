@@ -9,5 +9,6 @@ vphshare_masterinterface.egg-info/
 docs/_build
 static/
 media/
+css/style-dev.css
 
 
