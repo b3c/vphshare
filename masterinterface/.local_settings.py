@@ -7,7 +7,7 @@ DATABASES = {
         'NAME': 'vphsharedevdb',                      # Or path to database file if using sqlite3.
         'USER': 'vph',                      # Not used with sqlite3.
         'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': '46.105.98.182',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
