@@ -9,9 +9,9 @@ has_local_roles_entries = Resource(handler=has_local_roles)
 get_resources_list_entries = Resource(handler=get_resources_list)
 
 urlpatterns = patterns(
-    url(r'^hasroles', has_local_roles_entries),
-    url(r'^hasroles/', has_local_roles_entries),
-    url(r'^hasroles\.(?P<emitter_format>.+)', has_local_roles_entries),
+    url(r'^hasrole', has_local_roles_entries),
+    url(r'^hasrole/', has_local_roles_entries),
+    url(r'^hasrole\.(?P<emitter_format>.+)', has_local_roles_entries),
     url(r'^resources', get_resources_list_entries),
     url(r'^resources/', get_resources_list_entries),
     url(r'^resources\.(?P<emitter_format>.+)', get_resources_list_entries),

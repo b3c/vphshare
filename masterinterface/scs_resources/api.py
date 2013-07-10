@@ -128,7 +128,7 @@ class get_resources_list(BaseHandler):
 
             request (HTTP request istance): HTTP request send from client.
             ticket (string) : base 64 ticket.
-            type (string) : the type of the resource - optional
+            type (string) : the type of the resource
             role (string) : the role to be checked
             ticket (string) : the authentication ticket - optional
 

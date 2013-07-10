@@ -437,3 +437,10 @@ def create_workflow(request):
 
     except Exception, e:
         return render_to_response("scs_resources/workflows.html", {'form': form}, RequestContext(request))
+
+
+def api_help(request):
+    return render_to_response(
+        'scs_resources/api.html',
+        RequestContext(request)
+    )
