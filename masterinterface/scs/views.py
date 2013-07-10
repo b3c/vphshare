@@ -477,3 +477,9 @@ def edit_description_service(request):
         response._is_string = True
         return response
 
+
+def api_help(request):
+    return render_to_response(
+        'scs/api.html',
+        RequestContext(request)
+    )

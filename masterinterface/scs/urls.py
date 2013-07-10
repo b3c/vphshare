@@ -32,6 +32,7 @@ urlpatterns = patterns(
     url(r'^update_description/$', edit_description_service,  name='update-description'),
     url(r'^search/$', search, name="search"),
     url(r'^search_results/$', search_service, name="search_results"),
+    url(r'^help/api/$', 'api_help'),
 
 )
 
