@@ -53,7 +53,7 @@ class has_local_roles(BaseHandler):
 
                 # if global_id is provided, look for local resources
                 if 'global_id' in request.GET:
-                    global_ids = request.GET.get('global_id', [])
+                    global_ids = request.GET.getlist('global_id', [])
                     resources = Resource.objects.filter(global_id__in=global_ids)
 
                     if resources.count() == 0:
