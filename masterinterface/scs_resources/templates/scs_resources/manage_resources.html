@@ -266,6 +266,7 @@
             ShareModal.prototype.inizialize = function(shareModal){
                 var self = this;
                 this.$globalId = shareModal.data('globalid');
+                this.$localid = shareModal.data('localid');
                 this.$textInput = shareModal.find('#enter-text-input');
                 this.$searchBtn = shareModal.find('#search-btn');
                 this.$dataSearchResults = shareModal.find('#datashare-search-results');
@@ -382,7 +383,22 @@
                     return true;
                 }
 
-                var content = $('<div class="btn-group" ><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Editor</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Manager</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Reader</button></div>');
+                var content = $('<div/>', {
+                    'class':'btn-group'
+                });
+
+                $("#roles-list-"+this.$localid).find("dt").each(
+                        function(){
+                            $('<button/>', {
+                                'class': 'well well-small well-white filter ',
+                                'type': 'button',
+                                'data-loading-text': 'Waiting',
+                                text: $(this).text()
+                            }).appendTo(content);
+                        }
+                );
+
+                // content = $('<div class="btn-group" ><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Editor</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Manager</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Reader</button></div>');
                 content.find('.well').each(function(i,btn){
                     var btn = $(btn);
                     if ($.inArray(btn.text(),self.permissionMap[element.data('name')])>=0){

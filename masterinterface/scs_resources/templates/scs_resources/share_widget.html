@@ -1,4 +1,4 @@
-<div  id="share-{{ resource.id }}" class="share-modal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-globalid="{{ resource.global_id }}">
+<div  id="share-{{ resource.id }}" class="share-modal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-localid="{{ resource.id }}" data-globalid="{{ resource.global_id }}">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <span class="icon icon-group pull-left" style="padding-right: 10px;zoom: 2.3;"></span>
@@ -9,7 +9,7 @@
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <span id="modal-message"></span>
         </div>
-    <dl id="roles-list">
+    <dl id="roles-list-{{ resource.id }}">
         {% for role in resource.permissions_map %}
         <dt>{{ role.name }}</dt>
         <dd class="well-small granted-role" id="{{ role.name }}" >
