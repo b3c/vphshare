@@ -70,6 +70,15 @@ def registration(request):
         RequestContext(request)
     )
 
+def reset_password(request):
+    """Login view"""
+    if request.user.is_authenticated():
+        return redirect('/')
+    return render_to_response(
+        'scs/reset_password.html',
+        {'version': version, 'token':request.GET.get('token', '')},
+        RequestContext(request)
+    )
 
 @login_required
 def profile(request):
