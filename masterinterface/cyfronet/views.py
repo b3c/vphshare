@@ -126,3 +126,7 @@ def lobcderSearch(request):
         entries = lobcderQuery(request.POST['resourceName'], request.POST['createdAfter'], request.POST['createdBefore'],
             request.POST['modifiedAfter'], request.POST['modifiedBefore'], request.COOKIES.get('vph-tkt','No ticket'))
     return render_to_response('cyfronet/lobcderSearch.html', {'entries': entries}, RequestContext(request))
+
+@login_required
+def dashboard(request):
+    return render_to_response('cyfronet/dashboard.html', {}, RequestContext(request))
