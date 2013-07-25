@@ -128,5 +128,7 @@ def lobcderSearch(request):
     return render_to_response('cyfronet/lobcderSearch.html', {'entries': entries}, RequestContext(request))
 
 @login_required
-def dashboard(request):
-    return render_to_response('cyfronet/dashboard.html', {}, RequestContext(request))
+def dashboard(request, path = 'apps'):
+    if path.strip('/') == '':
+        path = 'apps'
+    return render_to_response('cyfronet/dashboard.html', {'path': path.rstrip('/')}, RequestContext(request))

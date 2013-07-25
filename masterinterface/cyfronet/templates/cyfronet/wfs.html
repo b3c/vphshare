@@ -1,0 +1,31 @@
+<h5 style="float: left;">Workflow 1 name</h5>
+<button id="shutdown" class="btn btn-danger" style="float: right;"><i class="icon-off"></i> Shutdown workflow</button>
+<div style="clear: both;"></div>
+<div class="offset1" style="margin-top: 15px;"><em>no instances</em></div>
+
+<h5 style="float: left;">Workflow 2 name</h5>
+<button id="shutdown" class="btn btn-danger" style="float: right;"><i class="icon-off"></i> Shutdown workflow</button>
+<div style="clear: both;"></div>
+<div class="offset1" style="margin-top: 15px;">
+	<table class="table table-striped table-condensed">
+		<tbody>
+			<tr>
+				<td>AneuristVNC</td>
+				<td style="text-align: right;">(id: 7432857324652652)</td>
+			</tr>
+			<tr>
+				<td>Kate via NoMachine</td>
+				<td style="text-align: right;">(id: 6571265195616515)</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery('button#shutdown').click(function() {
+			if (!confirm("Are you sure?")) {
+				return false;
+			}
+		});
+	});
+</script>
