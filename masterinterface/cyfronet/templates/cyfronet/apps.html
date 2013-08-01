@@ -1,9 +1,9 @@
 <div id="startAsModal" class="modal hide fade" role="dialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">×</button>
-		<h3 id="startAsModalLabel" style="float: left;">Start app</h3>
+		<h3 id="startAsModalLabel" style="float: left;">Start application</h3>
 		<form class="form-search" style="float: left; margin-left: 30px;">
-			<input type="text" class="input-medium search-query" placeholder="Search app">
+			<input type="text" class="input-medium search-query" placeholder="Filter applications">
 		</form>
 		<div style="clear: left;"></div>
 	</div>
@@ -13,6 +13,9 @@
 				<tr>
 					<td style="vertical-align: middle;">
 						<button class="btn btn-success btn-mini" role="button" data-toggle="tooltip" title="Start"><i class="icon-play"></i></button>
+					</td>
+					<td style="vertical-align: middle;">
+						<input type="checkbox"/>
 					</td>
 					<td style="vertical-align: middle;"><h6>
 							<strong>Kate via NoMachine</strong>
@@ -27,6 +30,9 @@
 				<tr>
 					<td style="vertical-align: middle;">
 						<button class="btn btn-success btn-mini" role="button" data-toggle="tooltip" title="Start"><i class="icon-play"></i></button>
+					</td>
+					<td style="vertical-align: middle;">
+						<input type="checkbox"/>
 					</td>
 					<td style="vertical-align: middle;"><h6>
 							<strong>42</strong>
@@ -52,6 +58,9 @@
 					<td style="vertical-align: middle;">
 						<button class="btn btn-success btn-mini" role="button" data-toggle="tooltip" title="Start"><i class="icon-play"></i></button>
 					</td>
+					<td style="vertical-align: middle;">
+						<input type="checkbox"/>
+					</td>
 					<td style="vertical-align: middle;"><h6>
 							<strong>Another app</strong>
 						</h6></td>
@@ -65,6 +74,9 @@
 					<td style="vertical-align: middle;">
 						<button class="btn btn-success btn-mini" role="button" data-toggle="tooltip" title="Start"><i class="icon-play"></i></button>
 					</td>
+					<td style="vertical-align: middle;">
+						<input type="checkbox"/>
+					</td>
 					<td style="vertical-align: middle;"><h6>
 							<strong>Yet another app</strong>
 						</h6></td>
@@ -75,6 +87,9 @@
 				<tr>
 					<td style="vertical-align: middle;">
 						<button class="btn btn-success btn-mini" role="button" data-toggle="tooltip" title="Start"><i class="icon-play"></i></button>
+					</td>
+					<td style="vertical-align: middle;">
+						<input type="checkbox"/>
 					</td>
 					<td style="vertical-align: middle;"><h6>
 							<strong>Super app</strong>
@@ -90,53 +105,19 @@
 		</table>
 	</div>
 	<div class="modal-footer">
+		<button class="btn btn-primary">Start selected</button>
 		<button class="btn" data-dismiss="modal">Cancel</button>
 	</div>
 </div>
-<div id="invokeAsi" class="modal hide fade" role="dialog">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal">×</button>
-		<h3 id="myModalLabel">Invoke app</h3>
-	</div>
-	<div class="modal-body">
-		<h5>Web applications</h5>
-		<div class="offset1" style="margin-top: 15px;">
-			<table class="table table-striped table-condensed">
-				<tbody>
-					<tr><td><a href="">Web application 1</a><td></tr>
-					<tr><td><a href="">Web application 1</a><td></tr>
-				</tbody>
-			</table>
-		</div>
-		<h5>Services</h5>
-		<div class="offset1" style="margin-top: 15px;">
-			<table class="table table-striped table-condensed">
-				<tbody>
-					<tr>
-						<td><a href="">Service 1</a><td>
-						<td style="text-align: right;"><button class="btn btn-info btn-mini disabled" disabled="disabled" data-toggle="tooltip" title="No descriptor"><i class="icon-file"></i></button></td>
-					</tr>
-					<tr>
-						<td><a href="">Service 2</a><td>
-						<td style="text-align: right;"><button class="btn btn-info btn-mini" data-toggle="tooltip" title="Get descriptor"><i class="icon-file"></i></button></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal">Close</button>
-	</div>
-</div>
-<a href="#startAsModal" class="btn btn-success" role="button" data-toggle="modal"><i class="icon-play"></i> Start new app</a>
-<table class="table table-striped table-condensed">
+<a href="#startAsModal" class="btn btn-success" role="button" data-toggle="modal"><i class="icon-play"></i> Start new application</a>
+<table class="table table-condensed">
 	<caption>Active applications</caption>
 	<thead>
 		<tr>
 			<th>Name</th>
 			<th>IP address</th>
 			<th>Location</th>
-			<th>Spec</th>
+			<th>Specification</th>
 			<th>Status</th>
 			<th style="text-align: right;">Actions</th>
 		</tr>
@@ -157,6 +138,11 @@
 			</td>
 		</tr>
 		<tr>
+			<td colspan="6" style="border: none;">
+				
+			</td>
+		</tr>
+		<tr>
 			<td>Aneufuse</td>
 			<td>72.45.167.23</td>
 			<td>Amazon</td>
@@ -164,12 +150,89 @@
 			<td>running</td>
 			<td style="text-align: right;">
 				<div class="btn-group">
-					<button id="invoke" class="btn btn-mini btn-warning" data-toggle="tooltip" title="Invoke">
-						<i class="icon-fire"></i>
+					<button id="invoke" class="btn btn-mini btn-warning" data-toggle="collapse" data-target="#details" title="Details">
+						<i class="icon-align-justify"></i>
 					</button>
-					<button id="shutdown" class="btn btn-mini btn-danger" data-toggle="tooltip" title="Shutdown">
+					<button id="shutdown" class="btn btn-mini btn-danger" title="Shutdown">
 						<i class="icon-off"></i>
 					</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6" style="border: none;">
+				<div id="details" class="collapse" style="margin-right: 30px; margin-left: 30px;">
+					<h5>Web applications</h5>
+					<div style="margin-top: 15px;">
+						<table class="table table-striped table-condensed">
+							<tbody>
+								<tr><td><a href="">Web application 1</a><td></tr>
+								<tr><td><a href="">Web application 1</a><td></tr>
+							</tbody>
+						</table>
+					</div>
+					<h5>Services</h5>
+					<div style="margin-top: 15px;">
+						<table class="table table-striped table-condensed">
+							<tbody>
+								<tr>
+									<td><a href="">Service 1</a><td>
+									<td style="text-align: right;"><button class="btn btn-info btn-mini disabled" disabled="disabled" data-toggle="tooltip" title="No descriptor"><i class="icon-file"></i></button></td>
+								</tr>
+								<tr>
+									<td><a href="">Service 2</a><td>
+									<td style="text-align: right;"><button class="btn btn-info btn-mini" data-toggle="tooltip" title="Get descriptor"><i class="icon-file"></i></button></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>HelloWorld</td>
+			<td>72.45.167.23</td>
+			<td>Amazon</td>
+			<td>16 cores, 8GB RAM, 300GB disk</td>
+			<td>running</td>
+			<td style="text-align: right;">
+				<div class="btn-group">
+					<button id="invoke" class="btn btn-mini btn-warning" data-toggle="collapse" data-target="#details2" title="Details">
+						<i class="icon-align-justify"></i>
+					</button>
+					<button id="shutdown" class="btn btn-mini btn-danger" title="Shutdown">
+						<i class="icon-off"></i>
+					</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6" style="border: none;">
+				<div id="details2" class="collapse" style="margin-right: 30px; margin-left: 30px;">
+					<h5>Web applications</h5>
+					<div style="margin-top: 15px;">
+						<table class="table table-striped table-condensed">
+							<tbody>
+								<tr><td><a href="">Web application 1</a><td></tr>
+								<tr><td><a href="">Web application 1</a><td></tr>
+							</tbody>
+						</table>
+					</div>
+					<h5>Services</h5>
+					<div style="margin-top: 15px;">
+						<table class="table table-striped table-condensed">
+							<tbody>
+								<tr>
+									<td><a href="">Service 1</a><td>
+									<td style="text-align: right;"><button class="btn btn-info btn-mini disabled" disabled="disabled" data-toggle="tooltip" title="No descriptor"><i class="icon-file"></i></button></td>
+								</tr>
+								<tr>
+									<td><a href="">Service 2</a><td>
+									<td style="text-align: right;"><button class="btn btn-info btn-mini" data-toggle="tooltip" title="Get descriptor"><i class="icon-file"></i></button></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</td>
 		</tr>
@@ -181,9 +244,6 @@
 			if (!confirm("Are you sure?")) {
 				return false;
 			}
-		});
-		jQuery('button#invoke').click(function() {
-			jQuery('#invokeAsi').modal('show');
 		});
 	});
 </script>
