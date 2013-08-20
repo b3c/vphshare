@@ -190,3 +190,29 @@ def get_user_resources(username, ticket):
         resources.extend(workflow['atomicServiceInstances'])
 
     return resources
+
+def get_atomic_services(username, ticket):
+    """
+        returns a list of atomic services
+    """
+    
+    r = requests.get(
+        "%s/atomic_services" % settings.CLOUDFACACE_URL,
+        auth = (username, ticket),
+        verify = settings.CLOUDFACACE_SSL
+    )
+    
+    return r.json()
+
+def get_initial_configurations(username, ticket, atomic_service_id):
+    """
+        returns a list of initial configurations for the given atomic service id
+    """
+    
+    r = requests.get(
+        "%s/atomic_services/%s/configurations" % (settings.CLOUDFACACE_URL, atomic_service_id),
+        auth = (username, ticket),
+        verify = settings.CLOUDFACACE_SSL
+    )
+    
+    return r.json()

@@ -17,6 +17,7 @@ from lobcder import LobcderException
 import mimetypes
 from StringIO import StringIO
 import logging
+import cloudfacade
 
 log = logging.getLogger('cyfronet')
 
@@ -131,4 +132,15 @@ def lobcderSearch(request):
 def dashboard(request, path = 'apps'):
     if path.strip('/') == '':
         path = 'apps'
-    return render_to_response('cyfronet/dashboard.html', {'path': path.rstrip('/')}, RequestContext(request))
+    atomicServices = cloudfacade.get_atomic_services(request.user.username, request.COOKIES.get('vph-tkt'))
+    atomicServices.sort(key=lambda atomicService: atomicService['name'].lower())
+    initialConfigurations = {}
+    for atomicService in atomicServices:
+        asInitialConfigurations = cloudfacade.get_initial_configurations(request.user.username, request.COOKIES.get('vph-tkt'), atomicService['atomicServiceId'])
+        atomicService['initialConfigurationNumber'] = len(asInitialConfigurations)
+        if len(asInitialConfigurations) > 1:
+            initialConfigurations[atomicService['atomicServiceId']] = asInitialConfigurations
+    return render_to_response('cyfronet/dashboard.html', {'path': path.rstrip('/'),
+                                                          'atomicServices': atomicServices,
+                                                          'initialConfigurations': initialConfigurations},
+                              RequestContext(request))
