@@ -128,19 +128,10 @@ def lobcderSearch(request):
             request.POST['modifiedAfter'], request.POST['modifiedBefore'], request.COOKIES.get('vph-tkt','No ticket'))
     return render_to_response('cyfronet/lobcderSearch.html', {'entries': entries}, RequestContext(request))
 
+def dashboard(request):
+    return render_to_response('cyfronet/clew.html', {}, RequestContext(request))
+
 @login_required
-def dashboard(request, path = 'apps'):
-    if path.strip('/') == '':
-        path = 'apps'
-    atomicServices = cloudfacade.get_atomic_services(request.user.username, request.COOKIES.get('vph-tkt'))
-    atomicServices.sort(key=lambda atomicService: atomicService['name'].lower())
-    initialConfigurations = {}
-    for atomicService in atomicServices:
-        asInitialConfigurations = cloudfacade.get_initial_configurations(request.user.username, request.COOKIES.get('vph-tkt'), atomicService['atomicServiceId'])
-        atomicService['initialConfigurationNumber'] = len(asInitialConfigurations)
-        if len(asInitialConfigurations) > 1:
-            initialConfigurations[atomicService['atomicServiceId']] = asInitialConfigurations
-    return render_to_response('cyfronet/dashboard.html', {'path': path.rstrip('/'),
-                                                          'atomicServices': atomicServices,
-                                                          'initialConfigurations': initialConfigurations},
-                              RequestContext(request))
+def startAtomicService(request, initialConfigurationId):
+    log.info(initialConfigurationId)
+    return dashboard(request, 'apps')

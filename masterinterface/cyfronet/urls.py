@@ -14,5 +14,6 @@ urlpatterns = patterns(
     url(r'^lobcdermetadata(.*)$', 'lobcderMetadata'),
     url(r'^lobcderdelete(.*)$', 'lobcderDelete'),
     url(r'^lobcder(.*)$', 'lobcder'),
-    url(r'^dashboard/(.*)$', 'dashboard'),
+    url(r'^dashboard/$', 'dashboard'),
+    url(r'^startAtomicService/(.*)$', 'startAtomicService'),
 )
