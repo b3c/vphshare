@@ -10,5 +10,6 @@ docs/_build
 static/
 media/
 css/style-dev.css
+data_paraview/
 
 
