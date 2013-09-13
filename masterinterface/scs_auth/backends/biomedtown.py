@@ -269,8 +269,8 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             new_tkt = ticketObj.createTkt(
                 user.username,
                 tokens=tokens,
-                #user_data=user_value,
-                user_data=[],
+                user_data=user_value,
+                #user_data=[],
                 #cip = cip,
                 validuntil=validuntil,
             )

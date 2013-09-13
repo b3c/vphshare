@@ -116,8 +116,8 @@ def socialtktGen(details, *args, **kwargs):
             new_tkt = ticketObj.createTkt(
                 details['nickname'],
                 tokens=tokens,
-                #user_data=user_value,
-                user_data=[],
+                user_data=user_value,
+                #user_data=[],
                 #cip = kwargs['request'].META['REMOTE_ADDR'],
                 validuntil=validuntil,
                 encoding='utf-8'
