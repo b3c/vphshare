@@ -15,4 +15,5 @@ $(document).ready(function() {
 
 	$('.has_left_tooltip').tooltip({placement: 'left'});
 	$('.has_right_tooltip').tooltip({placement: 'right'});
+    $('.has_top_tooltip').tooltip({placement: 'top'});
 });

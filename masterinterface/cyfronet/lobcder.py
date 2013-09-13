@@ -20,6 +20,7 @@ class LobcderEntry:
         self.size = size
         self.path = path
         self.owner = ''
+        self.format = None
         self.created = None
         self.modified = None
         self.driSupervised = False
@@ -70,6 +71,8 @@ def lobcderEntries(files, root, currentPath, ticket):
             name = path if not path.endswith('/') else path.rstrip('/')
             name = name.split('/')[-1]
             entry = LobcderEntry(name, type, file.size, path)
+            if type == 'file' and len(entry.name.split('.')) > 1:
+                entry.format = entry.name.split('.')[-1].lower()
             fillInMetadata(entry, metadata)
             result.append(entry)
     result.sort(key = attrgetter('type', 'name'))

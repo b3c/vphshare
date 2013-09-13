@@ -267,6 +267,10 @@ LOBCDER_PORT = 8080
 LOBCDER_ROOT = '/lobcder/dav'
 LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder/rest"
 
+#PARAVIEW settings
+LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
+PARAVIEW_HOST = '46.105.98.182:9000'
+
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
 

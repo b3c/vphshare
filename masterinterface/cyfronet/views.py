@@ -1,5 +1,6 @@
 # Create your views here.
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
@@ -15,9 +16,10 @@ from lobcder import updateMetadata
 from lobcder import lobcderQuery
 import mimetypes
 from StringIO import StringIO
-import logging
+import logging, json, os
 
 log = logging.getLogger('cyfronet')
+
 
 def index(request):
     """ Index page to reach all available services
@@ -91,7 +93,46 @@ def lobcder(request, path = '/'):
         #listing a directory
         entries = lobcderEntries(webdav.ls(settings.LOBCDER_ROOT + path), settings.LOBCDER_ROOT, path, request.COOKIES.get('vph-tkt','No ticket'))
         return render_to_response("cyfronet/lobcder.html", {'path': path, 'entries': entries, 'form': form, 'deleteForm': LobcderDelete(),
-            'createDirectoryForm': createDirectoryForm}, RequestContext(request))
+            'createDirectoryForm': createDirectoryForm, 'paraviewHost': settings.PARAVIEW_HOST}, RequestContext(request))
+
+@csrf_exempt
+def retriveVtk(request):
+
+    if request.user.is_authenticated():
+        path = request.POST.get('path','')
+        if not path:
+            path = '/'
+        try:
+            webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username='user',
+                                        password=request.COOKIES.get('vph-tkt', 'No ticket')
+                                        )
+            fileName = path.split('/')[-1]
+            fileToDownload = os.path.join(settings.LOBCDER_DOWNLOAD_DIR, fileName)
+            downloadChunks = webdav.downloadChunks(settings.LOBCDER_ROOT + path)
+            #remove file if exists
+            if os.path.exists(fileToDownload) and os.stat(fileToDownload)[6] != int(downloadChunks.raw.headers['content-length']):
+                os.remove(fileToDownload)
+
+            if not os.path.exists(fileToDownload):
+                webdav.download(settings.LOBCDER_ROOT+ path, fileToDownload)
+
+            content = json.dumps({'path': fileName}, sort_keys=False)
+
+            response = HttpResponse(content=content,
+                                    content_type='application/json')
+            return response
+
+        except Exception, e:
+            response = HttpResponse(status=500)
+            response._is_string = True
+
+            return response
+
+    #User is not authenticade
+    response = HttpResponse(status=403)
+    response._is_string = True
+
+    return response
 
 @login_required
 def lobcderDelete(request, path = '/'):
