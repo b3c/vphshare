@@ -1,0 +1,6 @@
+Dear {{recipient.first_name}},
+there is a notification message delivered to you this is the content:
+
+    {{ message }}
+
+Best regards, The VPH-Share Staff
