@@ -9,6 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     'scs_auth.views',
     url(r'^bt_login/$', bt_login , name='bt_login'),
+    url(r'^bt_agreement/$', bt_agreement_check, name='bt_agreement'),
     url(r'^bt_loginform/$', bt_loginform , name='bt_loginform'),
     url(r'^auth_login/$', auth_login , name='auth_login'),
     url(r'^auth_loginform/$', auth_loginform , name='auth_loginform'),

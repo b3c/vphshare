@@ -57,6 +57,13 @@ class UserProfile(models.Model):
         return user_dict
 
 
+class UserAgreement(models.Model):
+    user = models.OneToOneField(User)
+    cookies = models.BooleanField(null=False, blank=False, default=False)
+    privacy = models.BooleanField(null=False, blank=False, default=False)
+    ip = models.IPAddressField(null=False)
+
+
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
