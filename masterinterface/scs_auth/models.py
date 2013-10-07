@@ -63,6 +63,9 @@ class UserAgreement(models.Model):
     privacy = models.BooleanField(null=False, blank=False, default=False)
     ip = models.IPAddressField(null=False)
 
+    def __unicode__(self):
+        return unicode(self.user)
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
