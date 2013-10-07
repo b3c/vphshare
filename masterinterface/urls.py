@@ -32,6 +32,7 @@ urlpatterns = patterns('',
     url(r'^security/', include('masterinterface.scs_security.urls')),
 
     # api
+    url(r'^api/', include('masterinterface.scs.apiurls')),
     url(r'^api/', include('masterinterface.scs_groups.apiurls')),
     url(r'^api/', include('masterinterface.scs_resources.apiurls')),
 

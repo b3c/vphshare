@@ -149,6 +149,15 @@
                     {% endblock %}
             {% endblock %}
         {% endif %}
+        {% for n in notifications %}
+        <div class="alert alert-info">
+            <button onclick="hide_notification({{ n.pk }})" type="button" class="close" data-dismiss="alert">&times;</button>
+            <span id="statusmessage">
+                {% if n.subject != '' and n.subject %}<h4>{{ n.subject }}</h4>{% endif %}
+                {% autoescape off %}{{ n.content|urlizetrunc:60000 }}{% endautoescape %}
+            </span>
+        </div>
+        {% endfor %}
         {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
         {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
         {% block content %} {% endblock %}

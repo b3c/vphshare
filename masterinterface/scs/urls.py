@@ -27,6 +27,7 @@ urlpatterns = patterns(
     url(r'^404/$', page404 , name='bad_request'),
     url(r'^500/$', page500 , name='bad_request'),
     url(r'^users_admin/$', users_access_admin , name='users_access_admin'),
+    url(r'^hide_notification/$', hide_notification, name="hide_notification"),
     # manage-data modal services
     url(r'^delete_tag/$', delete_tag_service,  name='delete-tag'),
     url(r'^update_tag/$', add_tag_service,  name='update-tag'),

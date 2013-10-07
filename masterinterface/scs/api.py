@@ -6,9 +6,7 @@ from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from piston.handler import BaseHandler
 from masterinterface.scs_auth.auth import authenticate
-from masterinterface.scs.models import message as messageModel
-from django.core.mail import EmailMultiAlternatives
-from django.template import loader
+from masterinterface.scs.models import Notification
 
 
 class NotifyException(Exception):
@@ -17,25 +15,12 @@ class NotifyException(Exception):
     """
 
 
-def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={}):
-    """
-        send an email to alert user
-    """
-
-    text_content = loader.render_to_string('scs/%s.txt' % mail_template, dictionary=dictionary)
-    html_content = loader.render_to_string('scs/%s.html' % mail_template, dictionary=dictionary)
-    msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.content_subtype = "html"
-    msg.send()
-
-
 class Notify(BaseHandler):
     """
         REST service based on Django-Piston Library.\n
     """
 
-    def read(self, request, ticket, recipient, message, subject=''):
+    def read(self, request):
         """
             Notifycation message service.
             At the service invocation:
@@ -65,9 +50,19 @@ class Notify(BaseHandler):
 
                 if user is not None:
                     try:
-                        recipient = request.GET['recipient'] if request.GET.get('recipient') else recipient = None
-                        message = request.GET['message'] if request.GET.get('message') else recipient = None
-                        subject = request.GET['subject'] if request.GET.get('subject') else recipient = None
+
+                        if request.GET.get('recipient', None):
+                            recipient = request.GET['recipient']
+                        else:
+                            recipient = None
+                        if request.GET.get('message', None):
+                            message = request.GET['message']
+                        else:
+                            message = None
+                        if request.GET.get('subject', None):
+                            subject = request.GET['subject']
+                        else:
+                            subject = ''
 
                         if recipient is None:
                             raise NotifyException('Recipient is wrong')
@@ -77,34 +72,13 @@ class Notify(BaseHandler):
                         try:
                             user = User.objects.get(username=recipient)
 
-                            messageModel(recipient=User, message=message, subject=subject)
-
-                            alert_user_by_email(
-                                'webmaster@vph-share.eu',
-                                user.email,
-                                subject,
-                                'notify',
-                                {
-                                    message:message,
-                                    recipient: recipient
-                                }
-                            )
+                            n = Notification(recipient=user, message=message, subject=subject).save()
 
                         except ObjectDoesNotExist:
                             try:
                                 group = Group.objects.get(name=recipient)
                                 for user in group.user_set.all():
-                                    messageModel(recipient=User, message=message, subject=subject)
-                                    alert_user_by_email(
-                                        'webmaster@vph-share.eu',
-                                        user.email,
-                                        subject,
-                                        'notify',
-                                        {
-                                            message: message,
-                                            recipient: recipient
-                                        }
-                                    )
+                                    Notification(recipient=user, message=message, subject=subject).save()
                                 pass
                             except ObjectDoesNotExist:
                                 raise NotifyException('recipient is wrong')

@@ -1,6 +1,7 @@
 Dear {{recipient.first_name}},
 there is a notification message delivered to you this is the content:
 
-    {{ message }}
+    {%if subject != '' %} {{ subject }} {% endif %}
+    {{ message|urlizetrunc:60000 }}
 
 Best regards, The VPH-Share Staff

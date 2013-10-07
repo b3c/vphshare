@@ -1,5 +1,6 @@
 #from models import message as mess
 from django.utils.importlib import import_module
+from masterinterface.scs.models import Notification
 
 def statusMessage(request):
     """
@@ -26,27 +27,15 @@ def statusMessage(request):
     return {}
 
 
-#def getMessages(request):
-#    try:
-#        messages = []
-#        for m in mess.objects.all():
-#            callback_r = True
-#            if m.expire_callback != '':
-#                i = m.expire_callback.rfind('.')
-#                module, attr = m.expire_callback[:i], m.expire_callback[i+1:]
-#                mod = import_module(module)
-#                callback = getattr(mod, attr)
-#                callback_r = callback(request, m)#
+def get_notifications(request):
+    try:
+        notifications = []
+        for n in Notification.objects.filter(recipient=request.user, hidden=False).order_by('-pk'):
+            notifications.append({'pk': n.pk, 'subject': n.subject, 'content': n.message})
 
-#            if callback_r or (request.user not in m.users.all() and m.expire_on_view is True) or m.to == 'ALL' or (m.to == 'AUTH' and request.user.is_authenticated()) or m.to == request.user.username or m.to in request.user.groups.all():
-#                messages.append({'mtype': m.mtype, 'message': m.message})
-#            if m.expire_on_view:
-#                m.users.add(request.user)
-#                m.save()#
-
-#        return {'messages': messages}
-#    except Exception, e:
-#        pass
-#    return {'messages': []}
+        return {'notifications': notifications}
+    except Exception, e:
+        pass
+    return {'notifications': []}
 
 
