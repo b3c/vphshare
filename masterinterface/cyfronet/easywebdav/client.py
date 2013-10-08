@@ -43,6 +43,7 @@ class OperationFailed(WebdavException):
         DELETE = "delete",
         MKCOL = "create directory",
         PROPFIND = "list directory",
+        COPY = "copy resource",
         )
     def __init__(self, method, path, expected_code, actual_code):
         self.method = method
@@ -152,3 +153,10 @@ class Client(object):
             else:
                 raise e
         return True
+    def copy(self, fromPath, toPath, overwrite = False):
+        expectedCodes = (201, 204)
+        fromUrl = self._get_url(fromPath)
+        toUrl = self._get_url(toPath)
+        response = self.session.request('COPY', fromUrl, headers = {'Destination': toUrl, 'Overwrite': 'T' if overwrite else 'F'})
+        if response.status_code not in expectedCodes:
+            raise OperationFailed('COPY', fromUrl + ' -> ' + toUrl, expectedCodes, response.status_code)
