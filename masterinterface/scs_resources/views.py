@@ -189,7 +189,7 @@ def manage_resources(request):
                 try:
                     resource.metadata = get_resource_metadata(resource.global_id)
                 except AtosServiceException, e:
-                    pass
+                    continue
 
             # look if there are group with the resource name and grant them the local role
             for role in get_resource_local_roles():
