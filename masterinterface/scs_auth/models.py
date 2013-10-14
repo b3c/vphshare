@@ -54,6 +54,10 @@ class UserProfile(models.Model):
             user_dict['role'].append(role.name)
         for group in self.user.groups.all():
             user_dict['role'].append(group.name)
+
+        # add default role for all the users
+        if not user_dict['role'].count("VPH"):
+            user_dict['role'].append("VPH")
         return user_dict
 
 
