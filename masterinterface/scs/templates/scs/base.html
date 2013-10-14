@@ -31,11 +31,11 @@
     <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/style-dev.css" type="text/css" media="screen" />
 
-    <style type="text/css">
+    <style type="text/css" media="screen">
         body{
             font-family: 'Ubuntu','sans-serif';
         }
-        <style type="text/css" media="screen">
+
         @-webkit-keyframes fade-in {
           0%   { opacity: 0; }
           50%  { opacity: 0; }
@@ -79,7 +79,7 @@
                                 <a href="/about">About</a>
                                 {% block login %}
                                     {% if not request.user.is_authenticated %}
-                                        <a id="login" href="#"  data-toggle="popover" data-placement="bottom" title="" data-original-title="Login" style="padding-left: 35px;">Login</a>
+                                        <a id="login" href="#"  data-toggle="popover" data-placement="bottom" title="" data-original-title="Enter your BiomedTown username" style="padding-left: 35px;">Login</a>
                                         <span class="divider">|</span>
                                         <a href="/registration">Registration</a>
                                         <script type="text/javascript">
@@ -149,6 +149,15 @@
                     {% endblock %}
             {% endblock %}
         {% endif %}
+        {% for n in notifications %}
+        <div class="alert alert-info">
+            <button onclick="hide_notification({{ n.pk }})" type="button" class="close" data-dismiss="alert">&times;</button>
+            <span id="statusmessage">
+                {% if n.subject != '' and n.subject %}<h4>{{ n.subject }}</h4>{% endif %}
+                {% autoescape off %}{{ n.content|urlizetrunc:60000 }}{% endautoescape %}
+            </span>
+        </div>
+        {% endfor %}
         {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
         {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
         {% block content %} {% endblock %}

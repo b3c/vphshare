@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <p>Dear {{recipient.first_name}},<br/> there is a notification message delivered to you, this is the content:</p>
+    <strong>{{ subject }}</strong>
+    <p>{{ message|urlizetrunc:60000 }}</p>
+
+    <p>Best regards, <br /> The VPH-Share Staff</p>
+
+</body>
+</html>

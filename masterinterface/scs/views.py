@@ -487,6 +487,29 @@ def edit_description_service(request):
         return response
 
 
+@csrf_exempt
+def hide_notification(request):
+    """
+        add tag to resource's metadata
+    """
+    try:
+        if request.user.is_authenticated() and request.method == 'POST' and request.POST.get('notificationId', None):
+            from masterinterface.scs.models import Notification
+            notification = Notification.objects.get(pk=request.POST.get('notificationId', None))
+            notification.hidden = True
+            notification.save()
+            response = HttpResponse(status=200)
+            response._is_string = True
+            return response
+
+        raise
+
+    except Exception, e:
+        response = HttpResponse(status=403)
+        response._is_string = True
+        return response
+
+
 def api_help(request):
     return render_to_response(
         'scs/api.html',

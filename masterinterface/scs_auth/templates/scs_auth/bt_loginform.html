@@ -8,17 +8,37 @@
         <script type="text/javascript">
             function checkCookie(){
 
-                if( ! $("#cookie-ok").attr("checked") ) {
-                    $("#cookie-question").addClass("alert-error");
-                    return;
-                }
+                var agreement = $('#agreement');
 
-                if( ! $("#privacy-ok").attr("checked") ) {
-                    $("#privacy-question").addClass("alert-error");
-                    return;
-                }
+                if (agreement.is(":visible")){
 
-                $("#login-form-bt").submit();
+                    if( ! $("#cookie-ok").attr("checked") ) {
+                        $("#cookie-question").addClass("alert-error");
+                        return;
+                    }
+                    if( ! $("#privacy-ok").attr("checked") ) {
+                        $("#privacy-question").addClass("alert-error");
+                        return;
+                    }
+                    $("#login-form-bt").submit();
+
+                }else {
+
+                    $.ajax({
+                        type:'POST',
+                        url:'{% url bt_agreement %}',
+                        data:{'username':$('#openid_identifier').val()}
+                    }
+                    ).success(function(msg){
+                        if (msg == 'TRUE'){
+                          $("#login-form-bt").submit();
+                        }else{
+                            agreement.show();
+                            $('#submit-button').text('Confirm');
+                        }
+
+                    });
+                }
 
             }
         </script>
@@ -107,20 +127,23 @@
             <form id="login-form-bt" action="{% url socialauth_begin "biomedtown" %}" method="post">
                 {% csrf_token %}
                 <div class="input-append">
-                    <input id="openid_identifier" class="span2" type="text" name="openid_identifier" />
-                    <button type="submit" class="btn btn-primary" type="button" onclick="event.preventDefault();checkCookie();">login</button>
+                    <input id="openid_identifier" class="span2" type="text" name="openid_identifier" value="{{ username }}" />
+                    <button id="submit-button" type="submit" class="btn btn-primary" type="button" onclick="event.preventDefault();checkCookie();">login</button>
                 </div>
+
+                <div id="agreement" class="well-small hide" style="font-size: 90%;">
+                    <div id="cookie-question" class="alert">
+                        <p>This site uses cookies to store information on your computer.</p>
+                        <label class="checkbox"><input type="checkbox" id="cookie-ok" /> I agree</label>
+                    </div>
+                    <div id="privacy-question" class="alert">
+                        <p>By using our site you accept the terms of our <a target="_blank" href="/static/VPH-Share-Privacy-Policy-1v0.pdf" >Privacy Policy</a>.</p>
+                        <label class="checkbox"><input type="checkbox" id="privacy-ok" /> I accept</label>
+                    </div>
+                </div>
+
             </form>
-            <div class="well-small" style="font-size: 90%;">
-                <div id="cookie-question" class="alert">
-                    <p>This site uses cookies to store information on your computer.</p>
-                    <label class="checkbox"><input type="checkbox" id="cookie-ok" /> I agree</label>
-                </div>
-                <div id="privacy-question" class="alert">
-                    <p>By using our site you accept the terms of our <a target="_blank" href="/static/VPH-Share-Privacy-Policy-1v0.pdf" >Privacy Policy</a>.</p>
-                    <label class="checkbox"><input type="checkbox" id="privacy-ok" /> I accept</label>
-                </div>
-            </div>
+
         </p>
     </body>
 
