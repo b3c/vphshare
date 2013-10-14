@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h2>Welcome</h2>
+
+{% if current_user.is_authenticated() %}
+<p>You are Logged!
+{% else %}
+<p>You are Anonymous!
+{% endif %}
+{% endblock body %}
