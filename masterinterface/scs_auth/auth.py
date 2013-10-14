@@ -67,6 +67,10 @@ def getUserTokens(user):
         #    tokens=['developer']
         #######
 
+    # add default role for all the users
+    if not tokens.count("VPH"):
+        tokens.append("VPH")
+
     return tokens
 
 
