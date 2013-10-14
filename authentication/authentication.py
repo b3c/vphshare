@@ -388,6 +388,42 @@ def validate_tkt():
         return "NOT VALID"
 
 
+@app.route("/refresh_tkt", methods=["GET", "POST"])
+def refresh_tkt(ticket=None):
+    """ *validate_tkt* method
+    """
+    try:
+
+        if request.method == 'GET':
+            ticket = request.args.get("ticket", "")
+        elif request.method == 'POST':
+            ticket = request.form['ticket', ""]
+        else:
+            return app.make_response("Error")
+
+        if ticket:
+            ticket = binascii.a2b_base64(ticket)
+            if ticket is None:
+                return False
+
+            cip = str(request.remote_addr)
+            if isinstance(TICKET, SignedTicket):
+                data = ticket
+            else:
+                data = ticket, cip
+            ticket_data = TICKET.validateTkt(data)
+
+            validuntil = int(time.time()) + TIMEOUT
+            ticket = TICKET.createTkt(ticket_data[0], ticket_data[1], ticket_data[2], cip=cip, validuntil=validuntil)
+            ticket_b64 = base64.b64encode(ticket)
+            return ticket_b64
+
+        return False
+
+    except Exception, e:
+        return False
+
+
 def rpc_validate_tkt(ticket=None):
     """ *validate_tkt* method
     """
