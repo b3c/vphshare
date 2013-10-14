@@ -1,4 +1,3 @@
-
 # Create your views here.
 
 from django.http import HttpResponse
@@ -187,7 +186,10 @@ def manage_resources(request):
         managed_resources = get_managed_resources(request.user)
         for resource in managed_resources:
             if getattr(resource, 'metadata', None) is None:
-                resource.metadata = get_resource_metadata(resource.global_id)
+                try:
+                    resource.metadata = get_resource_metadata(resource.global_id)
+                except AtosServiceException, e:
+                    continue
 
             # look if there are group with the resource name and grant them the local role
             for role in get_resource_local_roles():
