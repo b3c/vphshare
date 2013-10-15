@@ -397,7 +397,7 @@ def refresh_tkt(ticket=None):
         if request.method == 'GET':
             ticket = request.args.get("ticket", "")
         elif request.method == 'POST':
-            ticket = request.form['ticket', ""]
+            ticket = request.form.get('ticket', "")
         else:
             return app.make_response("Error")
 
