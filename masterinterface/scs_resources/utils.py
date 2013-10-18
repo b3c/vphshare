@@ -82,7 +82,9 @@ def get_managed_resources(user):
         Q(user=user) | Q(group__in=user.groups.all()),
         role__name__in=['Manager', 'Owner']
     )
-
-    managed_resources = [r.content for r in role_relations if r.content is not None]
+    managed_resources = []
+    for r in role_relations:
+        if r.content is not None and r.content not in managed_resources:
+            managed_resources.append(r.content)
 
     return managed_resources
