@@ -165,7 +165,8 @@ INSTALLED_APPS = (
     'masterinterface.atos',
     'south',
     'datetimewidget',
-    'django_select2'
+    'django_select2',
+    'masterinterface.scs_workspace'
 
     ##NEW_APP
 )
@@ -257,7 +258,7 @@ TICKET_TIMEOUT = 12*60*60  # 12 h
 MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/pubkey_DSA.pem')
 MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/privkey_DSA.pem')
 #MOD_AUTH_PUBTKY COOKIE STYLE
-TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
+TICKET = SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)

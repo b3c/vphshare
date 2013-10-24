@@ -1,0 +1,39 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Workspace {% endblock %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block page-title %}
+    <span class="title">Workspace</span>
+{% endblock%}
+
+{% block content %}
+
+    <div class="row">
+        <div class="span12">
+            <div class="accordion" id="wsaccordion">
+                <div class="accordion-group accordion-manage-data">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#datas">
+                            <h4>Your Taverna Workflow Executions</h4>
+                            <span class="icon-chevron-down pull-right"></span>
+                        </a>
+                    </div>
+                    <div id="datas" class="accordion-body collapse in">
+                        &nbsp
+                    {% for execution in executions%}
+                        <div class="row">
+                            <div class="span3"><strong>{{ execution.info.title }}</strong></div>
+                            <div class="span3">Status: {{ execution.info.status}} </div>
+                            <div class="span3">Created: {{ execution.info.createTime }}</div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
