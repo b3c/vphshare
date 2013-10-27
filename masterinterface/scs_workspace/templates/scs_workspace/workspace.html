@@ -1,8 +1,10 @@
 {% extends 'scs/base.html' %}
 
+{% load scs_extras %}
 {%  block title %} Workspace {% endblock %}
 
 {% block extrahead %}
+    <link rel="stylesheet" href="/static/css/scs_workspace.css" type="text/css" media="screen" />
 {% endblock %}
 
 {% block page-title %}
@@ -17,17 +19,51 @@
                 <div class="accordion-group accordion-manage-data">
                     <div class="accordion-heading">
                         <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#datas">
-                            <h4>Your Taverna Workflow Executions</h4>
+                            <h4>Your Taverna Servers</h4>
                             <span class="icon-chevron-down pull-right"></span>
                         </a>
                     </div>
-                    <div id="datas" class="accordion-body collapse in">
+                    <div class="accordion-body collapse in">
+                        &nbsp
+                    {% for taverna in tavernas%}
+                        <div class="row job">
+                            {% for key, value in taverna.items %}
+                                <p><strong>{{ key }}</strong> <span>{{ value }}</span></p>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    </div>
+
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#datas">
+                            <h4>Your Jobs</h4>
+                            <span class="icon-chevron-down pull-right"></span>
+                        </a>
+                    </div>
+                    <div class="accordion-body collapse in">
                         &nbsp
                     {% for execution in executions%}
-                        <div class="row">
-                            <div class="span3"><strong>{{ execution.info.title }}</strong></div>
-                            <div class="span3">Status: {{ execution.info.status}} </div>
-                            <div class="span3">Created: {{ execution.info.createTime }}</div>
+                        <div class="row job">
+                            <div class="span3"><strong>{{ execution.title }}</strong></div>
+                            <div class="span3">{{ execution.status}} </div>
+                            {% if execution.isReady %}
+                                <div class="span3">{{ execution.workflowId}} </div>
+                            {% else %}
+                                <div class="span3">
+                                    <form action="/workspace/taverna/" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="eid" value="{{ execution.id }}"/>
+                                        <input type="submit" value="start taverna server" class="btn btn-success">
+                                    </form>
+                                </div>
+                                {% if tavernas|length %}
+                                     <form action="/workspace/submit/" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="eid" value="{{ execution.id }}"/>
+                                        <input type="submit" value="submit workflow" class="btn btn-success">
+                                    </form>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     {% endfor %}
                     </div>

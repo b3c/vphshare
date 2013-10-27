@@ -20,9 +20,9 @@ class TavernaExecutionManager(models.Manager):
 
 class TavernaExecution(models.Model):
     owner = models.ForeignKey(User)
-    t2flow = models.FileField(verbose_name="Workflow Definition File", blank=True)
-    baclava = models.FileField(verbose_name="Baclava Input definition", blank=True)
-    title = models.CharField(max_length=120)
+    t2flow = models.TextField(verbose_name="Workflow Definition File Content", blank=True)
+    baclava = models.TextField(verbose_name="Baclava Input Definition File Content", blank=True)
+    title = models.CharField(max_length=120, verbose_name="Workflow Execution Title", help_text="Insert a meaningful name for this execution")
     workflowId = models.CharField(max_length=80, blank=True)
     status = models.CharField(max_length=25, default="Initialized")
 
@@ -55,3 +55,6 @@ class TavernaExecution(models.Model):
             return True
         else:
             raise WorkflowManagerException(ret.get('error.code', ''), ret.get('error.description', ''))
+
+    def isReady(self):
+        return self.status != 'Created'

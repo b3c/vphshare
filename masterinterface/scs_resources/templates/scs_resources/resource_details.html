@@ -78,7 +78,7 @@
             {% if request.user.is_authenticated %}
             {% if request.user|can_read:resource or resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service"%}
                 {% if workflow and workflow.t2flow %}
-                    <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
+                    <a target="_blank" href="/workspace/create?wid={{ workflow.id }}" class="btn btn-block btn-large btn-success">Execute workflow</a>
                 {% else %}
                     {% if resource.metadata.type == "Dataset" %}
                         <a  href="/semantic-search/concept/?dataset=sparqlEndpoint%3D{{ resource.metadata.local_id }}/sparql%26&datasetLabel={{ resource.metadata.local_id }}" class="btn btn-block btn-large btn-success">Query the dataset</a>

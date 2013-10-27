@@ -1,0 +1,19 @@
+{% extends 'scs/base.html' %}
+
+{% load scs_extras %}
+
+{% block content %}
+    <div class="well">
+        <h3>{{ workflow.metadata.name }}</h3>
+
+        <form action="/workspace/submit/" enctype="multipart/form-data" method="post">
+            {{ form.as_table }}
+
+            {% csrf_token %}
+
+            <input type="submit" class="btn btn-success" value="Execute" />
+        </form>
+
+    </div>
+
+{% endblock %}
