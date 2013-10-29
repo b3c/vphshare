@@ -275,7 +275,8 @@ def grant_role(request):
         # look for a group with the dataset name
         group_name = get_resource_global_group_name(resource, role)
         group = Group.objects.get(name=group_name)
-        group.user_set.add(principal)
+        if type(principal) is User:
+            group.user_set.add(principal)
         group.save()
 
     except ObjectDoesNotExist, e:
@@ -330,9 +331,20 @@ def revoke_role(request):
     except ObjectDoesNotExist, e:
         principal = Group.objects.get(name=name)
 
-    # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
-    # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-    # remove_role(principal, global_role)
+    try:
+        # look for a group with the dataset name
+        group_name = get_resource_global_group_name(resource, role)
+        group = Group.objects.get(name=group_name)
+        if type(principal) is User:
+            group.user_set.remove(principal)
+        group.save()
+
+    except ObjectDoesNotExist, e:
+        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
+        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+        # remove_role(principal, global_role)
+        pass
+
     remove_local_role(resource, principal, role)
 
     response_body = json.dumps({"status": "OK", "message": "Role revoked correctly", "alertclass": "alert-success"})
