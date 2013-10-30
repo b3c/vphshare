@@ -154,7 +154,7 @@
             <button onclick="hide_notification({{ n.pk }})" type="button" class="close" data-dismiss="alert">&times;</button>
             <span id="statusmessage">
                 {% if n.subject != '' and n.subject %}<h4>{{ n.subject }}</h4>{% endif %}
-                {% autoescape off %}{{ n.content|urlizetrunc:60000 }}{% endautoescape %}
+                {% autoescape off %}{{ n.content|urlizetrunctarget:60000 }}{% endautoescape %}
             </span>
         </div>
         {% endfor %}
