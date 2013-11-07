@@ -333,9 +333,12 @@ def search(request):
                                   {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
                                   'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                                   RequestContext(request))
-
+    types = request.GET.get('types', [])
+    search = {
+            'type': types,
+    }
     return render_to_response("scs/search.html",
-                              {'search': {}, "results": None, "numresults": 0, 'countType': {},
+                              {'search': search, "results": None, "numresults": 0, 'countType': {},
                                'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                               RequestContext(request))
 
