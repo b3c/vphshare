@@ -334,6 +334,8 @@ def search(request):
                                   'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                                   RequestContext(request))
     types = request.GET.get('types', [])
+    if type(types) in (str, unicode):
+            types = types.split(',')[:-1]
     search = {
             'type': types,
     }
