@@ -530,3 +530,8 @@ def beta_programme(request):
     return render_to_response("scs/beta_programme.html",
             {},
         RequestContext(request))
+
+def upload_structured_data(request):
+    return render_to_response("scs/upload_structured_data.html",
+            {},
+        RequestContext(request))

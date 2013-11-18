@@ -18,6 +18,7 @@ urlpatterns = patterns(
     url(r'^data/$', data ,  name='data'),
     url(r'^data/search-data/$', search_data ,  name='search-data'),
     url(r'^data/upload-data/$', upload_data ,  name='upload-data'),
+    url(r'^data/upload-structured-data/$', upload_structured_data,  name='upload-structured-data'),
     url(r'^data/browse/$', browse_data_az, name="browse_data_az"),
     url(r'^workflows/search-workflow/$', search_workflow ,  name='search-workflow'),
     url(r'^profile/$',profile, name='profile'),
