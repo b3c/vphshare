@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+
+        <link rel='stylesheet' href='/static/css/style_embed.css' type='text/css' />
+
+        <!-- Core-js ParaViewWeb dependency
+        <script type="text/javascript" src="/ext/js-core/autobahn.min.js"></script>
+        -->
+        <script type="text/javascript" src="/static/jquery-1.8.3.js"></script>
+        <script type="text/javascript" src="/static/js/paraview-all.js"></script>
+
+        <!-- ParaViewWeb Widget dependency -->
+        <link   type='text/css'       href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+        <script type="text/javascript" src="/static/jquery-ui-1.9.2.custom.js"></script>
+	<style>
+	b {
+		color: #2FA4E7;
+	}
+	</style>
+        <script type="text/javascript">
+            $(function() {
+                // Center the clicktostart element.
+                var clicktostart = $(".clicktostart");                
+
+                //-----------------------------------------------------------------------------
+                // 'global' variables.
+                var pv = {};
+
+                $(window).resize(function() {
+                    if (pv.viewport) {
+                        pv.viewport.render();
+                    }
+                }).trigger('resize');
+
+                //-----------------------------------------------------------------------------
+                // Setup UI
+                $("#menu").hide();
+                $("#options").hide();
+                $("#scalars").hide();
+                $("#scalar-menu").hide();
+                $("#info").hide();
+
+                // handlers for selecting of options in the menu.
+                $("#menu").menu({
+                    select : function (event, ui) {
+                        event.preventDefault();
+                        $(this).hide();
+                        var selectedItem = ui.item;
+                        if (selectedItem.hasClass("resetview") === true) {
+                            if (pv.viewport) {pv.viewport.resetCamera();}
+                        } else if (selectedItem.hasClass("stats") === true) {
+                            var anchor = selectedItem.find("a");
+                            if (selectedItem.hasClass("show") === true) {
+                                anchor.text("Hide Statistics");
+                                if (pv.viewport) {
+                                    pv.viewport.showStatistics(true);
+                                }
+
+                            } else {
+                                anchor.text("Show Statistics");
+                                if (pv.viewport) {
+                                    pv.viewport.showStatistics(false);
+                                }
+                            }
+                            selectedItem.toggleClass("show");
+                        } else if (selectedItem.hasClass("disconnect") === true) {
+                            cleanup();
+                        }
+                    }
+                });
+
+                // show the menu when the mouse enter the "options" button.
+                $("#options").click(function(event) {
+                        $("#menu").show("fade").focus();
+                    }
+                );
+
+                $("#scalars").click(function(event) {
+                        $("#scalar-menu").show("fade").focus();
+                    }
+                );
+
+                // hide the menu if the user moves out from the menu.
+                $("#menu").mouseleave(function(event) {
+                    $("#menu").hide("fade");
+                });
+
+                $("#scalar-menu").mouseleave(function(event) {
+                    $("#scalar-menu").hide("fade");
+                });
+
+		function startParaview(){		
+                    if ($(this).hasClass("session_started")) {
+                        return;
+                    }
+                    // We start a new ParaView session everytime the user clicks on
+                    // the the page.
+                    if (!pv.connection) {
+                        $(this).addClass("session_started");
+                        $(".clicktostart").html("I'm rendenring...");
+
+                        var serviceURL = location.protocol + "//" + location.hostname +
+                            ":" + location.port + "/paraview";
+                        var config = {
+                            sessionManagerURL: serviceURL,
+                            name: "Live Articles",
+                            description: "3D visualization with ParaView/Web",
+                            application: "loader"
+                        };
+                        setupConnection(config);
+
+                    }
+		        };
+                // if the user clicks on the empty viewport, we start a new session
+                // if one hasn't already been started.
+                $("#viewport").click(function() {
+			        startParaview();
+                });
+
+                function scalarMenu(event, ui) {
+                    event.preventDefault();
+                    $(this).hide();
+                    var selectedItem = ui.item;
+                    var lutId = selectedItem.attr('id');
+                    $.ajax('/paraview/pvw_method_call/', {
+                        data: {data : JSON.stringify({method:"enableLutFromId", args: [lutId]})},
+                        type: 'POST',
+                        success: function(reply){
+                            pv.viewport.render();
+                        }
+                    });
+                }
+
+                function surfaceRender( ){
+                    var scalar_menu = $("#scalar-menu");
+                    $.ajax('/paraview/pvw_method_call/', {
+                                data: {data : JSON.stringify({method:"surfaceRender", args: []})},
+                                type: 'POST',
+                                success: function(reply){
+                                    reply = JSON.parse(reply);
+                                    for (var scalar in reply.scalarbarVisibility){
+                                        scalar = reply.scalarbarVisibility[scalar];
+                                        scalar_menu.append($(
+                                                '<li id="'+scalar.lutId+'"><a>'+scalar.name+' ['+scalar.size+']</a></li>'
+                                        ));
+                                    }
+                                    scalar_menu.menu({
+                                        select: scalarMenu
+                                    });
+                                    $("#scalars").show();
+				                    pv.viewport.render();
+				                }
+
+                    });
+                }
+                //-----------------------------------------------------------------------------
+                // Setup paraview
+                function setupConnection(connection) {
+
+                    // connect to the ParaView/Web instance, so we can start
+                    // visualizing.
+                    paraview.connect(connection,
+                    function(conn) {
+                        pv.connection = conn;
+                        pv.viewport = paraview.createViewport({session:conn.session});
+                        pv.viewport.bind("#viewport");
+
+                        var filePath= getParameter("data");
+                        if (filePath !== "") {
+                            $.ajax('/paraview/pvw_method_call/', {
+                                data: {data : JSON.stringify({method:"openFileFromPath", args: [filePath]})},
+                                type: 'POST',
+                                success: function(reply){
+                                    surfaceRender();
+                                     $("#options").show();
+                                    $("#info").show();
+				                }
+                            });
+                        }
+
+                    },
+                    function(code,reason){
+                        pv.connection = null;
+                        console.log(reason);
+                        cleanup();
+                    }
+                );
+                }
+
+                function cleanup() {
+                    if (pv.viewport) {
+                        pv.viewport.unbind();
+                    }
+
+                    paraview.disconnect(pv.connection);
+
+                    $("#options").hide();
+		    $("#info").hide();
+                    pv = {};
+                    $("#viewport").removeClass("session_started");
+                    $(".clicktostart").html("Click to Start");
+                }
+
+                function getParameter(name) {
+                    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+                    var regexS = "[\\?&]" + name + "=([^&#]*)";
+                    var regex = new RegExp(regexS);
+                    var results = regex.exec(window.location.search);
+                    if (results == null) {
+                        return "";
+                    } else {
+                        return decodeURIComponent(results[1].replace(/\+/g, " "));
+                    }
+                }
+
+		startParaview();            
+		});
+        </script>
+    </head>
+    <body>
+        <div id="viewport" class="fullscreen">
+            <p class="clicktostart" style="margin-top:200px;color: #2FA4E7;">Click to Start</p>
+	    <div id="info" style="display:none;position: absolute;bottom: 0px;padding: 5px;z-index: 100;color:#fff;">
+        <button id="scalars" class="transparent" style="color:#fff">Scalars</button>
+        <ul id="scalar-menu">
+        </ul>
+		<b>MOVE</b> mouse &amp; press <b>LEFT button:</b> rotate, <b>MIDDLE button:</b> pan , <b>RIGHT button:</b> zoom
+	    </div>
+        </div>
+        <button id="options" class="anchor-bottom-right transparent" style="color:#fff">Options</button>
+        <ul id="menu">
+            <li class="resetview"><a>Reset View</a></li>
+            <li class="stats show"><a>Show Statistics</a></li>
+            <li class="disconnect"><a>Disconnect</a></li>
+        </ul>
+    </body>
+</html>
