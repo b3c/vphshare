@@ -90,6 +90,10 @@
                 $("#scalar-menu").mouseleave(function(event) {
                     $("#scalar-menu").hide("fade");
                 });
+                $("#slice-link" ).click(function( event ) {
+                    event.preventDefault();
+                    window.location = "/paraview/slice/?data="+getParameter("data");
+                  });
 
 		function startParaview(){		
                     if ($(this).hasClass("session_started")) {
@@ -99,7 +103,7 @@
                     // the the page.
                     if (!pv.connection) {
                         $(this).addClass("session_started");
-                        $(".clicktostart").html("I'm rendenring...");
+                        $(".clicktostart").html("I'm rendering...");
 
                         var serviceURL = location.protocol + "//" + location.hostname +
                             ":" + location.port + "/paraview";
@@ -226,7 +230,8 @@
         <button id="scalars" class="transparent" style="color:#fff">Scalars</button>
         <ul id="scalar-menu">
         </ul>
-		<b>MOVE</b> mouse &amp; press <b>LEFT button:</b> rotate, <b>MIDDLE button:</b> pan , <b>RIGHT button:</b> zoom
+        <button id="slice-link" class="transparent" style="color:#fff">View slice</button>
+    		<b>MOVE</b> mouse &amp; press <b>LEFT button:</b> rotate, <b>MIDDLE button:</b> pan , <b>RIGHT button:</b> zoom
 	    </div>
         </div>
         <button id="options" class="anchor-bottom-right transparent" style="color:#fff">Options</button>

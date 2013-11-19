@@ -13,7 +13,6 @@ class paraviewWebMiddleware:
             if request.user.is_authenticated():
                 try:
                     pvw_instance = ParaviewInstance.objects.get(user=request.user, deletion_time__exact=None)
-                    print (datetime.utcnow() - pvw_instance.creation_time.replace(tzinfo=None)).seconds
                     if (datetime.utcnow() - pvw_instance.creation_time.replace(tzinfo=None)).seconds >= settings.PARAVIEWWEB_SERVER_TIMEOUT:
                         try:
                             if request.session[str(pvw_instance.pid)].poll() is None:
