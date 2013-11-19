@@ -333,9 +333,14 @@ def search(request):
                                   {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
                                   'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                                   RequestContext(request))
-
+    types = request.GET.get('types', [])
+    if type(types) in (str, unicode):
+            types = types.split(',')[:-1]
+    search = {
+            'type': types,
+    }
     return render_to_response("scs/search.html",
-                              {'search': {}, "results": None, "numresults": 0, 'countType': {},
+                              {'search': search, "results": None, "numresults": 0, 'countType': {},
                                'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                               RequestContext(request))
 
@@ -515,3 +520,18 @@ def api_help(request):
         'scs/api.html',
         RequestContext(request)
     )
+
+def search_workflow(request):
+    return render_to_response("scs/search_workflows.html",
+        {},
+                              RequestContext(request))
+
+def beta_programme(request):
+    return render_to_response("scs/beta_programme.html",
+            {},
+        RequestContext(request))
+
+def upload_structured_data(request):
+    return render_to_response("scs/upload_structured_data.html",
+            {},
+        RequestContext(request))

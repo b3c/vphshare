@@ -108,7 +108,12 @@
                     success: function(data) {
                         $('#preview-button'+lineNumber).show();
                         $('#preview-loading'+lineNumber).hide();
-                        $("#render-frame").attr("src", "http://{{ paraviewHost }}/embed.html?data=" + data['path']);
+                        var ext = data['path'].substr(data['path'].lastIndexOf('.') + 1);
+                        if ($.inArray(ext, ['mha','nrrd']) != -1){
+                            $("#render-frame").attr("src", "/paraview/slice/?data=" + data['path']);
+                        }else if ($.inArray(ext, ['vtk','vtp','ply']) != -1) {
+                            $("#render-frame").attr("src", "/paraview/surface/?data=" + data['path']);
+                        }
                         $("#directory-table").animate({marginTop:'402px'}, function(){
                             $("#directory-table").css("marginTop",'0px');
                             $("#render-frame").fadeIn("slow");
@@ -148,7 +153,7 @@
 						original.find('input[name="driSupervised"]').removeAttr('checked');
 					}
 				} else {
-					f.find('div.alert').addClass('alert-error').removeClass('fade').html('<strong>Error!</strong> ' + data);
+					f.find('div.alert').addClass('alert-error').removeClass('fade').html('<strong>Error!</strong> Update failed (' + data + ')');
 				}
 			});
     	}

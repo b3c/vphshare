@@ -14,6 +14,7 @@ import easywebdav
 from lobcder import lobcderEntries
 from lobcder import updateMetadata
 from lobcder import lobcderQuery
+from lobcder import LobcderException
 import mimetypes
 from StringIO import StringIO
 import logging, json, os
@@ -152,8 +153,12 @@ def lobcderMetadata(request, path = '/'):
     uid = request.POST['uid']
     owner = request.POST['owner']
     driSupervised = True if request.POST.get('driSupervised', '') else False
-    updateMetadata(uid, owner, read, write, driSupervised, request.COOKIES.get('vph-tkt','No ticket'))
-    return HttpResponse("OK")
+    try:
+        updateMetadata(uid, owner, read, write, driSupervised, request.COOKIES.get('vph-tkt','No ticket'))
+    except LobcderException as e:
+        log.error('LOBCDER metadata update request failed: ' + e.message)
+        return HttpResponse(e.code)
+    return HttpResponse('OK')
 
 @login_required
 def lobcderSearch(request):
