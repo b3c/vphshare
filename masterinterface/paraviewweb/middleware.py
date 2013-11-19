@@ -16,8 +16,9 @@ class paraviewWebMiddleware:
                     print (datetime.utcnow() - pvw_instance.creation_time.replace(tzinfo=None)).seconds
                     if (datetime.utcnow() - pvw_instance.creation_time.replace(tzinfo=None)).seconds >= settings.PARAVIEWWEB_SERVER_TIMEOUT:
                         try:
-                            os.kill(pvw_instance.pid, 9)
-                            os.waitpid(pvw_instance.pid, os.WNOHANG)
+                            if request.session[str(pvw_instance.pid)].poll() is None:
+                                request.session[str(pvw_instance.pid)].kill()
+                                request.session[str(pvw_instance.pid)].wait()
                         except Exception, e:
                             pass
                         pvw_instance.deletion_time = datetime.now()

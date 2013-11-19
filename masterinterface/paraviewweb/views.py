@@ -22,7 +22,7 @@ def pvw_start_session(request):
             pvw_instance = None
             try:
                 pvw_instance = ParaviewInstance.objects.get(user=request.user, deletion_time__exact=None)
-                if os.waitpid(pvw_instance.pid ,os.WNOHANG) != (0, 0):
+                if request.session[str(pvw_instance.pid)].poll() is not None:
                     pvw_instance.deletion_time = datetime.now()
                     pvw_instance.save()
                     raise Exception
@@ -39,6 +39,7 @@ def pvw_start_session(request):
                 )
                 pvw_instance = ParaviewInstance(pid=pvw_proces.pid, port=port, user=request.user)
                 pvw_instance.save()
+                request.session[str(pvw_proces.pid)] = pvw_proces
                 pvw_render_connector = ServerProxy('http://127.0.0.1:%s/api' % pvw_instance.port)
                 #Wait that the process run.
                 while True:
@@ -67,8 +68,8 @@ def pvw_close_session(request):
     try:
         if request.method == 'GET' and request.user.is_authenticated():
             pvw_instance = ParaviewInstance.objects.get(user=request.user, deletion_time__exact=None)
-            os.kill(pvw_instance.pid,9)
-            os.waitpid(pvw_instance.pid,os.WNOHANG)
+            request.session[str(pvw_instance.pid)].kill()
+            request.session[str(pvw_instance.pid)].wait()
             pvw_instance.deletion_time = datetime.now()
             pvw_instance.save()
             return HttpResponse(content='TRUE')
@@ -92,7 +93,7 @@ def pvw_method_call(request):
 
             data = json.loads(request.POST['data'])
             pvw_instance = ParaviewInstance.objects.get(user=request.user, deletion_time__exact=None)
-            if os.waitpid(pvw_instance.pid ,os.WNOHANG) == (0, 0):
+            if request.session[str(pvw_instance.pid)].poll() is None:
                 pvw_render_connector = ServerProxy('http://127.0.0.1:%s/api' % pvw_instance.port)
                 result = pvw_render_connector.pvw_call_method(data['method'], json.dumps(data['args']))
             else:
