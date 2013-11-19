@@ -131,7 +131,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'scs_auth.preprocess_middleware.masterInterfaceMiddleware'
+    'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
+    'paraviewweb.middleware.paraviewWebMiddleware'
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -166,7 +167,8 @@ INSTALLED_APPS = (
     'south',
     'datetimewidget',
     'django_select2',
-    'masterinterface.scs_workspace'
+    'masterinterface.scs_workspace',    
+    'paraviewweb'
 
     ##NEW_APP
 )
@@ -279,6 +281,11 @@ ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/met
 #WORKFLOW MANAGER URL
 WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'
 
+#PARAVIEW CONFIGS
+
+PARAVIEW_PYTHON_BIN = "/usr/local/bin/pvpython"
+PARAVIEWWEB_SERVER = os.path.join(PROJECT_ROOT, 'paraviewweb/app/paraviewweb_xmlrpc.py')
+PARAVIEWWEB_SERVER_TIMEOUT = 600
 ##################
 # LOCAL SETTINGS #
 ##################

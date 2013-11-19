@@ -7,6 +7,7 @@ from permissions.utils import has_local_role, has_permission
 from workflows.utils import get_state
 from masterinterface.scs_resources.config import request_pending
 from masterinterface.scs_resources.models import ResourceRequest, Resource
+from masterinterface.scs_groups.models import VPHShareSmartGroup
 
 
 def get_resource_local_roles(resource=None):
@@ -34,12 +35,24 @@ def get_permissions_map(resource_of_any_type):
     # look for user with those roles
     for role in resource_roles:
         role_relations = PrincipalRoleRelation.objects.filter(role__name__exact=role.name)
-        permissions_map.append({
+
+        permissions = {
             'name': role.name,
             'groups': [r.group for r in role_relations if r.group is not None and r.content_id == resource.id and has_local_role(r.group, role, resource)],
             'users': [r.user for r in role_relations if r.user is not None and r.content_id == resource.id and has_local_role(r.user, role, resource)]
         }
-        )
+
+        for group in permissions['groups']:
+            try:
+                vph_smart_group = VPHShareSmartGroup.objects.get(name=group.name)
+                for user in vph_smart_group.user_set.all():
+                    if user not in permissions['users']:
+                        permissions['users'].append(user)
+                del permissions['groups'][permissions['groups'].index(group)]
+            except Exception:
+                pass
+
+        permissions_map.append(permissions)
 
     return permissions_map
 
@@ -82,7 +95,9 @@ def get_managed_resources(user):
         Q(user=user) | Q(group__in=user.groups.all()),
         role__name__in=['Manager', 'Owner']
     )
-
-    managed_resources = [r.content for r in role_relations if r.content is not None]
+    managed_resources = []
+    for r in role_relations:
+        if r.content is not None and r.content not in managed_resources:
+            managed_resources.append(r.content)
 
     return managed_resources

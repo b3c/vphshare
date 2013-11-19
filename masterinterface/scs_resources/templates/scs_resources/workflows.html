@@ -17,9 +17,10 @@
 {% endblock%}
 
 {%  block content %}
-    <div class="span9">
+
 
         {% if form %}
+            <div class="span9">
         <h3>Create new workflow</h3>
         <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
         {% csrf_token %}
@@ -43,38 +44,42 @@
 
             <input type="submit" class="btn btn-primary" value="Create Workflow" />
         </form>
-
-        {% else %}
-        <div class="span9 left-list search-list" style="margin-top: 50px">
-            <div class="popover-list ">
-                <div class="popover-content">
-                    <p>We've found {{ workflows|length }} workflows</p>
-                </div>
-            </div>
-            {% for workflow in workflows %}
-
-                <div class="popover-list result-item">
-                    <div class="popover-content">
-                        <p>
-                            <i class="icon-th Workflow-color"></i><a target="_blank" href="/resources/{{ workflow.global_id}}"><b>{{ workflow.metadata.name }}</b></a>
-                            {% if workflow.owner.username == request.user.username %}
-                            <a class="pull-right" target="_blank" href="/workflows/edit/{{ workflow.id }}"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
-                            {% endif %}
-                        </p>
-                        <p style="font-size: 13px"> {{ workflow.metadata.description|strCut:'100' }}</p>
-                    </div>
-                </div>
-            {% endfor %}
-
-            {% if request.user.is_authenticated %}
-            <div class="well" style="margin: 50px 20px;">
-                <p>To upload a new workflow <a class="btn btn-link" href="/workflows/new">click here</a></p>
-            </div>
-            {% endif %}
-
         </div>
-            
+        {% else %}
+        <div class="row row-contet">
+        <div class="span9" style="margin-top:15px;">
+            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Browse Workflows</b></p><p>Browse the list of available workflows.</p></h6></div><div class="span4"><a href="/workflows/search-workflow/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo1.png"/></a></div> </div>
+            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Search Workflows</b></p><p>Search for available workflows.</p></h6></div><div class="span4"><a href="/search/?types=Workflow,"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo1.png"/></a></div> </div>
+            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Upload a new workflow</b></p><p>Upload your new workflow.</p></h6></div><div class="span4"><a href="/workflows/new"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo2.png"/></a></div> </div>
+            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Dashboard</b></p><p>Manage your workflows, set access permissions, control meta-data tags and view usage statistics.</p></h6></div><div class="span4"><a href="/data/manage-data/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo3.png"/></a></div> </div>
+        </div>
+        <div class="span3 rigth-list" >
+            <div class="popover-list">
+                <div class="popover-content">
+                    <p><i class="icon-bookmark"></i><b>Documents</b></p>
+                    <p>Data Sharing Policy</p>
+                    <p>Use of Data Guidelines</p>
+                </div>
+
+            </div>
+            <div class="popover-list">
+                <div class="popover-content">
+                    <p><i class="icon-th"></i><b>Applications</b></p>
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/static/Data Publication Suite v1.1-b4.msi">Data Publications Suite (DPS)</a></p>
+                        <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test DataSet</a></p>
+                    {% else %}
+                    <p>Data Publications Suite (login required)</p>
+                    {% endif %}
+                    <p><a href="/lobcder">LOBCDER</a></p>
+                    <p><a href="/lobcderquery">LOBCDER Search</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     {% endif %}
-    </div>
+
 {% endblock %}
+

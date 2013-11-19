@@ -31,6 +31,9 @@ urlpatterns = patterns('',
     # security
     url(r'^security/', include('masterinterface.scs_security.urls')),
 
+    #paraview
+    url(r'^paraview/', include('masterinterface.paraviewweb.urls')),
+
     # api
     url(r'^api/', include('masterinterface.scs.apiurls')),
     url(r'^api/', include('masterinterface.scs_groups.apiurls')),

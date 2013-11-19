@@ -124,10 +124,10 @@
                             </button>
                             <div class="container nav-collapse collapse">
                                 <ul class="nav">
-                                    <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li>
-                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
+                                <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
                                     <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
                                     <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools">TOOLS</a></li>
+                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
                                     <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search">SEARCH</a></li>
                                 </ul>
                             </div>
@@ -154,7 +154,7 @@
             <button onclick="hide_notification({{ n.pk }})" type="button" class="close" data-dismiss="alert">&times;</button>
             <span id="statusmessage">
                 {% if n.subject != '' and n.subject %}<h4>{{ n.subject }}</h4>{% endif %}
-                {% autoescape off %}{{ n.content|urlizetrunc:60000 }}{% endautoescape %}
+                {% autoescape off %}{{ n.content|urlizetrunctarget:60000 }}{% endautoescape %}
             </span>
         </div>
         {% endfor %}
