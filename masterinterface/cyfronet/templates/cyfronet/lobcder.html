@@ -51,8 +51,9 @@
 		    		<a class="btn btn-danger lobcder-delete has_left_tooltip" href="/cyfronet/lobcderdelete{{ entry.path }}" title="Delete">
                     <i class="icon-trash cwhite"></i>
                     </a>
+                    {% with 'vtk mha nrrd vtp ply' as list %}
                     {% if entry.type != 'directory'  %}
-                        {% if entry.format == 'vtk' %}
+                        {% if entry.format in list.split %}
                             <button id="preview-button{{ forloop.counter0 }}" class="btn btn-info show-data has_top_tooltip"  onclick="getDataPath('{{ entry.path }}',{{ forloop.counter0 }});" data-path="{{ entry.path }}" title="Preview">
                                 <i  class="icon-eye-open"></i>
                             </button>
@@ -64,6 +65,7 @@
                         <i class="icon-download"></i>
                         </a>
                     {% endif %}
+                    {% endwith %}
 		    		<button class="btn show-metadata has_right_tooltip" data-toggle="button" data-path="{{ entry.path }}" title="Metadata">
                         <i class="icon-magic"></i>
                     </button>
