@@ -22,7 +22,9 @@ def pvw_start_session(request):
             pvw_instance = None
             try:
                 pvw_instance = ParaviewInstance.objects.get(user=request.user, deletion_time__exact=None)
-                if request.session[str(pvw_instance.pid)].poll() is not None:
+                if request.session[str(pvw_instance.pid)].poll() is None:
+                    request.session[str(pvw_instance.pid)].kill()
+                    request.session[str(pvw_instance.pid)].wait()
                     pvw_instance.deletion_time = datetime.now()
                     pvw_instance.save()
                     raise Exception
