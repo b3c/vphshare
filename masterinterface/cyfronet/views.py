@@ -30,30 +30,6 @@ def index(request):
     )
 
 @login_required
-def cloudmanager(request):
-    """ Atmosphere Cloud Management Portlet embedding (*only for authenticated users*)
-    """
-    return render_to_response("cyfronet/cloudmanager.html",
-            {'source': settings.CLOUD_PORTLET_LOGIN_URL_TEMPLATE.format(request.user.username, request.COOKIES.get('vph-tkt','No ticket'), 'cloud')},
-        RequestContext(request))
-
-@login_required
-def datamanager(request):
-    """ LOBDCER Storage Service Portlet embedding (*only for authenticated users*)
-    """
-    return render_to_response("cyfronet/datamanager.html",
-            {'source': settings.CLOUD_PORTLET_LOGIN_URL_TEMPLATE.format(request.user.username, request.COOKIES.get('vph-tkt','No ticket'), 'data')},
-        RequestContext(request))
-
-@login_required
-def policymanager(request):
-    """ Security Policy Management Portlet embedding (*only for authenticated users*)
-    """
-    return render_to_response("cyfronet/policymanager.html",
-            {'source': settings.CLOUD_PORTLET_LOGIN_URL_TEMPLATE.format(request.user.username, request.COOKIES.get('vph-tkt','No ticket'), 'policy')},
-        RequestContext(request))
-
-@login_required
 def lobcder(request, path = '/'):
     """
         LOBCDER Management Portlet
@@ -130,8 +106,3 @@ def lobcderSearch(request):
 
 def dashboard(request):
     return render_to_response('cyfronet/clew.html', {}, RequestContext(request))
-
-@login_required
-def startAtomicService(request, initialConfigurationId):
-    log.info(initialConfigurationId)
-    return dashboard(request, 'apps')
