@@ -1,0 +1,49 @@
+{% extends 'scs/base.html' %}
+{% load scs_extras %}
+
+{% block extrahead %}
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
+
+{%  block title %} VPH-Share Workflows {% endblock %}
+
+{% block page-title %}
+    <span class="title">Workflows</span>
+    <span class="subtitle">the availables workflow definition files</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="span9">
+
+
+        <div class="span9 left-list search-list" style="margin-top: 50px">
+            <div class="popover-list ">
+                <div class="popover-content">
+                    <p>We've found {{ workflows|length }} workflows</p>
+                </div>
+            </div>
+            {% for workflow in workflows %}
+
+                <div class="popover-list result-item">
+                    <div class="popover-content">
+                        <p>
+                            <i class="icon-th Workflow-color"></i><a target="_blank" href="/resources/{{ workflow.global_id}}"><b>{{ workflow.metadata.name }}</b></a>
+                            {% if workflow.owner.username == request.user.username %}
+                            <a class="pull-right" target="_blank" href="/workflows/edit/{{ workflow.id }}"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
+                            {% endif %}
+                        </p>
+                        <p style="font-size: 13px"> {{ workflow.metadata.description|strCut:'100' }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+
+
+    </div>
+{% endblock %}
