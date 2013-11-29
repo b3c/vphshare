@@ -167,6 +167,7 @@ INSTALLED_APPS = (
     'south',
     'datetimewidget',
     'django_select2',
+    'masterinterface.scs_workspace',    
     'paraviewweb'
 
     ##NEW_APP
@@ -259,7 +260,7 @@ TICKET_TIMEOUT = 12*60*60  # 12 h
 MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/pubkey_DSA.pem')
 MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/privkey_DSA.pem')
 #MOD_AUTH_PUBTKY COOKIE STYLE
-TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
+TICKET = SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)
@@ -276,6 +277,9 @@ PARAVIEW_HOST = '46.105.98.182:9000'
 
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
+
+#WORKFLOW MANAGER URL
+WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'
 
 #PARAVIEW CONFIGS
 

@@ -1,5 +1,3 @@
-__author__ = 'Teo'
-
 from django import forms
 from models import Study, Institution, VPHShareSmartGroup
 from permissions.utils import add_local_role

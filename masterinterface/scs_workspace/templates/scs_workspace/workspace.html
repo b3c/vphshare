@@ -1,0 +1,318 @@
+{% extends 'scs/base.html' %}
+
+{% load scs_extras %}
+{%  block title %} Workspace {% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+{% endblock %}
+
+{% block page-title %}
+    <span class="title">Workspace</span>
+{% endblock%}
+
+{% block content %}
+<div>
+<ul class="nav nav-pills">
+  <li class="active">
+      <a>
+      Workflow executions
+      </a>
+  </li>
+</ul>
+</div>
+{% for execution in executions%}
+<div id="{{ execution.id }}"  class="execution well well-small">
+    <div class="row">
+        <div  class="span4">
+        {{ execution.title }}
+        </div>
+        <div class="span5">
+        Status:<div id="{{ execution.id }}-status" style="display: inline-block" class="inline"> {{ execution.status }}</div>
+
+        </div>
+
+        <div class="span2">
+            <div class="btn-group">
+                <button id="play-button" class="btn btn-success btn-mini {% if execution.status != 'Created' %}toggle{% endif %}" title="Run workflow"  data-loading-text="<i class='icon-spinner icon-spin'></i>" >
+                    {% if execution.status == 'Created' %}
+                        <i class="icon-play"></i>
+                    {% else %}
+                        <i class='icon-spinner icon-spin'></i>
+                    {% endif %}
+                </button>
+                <button id="delete-button" class="btn btn-danger btn-mini" data-loading-text="<i class='icon-spinner icon-spin'></i>" title="Delete workflow">
+                    <i class="icon-remove"></i>
+                </button>
+                <a class="btn btn-warning btn-mini accordion-toggle " title="Show details" data-toggle="collapse" href="#{{ execution.id }}-details">
+                    <i class="icon-reorder"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+        <div class="alert hide" style="display: none;">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <span id="modal-message"></span>
+        </div>
+    <div id="{{ execution.id }}-details" class="accordion-body collapse">
+        &nbsp;
+        <!--<div class="row">
+        <div class="span6">
+            <ul class="nav nav-pills">
+              <li class="active">
+                  <a class="btn-success">
+                  Taverna <i class="icon-check"></i>
+                  </a>
+              </li>
+              <li class="active">
+                  <a class="btn-warning disabled">
+                  Workflow <i class='icon-spinner icon-spin'></i>
+                  </a>
+              </li>
+              <li class="">
+                  <a class="btn disabled">
+                  Completed
+                  </a>
+              </li>
+            </ul>
+        </div>
+        </div>
+        <h3>Taverna server:</h3>
+        <p><strong>Taverna workflow id</strong> <span ></span></p>
+        <p><strong>Taverna url</strong> <span ></span></p>
+        <p><strong>AS config id</strong> <span ></span></p>
+        <h3>Workflow execution:</h3>
+        <p><strong>Workflow id </strong> <span id="workflowId" ></span></p>
+        <p><strong>Created</strong> <span id="createTime" ></span></p>
+        <p><strong>Session Expire</strong> <span id="expiry" ></span></p>
+        <p><strong>Execution started</strong> <span id="startTime" ></span></p>
+        <p><strong>Execution finished</strong> <span id="finishTime" ></span></p>
+        <hr>
+        <p><strong>Execution completed</strong> <span id="complete" ></span></p>
+        <p><strong>Exit code</strong> <span id="exitcode" ></span></p>
+        <hr>
+        <p><strong>Std output</strong> <span id="stdout" ></span></p>
+        <hr>
+        <p><strong>Std error</strong> <span id="stderr" ></span></p>
+        -->
+
+     </div>
+</div>
+{% endfor %}
+
+
+
+<script type="text/javascript">
+
+
+        (function() {
+            var global = this;
+            var $ = global.$;
+            var console = global.console || {log:function() {}};
+
+
+            var WfmngProtocol = global.WfmngProtocol = function(element, options) {
+                this.inizialize($(element));
+            };
+
+            WfmngProtocol.prototype.inizialize = function(wfmngProtocol){
+                var self = this;
+                this.$executionId = wfmngProtocol.attr('id');
+                this.$playButton = wfmngProtocol.find('#play-button');
+                this.$deleteButton = wfmngProtocol.find('#delete-button');
+                this.$details = wfmngProtocol.find('#'+this.$executionId+'-details');
+                this.$status = wfmngProtocol.find('#'+this.$executionId+'-status');
+                this.$playButton.click(function(){
+                    self.startTaverna($(this));
+                });
+                this.$deleteButton.click(function(){
+                   self.deleteWorkflow();
+                });
+                this.getExecutioninfo();
+                this.$alert = wfmngProtocol.find('.alert');
+            };
+
+            WfmngProtocol.prototype.alert = function(message,style){
+                style = "alert-"+style;
+
+                this.$alert.find('#modal-message').text(message);
+                this.$alert.addClass(style);
+                this.$alert.fadeIn().delay(10000).fadeOut(1000, function(){
+                    $(this).removeClass(style).find('#modal-message').text('');
+                });
+            };
+
+            WfmngProtocol.prototype.startTavernaCallback = function(data){
+
+                if (data.results == 'true'){
+                    this.alert('Taverna server running with success','success');
+                    this.getExecutioninfo();
+                    //this.submitWorkflow();
+                }else{
+                    this.alert('Error occurs during Taverna booting','error');
+                }
+
+            };
+
+            WfmngProtocol.prototype.startTaverna = function(element){
+                var self = this;
+                this.$playButton.button('loading');
+                $.ajax({
+                            dataType: "json",
+                            type: 'post',
+                            url: '/workspace/startTaverna',
+                            data: {eid:self.$executionId},
+                            success: function(data){self.startTavernaCallback(data)},
+                            error: function(data){return;}
+                        }
+                );
+            };
+
+            WfmngProtocol.prototype.submitWorkflowCallback = function(data){
+                if (data.results == 'true'){
+                    this.alert('Workflow sumited with success','success');
+                    this.getExecutioninfo();
+                    //this.playWorkflow();
+                }else{
+                    this.alert('Error occurs during workflow submission','error');
+                }
+            };
+
+            WfmngProtocol.prototype.submitWorkflow = function(){
+                var self = this;
+                this.$playButton.button('loading');
+                $.ajax({
+                            dataType: "json",
+                            type: 'post',
+                            url: '/workspace/submitWorkflow',
+                            data: {eid:self.$executionId},
+                            success: function(data){self.submitWorkflowCallback(data)},
+                            error: function(data){return;}
+                        }
+                );
+            };
+
+            WfmngProtocol.prototype.playWorkflowCallBack = function(data){
+                if (data.results == 'true'){
+                    this.alert('Workflow started with success','success');
+                    this.getExecutioninfo();
+                }else{
+                    this.alert('Error occurs during workflow starting','error');
+                }
+            };
+
+            WfmngProtocol.prototype.playWorkflow = function(){
+                var self = this;
+                this.$playButton.button('loading');
+                $.ajax({
+                            dataType: "json",
+                            type: 'post',
+                            url: '/workspace/startWorkflow',
+                            data: {eid:self.$executionId},
+                            success: function(data){self.playWorkflowCallBack(data)},
+                            error: function(data){return;}
+                        }
+                );
+            };
+
+            WfmngProtocol.prototype.deleteflowCallBack = function(data){
+
+                if (data.results == 'true'){
+                    $("#"+this.$executionId).remove();
+                    delete this;
+                }
+
+                this.alert('Error occurs during workflow deletion','error');
+
+            };
+
+            WfmngProtocol.prototype.deleteWorkflow = function(){
+                var self = this;
+                this.$playButton.button('loading');
+                $.ajax({
+                            dataType: "json",
+                            type: 'post',
+                            url: '/workspace/deleteWorkflow',
+                            data: {eid:self.$executionId},
+                            success: function(data){self.deleteflowCallBack(data)},
+                            error: function(data){return;}
+                        }
+                );
+            };
+
+            WfmngProtocol.prototype.getExecutioninfoCallBack = function(data){
+                var self = this;
+                var label = ["","Taverna workflow id"," Taverna url","AS config id "," Workflow id"," Created"," Session Expire"," Execution started"," Execution finished"," Execution completed"," Exit code"," Std output"," Std error"];
+                this.$details.empty();
+                for (var i=0; i<data.length;i++){
+                    if (i==0){
+                      this.$status.text(data[i]);
+                        if (data[i] != "Created"){
+                            this.$playButton.button('loading');
+                        }
+                        if(data[i] == 'Inizialized'){
+                            this.submitWorkflow();
+                        }
+                        if(data[i] == 'Workflow ready to run'){
+                            this.playWorkflow();
+                        }
+                        if(data[i] == 'Workflow Running'){
+                            this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 10000);
+                        }else{
+                            window.clearTimeout(this.$timeoutid);
+                        }
+
+                        if(data[i] == 'Finished'){
+                            this.$playButton.hide();
+
+                            if (data[9] == false){
+                                this.$status.text('Finished but not complete');
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    if (data[i] != ''){
+                        if (i == 11 || i == 12){
+                            this.$details.append('<p><strong>'+label[i]+'</strong> <textarea readonly rows="10" style="width:90%">'+data[i]+'</textarea></p>');
+
+                        }else{
+                            this.$details.append('<p><strong>'+label[i]+'</strong> <span>'+data[i]+'</span></p>');
+                        }
+                    }else if (i == 9  && data[i] === false){
+                        this.$details.append('<p><strong>'+label[i]+'</strong> <span>NO</span></p>');
+                    }else if (i == 9  &&  data[i] === true){
+                        this.$details.append('<p><strong>'+label[i]+'</strong> <span>YES</span></p>');
+                    }
+                }
+            };
+
+            WfmngProtocol.prototype.getExecutioninfo = function(){
+                var self = this;
+                $.ajax({
+                            dataType: "json",
+                            type: 'post',
+                            url: '/workspace/getExecutionInfo',
+                            data: {eid:self.$executionId},
+                            success: function(data){
+                                self.getExecutioninfoCallBack(data)
+                            },
+                            error: function(data){
+                                return;
+                            }
+                        }
+                );
+            };
+
+            WfmngProtocol.autoDiscover = function() {
+                $('.execution').each(function(index, element) {
+                    new WfmngProtocol(element);
+                });
+
+            };
+            WfmngProtocol.autoDiscover();
+        }).call(this);
+    </script>
+
+{% endblock %}
