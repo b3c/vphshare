@@ -17,6 +17,12 @@ class TavernaExecutionManager(models.Manager):
             workflow_execution.update()
         return workflow_executions
 
+    def filter(self,*args, **kwargs):
+        workflow_executions = super(TavernaExecutionManager, self).filter(*args, **kwargs)
+        for workflow_execution in workflow_executions:
+            workflow_execution.update()
+        return workflow_executions
+
 
 class TavernaExecution(models.Model):
     owner = models.ForeignKey(User)
@@ -24,7 +30,12 @@ class TavernaExecution(models.Model):
     baclava = models.TextField(verbose_name="Baclava Input Definition File Content", blank=True)
     title = models.CharField(max_length=120, verbose_name="Workflow Execution Title", help_text="Insert a meaningful name for this execution")
     workflowId = models.CharField(max_length=80, blank=True)
+    taverna_id = models.CharField(max_length=80, blank=True)
+    as_config_id = models.CharField(max_length=80, blank=True)
+    url = models.URLField(blank=True)
     status = models.CharField(max_length=25, default="Initialized")
+
+    objects = TavernaExecutionManager()
 
     def __unicode__(self):
         return "%s - %s (%s)" % (self.workflowId, self.status, self.owner.username)
@@ -38,9 +49,14 @@ class TavernaExecution(models.Model):
 
     def update(self, info=[]):
         """ update workflow execution details information """
+        return None
         if not info:
             try:
                 self.info = WorkflowManager.getWorkflowInformation(self.workflowId)
+                if self.info['status'] == "unknown run UUID":
+                    WorkflowManager.deleteWorkflow(self.workflowId)
+                    WorkflowManager.deleteTavernaServerWorkflow(self.workflowId, user, ticket)
+                    self.delete()
                 self.status = self.info['status']
             except Exception, e:
                 raise WorkflowManagerException('500', 'Error while updating workflow %s' % self.workflowId)
