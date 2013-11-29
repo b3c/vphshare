@@ -8,93 +8,178 @@ from models import TavernaExecution
 from forms import TavernaExecutionForm
 from masterinterface.scs.utils import get_file_data
 from masterinterface.scs_resources.models import Workflow
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def workspace(request):
 
     executions = TavernaExecution.objects.filter(owner=request.user)
-    running_tavernas = []
-    try:
-        ret = WorkflowManager.getTavernaServersList(request.COOKIES.get('vph-tkt'))
-        running_tavernas = ret.get('servers', [])
-    except WorkflowManagerException, e:
-        request.session['errormessage'] = "Error %s : %s" % (e.code, e.description)
-        running_tavernas = []
+
     return render_to_response(
         'scs_workspace/workspace.html',
-        {'executions': executions,
-         'tavernas': running_tavernas},
+        {'executions': executions},
         RequestContext(request)
     )
 
 
 def create(request):
 
-    if request.method == 'POST':
-        form = TavernaExecutionForm(request.POST)
-        if form.is_valid():
-            workflow = Workflow.objects.get(pk=form.data['workflow_id'])
-            taverna_execution = form.save(commit=False)
-            taverna_execution.t2flow = get_file_data(workflow.t2flow)
-            if form.data['default_inputs']:
-                taverna_execution.baclava = get_file_data(workflow.xml)
-            taverna_execution.owner = request.user
-            taverna_execution.status = 'Created'
-            taverna_execution.save()
-
-            request.session['statusmessage'] = "The workflow execution has been correctly created"
-
-            return workspace(request)
-
-
+    if request.method == 'POST' and request.POST.get('workflowId',None):
+        form = TavernaExecutionForm()
+        workflow = Workflow.objects.get(global_id=request.POST['workflowId'])
+        taverna_execution = form.save(commit=False)
+        taverna_execution .title = request.POST['title']
+        taverna_execution.t2flow = get_file_data(workflow.t2flow)
+        if request.POST.get('default_inputs','off') == 'on':
+            taverna_execution.baclava = get_file_data(request.FILES['inputFile'])
         else:
-            return render_to_response(
-                'scs_workspace/create.html',
-                {'workflow': Workflow.objects.get(pk=form.data['workflow_id']),
-                 'form': form,
-                 'inputs': []},
-                RequestContext(request)
-            )
+            taverna_execution.baclava = get_file_data(workflow.xml)
+        #taverna_execution.baclava = get_file_data(workflow.xml)
+        taverna_execution.owner = request.user
+        taverna_execution.status = 'Created'
+        taverna_execution.save()
+        request.session['statusmessage'] = "The workflow execution has been correctly created"
+        return redirect('workspace')
+    if request.method == 'GET' and request.GET.get('workflow_id',None):
+        workflow = Workflow.objects.get(pk=request.GET['workflow_id'])
+        n = TavernaExecution.objects.filter(title__contains=workflow.metadata['name']).count() + 1
+        form = TavernaExecutionForm()
+        form.fields['workflowId'].initial = workflow.global_id
+        form.fields['title'].initial = workflow.metadata['name'] + " execution " + str(n)
+        return render_to_response(
+        'scs_workspace/create.html',
+        {'form': form, 'workflow': workflow},
+        RequestContext(request)
+        )
+    else:
+        raise PermissionDenied
 
 
-def submit(request):
+@csrf_exempt
+def startTaverna(request):
 
-    if request.method == 'POST':
+    try:
+        if request.method == 'POST' and request.POST.get('eid', None):
+            taverna_execution = TavernaExecution.objects.get(pk=request.POST['eid'], owner=request.user)
+            taverna_execution.status = 'Submiting Workflow to Taverna'
+            taverna_execution.save()
+            ret = WorkflowManager.createTavernaServerWorkflow(request.user.username, request.COOKIES.get('vph-tkt'))
+            taverna_execution.status = "Inizialized"
+            taverna_execution.as_config_id = ret['asConfigId']
+            taverna_execution.url = ret['serverURL']
+            taverna_execution.taverna_id = ret['workflowId']
+            taverna_execution.save()
+            ret['results'] = 'true'
+            return HttpResponse(content=json.dumps(ret))
+    except Exception, e:
+        pass
 
-        certificate_file = "vph.cyfronet.crt"
-        plugin_properties_file = "vphshare.properties"
+    return HttpResponse(status=403)
 
-        #HACK we have a lazy programmer here!
-        abs_path = os.path.abspath(os.path.dirname(__file__))
-        plugin_definition = open(os.path.join(abs_path, 'plugins.xml'), 'r').read()
+
+@csrf_exempt
+def submitWorkflow(request):
+
+    if request.method == 'POST' and request.POST.get('eid', None):
 
         taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'))
+        taverna_execution.status = 'Submiting Workflow to Taverna'
+        taverna_execution.save()
         ret = WorkflowManager.submitWorkflow(
             taverna_execution.title,
             taverna_execution.t2flow,
             taverna_execution.baclava,
-            plugin_definition,
-            certificate_file,
-            plugin_properties_file,
             request.COOKIES.get('vph-tkt')
         )
 
         if 'workflowId' in ret and ret['workflowId']:
             taverna_execution.workflowId = ret['workflowId']
-            taverna_execution.status = 'Initialized'
-            request.session['statusmessage'] = 'The worfklow execution has been correctly submitted'
+            taverna_execution.status = 'Workflow ready to run'
+            taverna_execution.save()
+            return HttpResponse(content=json.dumps({'results': 'true'}))
         else:
-            request.session['errormessage'] = "Error %s : %s" % (ret.get('error.code', '500'), ret.get('error.description', 'Ouch!'))
+            return HttpResponse(content=json.dumps({'results': 'false','errorcode':ret.get('error.code', '500'),'errordescription':ret.get('error.code', '500')}))
 
-    return workspace(request)
+    return HttpResponse(status=403)
 
 
-def starttaverna(request):
-    if request.method == 'POST':
-        WorkflowManager.createTavernaServerWorkflow('51ded4da86648825040093fe', request.user.username, request.COOKIES.get('vph-tkt'))
-        request.session['statusmessage'] = 'Taverna server created'
+@csrf_exempt
+def startWorkflow(request):
 
-    return workspace(request)
+    if request.method == 'POST' and request.POST.get('eid', None):
 
-def start(request, id='1'):
-    pass
+        taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'))
+        taverna_execution.status = 'Starting Workflow'
+        taverna_execution.save()
+
+        ret = WorkflowManager.startWorkflow(taverna_execution.workflowId)
+        if 'workflowId' in ret and ret['workflowId']:
+            taverna_execution.workflowId = ret['workflowId']
+            taverna_execution.status = 'Workflow Running'
+            taverna_execution.save()
+            return HttpResponse(content=json.dumps({'results': 'true'}))
+        else:
+            return HttpResponse(content=json.dumps({'results': 'false', 'errorcode': ret.get('error.code', '500'),
+                                         'errordescription': ret.get('error.code', '500')}))
+
+    return HttpResponse(status=403)
+
+
+@csrf_exempt
+def deleteWorkflow(request):
+    if request.method == 'POST' and request.POST.get('eid', None):
+
+        taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'))
+        taverna_execution.status = 'Deleting Workflow'
+        taverna_execution.save()
+
+        ret = WorkflowManager.deleteWorkflow(taverna_execution.workflowId)
+        ret = WorkflowManager.deleteTavernaServerWorkflow(taverna_execution.taverna_id, request.user.username, request.COOKIES.get('vph-tkt'))
+        if 'workflowId' in ret and ret['workflowId']:
+
+            taverna_execution.status = 'Workflow Deleted'
+            taverna_execution.save()
+
+            taverna_execution.delete()
+
+            return HttpResponse(content=json.dumps({'results': 'true'}))
+        else:
+            return HttpResponse(content=json.dumps({'results': 'false', 'errorcode': ret.get('error.code', '500'),
+                                         'errordescription': ret.get('error.code', '500')}))
+
+    return HttpResponse(status=403)
+
+
+@csrf_exempt
+def getExecutionInfo(request):
+    if request.method == 'POST' and request.POST.get('eid', None):
+
+        taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'))
+        if taverna_execution.workflowId != '':
+            ret = WorkflowManager.getWorkflowInformation(taverna_execution.workflowId, request.COOKIES.get('vph-tkt'))
+            if 'workflowId' in ret and ret['workflowId']:
+
+                if ret['status'] == 'Finished':
+                    taverna_execution.status = ret['status']
+                taverna_execution.save()
+
+                results = [ taverna_execution.status, taverna_execution.taverna_id, taverna_execution.url,
+                  taverna_execution.as_config_id, taverna_execution.workflowId, ret.get('createTime',''), ret.get('expiry',''),
+                  ret.get("startTime",''), ret.get('Finished',''), ret.get('complete',''), ret.get('exitcode',''),
+                  ret.get('stdout',''), ret.get('stderr','')]
+
+                return HttpResponse(content=json.dumps(results))
+            else:
+                return HttpResponse(content=json.dumps({'results': 'false', 'errorcode': ret.get('error.code', '500'),
+                                             'errordescription': ret.get('error.code', '500')}))
+        else:
+            ret = {}
+            results = [ taverna_execution.status, taverna_execution.taverna_id, taverna_execution.url,
+                  taverna_execution.as_config_id, taverna_execution.workflowId, ret.get('createTime',''), ret.get('expiry',''),
+                  ret.get("startTime",''), ret.get('Finished',''), ret.get('complete',''), ret.get('exitcode',''),
+                  ret.get('stdout',''), ret.get('stderr','')]
+            return HttpResponse(content=json.dumps(results))
+
+    return HttpResponse(status=403)

@@ -6,12 +6,29 @@
     <div class="well">
         <h3>{{ workflow.metadata.name }}</h3>
 
-        <form action="/workspace/submit/" enctype="multipart/form-data" method="post">
-            {{ form.as_table }}
+        <form action="/workspace/create" enctype="multipart/form-data" method="post">
+
+            {{ form.as_p }}
 
             {% csrf_token %}
+            <script>
+            $(function(){
+                $('#id_default_inputs').click(function(elem){
+                    if ($('#id_default_inputs').is(':checked')){
+                        $('#id_inputFile').parent().show();
+                    }else{
+                       $('#id_inputFile').parent().hide();
+                    }
+                });
+                if ($('#id_default_inputs').is(':checked')){
+                    $('#id_inputFile').parent().show();
+                }else{
+                   $('#id_inputFile').parent().hide();
+                }
 
-            <input type="submit" class="btn btn-success" value="Execute" />
+            });
+            </script><br/>
+            <input type="submit" class="btn btn-success" value="Initialize execution" />
         </form>
 
     </div>
