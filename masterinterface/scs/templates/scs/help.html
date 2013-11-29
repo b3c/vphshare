@@ -22,14 +22,16 @@
                     </div>
                     <div id="collapseOne" class="accordion-body collapse in">
                         <div class="accordion-inner">
-                            <h6 style="color: black;">To make the reporting procedure as smooth as possible you find in each page of the VPH-Share web portal a lateral panel on the right side of screen, named feedback. If you click on it, a layer will open in which you can choose the type of feedback you would like to send us. In the first step you can insert the text of your request in the box, while on the right side you will have the list of the already reported issues. If you press the continue button, you will go to the second step, where you can add more information and select if your feedback is associated to a specific infrastructure feature (related category menu). At this point you can preview your message. To complete the process you will be requested to sign in. You can use the facebook, Google accout or register to the "Get satisfaction" system that we use for the maintenance of the users' feedbacks. We will soon work to have the VPH-Share log in working so that you would not need a double sign-on process.</h6>
+                            <h6 style="color: black;">We are looking for bugs reporting, and suggestions for improvements from all our users.  These feedbacks will be used to keep updated a page with the issues already reported and fixed publicly available. </h6>
+                        </br>
+                            <h6 style="color: black;">If you would like to report any issue just drop an email to support@vph-share.eu and the technical team will be back to you as soon as possible!</h6>
                         </div>
                     </div>
                 </div>
               <div class="accordion-group">
                     <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                            <h3>How to contact us<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                            <h3>Stay in contact with us<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
                         </a>
                     </div>
                     <div id="collapseTwo" class="accordion-body collapse in">
@@ -37,7 +39,7 @@
                             <h6 style="color: black;">You can contact the support team at: support@vph-share.eu</br>
 You can write to the user group at: beta.users@vph-share.eu  (if you'd like to be added to this discussion group, please let us know).
 </br>
-We have also created a web presence on the major social network platforms: <a href="http://twitter.com/vphshare">Twitter</a>, <a href="https://www.facebook.com/pages/Vph-Share/195897340533954">Facebook</a>, <a href="https://plus.google.com/u/0/109251527630883747208/posts">Google+</a>, and <a href="http://www.linkedin.com/groups/VPHShare-project-5025771?home=&gid=5025771&trk=anet_ug_hm">LinkedIn</a>. So get in contact with us on your favourite platform.</h6>
+We have also created a web presence on the major social network platforms: <a href="http://twitter.com/vphshare">Twitter</a>, <a href="https://www.facebook.com/pages/Vph-Share/195897340533954">Facebook</a>, <a href="https://plus.google.com/u/0/109251527630883747208/posts">Google+</a>, and <a href="http://www.linkedin.com/groups/VPHShare-project-5025771?home=&gid=5025771&trk=anet_ug_hm">LinkedIn</a>. So get in contact with us on your favourite platform!</h6>
                         </div>
                     </div>
                 </div>
@@ -45,15 +47,23 @@ We have also created a web presence on the major social network platforms: <a hr
         </div>
         <div class="span2">
             <div class="popover popover-mod">
-                <h3 class="popover-title">Download Applications</h3>
+                <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
-                    <p>Data Publications Suite Taverna Workflow Engine Filestore Browser (Web DAV) Dummy App.</p>
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/static/Data Publication Suite v1.1-b4.msi">Data Publications Suite (DPS)</a></p>
+                        <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
+                    {% else %}
+                    <p>Data Publications Suite (login required)</p>
+                    {% endif %}
+                    <p><a href="http://www.taverna.org.uk/download/workbench/">Taverna Workbench</a></p>
+                    <p><a href="/lobcder">Filestore Browser (LOBCDER)</a></p>
                 </div>
             </div>
             <div class="popover popover-mod">
                 <h3 class="popover-title">Documents</h3>
                 <div class="popover-content">
-                    <p>VPH-Share Help <a href="api">Developer API</a> Infrastructure Tutorial Workflow Tutorial.</p>
+                    <p><a href="http://www.vph-share.eu/content/users-manual">VPH-Share Help</a></p>
+                    <p><a href="api">Developer API</a></p>
                 </div>
             </div>
         </div>
