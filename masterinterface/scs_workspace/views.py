@@ -115,7 +115,7 @@ def startWorkflow(request):
         taverna_execution.status = 'Starting Workflow'
         taverna_execution.save()
 
-        ret = WorkflowManager.startWorkflow(taverna_execution.workflowId)
+        ret = WorkflowManager.startWorkflow(taverna_execution.workflowId, request.COOKIES.get('vph-tkt'))
         if 'workflowId' in ret and ret['workflowId']:
             taverna_execution.workflowId = ret['workflowId']
             taverna_execution.status = 'Workflow Running'
@@ -136,7 +136,7 @@ def deleteWorkflow(request):
         taverna_execution.status = 'Deleting Workflow'
         taverna_execution.save()
 
-        ret = WorkflowManager.deleteWorkflow(taverna_execution.workflowId)
+        ret = WorkflowManager.deleteWorkflow(taverna_execution.workflowId, request.COOKIES.get('vph-tkt'))
         ret = WorkflowManager.deleteTavernaServerWorkflow(taverna_execution.taverna_id, request.user.username, request.COOKIES.get('vph-tkt'))
         if 'workflowId' in ret and ret['workflowId']:
 
