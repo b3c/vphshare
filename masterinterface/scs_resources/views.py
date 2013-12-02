@@ -393,6 +393,22 @@ def workflowsView(request):
     return render_to_response("scs_resources/workflows.html", {'workflows': workflows}, RequestContext(request))
 
 
+def search_workflow(request):
+
+    workflows = []
+
+    try:
+        dbWorkflows = Workflow.objects.all()
+        for workflow in dbWorkflows:
+            workflows.append(workflow)
+
+    except Exception, e:
+        request.session['errormessage'] = 'Metadata server is down. Please try later'
+        pass
+
+
+    return render_to_response("scs/search_workflows.html", {'workflows': workflows}, RequestContext(request))
+
 @login_required
 def edit_workflow(request, id=False):
     try:
