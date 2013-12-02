@@ -10,6 +10,7 @@ from masterinterface.scs.utils import get_file_data
 from masterinterface.scs_resources.models import Workflow
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 import json
 
 
@@ -63,13 +64,13 @@ def startTaverna(request):
     try:
         if request.method == 'POST' and request.POST.get('eid', None):
             taverna_execution = TavernaExecution.objects.get(pk=request.POST['eid'], owner=request.user)
-            taverna_execution.status = 'Submiting Workflow to Taverna'
+            taverna_execution.status = 'Starting Taverna Server'
             taverna_execution.save()
             ret = WorkflowManager.createTavernaServerWorkflow(request.user.username, request.COOKIES.get('vph-tkt'))
             taverna_execution.status = "Inizialized"
             taverna_execution.as_config_id = ret['asConfigId']
-            taverna_execution.url = ret['serverURL']
-            taverna_execution.taverna_id = ret['workflowId']
+            taverna_execution.url = ret['tavernaURL']
+            taverna_execution.taverna_id = ret['tavernawfId']
             taverna_execution.save()
             ret['results'] = 'true'
             return HttpResponse(content=json.dumps(ret))

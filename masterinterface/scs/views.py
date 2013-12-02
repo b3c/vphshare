@@ -521,11 +521,6 @@ def api_help(request):
         RequestContext(request)
     )
 
-def search_workflow(request):
-    return render_to_response("scs/search_workflows.html",
-        {},
-                              RequestContext(request))
-
 def beta_programme(request):
     return render_to_response("scs/beta_programme.html",
             {},
