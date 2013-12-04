@@ -28,7 +28,7 @@
     		<tr>
     			<th>Name</th>
     			<th>Owner</th>
-    			<th>Created</th>
+    			<th>Modified</th>
     			<th>Size (B)</th>
     			<th>Actions</th>
     		</tr>
@@ -45,7 +45,7 @@
 		    			<a href="/cyfronet/lobcder{{ entry.path }}">{{ entry.name }}</a>
 		    		</td>
 		    		<td>{{ entry.owner }}</td>
-		    		<td>{{ entry.created|date:"d M Y" }}</td>
+		    		<td>{{ entry.modified|date:"d M Y" }}</td>
 		    		<td>{{ entry.size }}</td>
 		    		<td>
 		    		<a class="btn btn-danger lobcder-delete has_left_tooltip" href="/cyfronet/lobcderdelete{{ entry.path }}" title="Delete">
