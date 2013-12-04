@@ -29,7 +29,10 @@ def breadcrumbs(path):
 
 def split(string, sep=" "):
     if string is not None:
-        return str(string).split(sep)
+        res = str(string).split(sep)
+        if '' in res:
+            res.remove('')
+        return res
     return []
 
 

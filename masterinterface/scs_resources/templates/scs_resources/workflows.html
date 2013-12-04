@@ -21,7 +21,11 @@
 
         {% if form %}
             <div class="span9">
-        <h3>Create new workflow</h3>
+            {% if edit  %}
+                <h3>Edit workflow</h3>
+            {% else %}
+                <h3>Create new workflow</h3>
+            {% endif %}
         <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
         {% csrf_token %}
             {% for hidden in form.hidden_fields %}
@@ -41,8 +45,11 @@
             <div class="control-group">
                 <div class="control-label"><i>* Required fields.</i></div>
             </div>
-
-            <input type="submit" class="btn btn-primary" value="Create Workflow" />
+            {% if edit  %}
+                <input type="submit" class="btn btn-primary" value="Update Workflow" />
+            {% else %}
+                <input type="submit" class="btn btn-primary" value="Create Workflow" />
+            {% endif %}
         </form>
         </div>
         {% else %}

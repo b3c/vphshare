@@ -50,7 +50,7 @@
             <p><strong>Version: </strong> {{ resource.version }}</p>
             <br /> <br />
             <p><strong>Tags</strong></p>
-            {% with  resource.metadata.tags|split:" " as tags%}
+            {% with  resource.metadata.tags|split:"," as tags%}
                 <ul class="inline">
                     {% for tag in tags %}
                         <li><span class="label"><a target="_blank" href="/search/?search_text=*&amp;tags={{ tag }},">{{ tag }}</a></span></li>
