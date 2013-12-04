@@ -131,7 +131,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'scs_auth.preprocess_middleware.masterInterfaceMiddleware'
+    'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
+    'paraviewweb.middleware.paraviewWebMiddleware'
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -165,7 +166,9 @@ INSTALLED_APPS = (
     'masterinterface.atos',
     'south',
     'datetimewidget',
-    'django_select2'
+    'django_select2',
+    'masterinterface.scs_workspace',    
+    'paraviewweb'
 
     ##NEW_APP
 )
@@ -192,6 +195,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
     'scs.templates_middleware.statusMessage',
+    'scs.templates_middleware.get_notifications'
     )
 
 PASSWORD_HASHERS = (
@@ -256,7 +260,7 @@ TICKET_TIMEOUT = 12*60*60  # 12 h
 MOD_AUTH_PUBTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/pubkey_DSA.pem')
 MOD_AUTH_PRIVTICKET = os.path.join(PROJECT_ROOT,'scs_auth/keys/privkey_DSA.pem')
 #MOD_AUTH_PUBTKY COOKIE STYLE
-TICKET =  SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
+TICKET = SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 
 #MOD_AUTH_TKY COOKIE STYLE
 #TICKET =  Ticket(SECRET_KEY)
@@ -267,9 +271,21 @@ LOBCDER_PORT = 8080
 LOBCDER_ROOT = '/lobcder/dav'
 LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder/rest"
 
+#PARAVIEW settings
+LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
+PARAVIEW_HOST = '46.105.98.182:9000'
+
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
 
+#WORKFLOW MANAGER URL
+WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'
+
+#PARAVIEW CONFIGS
+
+PARAVIEW_PYTHON_BIN = "/usr/local/bin/pvpython"
+PARAVIEWWEB_SERVER = os.path.join(PROJECT_ROOT, 'paraviewweb/app/paraviewweb_xmlrpc.py')
+PARAVIEWWEB_SERVER_TIMEOUT = 600
 ##################
 # LOCAL SETTINGS #
 ##################

@@ -17,12 +17,18 @@
 		<span style="color: red;">{{ createDirectoryForm.name.errors }}</span>
     </form>
 	{% if entries %}
-    <table class="table table-hover">
+    <div  id="loading" class="hide" style="border: 1px solid;height: 400px;width: 100%"><p style="margin-top:200px;font: bold 18px monospace;text-align: center;color: green;cursor: default; " >Loading . . . .</p></div>
+    <iframe id="render-frame" class="paraviewweb-player hide" type="text/html" style="border: 1px solid;height: 400px;width: 100%;"  frameborder="0" src="">
+    <a class="btn show-data has_top_tooltip" data-toggle="button" title="Download" href="/cyfronet/lobcder/">
+                        <i class="icon-download"></i>
+      </a>
+    </iframe>
+    <table id="directory-table" class="table table-hover">
     	<thead>
     		<tr>
     			<th>Name</th>
     			<th>Owner</th>
-    			<th>Created</th>
+    			<th>Modified</th>
     			<th>Size (B)</th>
     			<th>Actions</th>
     		</tr>
@@ -39,15 +45,30 @@
 		    			<a href="/cyfronet/lobcder{{ entry.path }}">{{ entry.name }}</a>
 		    		</td>
 		    		<td>{{ entry.owner }}</td>
-		    		<td>{{ entry.created|date:"d M Y" }}</td>
+		    		<td>{{ entry.modified|date:"d M Y" }}</td>
 		    		<td>{{ entry.size }}</td>
 		    		<td>
-		    			<a class="btn btn-danger lobcder-delete has_left_tooltip" href="/cyfronet/lobcderdelete{{ entry.path }}" title="Delete">
-                <i class="icon-trash cwhite"></i>
-              </a>
-		    			<button class="btn show-metadata has_right_tooltip" data-toggle="button" data-path="{{ entry.path }}" title="Metadata">
-                <i class="icon-magic"></i>
-              </button>
+		    		<a class="btn btn-danger lobcder-delete has_left_tooltip" href="/cyfronet/lobcderdelete{{ entry.path }}" title="Delete">
+                    <i class="icon-trash cwhite"></i>
+                    </a>
+                    {% with 'vtk mha nrrd vtp ply' as list %}
+                    {% if entry.type != 'directory'  %}
+                        {% if entry.format in list.split %}
+                            <button id="preview-button{{ forloop.counter0 }}" class="btn btn-info show-data has_top_tooltip"  onclick="getDataPath('{{ entry.path }}',{{ forloop.counter0 }});" data-path="{{ entry.path }}" title="Preview">
+                                <i  class="icon-eye-open"></i>
+                            </button>
+                            <button id="preview-loading{{ forloop.counter0 }}" class="btn btn-info show-data disabled hide"  title="Loading...">
+                                <i  class="icon-spinner icon-spin hide"></i> Loading...
+                            </button>
+                        {% endif %}
+                        <a class="btn show-data has_top_tooltip" data-toggle="button" title="Download" href="/cyfronet/lobcder{{ entry.path }}">
+                        <i class="icon-download"></i>
+                        </a>
+                    {% endif %}
+                    {% endwith %}
+		    		<button class="btn show-metadata has_right_tooltip" data-toggle="button" data-path="{{ entry.path }}" title="Metadata">
+                        <i class="icon-magic"></i>
+                    </button>
 		    			<div class="hide metadata-popover-content" data-path="{{ entry.path }}">
 		    				<form action="/cyfronet/lobcdermetadata{{ entry.path }}" method="POST" class="lobcder-metadata-form">
 		    					{% csrf_token %}
@@ -71,6 +92,44 @@
     	</tbody>
     </table>
     <script type="text/javascript">
+        var loadingData = false;
+        function getDataPath(path, lineNumber){
+            if (loadingData == false){
+                loadingData=true;
+                if ($("#render-frame").is(":visible")){
+                    $("#render-frame").fadeOut("slow", function(){
+                        $("#directory-table").css("marginTop",'402px');
+                        $("#directory-table").animate({marginTop:'0px'});
+                    });
+                }
+                $('#preview-button'+lineNumber).hide();
+                $('#preview-loading'+lineNumber).show();
+                $.ajax('/cyfronet/retrivevtk/', {
+                    data: { path: path},
+                    type: 'POST',
+                    success: function(data) {
+                        $('#preview-button'+lineNumber).show();
+                        $('#preview-loading'+lineNumber).hide();
+                        var ext = data['path'].substr(data['path'].lastIndexOf('.') + 1);
+                        if ($.inArray(ext, ['mha','nrrd']) != -1){
+                            $("#render-frame").attr("src", "/paraview/slice/?data=" + data['path']);
+                        }else if ($.inArray(ext, ['vtk','vtp','ply']) != -1) {
+                            $("#render-frame").attr("src", "/paraview/surface/?data=" + data['path']);
+                        }
+                        $("#directory-table").animate({marginTop:'402px'}, function(){
+                            $("#directory-table").css("marginTop",'0px');
+                            $("#render-frame").fadeIn("slow");
+                        });
+                        loadingData=false;
+                    },
+                    error: function(data) {
+                        $('#preview-button'+lineNumber).show();
+                        $('#preview-loading'+lineNumber).hide();
+                        loadingData=false;
+                    }
+                });
+            }
+        }
     	function submitLobcderMetadata(form) {
 			var f = jQuery(form);
 			var url = f.attr('action');
@@ -100,7 +159,13 @@
 				}
 			});
     	}
+        $(function() {
+
+
+            });
 		jQuery(document).ready(function() {
+
+
 			jQuery('.lobcder-delete').click(function() {
 				if(!confirm("Are you sure you would like to remove one of LOBCDER resources?")) {
 					return false;

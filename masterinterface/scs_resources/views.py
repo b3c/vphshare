@@ -187,7 +187,10 @@ def manage_resources(request):
         managed_resources = get_managed_resources(request.user)
         for resource in managed_resources:
             if getattr(resource, 'metadata', None) is None:
-                resource.metadata = get_resource_metadata(resource.global_id)
+                try:
+                    resource.metadata = get_resource_metadata(resource.global_id)
+                except AtosServiceException, e:
+                    continue
 
             # look if there are group with the resource name and grant them the local role
             for role in get_resource_local_roles():
@@ -272,7 +275,8 @@ def grant_role(request):
         # look for a group with the dataset name
         group_name = get_resource_global_group_name(resource, role)
         group = Group.objects.get(name=group_name)
-        group.user_set.add(principal)
+        if type(principal) is User:
+            group.user_set.add(principal)
         group.save()
 
     except ObjectDoesNotExist, e:
@@ -327,9 +331,20 @@ def revoke_role(request):
     except ObjectDoesNotExist, e:
         principal = Group.objects.get(name=name)
 
-    # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
-    # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-    # remove_role(principal, global_role)
+    try:
+        # look for a group with the dataset name
+        group_name = get_resource_global_group_name(resource, role)
+        group = Group.objects.get(name=group_name)
+        if type(principal) is User:
+            group.user_set.remove(principal)
+        group.save()
+
+    except ObjectDoesNotExist, e:
+        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
+        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+        # remove_role(principal, global_role)
+        pass
+
     remove_local_role(resource, principal, role)
 
     response_body = json.dumps({"status": "OK", "message": "Role revoked correctly", "alertclass": "alert-success"})
@@ -378,6 +393,22 @@ def workflowsView(request):
     return render_to_response("scs_resources/workflows.html", {'workflows': workflows}, RequestContext(request))
 
 
+def search_workflow(request):
+
+    workflows = []
+
+    try:
+        dbWorkflows = Workflow.objects.all()
+        for workflow in dbWorkflows:
+            workflows.append(workflow)
+
+    except Exception, e:
+        request.session['errormessage'] = 'Metadata server is down. Please try later'
+        pass
+
+
+    return render_to_response("scs/search_workflows.html", {'workflows': workflows}, RequestContext(request))
+
 @login_required
 def edit_workflow(request, id=False):
     try:
@@ -400,7 +431,7 @@ def edit_workflow(request, id=False):
                 return redirect('/workflows')
 
         return render_to_response("scs_resources/workflows.html",
-                                  {'form':form},
+                                  {'form':form, 'edit':True},
                                   RequestContext(request))
     except AtosServiceException, e:
         request.session['errormessage'] = 'Metadata service not work, please try later.'
@@ -428,7 +459,7 @@ def create_workflow(request):
                 return redirect('/workflows')
             else:
                 request.session['errormessage'] = 'Some fields are wrong or missed.'
-                return render_to_response("scs_resources/workflows.html", {'form': form}, RequestContext(request))
+                return render_to_response("scs_resources/workflows.html", {'form': form,  'edit':False}, RequestContext(request))
         raise
 
     except AtosServiceException, e:
@@ -437,3 +468,10 @@ def create_workflow(request):
 
     except Exception, e:
         return render_to_response("scs_resources/workflows.html", {'form': form}, RequestContext(request))
+
+
+def api_help(request):
+    return render_to_response(
+        'scs_resources/api.html',
+        RequestContext(request)
+    )

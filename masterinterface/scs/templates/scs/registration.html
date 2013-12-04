@@ -1,0 +1,24 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Welcome to the Vph-Share Master Interface {% endblock %}
+
+
+
+{% block page-title %}
+    <span class="title">Registration</span>
+    <span class="subtitle"></span>
+{% endblock%}
+
+{%  block content %}
+    <script type="text/javascript">
+    function on_load() {
+        $('html,body').scrollTop(0);      
+    }
+    </script>
+    <div class="row">
+    <iframe id="registrationForm" onload="on_load(this)" src="https://www.biomedtown.org/vphshare_join_form_member?login_form_skin=devel.vph-share.eu&invitation_code=vph-share" width="100%" height="2950px" frameborder="0" align="middle"></iframe>
+    </div>
+        
+
+
+{% endblock %}

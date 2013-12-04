@@ -363,3 +363,14 @@ function set_security_agentResponseHandler(responseText, statusText, xhr, jqform
     }
 
 }
+
+
+function hide_notification(notification){
+
+    $.ajax({
+            type: 'POST',
+            url : '/hide_notification/',
+            data: {notificationId:notification}
+        }
+    );
+}

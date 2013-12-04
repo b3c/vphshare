@@ -1,0 +1,115 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Vph-Share Developers API{% endblock %}
+
+{% block page-title %}
+        <span class="title">Developers API</span>
+        <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+
+    <div class="row" style="margin-top:15px;">
+        <div class="span10"><h2>Developers API</h2></div>
+    </div>
+
+    <div class="row" style="margin-top:15px;">
+        <div class="span12">
+            <div class="accordion" id="accordion1">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse1">
+                            <h3>Authentication Ticket <i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse1" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            {% include 'scs_auth/api.html' %}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse2">
+                            <h3>Groups Management <i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse2" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            {% include 'scs_groups/api.html' %}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse3">
+                            <h3>Resource Access <i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse3" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            {% include 'scs_resources/api.html' %}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse4">
+                            <h3>Notification Service<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse4" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h3>/api/notify</h3>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td><p>Provide the service to notify a specific user or a group members.
+                                        <br />When the serivce is invocated the user (or memebers group) receive an email and in the same time if it load a Master interface page, appears a message popup.
+                                        <br />The notification service can be perfomed by passing the ticket, the recipient (username or groupid), message and the subject, as an URL parameters,
+                                        <br />Returns status code 200 if the notification is delivered, 400 if there is a malformed request, however 403 error.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/notify?ticket=<strong class="text-info">&lt;ticket&gt;</strong>&recipient=<strong class="text-info">&lt;recipient&gt;</strong>&message=<strong class="text-info">&lt;message&gt;</strong>&subject=<strong class="text-info">&lt;subject&gt;</strong></code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GET</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt>ticket</dt><dd>your authentication ticket<span class="label">required</span></dd>
+                                            <dt>recipient</dt><dd>the username or group id<span class="label">required</span></dd>
+                                            <dt>message</dt><dd>the content of notification<span class="label">required</span></dd>
+                                            <dt>subject</dt><dd>you have the possibility to specific a notification subject, if need<span class="label">optional</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 200</strong>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 403</strong>Ticket not valid</p>
+                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </div>
+    </div>
+
+{% endblock %}

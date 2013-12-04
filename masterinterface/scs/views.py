@@ -4,7 +4,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.contrib.messages.api import get_messages
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -59,6 +59,26 @@ def login(request):
         RequestContext(request)
     )
 
+
+def registration(request):
+    """Login view"""
+    if request.user.is_authenticated():
+        return redirect('/profile/')
+    return render_to_response(
+        'scs/registration.html',
+        {'version': version},
+        RequestContext(request)
+    )
+
+def reset_password(request):
+    """Login view"""
+    if request.user.is_authenticated():
+        return redirect('/')
+    return render_to_response(
+        'scs/reset_password.html',
+        {'version': version, 'token':request.GET.get('token', '')},
+        RequestContext(request)
+    )
 
 @login_required
 def profile(request):
@@ -313,9 +333,14 @@ def search(request):
                                   {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
                                   'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                                   RequestContext(request))
-
+    types = request.GET.get('types', [])
+    if type(types) in (str, unicode):
+            types = types.split(',')[:-1]
+    search = {
+            'type': types,
+    }
     return render_to_response("scs/search.html",
-                              {'search': {}, "results": None, "numresults": 0, 'countType': {},
+                              {'search': search, "results": None, "numresults": 0, 'countType': {},
                                'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
                               RequestContext(request))
 
@@ -392,9 +417,12 @@ def delete_tag_service(request):
 
             metadata = get_resource_metadata(global_id)
             new_tag = {'tags': ''}
-            for tag in metadata['tags'].split():
+            metadata_tags = metadata['tags'].split(',')
+            if ''in metadata_tags:
+                metadata_tags.remove('')
+            for tag in metadata_tags:
                 if tag != removed_tag:
-                    new_tag['tags'] += "%s " % tag
+                    new_tag['tags'] += "%s," % tag
             new_tag['tags'] = new_tag['tags'].strip()
             update_resource_metadata(global_id, new_tag)
 
@@ -423,10 +451,17 @@ def add_tag_service(request):
 
             metadata = get_resource_metadata(global_id)
             if metadata['tags'] is not None:
-                for tag in metadata['tags'].split():
-                    if tag == added_tag:
+
+                metadata_tags = metadata['tags'].split(',')
+                if ''in metadata_tags:
+                    metadata_tags.remove('')
+                for tag in metadata_tags:
+                    added_tags = added_tag.split(',')
+                    if '' in added_tags:
+                        added_tags.remove('')
+                    if tag.strip() in added_tags:
                         raise
-                new_tags = {'tags': "%s %s" % (metadata['tags'], added_tag)}
+                new_tags = {'tags': "%s, %s" % (metadata['tags'], added_tag)}
             else:
                 new_tags = {'tags': added_tag.strip()}
             update_resource_metadata(global_id, new_tags)
@@ -466,3 +501,42 @@ def edit_description_service(request):
         response._is_string = True
         return response
 
+
+@csrf_exempt
+def hide_notification(request):
+    """
+        add tag to resource's metadata
+    """
+    try:
+        if request.user.is_authenticated() and request.method == 'POST' and request.POST.get('notificationId', None):
+            from masterinterface.scs.models import Notification
+            notification = Notification.objects.get(pk=request.POST.get('notificationId', None))
+            notification.hidden = True
+            notification.save()
+            response = HttpResponse(status=200)
+            response._is_string = True
+            return response
+
+        raise
+
+    except Exception, e:
+        response = HttpResponse(status=403)
+        response._is_string = True
+        return response
+
+
+def api_help(request):
+    return render_to_response(
+        'scs/api.html',
+        RequestContext(request)
+    )
+
+def beta_programme(request):
+    return render_to_response("scs/beta_programme.html",
+            {},
+        RequestContext(request))
+
+def upload_structured_data(request):
+    return render_to_response("scs/upload_structured_data.html",
+            {},
+        RequestContext(request))

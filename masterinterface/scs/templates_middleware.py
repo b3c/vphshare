@@ -1,6 +1,13 @@
-
+#from models import message as mess
+from django.utils.importlib import import_module
+from masterinterface.scs.models import Notification
 
 def statusMessage(request):
+    """
+
+    :type request: django.core.handlers.wsgi.WSGIRequest
+    :return:
+    """
     try:
         if request.session.get('statusmessage', False):
             message = request.session['statusmessage']
@@ -18,3 +25,17 @@ def statusMessage(request):
     except Exception, e:
         pass
     return {}
+
+
+def get_notifications(request):
+    try:
+        notifications = []
+        for n in Notification.objects.filter(recipient=request.user, hidden=False).order_by('-pk'):
+            notifications.append({'pk': n.pk, 'subject': n.subject, 'content': n.message})
+
+        return {'notifications': notifications}
+    except Exception, e:
+        pass
+    return {'notifications': []}
+
+

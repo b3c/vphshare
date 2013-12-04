@@ -1,0 +1,55 @@
+{% block content %}
+
+    <h3>/api/validatetkt (also /validatetkt works)</h3>
+    <table class="table">
+        <tbody>
+        <tr>
+            <td><strong>Description</strong></td>
+            <td><p>Validate given authentication ticket.
+                <br />Returns a <em>JSON</em> representation of the user attributes, raises <strong>403</strong> if ticket is invalid.</p></td>
+        </tr>
+        <tr>
+            <td><strong>Url structure</strong></td>
+            <td><code>{{ request.get_host }}/api/validatetkt?ticket=<strong class="text-info">&lt;ticket&gt;</strong></code>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Method</strong></td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td><strong>Parameters</strong></td>
+            <td>
+                <dl>
+                    <dt>ticket</dt><dd>your authentication ticket</dd>
+                </dl>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Returns</strong></td>
+            <td>
+                <div class="alert alert-success">
+                    <strong>Status code 200</strong>
+                    <pre>{
+    "username": "username",
+    "language": "",
+    "country": "ITALY",
+    "role": [
+        "developer",
+        "friend",
+    ],
+    "postcode": "40033",
+    "fullname": "Master Interface",
+    "email": "mail@example.com"
+}</pre>
+                </div>
+                <div class="alert alert-error">
+                    <p><strong>Status code 403</strong>Ticket not valid</p>
+                    <p><strong>Status code 500</strong>Any other kind of error</p>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+{% endblock %}

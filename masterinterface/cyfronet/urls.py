@@ -10,4 +10,5 @@ urlpatterns = patterns(
     url(r'^lobcderdelete(.*)$', 'lobcderDelete'),
     url(r'^lobcder(.*)$', 'lobcder'),
     url(r'^dashboard/$', 'dashboard'),
+    url(r'^retrivevtk/$', 'retriveVtk'),
 )

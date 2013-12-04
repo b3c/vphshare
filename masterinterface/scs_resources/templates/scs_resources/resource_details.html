@@ -22,7 +22,7 @@
             <h2> {{ resource.metadata.name }}</h2>
             <dl class="dl-horizontal">
                 <dt>Description</dt>
-                <dd>{{ resource.metadata.description }}</dd>
+                <dd>{% autoescape off %}{{ resource.metadata.description|urlizetrunctarget:60000 }}{% endautoescape %}</dd>
             </dl>
         </div>
         <div class="resource-details">
@@ -50,7 +50,7 @@
             <p><strong>Version: </strong> {{ resource.version }}</p>
             <br /> <br />
             <p><strong>Tags</strong></p>
-            {% with  resource.metadata.tags|split:" " as tags%}
+            {% with  resource.metadata.tags|split:"," as tags%}
                 <ul class="inline">
                     {% for tag in tags %}
                         <li><span class="label"><a target="_blank" href="/search/?search_text=*&amp;tags={{ tag }},">{{ tag }}</a></span></li>
@@ -78,21 +78,26 @@
             {% if request.user.is_authenticated %}
             {% if request.user|can_read:resource or resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service"%}
                 {% if workflow and workflow.t2flow %}
-                    <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
-                {% else %}
-                    {% if resource.metadata.type == "Dataset" %}
-                        <a  href="/semantic-search/concept/?dataset=sparqlEndpoint%3D{{ resource.metadata.local_id }}/sparql%26&datasetLabel={{ resource.metadata.local_id }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
-                    {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
-                        <a  href="#" class="btn btn-block btn-large btn-success">Invoke service</a>
-                        <p class="help-inline">This functionality is currently under development.</p>
-                    {% elif resource.metadata.type == "Workflow" %}
-                        <a  href="#" class="btn btn-block btn-large btn-success">Download workflow file</a>
-                    {% elif resource.metadata.type == "File"%}
-                        <a  href="#" class="btn btn-block btn-large btn-success">Download file</a>
-                    {% else %}
-                        <a  href="#" class="btn btn-block btn-large btn-success">Download</a>
-                    {% endif %}
+                    <form action="/workspace/create" enctype="multipart/form-data" method="get">
+                    {% csrf_token %}
+                    <input type="hidden" name="workflow_id" value="{{ workflow.id }}"/>
+                    <input type="submit" target="_blank"  class="btn btn-block btn-large btn-success" value="Execute workflow"/><br/>
+                    </form>
                 {% endif %}
+                {% if resource.metadata.type == "Dataset" %}
+                    <a  href="/semantic-search/concept/?dataset=sparqlEndpoint%3D{{ resource.metadata.local_id }}/sparql%26&datasetLabel={{ resource.metadata.local_id }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
+                    <a  href="#" class="btn btn-block btn-large btn-success">Invoke service</a>
+                    <p class="help-inline">This functionality is currently under development.</p>
+                {% elif resource.metadata.type == "Workflow" %}
+                    <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
+                    <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
+                {% elif resource.metadata.type == "File"%}
+                    <a  href="#" class="btn btn-block btn-large btn-success">Download file</a>
+                {% else %}
+                    <a  href="#" class="btn btn-block btn-large btn-success">Download</a>
+                {% endif %}
+
             {% else %}
                 {% if not resource.already_requested %}
                 <button id="request-for-sharing-btn" data-toggle="button" class="btn btn-block btn-large btn-warning" onclick="request_for_sharing();">Request for sharing</button>

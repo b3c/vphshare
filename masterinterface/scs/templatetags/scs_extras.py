@@ -2,7 +2,9 @@ from django import template
 from django.db.models import Q
 from datetime import datetime
 from permissions.models import PrincipalRoleRelation
-
+from django.template.defaultfilters import stringfilter
+from django.utils.safestring import mark_safe
+from django.utils.html import urlize as urlize_impl
 # get a register Library instance
 register = template.Library()
 
@@ -27,7 +29,10 @@ def breadcrumbs(path):
 
 def split(string, sep=" "):
     if string is not None:
-        return str(string).split(sep)
+        res = str(string).split(sep)
+        if '' in res:
+            res.remove('')
+        return res
     return []
 
 
@@ -72,7 +77,17 @@ def can_read(user, resource):
 
     return False
 
+@register.filter(is_safe=True, needs_autoescape=True)
+@stringfilter
+def urlizetrunctarget(value, limit, autoescape=None):
+    """
+    Converts URLs into clickable links, truncating URLs to the given character
+    limit, and adding 'rel=nofollow' attribute to discourage spamming.
 
+    Argument: Length to truncate URLs to.
+    """
+    return mark_safe(urlize_impl(value, trim_url_limit=int(limit), nofollow=True, autoescape=autoescape)).\
+        replace('<a href=', '<a target="_blank" href=')
 
 
 # register filters

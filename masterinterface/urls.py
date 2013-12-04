@@ -27,10 +27,17 @@ urlpatterns = patterns('',
 
     # groups
     url(r'^groups/', include('masterinterface.scs_groups.urls')),
-    url(r'^api/', include('masterinterface.scs_groups.apiurls')),
 
     # security
     url(r'^security/', include('masterinterface.scs_security.urls')),
+
+    #paraview
+    url(r'^paraview/', include('masterinterface.paraviewweb.urls')),
+
+    # api
+    url(r'^api/', include('masterinterface.scs.apiurls')),
+    url(r'^api/', include('masterinterface.scs_groups.apiurls')),
+    url(r'^api/', include('masterinterface.scs_resources.apiurls')),
 
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
@@ -39,6 +46,7 @@ urlpatterns = patterns('',
     url(r'scs_auth/', include('masterinterface.scs_auth.urls')),
     url(r'', include('masterinterface.scs_search.urls')),
     url(r'', include('masterinterface.scs_resources.urls')),
+    url(r'', include('masterinterface.scs_workspace.urls')),
     url(r'', include('masterinterface.cyfronet.urls')),
 
     url(r'^select2/', include('django_select2.urls')),

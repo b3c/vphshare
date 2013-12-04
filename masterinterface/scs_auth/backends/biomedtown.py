@@ -236,22 +236,27 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             user_value = user_data[2]
 
             self.user_dict = {}
-
             for i in range(0, len(user_key)):
-                self.user_dict[user_key[i]] = user_value[i]
-
+                try:
+                    self.user_dict[user_key[i]] = user_value[i]
+                except IndexError:
+                    continue
             user = None
 
             if self.create_unknown_user:
 
                 #TODO here we can create a pipeline
-                user, created = User.objects.get_or_create(username = self.user_dict['nickname'],email = self.user_dict['email'])
+                #Old version with long ticket
+                #user, created = User.objects.get_or_create(username = user_data[1] ,email = self.user_dict['email'])
+                #To reduce the length of ticket it's needed to waiver to the loging with ticket
+                user = User.objects.get(username = user_data[0])
 
-                if user:
-                    user = self.configure_user(user)
+                #We can create a user from a ticket
+                #if user:
+                #    user = self.configure_user(user)
             else:
                 try:
-                    user = User.objects.get(email=self.user_dict['email'])
+                    user = User.objects.get(username=user_data[0])
                 except User.DoesNotExist:
                     pass
 
@@ -262,9 +267,10 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             ticketObj = settings.TICKET
 
             new_tkt = ticketObj.createTkt(
-                self.user_dict['nickname'],
+                user.username,
                 tokens=tokens,
                 user_data=user_value,
+                #user_data=[],
                 #cip = cip,
                 validuntil=validuntil,
             )
@@ -345,7 +351,7 @@ class BiomedTownTicketBackend (RemoteUserBackend):
 
 class FromTicketBackend (BiomedTownTicketBackend):
     """Extend BiomedTownTicketBackend. FromTicketBackend authenticate user from given ticket (and not username, password)"""
-
+    #NO LONGER WORK! Because with short ticket it can't work
 
     def authenticate( self, ticket=None,cip=None, *args, **kwargs):
         """
@@ -372,7 +378,7 @@ class FromTicketBackend (BiomedTownTicketBackend):
 
             return user, tkt64
 
-        except Exception:
+        except Exception, e:
             return None
 
 

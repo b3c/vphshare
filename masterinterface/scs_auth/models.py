@@ -54,7 +54,21 @@ class UserProfile(models.Model):
             user_dict['role'].append(role.name)
         for group in self.user.groups.all():
             user_dict['role'].append(group.name)
+
+        # add default role for all the users
+        if not user_dict['role'].count("VPH"):
+            user_dict['role'].append("VPH")
         return user_dict
+
+
+class UserAgreement(models.Model):
+    user = models.OneToOneField(User)
+    cookies = models.BooleanField(null=False, blank=False, default=False)
+    privacy = models.BooleanField(null=False, blank=False, default=False)
+    ip = models.IPAddressField(null=False)
+
+    def __unicode__(self):
+        return unicode(self.user)
 
 
 def create_user_profile(sender, instance, created, **kwargs):

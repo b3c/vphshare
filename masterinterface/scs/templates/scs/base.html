@@ -29,11 +29,32 @@
     <!-- END bootstrap  -->
 
     <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/style-dev.css" type="text/css" media="screen" />
 
-    <style type="text/css">
+    <style type="text/css" media="screen">
         body{
             font-family: 'Ubuntu','sans-serif';
         }
+
+        @-webkit-keyframes fade-in {
+          0%   { opacity: 0; }
+          50%  { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        
+        @-webkit-keyframes fade-out {
+          0%   { opacity: 1; }
+          50%  { opacity: 1; }
+          100% { opacity: 0; }
+        }
+    
+        @-webkit-keyframes network-fade-in {
+          0%   { opacity: 0; top: -20px; }
+          60%   { opacity: 0; top: -20px; }
+          100% { opacity: 1; top: 0; }
+        }
+        
+        @-webkit-keyframes disco { 0% { background: url('/static/square.png') repeat top right, #066DAB; }2% { background: url('/static/square.png') repeat top right, #8f4; }4% { background: url('/static/square.png') repeat top right, #86c; }6% { background: url('/static/square.png') repeat top right, #7f4; }8% { background: url('/static/square.png') repeat top right, #8af; }10% { background: url('/static/square.png') repeat top right, #a84; }12% { background: url('/static/square.png') repeat top right, #c60; }14% { background: url('/static/square.png') repeat top right, #319; }16% { background: url('/static/square.png') repeat top right, #0a9; }18% { background: url('/static/square.png') repeat top right, #301; }20% { background: url('/static/square.png') repeat top right, #775; }22% { background: url('/static/square.png') repeat top right, #df5; }24% { background: url('/static/square.png') repeat top right, #27b; }26% { background: url('/static/square.png') repeat top right, #ffa; }28% { background: url('/static/square.png') repeat top right, #474; }30% { background: url('/static/square.png') repeat top right, #41d; }32% { background: url('/static/square.png') repeat top right, #8d4; }34% { background: url('/static/square.png') repeat top right, #816; }36% { background: url('/static/square.png') repeat top right, #110; }38% { background: url('/static/square.png') repeat top right, #b50; }40% { background: url('/static/square.png') repeat top right, #dc7; }42% { background: url('/static/square.png') repeat top right, #2a7; }44% { background: url('/static/square.png') repeat top right, #7ce; }46% { background: url('/static/square.png') repeat top right, #3bd; }48% { background: url('/static/square.png') repeat top right, #ef4; }50% { background: url('/static/square.png') repeat top right, #336; }52% { background: url('/static/square.png') repeat top right, #1c4; }54% { background: url('/static/square.png') repeat top right, #555; }56% { background: url('/static/square.png') repeat top right, #b77; }58% { background: url('/static/square.png') repeat top right, #b3c; }60% { background: url('/static/square.png') repeat top right, #c09; }62% { background: url('/static/square.png') repeat top right, #433; }64% { background: url('/static/square.png') repeat top right, #bbf; }66% { background: url('/static/square.png') repeat top right, #afb; }68% { background: url('/static/square.png') repeat top right, #8db; }70% { background: url('/static/square.png') repeat top right, #d1e; }72% { background: url('/static/square.png') repeat top right, #42b; }74% { background: url('/static/square.png') repeat top right, #871; }76% { background: url('/static/square.png') repeat top right, #e38; }78% { background: url('/static/square.png') repeat top right, #5fc; }80% { background: url('/static/square.png') repeat top right, #2cc; }82% { background: url('/static/square.png') repeat top right, #c10; }84% { background: url('/static/square.png') repeat top right, #fcc; }86% { background: url('/static/square.png') repeat top right, #f7b; }88% { background: url('/static/square.png') repeat top right, #a09; }90% { background: url('/static/square.png') repeat top right, #5da; }92% { background: url('/static/square.png') repeat top right, #41c; }94% { background: url('/static/square.png') repeat top right, #0a4; }96% { background: url('/static/square.png') repeat top right, #187; }98% { background: url('/static/square.png') repeat top right, #ae7; }100% { background: url('/static/square.png') repeat top right, #613; } }
     </style>
     {% block javascripts %} {% endblock %}
 
@@ -49,7 +70,7 @@
                             The Portal is now accessible only by the VPH-Share Consortium. Please contact <a href="mailto:support@vph-share.eu">our support service</a> if you like to join our Beta User Program.
                     </div>
                     {% endif %}
-                    <div id="page-title-wrapper">
+                    <div id="page-title-wrapper" class="dev-page-title-wrapper">
                         <a href="/"><div id="logo-left" ></div></a>
                         <div id="page-title">
                             <span id="page-title-links">
@@ -58,7 +79,9 @@
                                 <a href="/about">About</a>
                                 {% block login %}
                                     {% if not request.user.is_authenticated %}
-                                        <button id="login" href="#" class="btn btn-large" data-toggle="popover" data-placement="bottom" title="" data-original-title="Login">Login</button>
+                                        <a id="login" href="#"  data-toggle="popover" data-placement="bottom" title="" data-original-title="Enter your BiomedTown username" style="padding-left: 35px;">Login</a>
+                                        <span class="divider">|</span>
+                                        <a href="/registration">Registration</a>
                                         <script type="text/javascript">
 
                                             $("#login").popover({
@@ -77,7 +100,11 @@
                                                 <span class="caret" style="vertical-align: middle"></span>
                                             </a>
                                             <ul class="dropdown-menu" style="color: #000000; text-align: center">
+                                                <li><a style="color: #000000;" href="/dashboard/">Dashboard</a></li>
                                                 <li><a style="color: #000000;" href="/profile/">Profile</a></li>
+                                                {% if request.user.is_staff %}
+                                                    <li><a style="color: #000000;" href="/users_admin/">Admin tools</a></li>
+                                                {% endif %}
                                                 <li class="divider"></li>
                                                 <li><a style="color: #000000;" class="popup" rel="#overlay" href="/logout">Logout</a></li>
                                             </ul>
@@ -101,9 +128,10 @@
                             </button>
                             <div class="container nav-collapse collapse">
                                 <ul class="nav">
-                                    <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li>
-                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
+                                <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
                                     <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
+                                    <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools">TOOLS</a></li>
+                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
                                     <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search">SEARCH</a></li>
                                     <li {% if 'dashboard' == request.path|basepath %}class="active" {% endif %}><a href="/dashboard">DASHBOARD</a></li>
                                 </ul>
@@ -126,6 +154,15 @@
                     {% endblock %}
             {% endblock %}
         {% endif %}
+        {% for n in notifications %}
+        <div class="alert alert-info">
+            <button onclick="hide_notification({{ n.pk }})" type="button" class="close" data-dismiss="alert">&times;</button>
+            <span id="statusmessage">
+                {% if n.subject != '' and n.subject %}<h4>{{ n.subject }}</h4>{% endif %}
+                {% autoescape off %}{{ n.content|urlizetrunctarget:60000 }}{% endautoescape %}
+            </span>
+        </div>
+        {% endfor %}
         {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
         {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
         {% block content %} {% endblock %}
@@ -137,7 +174,7 @@
             <p class="muted">
                 <a href="/">Terms of use</a>
                 <span class="divider">|</span>
-                <a href="/">Privacy</a>
+                <a href="/static/VPH-Share-Privacy-Policy-1v0.pdf">Privacy</a>
                 <span class="divider">|</span>
                 <a href="/">Security</a>
                 <span class="divider">|</span>

@@ -1,4 +1,3 @@
-__author__ = 'Teo'
 
 import json
 import os

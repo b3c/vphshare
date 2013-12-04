@@ -5,11 +5,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout, login
 from auth import authenticate
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.utils.datastructures import SortedDict
 from django.core.validators import URLValidator
-
+from django.core.exceptions import ObjectDoesNotExist
 from scs_auth import __version__ as version
 from django.conf import settings
 from masterinterface.scs.utils import is_staff
@@ -31,7 +32,16 @@ def done(request):
         'last_login': request.session.get('social_auth_last_login_backend')
     }
 
-    # create ticket
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    agreement, created = UserAgreement.objects.get_or_create(user=request.user, cookies=True, privacy=True)
+    if created:
+        agreement.ip = ip
+    agreement.save()
 
     response = render_to_response(
         'scs_auth/done.html',
@@ -39,6 +49,24 @@ def done(request):
         RequestContext(request)
     )
 
+    return response
+
+@csrf_exempt
+def bt_agreement_check(request):
+
+    if request.method == 'POST' and request.POST.get('username'):
+        try:
+            user = User.objects.get(username=request.POST.get('username'))
+            agreement = UserAgreement.objects.get(user=user)
+            if not agreement.privacy or not agreement.cookies:
+                raise ObjectDoesNotExist
+            response = HttpResponse('TRUE')
+        except ObjectDoesNotExist:
+            response = HttpResponse('FALSE')
+    else:
+        response = HttpResponse(status=403)
+
+    response._is_string = True
     return response
 
 

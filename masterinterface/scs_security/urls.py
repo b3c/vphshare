@@ -1,4 +1,3 @@
-__author__ = 'Teo'
 
 from django.conf.urls import patterns, url
 

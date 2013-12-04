@@ -1320,3 +1320,7 @@ background-color: rgba(0, 173, 14, 0.63);
 .well.filter{
     cursor: pointer;
 }
+
+.fieldrequired {
+display: inline;
+}

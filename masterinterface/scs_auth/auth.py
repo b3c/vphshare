@@ -67,6 +67,10 @@ def getUserTokens(user):
         #    tokens=['developer']
         #######
 
+    # add default role for all the users
+    if not tokens.count("VPH"):
+        tokens.append("VPH")
+
     return tokens
 
 
@@ -117,6 +121,7 @@ def socialtktGen(details, *args, **kwargs):
                 details['nickname'],
                 tokens=tokens,
                 user_data=user_value,
+                #user_data=[],
                 #cip = kwargs['request'].META['REMOTE_ADDR'],
                 validuntil=validuntil,
                 encoding='utf-8'
