@@ -101,6 +101,7 @@ def submitWorkflow(request):
             taverna_execution.save()
             return HttpResponse(content=json.dumps({'results': 'true'}))
         else:
+            taverna_execution.status = 'Error during Workflow submition'
             return HttpResponse(content=json.dumps({'results': 'false','errorcode':ret.get('error.code', '500'),'errordescription':ret.get('error.code', '500')}))
 
     return HttpResponse(status=403)
@@ -122,6 +123,7 @@ def startWorkflow(request):
             taverna_execution.save()
             return HttpResponse(content=json.dumps({'results': 'true'}))
         else:
+            taverna_execution.status = 'Error during workflow starting'
             return HttpResponse(content=json.dumps({'results': 'false', 'errorcode': ret.get('error.code', '500'),
                                          'errordescription': ret.get('error.code', '500')}))
 
@@ -135,8 +137,10 @@ def deleteWorkflow(request):
         taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'))
         taverna_execution.status = 'Deleting Workflow'
         taverna_execution.save()
-
-        ret = WorkflowManager.deleteWorkflow(taverna_execution.workflowId, request.COOKIES.get('vph-tkt'))
+        try:
+            ret = WorkflowManager.deleteWorkflow(taverna_execution.workflowId, request.COOKIES.get('vph-tkt'))
+        except Exception, e:
+            pass
         ret = WorkflowManager.deleteTavernaServerWorkflow(taverna_execution.taverna_id, request.user.username, request.COOKIES.get('vph-tkt'))
         if 'workflowId' in ret and ret['workflowId']:
 
