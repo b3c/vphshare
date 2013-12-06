@@ -148,5 +148,5 @@ def lobcderSearch(request):
     return render_to_response('cyfronet/lobcderSearch.html', {'entries': entries}, RequestContext(request))
 
 @login_required
-def dashboard(request):
+def cloud(request):
     return render_to_response('cyfronet/clew.html', {}, RequestContext(request))
