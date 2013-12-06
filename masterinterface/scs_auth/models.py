@@ -65,7 +65,7 @@ class UserAgreement(models.Model):
     user = models.OneToOneField(User)
     cookies = models.BooleanField(null=False, blank=False, default=False)
     privacy = models.BooleanField(null=False, blank=False, default=False)
-    ip = models.IPAddressField(null=False)
+    ip = models.IPAddressField(null=False, default='0.0.0.0')
 
     def __unicode__(self):
         return unicode(self.user)
