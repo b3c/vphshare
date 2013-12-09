@@ -26,7 +26,6 @@ def workspace(request):
 
 
 def create(request):
-
     if request.method == 'POST' and request.POST.get('workflowId',None):
         form = TavernaExecutionForm()
         workflow = Workflow.objects.get(global_id=request.POST['workflowId'])
@@ -40,6 +39,7 @@ def create(request):
         #taverna_execution.baclava = get_file_data(workflow.xml)
         taverna_execution.owner = request.user
         taverna_execution.status = 'Created'
+        taverna_execution.taverna_atomic_id = request.POST['taverna_servers']
         taverna_execution.save()
         request.session['statusmessage'] = "The workflow execution has been correctly created"
         return redirect('workspace')
@@ -85,7 +85,7 @@ def startTaverna(request):
             taverna_execution = TavernaExecution.objects.get(pk=request.POST['eid'], owner=request.user)
             taverna_execution.status = 'Starting Taverna Server'
             taverna_execution.save()
-            ret = WorkflowManager.createTavernaServerWorkflow(request.user.username, request.COOKIES.get('vph-tkt'))
+            ret = WorkflowManager.createTavernaServerWorkflow(taverna_execution.taverna_atomic_id, request.user.username, request.COOKIES.get('vph-tkt'))
             taverna_execution.status = "Inizialized"
             taverna_execution.as_config_id = ret['asConfigId']
             taverna_execution.url = ret['tavernaURL']
