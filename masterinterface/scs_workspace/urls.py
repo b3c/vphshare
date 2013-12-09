@@ -12,4 +12,6 @@ urlpatterns = patterns(
     url(r'^workspace/startWorkflow$', startWorkflow),
     url(r'^workspace/deleteWorkflow$', deleteWorkflow),
     url(r'^workspace/getExecutionInfo$', getExecutionInfo),
+    url(r'^workspace/changestatus$', changeStatus),
+
 )

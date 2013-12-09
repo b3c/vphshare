@@ -57,6 +57,25 @@ def create(request):
     else:
         raise PermissionDenied
 
+@csrf_exempt
+def changeStatus(request):
+
+    try:
+        if request.method == 'POST' and request.POST.get('eid', None):
+            user = User.objects.get(username= request.POST['user'])
+            taverna_execution = TavernaExecution.objects.get(pk=int(request.POST['eid']), owner=user)
+            taverna_execution.status = request.POST['status']
+            if taverna_execution.status == "Error on submiting":
+                taverna_execution.as_config_id = ''
+                taverna_execution.url = ''
+                taverna_execution.taverna_id = ''
+            taverna_execution.save()
+            taverna_execution.save()
+            return HttpResponse(status=200)
+    except Exception, e:
+        pass
+
+    return HttpResponse(status=403)
 
 @csrf_exempt
 def startTaverna(request):
@@ -92,7 +111,8 @@ def submitWorkflow(request):
             taverna_execution.title,
             taverna_execution.t2flow,
             taverna_execution.baclava,
-            request.COOKIES.get('vph-tkt')
+            request.COOKIES.get('vph-tkt'),
+            request.POST.get('eid')
         )
 
         if 'workflowId' in ret and ret['workflowId']:
@@ -141,8 +161,7 @@ def deleteWorkflow(request):
             ret = WorkflowManager.deleteWorkflow(taverna_execution.workflowId, request.COOKIES.get('vph-tkt'))
         except Exception, e:
             pass
-        ret = WorkflowManager.deleteTavernaServerWorkflow(taverna_execution.taverna_id, request.user.username, request.COOKIES.get('vph-tkt'))
-        if 'workflowId' in ret and ret['workflowId']:
+        if 'workflowId' in ret:
 
             taverna_execution.status = 'Workflow Deleted'
             taverna_execution.save()
