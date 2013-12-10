@@ -7,6 +7,13 @@
     <span class="subtitle">Search LOBCDER resources</span>
 {% endblock%}
 
+{% block extrahead %}
+	<link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
+
 {% block content %}
 	<form action="/cyfronet/lobcderquery" method="POST" class="form-horizontal">
 		{% csrf_token %}
