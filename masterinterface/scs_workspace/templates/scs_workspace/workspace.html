@@ -34,8 +34,8 @@
 
         <div class="span2">
             <div class="btn-group">
-                <button id="play-button" class="btn btn-success btn-mini {% if execution.status != 'Created' %}toggle{% endif %}" title="Run workflow"  data-loading-text="<i class='icon-spinner icon-spin'></i>" >
-                    {% if execution.status == 'Created' %}
+                <button id="play-button" class="btn btn-success btn-mini {% if execution.status == 'Created' and execution.status != 'Error on submiting'  %}toggle{% endif %}" title="Run workflow"  data-loading-text="<i class='icon-spinner icon-spin'></i>" >
+                    {% if execution.status == 'Created' or execution.status == 'Error on submiting'  %}
                         <i class="icon-play"></i>
                     {% else %}
                         <i class='icon-spinner icon-spin'></i>
@@ -137,9 +137,7 @@
 
                 this.$alert.find('#modal-message').text(message);
                 this.$alert.addClass(style);
-                this.$alert.fadeIn().delay(10000).fadeOut(1000, function(){
-                    $(this).removeClass(style).find('#modal-message').text('');
-                });
+                this.$alert.fadeIn();
             };
 
             WfmngProtocol.prototype.startTavernaCallback = function(data){
@@ -166,6 +164,7 @@
                             error: function(data){return;}
                         }
                 );
+                this.getExecutioninfo();
             };
 
             WfmngProtocol.prototype.submitWorkflowCallback = function(data){
@@ -190,6 +189,7 @@
                             error: function(data){return;}
                         }
                 );
+                this.getExecutioninfo();
             };
 
             WfmngProtocol.prototype.playWorkflowCallBack = function(data){
@@ -213,6 +213,7 @@
                             error: function(data){return;}
                         }
                 );
+                this.getExecutioninfo();
             };
 
             WfmngProtocol.prototype.deleteflowCallBack = function(data){
@@ -247,11 +248,15 @@
                 for (var i=0; i<data.length;i++){
                     if (i==0){
                       this.$status.text(data[i]);
-                        if (data[i] != "Created"){
+                        if (data[i] != "Created" && data[i] != 'Error on submiting' ){
                             this.$playButton.button('loading');
                         }
                         if(data[i] == 'Inizialized'){
                             this.submitWorkflow();
+                        }
+                        if(data[i] == 'Error on submiting'){
+                            this.$playButton.button('reset');
+                            this.$status.text(data[i]);
                         }
                         if(data[i] == 'Workflow ready to run'){
                             this.playWorkflow();

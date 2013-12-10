@@ -34,6 +34,7 @@ class TavernaExecution(models.Model):
     as_config_id = models.CharField(max_length=80, blank=True)
     url = models.URLField(blank=True)
     status = models.CharField(max_length=80, default="Initialized")
+    taverna_atomic_id = models.CharField(max_length=80, blank=True)
 
     objects = TavernaExecutionManager()
 
