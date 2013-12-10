@@ -37,7 +37,10 @@ def done(request):
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
-    agreement, created = UserAgreement.objects.get_or_create(user=request.user, cookies=True, privacy=True, ip=ip)
+
+    agreement, created = UserAgreement.objects.get_or_create(user=request.user, cookies=True, privacy=True)
+    if created:
+        agreement.ip = ip
     agreement.save()
 
     response = render_to_response(

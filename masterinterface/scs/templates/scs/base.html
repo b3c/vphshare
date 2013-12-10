@@ -100,9 +100,11 @@
                                                 <span class="caret" style="vertical-align: middle"></span>
                                             </a>
                                             <ul class="dropdown-menu" style="color: #000000; text-align: center">
-                                                <li><a style="color: #000000;" href="/data/manage-data/">Dashboard</a></li>
+                                                <li><a style="color: #000000;" href="/dashboard/">Dashboard</a></li>
                                                 <li><a style="color: #000000;" href="/profile/">Profile</a></li>
-                                                <li><a style="color: #000000;" href="/users_admin/">Admin tools</a></li>
+                                                {% if request.user.is_staff %}
+                                                    <li><a style="color: #000000;" href="/users_admin/">Admin tools</a></li>
+                                                {% endif %}
                                                 <li class="divider"></li>
                                                 <li><a style="color: #000000;" class="popup" rel="#overlay" href="/logout">Logout</a></li>
                                             </ul>
@@ -171,7 +173,7 @@
             <p class="muted">
                 <a href="/">Terms of use</a>
                 <span class="divider">|</span>
-                <a href="/">Privacy</a>
+                <a href="/static/VPH-Share-Privacy-Policy-1v0.pdf">Privacy</a>
                 <span class="divider">|</span>
                 <a href="/">Security</a>
                 <span class="divider">|</span>

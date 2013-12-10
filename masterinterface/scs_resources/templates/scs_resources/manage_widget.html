@@ -18,7 +18,7 @@
                 <button id="update-description" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button>
             </span>
         </li>
-    {% with  resource.metadata.tags|split:" " as tags%}
+    {% with  resource.metadata.tags|split:"," as tags%}
         <li>Tags:
             {% for tag in tags %}
                 <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">{{ tag }}</div><div id="remove-tag" type="button" class="close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>

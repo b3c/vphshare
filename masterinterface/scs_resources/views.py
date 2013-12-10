@@ -393,6 +393,22 @@ def workflowsView(request):
     return render_to_response("scs_resources/workflows.html", {'workflows': workflows}, RequestContext(request))
 
 
+def search_workflow(request):
+
+    workflows = []
+
+    try:
+        dbWorkflows = Workflow.objects.all()
+        for workflow in dbWorkflows:
+            workflows.append(workflow)
+
+    except Exception, e:
+        request.session['errormessage'] = 'Metadata server is down. Please try later'
+        pass
+
+
+    return render_to_response("scs/search_workflows.html", {'workflows': workflows}, RequestContext(request))
+
 @login_required
 def edit_workflow(request, id=False):
     try:
@@ -415,7 +431,7 @@ def edit_workflow(request, id=False):
                 return redirect('/workflows')
 
         return render_to_response("scs_resources/workflows.html",
-                                  {'form':form},
+                                  {'form':form, 'edit':True},
                                   RequestContext(request))
     except AtosServiceException, e:
         request.session['errormessage'] = 'Metadata service not work, please try later.'
@@ -443,7 +459,7 @@ def create_workflow(request):
                 return redirect('/workflows')
             else:
                 request.session['errormessage'] = 'Some fields are wrong or missed.'
-                return render_to_response("scs_resources/workflows.html", {'form': form}, RequestContext(request))
+                return render_to_response("scs_resources/workflows.html", {'form': form,  'edit':False}, RequestContext(request))
         raise
 
     except AtosServiceException, e:

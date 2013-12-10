@@ -417,9 +417,12 @@ def delete_tag_service(request):
 
             metadata = get_resource_metadata(global_id)
             new_tag = {'tags': ''}
-            for tag in metadata['tags'].split():
+            metadata_tags = metadata['tags'].split(',')
+            if ''in metadata_tags:
+                metadata_tags.remove('')
+            for tag in metadata_tags:
                 if tag != removed_tag:
-                    new_tag['tags'] += "%s " % tag
+                    new_tag['tags'] += "%s," % tag
             new_tag['tags'] = new_tag['tags'].strip()
             update_resource_metadata(global_id, new_tag)
 
@@ -448,10 +451,17 @@ def add_tag_service(request):
 
             metadata = get_resource_metadata(global_id)
             if metadata['tags'] is not None:
-                for tag in metadata['tags'].split():
-                    if tag == added_tag:
+
+                metadata_tags = metadata['tags'].split(',')
+                if ''in metadata_tags:
+                    metadata_tags.remove('')
+                for tag in metadata_tags:
+                    added_tags = added_tag.split(',')
+                    if '' in added_tags:
+                        added_tags.remove('')
+                    if tag.strip() in added_tags:
                         raise
-                new_tags = {'tags': "%s %s" % (metadata['tags'], added_tag)}
+                new_tags = {'tags': "%s, %s" % (metadata['tags'], added_tag)}
             else:
                 new_tags = {'tags': added_tag.strip()}
             update_resource_metadata(global_id, new_tags)
@@ -520,11 +530,6 @@ def api_help(request):
         'scs/api.html',
         RequestContext(request)
     )
-
-def search_workflow(request):
-    return render_to_response("scs/search_workflows.html",
-        {},
-                              RequestContext(request))
 
 def beta_programme(request):
     return render_to_response("scs/beta_programme.html",
