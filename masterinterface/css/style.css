@@ -1324,3 +1324,13 @@ background-color: rgba(0, 173, 14, 0.63);
 .fieldrequired {
 display: inline;
 }
+
+.alert-disable {
+    color: #8B8B8B;
+    background-color: #F1F1F1;
+    border-color: #CFCFCF;
+}
+
+.tab-pane > .alert {
+    text-align: center;
+}
