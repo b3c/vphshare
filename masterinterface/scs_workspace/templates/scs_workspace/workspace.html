@@ -21,6 +21,11 @@
   </li>
 </ul>
 </div>
+{% if executions|length == 0 %}
+<div class="alert alert-info">
+    <span id="modal-message"> No Workflow execution available</span>
+</div>
+{% endif %}
 {% for execution in executions%}
 <div id="{{ execution.id }}"  class="execution well well-small">
     <div class="row">
@@ -40,7 +45,7 @@
                 <button id="delete-button" class="btn btn-danger btn-mini" data-loading-text="<i class='icon-spinner icon-spin'></i>" title="Delete workflow">
                     <i class="icon-remove"></i>
                 </button>
-                <a class="btn btn-warning btn-mini accordion-toggle " title="Show details" data-toggle="collapse" href="#{{ execution.id }}-details">
+                <a id="details-button" class="btn btn-warning btn-mini accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ execution.id }}-details">
                     <i class="icon-reorder"></i>
                 </a>
             </div>
@@ -76,7 +81,11 @@
      </div>
 </div>
 {% endfor %}
-
+<div class="alert alert-warning">
+    <h4>Under developing.</h4>
+    <span id="modal-message"> The workspace and the workflow execution are under developing, please contact support@vph-share.eu for any inconvenience.</span>
+    <span id="modal-message"> If you want to test this feature try <a href="/resources/686b72a6-738e-4b05-bf35-fea88685b1ad/">this workflow</a>, clicking 'Execute Workflow' (after you ask "request to share")</span>
+</div>
 
 
 <script type="text/javascript">
@@ -107,6 +116,7 @@
                 this.$executionId = wfmngProtocol.attr('id');
                 this.$playButton = wfmngProtocol.find('#play-button');
                 this.$deleteButton = wfmngProtocol.find('#delete-button');
+                this.$detailsButton = wfmngProtocol.find('#details-button');
                 this.$details = wfmngProtocol.find('#'+this.$executionId+'-status-details');
                 this.$status = wfmngProtocol.find('#'+this.$executionId+'-status');
                 this.$statusInfo = wfmngProtocol.find('#'+this.$executionId+'-status-info');
@@ -117,6 +127,8 @@
                 this.$deleteButton.click(function(){
                    self.deleteWorkflow();
                 });
+                this.$statusInfo.hide();
+                this.$details.hide();
                 this.getExecutioninfo();
                 this.$alert = wfmngProtocol.find('.alert');
             };
@@ -159,15 +171,19 @@
             WfmngProtocol.prototype.deleteWorkflow = function(){
                 var self = this;
                 this.$playButton.button('loading');
-                $.ajax({
-                            dataType: "json",
-                            type: 'post',
-                            url: '/workspace/deleteExecution',
-                            data: {eid:self.$executionId},
-                            success: function(data){self.deleteWorkflowCallBack(data)},
-                            error: function(data){return;}
-                        }
-                );
+                var answer = confirm ("Warning deleting the workflow you will lost all the informations about the execution. Please click on OK to confirm.");
+                if (answer){
+                    $.ajax({
+                                dataType: "json",
+                                type: 'post',
+                                url: '/workspace/deleteExecution',
+                                data: {eid:self.$executionId},
+                                success: function(data){self.deleteWorkflowCallBack(data)},
+                                error: function(data){return;}
+                            }
+                    );
+                }
+                this.$playButton.button('reset');
             };
 
             WfmngProtocol.prototype.getExecutioninfoCallBack = function(data){
@@ -230,11 +246,15 @@
 
                         }else if(i==13){
                             this.$details.append('<p> <a href="/lobcder'+data[i]+'">'+label[i]+'</a></p>');
+                        }else if(i==4){
+                            this.$details.append('<p><strong>'+label[i]+'</strong> <a href="'+data[i]+'">'+data[i]+'</a></p>');
                         }else{
                             this.$details.append('<p><strong>'+label[i]+'</strong> <span>'+data[i]+'</span></p>');
                         }
                     }
                 }
+                this.$statusInfo.show();
+                this.$details.show();
             };
 
             WfmngProtocol.prototype.getExecutioninfo = function(){
