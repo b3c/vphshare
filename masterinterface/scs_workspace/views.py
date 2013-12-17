@@ -91,6 +91,7 @@ def startExecution(request):
             taverna_execution.save()
             return HttpResponse(content=json.dumps(ret))
     except Exception, e:
+        print e
         pass
 
     return HttpResponse(status=403)

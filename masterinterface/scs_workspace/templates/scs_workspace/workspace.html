@@ -142,7 +142,7 @@
                             error: function(data){return;}
                         }
                 );
-                this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);
+                this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);                
             };
 
             WfmngProtocol.prototype.deleteWorkflowCallBack = function(data){
@@ -181,8 +181,7 @@
                 if(executionStatusCode<8 && !error){
                     if(executionStatusCode>0)
                         this.$playButton.button('loading');
-                    if (this.$timeoutid == 0)
-                        this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);
+                    this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);
                 }else{
                     window.clearTimeout(this.$timeoutid);
                     this.$playButton.button('reset');
@@ -199,8 +198,6 @@
                         }else{
                             this.$status.text(statusMessage[j]);
                         }
-                        $(alerts[j]).toggleClass( "alert-info", executionStatusCode == j && !error );
-                        $(alerts[j]).toggleClass( "alert-error", executionStatusCode == j && error );
                         if(j==0 || j==8){
                             $(alerts[j]).html(this.$status.text()+"<i class='icon-check'></i>");
                         }else{
@@ -212,15 +209,17 @@
                         }else{
                             $(alerts[j]).html(statusMessage[j]+"<i class='icon-check'></i>");
                         }
-                        $(alerts[j]).toggleClass( "alert-success", executionStatusCode > j );
                     }else{
                         if ($.isArray(statusMessage[j])){
                             $(alerts[j]).html(statusMessage[j][0]);
                         }else{
                             $(alerts[j]).html(statusMessage[j]);
                         }
-                        $(alerts[j]).toggleClass( "alert-disable", executionStatusCode < j);
                     }
+                    $(alerts[j]).toggleClass( "alert-info", executionStatusCode == j && !error );
+                    $(alerts[j]).toggleClass( "alert-error", executionStatusCode == j && error );
+                    $(alerts[j]).toggleClass( "alert-success", executionStatusCode > j );
+                    $(alerts[j]).toggleClass( "alert-disable", executionStatusCode < j);
                 }
 
                 for (var i=3; i<data.length;i++){
