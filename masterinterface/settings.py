@@ -195,7 +195,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
     'scs.templates_middleware.statusMessage',
-    'scs.templates_middleware.get_notifications'
+    'scs.templates_middleware.get_notifications',
+    'scs.templates_middleware.baseurl'
     )
 
 PASSWORD_HASHERS = (
