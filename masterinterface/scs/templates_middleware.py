@@ -50,3 +50,17 @@ def baseurl(request):
 
     return {'BASE_URL': scheme + request.get_host(),}
 
+
+def okcookies(request):
+    """
+    Return a BASE_URL template context for the current request.
+    """
+    if request.session.get('okcookies', False) or request.GET.get('cookie-agree', False):
+        request.session['okcookies'] = True
+        return {'OK_COOKIES': True}
+    else:
+        return {'OK_COOKIES': False}
+
+
+
+

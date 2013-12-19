@@ -64,12 +64,35 @@
     <div class="container">
         {% if not request.is_ajax %}
             {% block header %}
-                    {% if not request.user.is_authenticated %}
-                    <div class="alert alert-error" style="text-align: center">
-                            <strong>BETA!</strong>
-                            The Portal is now accessible only by the VPH-Share Consortium. Please contact <a href="mailto:support@vph-share.eu">our support service</a> if you like to join our Beta User Program.
+                    {% if not OK_COOKIES %}
+                        <script type="text/javascript">
+                            $(function(){
+                                $("#cookies-ok").click(function(){
+                                    $.ajax({
+                                                type: 'get',
+                                                url: '/?cookie-agree=true',
+                                                success: function(data){
+                                                    $('#cookies-message').slideUp();
+                                                    return true;
+                                                },
+                                                error: function(data){
+                                                    $('#cookies-message').slideUp();
+                                                    return true;}
+                                            }
+                                    );
+                                });
+                            });
+
+                        </script>
+                    <div id="cookies-message" class="alert alert-warning" >
+                            <p>We use cookies on our websites to help us offer you the best online experience. We've already placed some of these little packets of information on your browser to do this. By continuing to use our website, you're agreeing to our use of cookies. Alternatively, you can manage them in your browser settings.
+                            <button id="cookies-ok" class="btn btn-success">I accept</button> <a href="/privacy-policy#cookies">FIND OUT MORE ABOUT COOKIES</a></p>
                     </div>
                     {% endif %}
+                    <!--<div class="alert alert-error" style="text-align: center">
+                            <strong>BETA!</strong>
+                            The Portal is now accessible only by the VPH-Share Consortium. Please contact <a href="mailto:support@vph-share.eu">our support service</a> if you like to join our Beta User Program.
+                    </div>-->
                     <div id="page-title-wrapper" class="dev-page-title-wrapper">
                         <a href="/"><div id="logo-left" ></div></a>
                         <div id="page-title">
@@ -174,7 +197,9 @@
             <p class="muted">
                 <a href="/">Terms of use</a>
                 <span class="divider">|</span>
-                <a href="/static/VPH-Share-Privacy-Policy-1v0.pdf">Privacy</a>
+                <a href="/privacy-policy">Privacy policy</a>
+                <span class="divider">|</span>
+                <a href="/privacy-policy#cookies">Cookie policy</a>
                 <span class="divider">|</span>
                 <a href="/">Security</a>
                 <span class="divider">|</span>
