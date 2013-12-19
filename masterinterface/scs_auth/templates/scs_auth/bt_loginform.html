@@ -13,10 +13,6 @@
 
                 if (agreement.is(":visible")){
 
-                    if( ! $("#cookie-ok").attr("checked") ) {
-                        $("#cookie-question").addClass("alert-error");
-                        return;
-                    }
                     if( ! $("#privacy-ok").attr("checked") ) {
                         $("#privacy-question").addClass("alert-error");
                         return;
@@ -133,10 +129,6 @@
                 </div>
                 <div>Are you an Internet Explorer user? <a id="ie-help">click here</a></div>
                 <div id="agreement" class="well-small hide" style="font-size: 90%;">
-                    <div id="cookie-question" class="alert">
-                        <p>This site uses cookies to store information on your computer.</p>
-                        <label class="checkbox"><input type="checkbox" id="cookie-ok" /> I agree</label>
-                    </div>
                     <div id="privacy-question" class="alert">
                         <p>By using our site you accept the terms of our <a target="_blank" href="/static/VPH-Share-Privacy-Policy-1v0.pdf" >Privacy Policy</a>.</p>
                         <label class="checkbox"><input type="checkbox" id="privacy-ok" /> I accept</label>

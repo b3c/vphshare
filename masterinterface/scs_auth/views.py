@@ -58,7 +58,7 @@ def bt_agreement_check(request):
         try:
             user = User.objects.get(username=request.POST.get('username'))
             agreement = UserAgreement.objects.get(user=user)
-            if not agreement.privacy or not agreement.cookies:
+            if not agreement.privacy:
                 raise ObjectDoesNotExist
             response = HttpResponse('TRUE')
         except ObjectDoesNotExist:

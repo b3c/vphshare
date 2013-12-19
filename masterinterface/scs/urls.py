@@ -9,6 +9,7 @@ urlpatterns = patterns(
     'scs.views',
     url(r'^$', 'home' ),
     url(r'^about/$', TemplateView.as_view(template_name='scs/about.html')),
+    url(r'^privacy-policy/$', TemplateView.as_view(template_name='scs/privacy-policy.html')),
     url(r'^login/$', login , name='login'),
     url(r'^registration/$', registration , name='registration'),
     url(r'^reset_password_form/$', reset_password , name='registration'),
