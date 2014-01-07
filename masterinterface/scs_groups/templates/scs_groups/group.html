@@ -34,7 +34,7 @@
                 </div>
             {% endif %}
             <div class="span1">
-                <strong>{{ group.name }}</strong>
+                <strong>{{ group.name|truncatechars:10 }}</strong>
             </div>
             <div class="span1">
                 <span class="muted">{{ group.country }}</span>

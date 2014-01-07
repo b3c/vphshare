@@ -68,7 +68,9 @@
                 {% usemacro display_group institution 'study' 0 %}
             {% endif %}
         {% endfor %}
-         <!--for group in user_groups usemacro display_group group 'smart' 0 endfor -->
+        {%for group in user_groups %}
+            {% usemacro display_group group 'smart' 0 %} 
+        {% endfor %}
         {% for institution in other_institutions %}
             {% usemacro display_group institution 'institution' 0 %}
         {% endfor %}
