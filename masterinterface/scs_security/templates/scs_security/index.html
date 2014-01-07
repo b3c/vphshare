@@ -2,29 +2,6 @@
 
 {% block content %}
 
-    <h4>Your cloud resources</h4>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>name</th><th>status</th><th>site</th><th>atomic service name</th><th>action</th>
-            </tr>
-        </thead>
-    {% for resource in resources %}
-        <tr>
-            <td>{{ resource.name }}</td>
-            <td>{{ resource.status }}</td>
-            <td>{{ resource.siteId }}</td>
-            <td>{{ resource.atomicServiceName }}</td>
-            <td>
-                <a class="btn btn-link btn-success" href="/security/configuration/?endpoint={{ resource.atomicServiceId }}" title="configure properties"><span class="icon-wrench"></span></a>
-                <a class="btn btn-link" href="/security/policy/?endpoint={{ resource.atomicServiceId }}" title="configure security policy"><span class="icon-warning-sign"></span></a>
-            </td>
-        </tr>
-    {% endfor %}
-    </table>
-
-
     {% include 'scs_security/configurationslist.html' %}
 
     {% include 'scs_security/policieslist.html' %}

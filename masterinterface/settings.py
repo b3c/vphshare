@@ -248,7 +248,7 @@ SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
 CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'https://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
-CLOUDFACACE_URL = "https://vph.cyfronet.pl/cloudfacade"
+CLOUDFACACE_URL = "https://149.156.10.137/api/v1"
 CLOUDFACACE_SSL = False
 
 #Atos service

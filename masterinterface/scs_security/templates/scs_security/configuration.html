@@ -4,8 +4,8 @@
 
     {% include 'scs_security/configurationslist.html' %}
 
-    {% if configuration_name  %}
-        <h3>Security Proxy Configuration: {{ configuration_name }}</h3>
+    {% if configuration_obj  %}
+        <h3>Security Proxy Configuration: {{ configuration_obj.name }}</h3>
     {% else %}
         <h3>Create new Security Proxy Configuration</h3>
     {% endif %}
