@@ -16,7 +16,7 @@ def get_securitypolicies(ticket):
 
     r = requests.get(
         "%s/security_policies" % settings.CLOUDFACACE_URL,
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket},
         verify=settings.CLOUDFACACE_SSL
     )
     if r.status_code == 200:
@@ -31,7 +31,7 @@ def get_securitypolicy_by_id(ticket, policy_id):
 
     r = requests.get(
         "%s/security_policies?id=%s" % (settings.CLOUDFACACE_URL, policy_id),
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket},
         verify=settings.CLOUDFACACE_SSL
     )
     if r.status_code == 200:
@@ -48,7 +48,7 @@ def update_securitypolicy(ticket, policy_id, policy_name, policy_file):
 
     r = requests.put(
         "%s/security_policies/%s" % (settings.CLOUDFACACE_URL, policy_id),
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket, 'Content-Type': 'application/json'},
         data=body,
         verify=settings.CLOUDFACACE_SSL
     )
@@ -65,7 +65,7 @@ def create_securitypolicy(ticket, policy_name, policy_file):
 
     r = requests.post(
         "%s/security_policies" % settings.CLOUDFACACE_URL,
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket, 'Content-Type': 'application/json'},
         data = body,
         verify=settings.CLOUDFACACE_SSL
     )
@@ -80,7 +80,7 @@ def delete_securitypolicy(ticket, policy_id):
 
     r = requests.delete(
         "%s/security_policies/%s" % (settings.CLOUDFACACE_URL, policy_id),
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket},
         verify=settings.CLOUDFACACE_SSL
     )
 
@@ -94,7 +94,7 @@ def get_securityproxy_configurations(ticket):
 
     r = requests.get(
         "%s/security_proxies" % settings.CLOUDFACACE_URL,
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket},
         verify=settings.CLOUDFACACE_SSL
     )
 
@@ -108,7 +108,7 @@ def get_securityproxy_configurations_by_id(ticket, configuration_id):
 
     r = requests.get(
         "%s/security_proxies?id=%s" % (settings.CLOUDFACACE_URL, configuration_id),
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket},
         verify=settings.CLOUDFACACE_SSL
     )
 
@@ -122,7 +122,7 @@ def get_securityproxy_configuration_content(ticket, configuration_name):
 
     r = requests.get(
         "%s/security_proxies/%s/payload" % (settings.CLOUDFACACE_URL, configuration_name),
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket},
         verify=settings.CLOUDFACACE_SSL
     )
 
@@ -138,7 +138,7 @@ def create_securityproxy_configuration(ticket, configuration_name, configuration
 
     r = requests.post(
         "%s/security_proxies" % settings.CLOUDFACACE_URL,
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket, 'Content-Type': 'application/json'},
         data=body,
         verify=settings.CLOUDFACACE_SSL
     )
@@ -155,7 +155,7 @@ def update_securityproxy_configuration(ticket, configuration_id, configuration_n
 
     r = requests.put(
         "%s/security_proxies/%s" % (settings.CLOUDFACACE_URL, configuration_id),
-        headers={'mi_ticket': ticket},
+        headers={'MI-TICKET': ticket, 'Content-Type': 'application/json'},
         data = body,
         verify=settings.CLOUDFACACE_SSL
     )
@@ -163,14 +163,14 @@ def update_securityproxy_configuration(ticket, configuration_id, configuration_n
     return r.status_code in SUCCESSFUL_CODES
 
 
-def delete_securityproxy_configuration(ticket, configuration_name):
+def delete_securityproxy_configuration(ticket, configuration_id):
     """
         delete an existing security proxy configuration
     """
 
     r = requests.delete(
-        "%s/security_proxies/%s" % (settings.CLOUDFACACE_URL, configuration_name),
-        headers={'mi_ticket': ticket},
+        "%s/security_proxies/%s" % (settings.CLOUDFACACE_URL, configuration_id),
+        headers={'MI-TICKET': ticket},
         verify=settings.CLOUDFACACE_SSL
     )
 

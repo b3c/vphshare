@@ -46,9 +46,9 @@ def delete_policy(request):
     data = {}
 
     if request.method == 'POST':
-        policy_name = request.POST.get('name')
+        policy_id = request.POST.get('id')
 
-        if cloudfacade.delete_securitypolicy(request.COOKIES.get('vph-tkt'), policy_name):
+        if cloudfacade.delete_securitypolicy(request.COOKIES.get('vph-tkt'), policy_id):
             data['statusmessage'] = "Security Policy correctly deleted"
 
         else:
@@ -134,8 +134,9 @@ def configuration(request):
     if request.method == 'GET':
 
         configuration_id = request.GET.get('id', '')
-        configuration_obj = cloudfacade.get_securityproxy_configurations_by_id(request.COOKIES.get('vph-tkt'), configuration_id)
-        if configuration_obj:
+        if configuration_id:
+            configuration_obj = cloudfacade.get_securityproxy_configurations_by_id(request.COOKIES.get('vph-tkt'), configuration_id)
+        if configuration_id:
             data['configuration_obj'] = configuration_obj
             data['configuration_file'] = configuration_obj['payload'].decode('unicode_escape')
             try:
@@ -207,9 +208,9 @@ def delete_configuration(request):
     data = {}
 
     if request.method == 'POST':
-        configuration_name = request.POST.get('name')
+        configuration_id = request.POST.get('id')
 
-        if cloudfacade.delete_securityproxy_configuration(request.COOKIES.get('vph-tkt'), configuration_name):
+        if cloudfacade.delete_securityproxy_configuration(request.COOKIES.get('vph-tkt'), configuration_id):
             data['statusmessage'] = "Security Proxy configuration correctly deleted"
 
         else:
