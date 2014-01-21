@@ -100,12 +100,25 @@
 
             {% else %}
                 {% if not resource.already_requested %}
-                <button id="request-for-sharing-btn" data-toggle="button" class="btn btn-block btn-large btn-warning" onclick="request_for_sharing();">Request for sharing</button>
-                <form id="request-for-sharing-form" method="GET" action="/resources/request_for_sharing/">
-                    {% csrf_token %}
-                    <input type="hidden" name="id" value="{{ resource.id }}" />
-                    <input type="hidden" name="message" value="my custom message" />
-                </form>
+                <a href="#request-{{ resource.id }}" role="button" class="btn btn-block btn-large btn-warning" data-toggle="modal">Request for sharing</a>
+                <!-- Modal -->
+                <div id="request-{{ resource.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">Attach a message to your request</h3>
+                    </div>
+                    <form id="request-for-sharing-form" method="GET" action="/resources/request_for_sharing/">
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ resource.id }}" />
+                            <textarea style="width: 80%;" rows="3" name="message"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            <button id="request-for-sharing-btn"  aria-hidden="true"  data-dismiss="modal" class="btn btn-primary" onclick="request_for_sharing();">Send request</button>
+                        </div>
+                    </form>
+                </div>
                 {% else %}
                     <button id="request-for-sharing-btn" class="btn btn-block btn-large btn-warning disabled">You have already requested this resource</button>
                 {% endif %}

@@ -83,8 +83,8 @@ class UsersGroupsForm(forms.Form):
         users = User.objects.all()
         groups = Group.objects.all()
 
-        usersList = [("user_"+str(user.id),  "%s %s" % (user.first_name, user.last_name)) for user in users if user not in excludedList]
-        groupList = [("group_"+str(group.id),  "%s" % group.name) for group in groups if group not in excludedList]
+        usersList = [("user_"+str(user.username),  "%s %s" % (user.first_name, user.last_name)) for user in users if user not in excludedList]
+        groupList = [("group_"+str(group.name),  "%s" % group.name) for group in groups if group not in excludedList]
         usersList.sort(key=lambda tup: tup[1])
         groupList.sort(key=lambda tup: tup[1])
 

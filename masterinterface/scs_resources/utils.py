@@ -1,9 +1,12 @@
 __author__ = 'm.balasso@scsitaly.com'
 
 import random
-from django.db.models import Q
+from django.db.models import Q, ObjectDoesNotExist
+from django.contrib.auth.models import User, Group
+from django.template import loader
+from django.core.mail import EmailMultiAlternatives
 from permissions.models import Role, PrincipalRoleRelation
-from permissions.utils import has_local_role, has_permission
+from permissions.utils import has_local_role, has_permission, add_local_role, remove_local_role
 from workflows.utils import get_state
 from masterinterface.scs_resources.config import request_pending
 from masterinterface.scs_resources.models import ResourceRequest, Resource
@@ -157,3 +160,41 @@ def get_managed_resources(user):
             managed_resources.append(r.content)
 
     return managed_resources
+
+
+def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={}):
+    """
+        send an email to alert user
+    """
+
+    text_content = loader.render_to_string('scs_resources/%s.txt' % mail_template, dictionary=dictionary)
+    html_content = loader.render_to_string('scs_resources/%s.html' % mail_template, dictionary=dictionary)
+    msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
+    msg.attach_alternative(html_content, "text/html")
+    msg.content_subtype = "html"
+    msg.send()
+
+
+def grant_permission(name, resource, role):
+    try:
+        principal = User.objects.get(username=name)
+    except ObjectDoesNotExist, e:
+        principal = Group.objects.get(name=name)
+
+    try:
+    # look for a group with the dataset name
+        group_name = get_resource_global_group_name(resource, role)
+        group = Group.objects.get(name=group_name)
+        if type(principal) is User:
+            group.user_set.add(principal)
+        group.save()
+
+    except ObjectDoesNotExist, e:
+        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+        #add_role(principal, global_role)
+        pass
+
+        # grant local role to the user
+    add_local_role(resource, principal, role)
+
+    return principal

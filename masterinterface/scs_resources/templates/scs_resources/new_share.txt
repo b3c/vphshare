@@ -1,0 +1,5 @@
+Dear {{ requestor.first_name }}, a new resource - {{ resource.metadata.name }} - has been shared with you your!
+{{ BASE_URL }}/resources/{{ resource.global_id }}  Go here to start use it.
+
+Best regards,
+The VPH-Share Staff
