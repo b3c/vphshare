@@ -1,4 +1,6 @@
 {% extends 'scs/base.html' %}
+{% load macros %}
+{% loadmacros 'scs_resources/manage_resource_macro.html' %}
 {% load scs_extras %}
 {%  block title %} Dashboard {% endblock %}
 
@@ -7,489 +9,294 @@
     <!--[if IE 7]>
     <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
     <![endif]-->
+    <style>
+    .select2-container.select2-container-multi {
+        width: 200px !important;
+    }
+    </style>
 {% endblock %}
 
-{% block page-title %}
-    <span class="title">Dashboard</span>
-    <span class="subtitle">&nbsp</span>
-{% endblock%}
-
 {%  block content %}
-    <div class="row">
-        <div class="span12">
-
-            <div class="accordion" id="accordion2">
-
-                    <div class="accordion-group accordion-manage-data">
-                        <div class="accordion-heading">
-                            <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#datas">
-                                <h4>My Data </h4>
-                                <span class="icon-chevron-down pull-right"></span>
-                            </a>
-                        </div>
-                        <div id="datas" class="accordion-body collapse in">
-                            &nbsp
-                        {% for resource in datas %}
-                            <div class="row row-manage-data">
-                                <div class="span3">{{ resource.metadata.name }}</div>
-                                <div class="span3">Author: {{ resource.metadata.author }} </div>
-                                <div class="span3">Published: {{ resource.metadata.creation_date }}</div>
-                                <div class="span2">
-                                    <a href="/resources/{{ resource.global_id }}" target="_blank"><span class="icon icon-share-alt" style="padding-right: 25px;"></span></a>
-                                    <a href="#modal-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
-                                    <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group"></span>{% if resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}</a>
-                                </div>
-
-                                {% include 'scs_resources/manage_widget.html' %}
-                                {% include 'scs_resources/share_widget.html' %}
-                            </div>
-                        {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="accordion-group accordion-manage-data">
-                        <div class="accordion-heading">
-                            <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#applications">
-                                <h4>My Applications </h4>
-                                <span class="icon-chevron-down pull-right"></span>
-                            </a>
-                        </div>
-                        <div id="applications" class="accordion-body collapse in">
-                            &nbsp
-                        {% for resource in applications %}
-                            <div class="row row-manage-data">
-                                <div class="span3">{{ resource.metadata.name }}</div>
-                                <div class="span3">Author: {{ resource.metadata.author }} </div>
-                                <div class="span3">Published: {{ resource.metadata.creation_date }}</div>
-                                <div class="span2">
-                                    <a href="/resources/{{ resource.global_id }}" target="_blank"><span class="icon icon-share-alt" style="padding-right: 25px;"></span></a>
-                                    <a href="#modal-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
-                                    <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group"></span>{% if resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}</a>
-                                </div>
-
-                                {% include 'scs_resources/manage_widget.html' %}
-                                {% include 'scs_resources/share_widget.html' %}
-                            </div>
-                        {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="accordion-group accordion-manage-data">
-                        <div class="accordion-heading">
-                            <a class="accordion-toggle collapse-manage-data" data-toggle="collapse" data-parent="#accordion2" href="#workflows">
-                                <h4>My Workflows</h4>
-                                <span class="icon-chevron-down pull-right"></span>
-                            </a>
-                        </div>
-                        <div id="workflows" class="accordion-body collapse in">
-                            &nbsp
-                        {% for resource in workflows %}
-                            <div class="row row-manage-data">
-                                <div class="span3">{{ resource.metadata.name }}</div>
-                                <div class="span3">Author: {{ resource.metadata.author }} </div>
-                                <div class="span3">Published: {{ resource.metadata.creation_date }}</div>
-                                <div class="span2">
-                                    <a href="/resources/{{ resource.global_id }}" target="_blank"><span class="icon icon-share-alt" style="padding-right: 25px;"></span></a>
-                                    <a href="#modal-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon icon-cog" style="padding-right: 25px;"></span></a>
-                                    <a href="#share-{{ resource.id }}" role="button" data-toggle="modal"><span class="icon  icon-group"></span>{% if resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}</a>
-                                </div>
-
-                                {% include 'scs_resources/manage_widget.html' %}
-                                {% include 'scs_resources/share_widget.html' %}
-                            </div>
-                        {% endfor %}
-                        </div>
-                    </div>
-
-            </div>
-        </div>
+<div>
+    <ul class="nav nav-pills">
+      <li class="active">
+          <a>
+          My Data
+          </a>
+      </li>
+    </ul>
+    {% if datas|length == 0 %}
+    <div class="alert alert-info">
+        <span> you don't have data yet.</span>
     </div>
-    <script type="text/javascript">
+    {% endif %}
+    {%for resource in datas%}
+        {% usemacro resource_render resource %}
+    {% endfor %}
 
-        (function() {
-            var global = this;
-            var $ = global.$;
-            var console = global.console || {log:function() {}};
+    <ul class="nav nav-pills">
+        <li class="active">
+            <a>
+                My Applications
+            </a>
+        </li>
+    </ul>
+    {% if applications|length == 0 %}
+        <div class="alert alert-info">
+            <span> you don't have applications yet.</span>
+        </div>
+    {% endif %}
+    {%for resource in applications%}
+        {% usemacro resource_render resource %}
+    {% endfor %}
 
+    <ul class="nav nav-pills">
+        <li class="active">
+            <a>
+                My Workflows
+            </a>
+        </li>
+    </ul>
+    {% if workflows|length == 0 %}
+        <div class="alert alert-info">
+            <span> you don't have workflow yet.</span>
+        </div>
+    {% endif %}
+    {%for resource in workflows%}
+        {% usemacro resource_render resource %}
+    {% endfor %}
+</div>
+<script type="text/javascript">
 
-            var ManageModal = global.ManageModal = function(element, options) {
-                this.inizialize($(element));
-            };
-
-            ManageModal.prototype.inizialize = function(manageModal){
-                var self = this;
-                this.$globalId = manageModal.data('globalid');
-                this.$editDescriptionBtn = manageModal.find('#edit-description-btn');
-                this.$description = manageModal.find('#edit-description-textarea');
-                this.$updateDescriptionBtn = manageModal.find('#update-description');
-                this.$editDescriptionForm = manageModal.find('#edit-description-form');
-                this.$tag = manageModal.find('.tag');
-                this.$removeTag = manageModal.find('#remove-tag');
-                this.$enterTagForm = manageModal.find('#enter-tag-form');
-                this.$enterTagBtn = manageModal.find('#enter-tag-btn');
-                this.$tagInput = manageModal.find('#enter-tag-input');
-                this.$updateTagBtn = manageModal.find('#update-tag');
-                this.$modalDescription = manageModal.find('#modal-description');
-                this.$alert = manageModal.find('.alert');
-
-                this.$editDescriptionBtn.click(function(e){self.editDescription(e);});
-                this.$updateDescriptionBtn.click(function(e){self.updateDescription(e);});
-                this.$removeTag.click(function(e){self.removeTag(e,$(this).parent('.tag-label').find('.tag'));});
-                this.$enterTagBtn.click(function(e){self.enterTag(e);});
-                this.$updateTagBtn.click(function(e){self.updateTag(e);});
-
-            };
-
-            ManageModal.prototype.alert = function(message,style){
-                style = "alert-"+style;
-
-                this.$alert.find('#modal-message').text(message);
-                this.$alert.addClass(style);
-                this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
-                    $(this).removeClass(style).find('#modal-message').text('');
-                });
-            };
-
-            ManageModal.prototype.editDescription = function(e){
-                this.$editDescriptionBtn.hide();
-                this.$modalDescription.hide();
-                this.$editDescriptionForm.show();
-            };
-
-            ManageModal.prototype.updateDescriptionError = function(e){
-                this.$editDescriptionBtn.show();
-                this.$modalDescription.show();
-                this.$editDescriptionForm.hide();
-                this.alert("Error! Service don't not accept your request.","error");
-                this.$updateDescriptionBtn.button('reset');
-            };
-
-            ManageModal.prototype.updateDescriptionCallBack = function(e){
-                this.$modalDescription.text(this.$description.val());
-                this.$editDescriptionBtn.show();
-                this.$modalDescription.show();
-                this.$editDescriptionForm.hide();
-                this.alert("Done! Description updated.","success");
-                this.$updateDescriptionBtn.button('reset');
-            };
-
-            ManageModal.prototype.updateDescription = function(e){
-                this.$updateDescriptionBtn.button('loading');
-                var self = this;
-                var description = this.$description.val();
-
-                $.ajax('/update_description/', {
-                    data: {global_id:self.$globalId, description: description},
-                    type: 'POST',
-                    success: function(data) { self.updateDescriptionCallBack(data); },
-                    error: function(data) { self.updateDescriptionError(data); }
-                });
-            };
-
-            ManageModal.prototype.removeTagError = function(e){
-                this.alert("Error! Service don't accept your request.","error");
-            };
-
-            ManageModal.prototype.removeTagCallBack = function(e, tag){
-                tag.parent('.tag-label').remove();
-                this.alert("Done! Tag removed.","success");
-            };
-
-            ManageModal.prototype.removeTag = function(e, tag){
-                var self = this;
-                var removedTag = tag.text();
-
-                $.ajax('/delete_tag/', {
-                    data: {global_id:self.$globalId, tag: removedTag},
-                    type: 'POST',
-                    success: function(data) { self.removeTagCallBack(data, tag); },
-                    error: function(data) { self.removeTagError(data); }
-                });
-            };
-
-            ManageModal.prototype.enterTag = function(e){
-                this.$enterTagBtn.hide();
-                this.$enterTagForm.show();
-            };
-
-            ManageModal.prototype.updateTagError = function(e){
-                this.$enterTagBtn.show();
-                this.$enterTagForm.hide();
-                this.alert("Error! Service don't not accept your request.","error");
-                this.$updateTagBtn.button('reset');
-            };
-
-            ManageModal.prototype.updateTagCallBack = function(tag){
-                var self = this;
-                var newTag = $("<span class=\"label tag-label\" style=\"vertical-align: middle;margin-right: 5px;\"><div class=\"tag pull-left\">"+tag+"</div><div id=\"remove-tag\" type=\"button\" class=\"close pull-rigth\" style=\"margin-left:5px;line-height: 14px\">×</div></span>");
-                newTag.insertBefore(this.$enterTagBtn);
-                newTag.find('#remove-tag').click(function(e){self.removeTag(e,$(this).parent('.tag-label').find('.tag'));});
-                this.$enterTagBtn.show();
-                this.$enterTagForm.hide();
-                this.alert("Done! Tags updated","success");
-                this.$updateTagBtn.button('reset');
-            };
-
-            ManageModal.prototype.updateTag = function(e){
-                this.$updateTagBtn.button('loading');
-                var self = this;
-                var tag = this.$tagInput.val();
-
-                $.ajax('/update_tag/', {
-                    data: {global_id:self.$globalId, tag: tag},
-                    type: 'POST',
-                    success: function(data) { self.updateTagCallBack(tag); },
-                    error: function(data) { self.updateTagError(data); }
-                });
-            };
+    (function() {
+        var global = this;
+        var $ = global.$;
+        var console = global.console || {log:function() {}};
 
 
-            ManageModal.autoDiscover = function() {
-                $('.manage-modal-data').each(function(index, element) {
-                    new ManageModal(element);
-                });
+        var ManageModal = global.ManageModal = function(element, options) {
+            this.inizialize($(element));
+        };
 
-            };
-            ManageModal.autoDiscover();
-        }).call(this);
+        ManageModal.prototype.inizialize = function(manageModal){
+            var self = this;
+            this.$globalId = manageModal.data('globalid');
+            this.$editDescriptionBtn = manageModal.find('#edit-description-btn');
+            this.$description = manageModal.find('#edit-description-textarea');
+            this.$updateDescriptionBtn = manageModal.find('#update-description');
+            this.$editDescriptionForm = manageModal.find('#edit-description-form');
+            this.$tag = manageModal.find('.tag');
+            this.$removeTag = manageModal.find('#remove-tag');
+            this.$enterTagForm = manageModal.find('#enter-tag-form');
+            this.$enterTagBtn = manageModal.find('#enter-tag-btn');
+            this.$tagInput = manageModal.find('#enter-tag-input');
+            this.$updateTagBtn = manageModal.find('#update-tag');
+            this.$modalDescription = manageModal.find('#modal-description');
+            this.$alert = manageModal.find('.alert');
 
-        (function() {
-            var global = this;
-            var $ = global.$;
-            var console = global.console || {log:function() {}};
+            this.$editDescriptionBtn.click(function(e){self.editDescription(e);});
+            this.$updateDescriptionBtn.click(function(e){self.updateDescription(e);});
+            this.$removeTag.click(function(e){self.removeTag(e,$(this).parent('.tag-label').find('.tag'));});
+            this.$enterTagBtn.click(function(e){self.enterTag(e);});
+            this.$updateTagBtn.click(function(e){self.updateTag(e);});
+
+        };
+
+        ManageModal.prototype.alert = function(message,style){
+            style = "alert-"+style;
+
+            this.$alert.find('#modal-message').text(message);
+            this.$alert.addClass(style);
+            this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                $(this).removeClass(style).find('#modal-message').text('');
+            });
+        };
+
+        ManageModal.prototype.editDescription = function(e){
+            this.$editDescriptionBtn.hide();
+            this.$modalDescription.hide();
+            this.$editDescriptionForm.show();
+        };
+
+        ManageModal.prototype.updateDescriptionError = function(e){
+            this.$editDescriptionBtn.show();
+            this.$modalDescription.show();
+            this.$editDescriptionForm.hide();
+            this.alert("Error! Service don't not accept your request.","error");
+            this.$updateDescriptionBtn.button('reset');
+        };
+
+        ManageModal.prototype.updateDescriptionCallBack = function(e){
+            this.$modalDescription.text(this.$description.val());
+            this.$editDescriptionBtn.show();
+            this.$modalDescription.show();
+            this.$editDescriptionForm.hide();
+            this.alert("Done! Description updated.","success");
+            this.$updateDescriptionBtn.button('reset');
+        };
+
+        ManageModal.prototype.updateDescription = function(e){
+            this.$updateDescriptionBtn.button('loading');
+            var self = this;
+            var description = this.$description.val();
+
+            $.ajax('/update_description/', {
+                data: {global_id:self.$globalId, description: description},
+                type: 'POST',
+                success: function(data) { self.updateDescriptionCallBack(data); },
+                error: function(data) { self.updateDescriptionError(data); }
+            });
+        };
+
+        ManageModal.prototype.removeTagError = function(e){
+            this.alert("Error! Service don't accept your request.","error");
+        };
+
+        ManageModal.prototype.removeTagCallBack = function(e, tag){
+            tag.parent('.tag-label').remove();
+            this.alert("Done! Tag removed.","success");
+        };
+
+        ManageModal.prototype.removeTag = function(e, tag){
+            var self = this;
+            var removedTag = tag.text();
+
+            $.ajax('/delete_tag/', {
+                data: {global_id:self.$globalId, tag: removedTag},
+                type: 'POST',
+                success: function(data) { self.removeTagCallBack(data, tag); },
+                error: function(data) { self.removeTagError(data); }
+            });
+        };
+
+        ManageModal.prototype.enterTag = function(e){
+            this.$enterTagBtn.hide();
+            this.$enterTagForm.show();
+        };
+
+        ManageModal.prototype.updateTagError = function(e){
+            this.$enterTagBtn.show();
+            this.$enterTagForm.hide();
+            this.alert("Error! Service don't not accept your request.","error");
+            this.$updateTagBtn.button('reset');
+        };
+
+        ManageModal.prototype.updateTagCallBack = function(tag){
+            var self = this;
+            var newTag = $("<span class=\"label tag-label\" style=\"vertical-align: middle;margin-right: 5px;\"><div class=\"tag pull-left\">"+tag+"</div><div id=\"remove-tag\" type=\"button\" class=\"close pull-rigth\" style=\"margin-left:5px;line-height: 14px\">×</div></span>");
+            newTag.insertBefore(this.$enterTagBtn);
+            newTag.find('#remove-tag').click(function(e){self.removeTag(e,$(this).parent('.tag-label').find('.tag'));});
+            this.$enterTagBtn.show();
+            this.$enterTagForm.hide();
+            this.alert("Done! Tags updated","success");
+            this.$updateTagBtn.button('reset');
+        };
+
+        ManageModal.prototype.updateTag = function(e){
+            this.$updateTagBtn.button('loading');
+            var self = this;
+            var tag = this.$tagInput.val();
+
+            $.ajax('/update_tag/', {
+                data: {global_id:self.$globalId, tag: tag},
+                type: 'POST',
+                success: function(data) { self.updateTagCallBack(tag); },
+                error: function(data) { self.updateTagError(data); }
+            });
+        };
 
 
-            var ShareModal = global.ShareModal = function(element, options) {
-                this.inizialize($(element));
-            };
+        ManageModal.autoDiscover = function() {
+            $('.manage-modal-data').each(function(index, element) {
+                new ManageModal(element);
+            });
 
-            ShareModal.prototype.inizialize = function(shareModal){
-                var self = this;
-                this.$globalId = shareModal.data('globalid');
-                this.$localid = shareModal.data('localid');
-                this.$textInput = shareModal.find('#enter-text-input');
-                this.$searchBtn = shareModal.find('#search-btn');
-                this.$dataSearchResults = shareModal.find('#datashare-search-results');
-                this.$searchResults = shareModal.find('#search-results');
-                this.$csrfmiddlewaretoken = shareModal.find("input[name=csrfmiddlewaretoken]").val();
-                this.$shareModal = shareModal;
-                this.permissionMap = [];
+        };
+        ManageModal.autoDiscover();
+    }).call(this);
 
-                shareModal.find('.grant').each(function(index,element){
-                    self.grantEvent(element);
-                });
+    (function() {
+        var global = this;
+        var $ = global.$;
+        var console = global.console || {log:function() {}};
 
-                this.$searchBtn.click(function(e){self.searchUsersGroups(e);});
-                this.$alert = shareModal.find('.alert');
-            };
 
-            ShareModal.prototype.grantEvent = function(element){
-                var self = this;
-                var grant = $(element);
-                var name = grant.data('name');
-                var role = grant.data('rolename');
-                if (this.permissionMap[name] == undefined) {
-                    this.permissionMap[name] = [role];
-                }else if ($.inArray(role,this.permissionMap[name])<0){
-                    this.permissionMap[name].push(role);
-                }
-                grant.click(function(e){
-                    self.popupRole(e,$(this));
-                });
-            };
+        var ShareTab = global.ShareTab = function(element, options) {
+            this.inizialize($(element));
+        };
 
-            ShareModal.prototype.alert = function(message,style){
-                style = "alert-"+style;
+        ShareTab.prototype.inizialize = function(shareModal){
+            var self = this;
+            this.$globalId = shareModal.data('globalid');
+            this.$localid = shareModal.data('localid');
+            this.$csrfmiddlewaretoken = shareModal.find("input[name=csrfmiddlewaretoken]").val();
+            this.$shareModal = shareModal;
+            this.permissionMap = [];
 
-                this.$alert.find('#modal-message').text(message);
-                this.$alert.addClass(style);
-                this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
-                    $(this).removeClass(style).find('#modal-message').text('');
-                });
-            };
+            shareModal.find('.permissions-map > tr ').each(function(index,element){
+                var updating_alert = $(element).find('.updating-alert');
 
-            ShareModal.prototype.searchUsersGroupsError = function(e){
-                this.alert('Users and groups search don\'t work now, please try later.','error');
-            };
-
-            ShareModal.prototype.searchUsersGroupsCallBack = function(data){
-                var self = this;
-                this.$searchBtn.button('reset');
-                this.$dataSearchResults.show();
-                this.$searchResults.empty();
-
-                var groups = [];
-
-                $.each(data.users,
-                        function(i, user) {
-                            var span = $('<span/>',{
-                                'class': "label label-info grant",
-                                'data-name': user.username,
-                                html: user.fullname
-                            })
-                                    .css("margin-left","2px")
-                                    .appendTo(self.$searchResults);
-                            self.grantEvent(span);
-                        }
-                );
-
-                $.each(data.groups,
-                        function(i, group) {
-                            var span = $('<span/>',{
-                                'class': "label label-success grant",
-                                'data-name': group.groupname,
-                                html: group.groupname
-                            })
-                                    .css("margin-left","2px")
-                                    .appendTo(self.$searchResults);
-                            self.grantEvent(span);
-                        }
-
-                );
-
-            };
-
-            ShareModal.prototype.searchUsersGroups = function(e){
-                var self = this;
-                this.$searchBtn.button('loading');
-                $.ajax({
-                            dataType: "json",
-                            type: 'get',
-                            url: '/api/searchuserandgroup/',
-                            data: {term:self.$textInput.val(),ticket:'{{ tkt64 }}',csrfmiddlewaretoken:self.$csrfmiddlewaretoken},
-                            success: function(data){self.searchUsersGroupsCallBack(data)},
-                            error: function(data){self.searchUsersGroupsError(data)}
-                        }
-                );
-            };
-
-            ShareModal.prototype.popupRole = function(e, element){
-
-                var self = this;
-                e.preventDefault();
-                if (this.$popoveractive != undefined && this.$popoveractive[0] != element[0]){
-                    this.$popoveractive.popover('destroy');
-                    this.$popoveractive = undefined;
-                }
-                if (this.$popoveractive != undefined && this.$popoveractive[0] == element[0]){
-                    var popover = element.parent().find('.popover');
-                    if (!popover.hasClass('hide')){
-                        popover.addClass('hide');
-                        popover.css('display','none');
+                $(element).find('.roles').click(function(e){
+                    updating_alert.show();
+                    var rolename =  $(this).data('rolename');
+                    var name =  $(this).data('name');
+                    if (this.checked){
+                        self.grant( name,rolename,0, element)
                     }else{
-                        popover.removeClass('hide');
-                        popover.css('display','block');
+                        self.grant( name,rolename,1, element)
                     }
-                    return true;
-                }
 
-                var content = $('<div/>', {
-                    'class':'btn-group'
+                });
+            });
+
+            shareModal.find('.pendig-users > tr').each(function(index, element){
+
+                $(element).find('.accept').click(function(e){
+                    $(this).hide();
+                    $(element).find('.accept-roles').show();
                 });
 
-                $("#roles-list-"+this.$localid).find("dt").each(
-                        function(){
-                            $('<button/>', {
-                                'class': 'well well-small well-white filter ',
-                                'type': 'button',
-                                'data-loading-text': 'Waiting',
-                                text: $(this).text()
-                            }).appendTo(content);
-                        }
-                );
+            });
 
-                // content = $('<div class="btn-group" ><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Editor</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Manager</button><button data-loading-text="Waiting..." type="button" class="well well-small well-white filter ">Reader</button></div>');
-                content.find('.well').each(function(i,btn){
-                    var btn = $(btn);
-                    if ($.inArray(btn.text(),self.permissionMap[element.data('name')])>=0){
-                        btn.addClass('active');
-                    }
-                    var style = "label-info";
-                    if (element.hasClass('label-success')){
-                        style = 'label-success';
-                    }
-                    btn.click(function(e){self.setGrant(element.data('name'),element.text(), btn,style);});
-                });
+            this.$alert = shareModal.find('.alert');
+        };
 
-                element.popover({
-                    html:true,
-                    placement: 'top',
-                    title: 'Set Permissions',
-                    content : content,
-                    trigger : 'manual'
-                });
-                element.popover('show');
-                this.$popoveractive = element;
-            };
+        ShareTab.prototype.alert = function(message,style){
+            style = "alert-"+style;
 
-            ShareModal.prototype.setGrantError = function(data){
-                this.$popoveractive.popover('destroy');
-                this.$popoveractive = undefined;
-                this.alert('Error while setting the permission, try again or contact the Administrator.','error');
-            };
+            this.$alert.find('#modal-message').text(message);
+            this.$alert.addClass(style);
+            this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                $(this).removeClass(style).find('#modal-message').text('');
+            });
+        };
 
-            ShareModal.prototype.setGrantCallBack = function(data, revoke, name, role, style, contentLabel){
-                var self = this;
-                this.$popoveractive.popover('destroy');
-                this.$popoveractive = undefined;
-                if (revoke){
-                    this.alert('Grant revoked successful','success');
-                    $('#'+role+'-'+name).remove();
-                    var index = $.inArray(role,self.permissionMap[name]);
-                    this.permissionMap[name].splice(index,1);
-                    if (self.$shareModal.find('#'+role).find('.grant') == 0)
-                        self.$shareModal.find('#'+role).find('.noone').show();
-                }else{
-                    this.alert('Grant sets successful.','success');
-                    self.$shareModal.find('#'+role).find('.noone').hide();
-                    var span = $('<span/>',{
-                        'class': "label "+style+" grant",
-                        'id':role+'-'+name,
-                        'data-name': name,
-                        html: contentLabel
-                    })
-                            .css("margin-left","2px")
-                            .appendTo(self.$shareModal.find('#'+role));
-                    self.grantEvent(span);
-                    if (this.permissionMap[name] == undefined) {
-                        this.permissionMap[name] = [role];
-                    }else if ($.inArray(role,this.permissionMap[name])<0){
-                        this.permissionMap[name].push(role);
-                    }
-                }
 
-            };
+        ShareTab.prototype.grant = function(setTo, roleToset, method, element){
+            var self = this;
+            var urls = ['/grantrole', '/revokerole'];
+            var url = urls[method];
+            $.ajax({
+                dataType: "json",
+                url: url,
+                method: 'get',
+                data: {name: setTo, role: roleToset, csrfmiddlewaretoken: self.$csrfmiddlewaretoken, global_id: self.$globalId},
+                success: function(data){
+                    $(element).find('.updating-alert').hide(); $(element).find('.updating-ok').show().delay(10000).hide();},
+                error: function(data){
+                    $(element).find('.updating-alert').hide(); $(element).find('.updating-error').show().delay(10000).hide();}
+            });
+        };
 
-            ShareModal.prototype.setGrant = function(setTo, contentLabel, roleBtn,style){
-                var self = this;
-                var roleToset = roleBtn.text();
-                roleBtn.button('loading');
-                var url = '/grantrole';
-                var revoke = false;
-                if (roleBtn.hasClass('active')){
-                    url = '/revokerole';
-                    revoke = true;
-                }
 
-                $.ajax({
-                    dataType: "json",
-                    url: url,
-                    method: 'get',
-                    data: {name: setTo, role: roleToset, csrfmiddlewaretoken: self.$csrfmiddlewaretoken, global_id: this.$globalId},
-                    success: function(data){self.setGrantCallBack(data,revoke,setTo,roleToset,style, contentLabel);},
-                    error: function(data){self.setGrantError(data);}
-                });
+        ShareTab.autoDiscover = function() {
+            $('.share-pannel').each(function(index, element) {
+                new ShareTab(element);
+            });
 
-            };
-
-            ShareModal.autoDiscover = function() {
-                $('.share-modal').each(function(index, element) {
-                    new ShareModal(element);
-                });
-
-            };
-            ShareModal.autoDiscover();
-        }).call(this);
-    </script>
+        };
+        ShareTab.autoDiscover();
+    }).call(this);
+</script>
 
 {% endblock %}

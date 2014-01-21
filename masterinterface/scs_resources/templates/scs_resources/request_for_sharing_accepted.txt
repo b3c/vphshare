@@ -1,4 +1,4 @@
 Dear {{ requestor.first_name }}, your request for sharing the resource {{ resource.metadata.name }} has been accepted!
-
+{{ BASE_URL }}/resources/{{ resource.global_id }} Go here to start
 Best regards,
 The VPH-Share Staff

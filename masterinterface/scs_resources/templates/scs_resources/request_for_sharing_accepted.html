@@ -2,7 +2,7 @@
 <html>
 <body>
     <p>Dear {{ requestor.first_name }}, your request for sharing the resource {{ resource.metadata.name }} has been accepted!</p>
-
+    <p><a href="{{ BASE_URL }}/resources/{{ resource.global_id }}" target="_blank">Click here to start</a></p>
     <p>Best regards, <br /> The VPH-Share Staff</p>
 
 </body>

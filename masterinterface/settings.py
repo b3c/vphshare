@@ -247,9 +247,9 @@ SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
-CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'https://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
-CLOUDFACACE_URL = "https://149.156.10.137/api/v1"
+CLOUDFACACE_URL = "https://vph.cyfronet.pl/api/v1"
 CLOUDFACACE_SSL = False
+CLOUD_FACADE_URL = "https://vph.cyfronet.pl/api/v1"
 
 #Atos service
 ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"

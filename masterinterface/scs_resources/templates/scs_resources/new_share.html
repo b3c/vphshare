@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <p>Dear {{ requestor.first_name }}, a new resource - {{ resource.metadata.name }} - has been shared with you your.</p>
+    <p><a href="{{ BASE_URL }}/resources/{{ resource.global_id }}" target="_blank">Click here to start use it</a></p>
+    <p>Best regards, <br /> The VPH-Share Staff</p>
+
+</body>
+</html>
