@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
     <![endif]-->
     <script src="/static/clew/clew.nocache.js" type="text/javascript"></script>
+    <script type="text/javascript">
+		var ClewOverrides = {
+			cloudFacadeUrl: "{{ cloudFacadeUrl }}"
+		}
+    </script>
 {% endblock %}
 
 {% block page-title %}
