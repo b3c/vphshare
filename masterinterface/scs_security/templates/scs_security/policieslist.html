@@ -7,16 +7,16 @@
     </thead>
     {% for policy in policies %}
         <tr>
-            <td>{{ policy }}</td>
+            <td>{{ policy.name }}</td>
             <td>
-                <a class="btn btn-link btn-success" href="/security/policy/?name={{ policy }}" title="manage policy file"><span class="icon-wrench"></span></a>
+                <a class="btn btn-link btn-success" href="/security/policy/?id={{ policy.id }}" title="manage policy file"><span class="icon-wrench"></span></a>
                 <a class="btn btn-link btn-warning" href="/security/policy/" title="delete policy file"
-                   onclick="event.preventDefault(); if (confirm('Are you sure you want to delete this policy?')){$('#{{ policy }}').submit();}"><span class="icon-remove-sign"></span></a>
+                   onclick="event.preventDefault(); if (confirm('Are you sure you want to delete this policy?')){$('#{{ policy.id }}').submit();}"><span class="icon-remove-sign"></span></a>
             </td>
         </tr>
-        <form id="{{ policy }}" action="/security/deletepolicy/" method="post" enctype="multipart/form-data">
+        <form id="{{ policy.id }}" action="/security/deletepolicy/" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="hidden" name="name" value="{{ policy }}">
+            <input type="hidden" name="id" value="{{ policy.id }}">
         </form>
     {% empty %}
         <tr>
@@ -25,4 +25,4 @@
     {% endfor %}
 </table>
 
-<a href="/security/policy/"><button class="btn btn-link">create a new security policy</button></a>
+<a href="/security/policy/"><button class="btn btn-link">create a new policy</button></a>

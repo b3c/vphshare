@@ -56,6 +56,62 @@ def get_permissions_map(resource_of_any_type):
 
     return permissions_map
 
+def get_user_group_permissions_map(resource_of_any_type):
+
+    resource = Resource.objects.get(id=resource_of_any_type.id)
+
+    permissions_map = []
+    resource_roles = get_resource_local_roles(resource)
+
+    # look for user with those roles
+    for role in resource_roles:
+        role_relations = PrincipalRoleRelation.objects.filter(role__name__exact=role.name)
+        for r in role_relations:
+            if r.user is not None and r.content_id == resource.id and has_local_role(r.user, role, resource):
+                if r.user in permissions_map:
+                    index = permissions_map.index(r.user)
+                    if role.name not in permissions_map[index].roles:
+                        permissions_map[index].roles.append(role.name)
+                else:
+                    if getattr(r.user, 'roles', None) is not None:
+                        if role.name not in r.user.roles:
+                            r.user.roles.append(role.name)
+                    else:
+                        r.user.roles = []
+                        r.user.roles.append(role.name)
+                    permissions_map.append(r.user)
+            if r.group is not None and r.content_id == resource.id and has_local_role(r.group, role, resource):
+                try:
+                    vph_smart_group = VPHShareSmartGroup.objects.get(name=r.group.name)
+                    for user in vph_smart_group.user_set.all():
+                        if user in permissions_map:
+                            index = permissions_map.index(user)
+                            if role.name not in permissions_map[index].roles:
+                                permissions_map[index].roles.append(role.name)
+                        else:
+                            if getattr(user, 'roles', None) is not None:
+                                if role.name not in user.roles:
+                                    user.roles.append(role.name)
+                            else:
+                                user.roles = []
+                                user.roles.append(role.name)
+                            permissions_map.append(user)
+                except Exception:
+                    if r.group in permissions_map:
+                        index = permissions_map.index(r.group)
+                        if role.name not in permissions_map[index].roles:
+                            permissions_map[index].roles.append(role.name)
+                    else:
+                        if getattr(r.group, 'roles', None) is not None:
+                            if role.name not in r.group.roles:
+                                r.group.roles.append(role.name)
+                        else:
+                            r.group.roles = []
+                            r.group.roles.append(role.name)
+                        permissions_map.append(r.group)
+                    pass
+
+    return permissions_map
 
 def is_request_pending(r):
     state = get_state(r)

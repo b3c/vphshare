@@ -127,8 +127,8 @@
                 this.$deleteButton.click(function(){
                    self.deleteWorkflow();
                 });
-                this.$statusInfo.hide();
-                this.$details.hide();
+                //this.$statusInfo.hide();
+                //this.$details.hide();
                 this.getExecutioninfo();
                 this.$alert = wfmngProtocol.find('.alert');
             };
@@ -253,8 +253,8 @@
                         }
                     }
                 }
-                this.$statusInfo.show();
-                this.$details.show();
+                //this.$statusInfo.show();
+                //this.$details.show();
             };
 
             WfmngProtocol.prototype.getExecutioninfo = function(){

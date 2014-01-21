@@ -7,16 +7,16 @@
     </thead>
     {% for configuration in configurations%}
         <tr>
-            <td>{{ configuration }}</td>
+            <td>{{ configuration.name }}</td>
             <td>
-                <a class="btn btn-link btn-success" href="/security/configuration/?name={{ configuration }}" title="manage configuration file"><span class="icon-wrench"></span></a>
+                <a class="btn btn-link btn-success" href="/security/configuration/?id={{ configuration.id }}" title="manage configuration file"><span class="icon-wrench"></span></a>
                 <a class="btn btn-link btn-warning" href="/security/configuration/" title="delete configuration file"
-                   onclick="event.preventDefault(); if (confirm('Are you sure you want to delete this configuration?')){$('#{{ configuration }}-conf').submit();}"><span class="icon-remove-sign"></span></a>
+                   onclick="event.preventDefault(); if (confirm('Are you sure you want to delete this configuration?')){$('#{{ configuration.id }}-conf').submit();}"><span class="icon-remove-sign"></span></a>
             </td>
         </tr>
-        <form id="{{ configuration }}-conf" action="/security/deleteconfiguration/" method="post" enctype="multipart/form-data">
+        <form id="{{ configuration.id }}-conf" action="/security/deleteconfiguration/" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="hidden" name="name" value="{{ configuration }}">
+            <input type="hidden" name="id" value="{{ configuration.id }}">
         </form>
     {% empty %}
         <tr>

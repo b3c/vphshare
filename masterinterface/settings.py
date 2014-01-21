@@ -195,7 +195,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     'social_auth.context_processors.social_auth_by_type_backends',
     'scs.templates_middleware.statusMessage',
-    'scs.templates_middleware.get_notifications'
+    'scs.templates_middleware.get_notifications',
+    'scs.templates_middleware.baseurl',
+    'scs.templates_middleware.okcookies'
     )
 
 PASSWORD_HASHERS = (
@@ -245,7 +247,7 @@ SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Cyfronet Settings
-CLOUDFACACE_URL = "https://vph.cyfronet.pl/cloudfacade"
+CLOUDFACACE_URL = "https://149.156.10.137/api/v1"
 CLOUDFACACE_SSL = False
 CLOUD_FACADE_URL = "https://vph.cyfronet.pl/api/v1"
 

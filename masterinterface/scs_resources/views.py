@@ -21,7 +21,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import Resource, Workflow, ResourceRequest
 from config import ResourceRequestWorkflow, request_pending, request_accept_transition, ResourceWorkflow
-from forms import WorkflowForm
+from forms import WorkflowForm, UsersGroupsForm
 from masterinterface.atos.metadata_connector import *
 from utils import *
 
@@ -202,7 +202,11 @@ def manage_resources(request):
                     pass
 
             resource.permissions_map = get_permissions_map(resource)
+            resource.roleslist = get_resource_local_roles(resource)
             resource.requests = get_pending_requests_by_resource(resource)
+            resource.sharreduser = get_user_group_permissions_map(resource)
+            resource.user_group_finder = UsersGroupsForm(id="user_group_"+resource.global_id,
+                                                         excludedList=resource.sharreduser)
 
             if str(resource.metadata['type']).lower() in ['dataset', 'file']:
                 datas.append(resource)
@@ -218,7 +222,6 @@ def manage_resources(request):
     except AtosServiceException, e:
         request.session['errormessage'] = 'Metadata server is down. Please try later'
         pass
-
     return render_to_response(
         "scs_resources/manage_resources.html",
         {'workflows': workflows,
@@ -270,7 +273,7 @@ def grant_role(request):
     except ObjectDoesNotExist, e:
         principal = Group.objects.get(name=name)
 
-    # TODO ADD GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
+    # TODO ADD GLOBAL ROLE ACCORDING TO RESOURCE NAME!!! and update the security proxy?
     try:
         # look for a group with the dataset name
         group_name = get_resource_global_group_name(resource, role)
@@ -340,7 +343,7 @@ def revoke_role(request):
         group.save()
 
     except ObjectDoesNotExist, e:
-        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
+        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!! and update the security proxy?
         # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
         # remove_role(principal, global_role)
         pass
@@ -351,7 +354,7 @@ def revoke_role(request):
     response = HttpResponse(content=response_body, content_type='application/json')
     return response
 
-
+# I don't know why but nobody use this view TOFIX!
 def create_role(request):
     """
         create the requested role and the relative security

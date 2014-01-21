@@ -1,5 +1,6 @@
 {% extends 'scs/base.html' %}
 {% load scs_extras %}
+{% load django_select2_tags %}
 {%  block title %} Dashboard {% endblock %}
 
 {% block extrahead %}
@@ -7,14 +8,150 @@
     <!--[if IE 7]>
     <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
     <![endif]-->
+    <style>
+    .select2-container.select2-container-multi {
+        width: 200px !important;
+    }
+    </style>
 {% endblock %}
 
-{% block page-title %}
-    <span class="title">Dashboard</span>
-    <span class="subtitle">&nbsp</span>
-{% endblock%}
-
 {%  block content %}
+<div>
+<ul class="nav nav-pills">
+  <li class="active">
+      <a>
+      My Data
+      </a>
+  </li>
+</ul>
+{% if datas|length == 0 %}
+<div class="alert alert-info">
+    <span id="modal-message"> you don't have data yet.</span>
+</div>
+{% endif %}
+{%for resource in datas%}
+<div id="{{ resource.id }}"  class="resource well well-small">
+    <div class="row">
+        <div  class="span4">
+        {{ resource.metadata.name }}
+        </div>
+        <div class="span5">
+        Author: {{ resource.metadata.author }} | Published: {{ resource.metadata.creation_date }}
+        </div>
+
+        <div class="span2">
+            <div class="btn-group">
+                <button id="link-button" class="btn btn-success btn-mini" title="Open in new tab" >
+                    <a href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
+                </button>
+                <a id="details-button" class="btn btn-warning btn-mini accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ resource.id }}-details">
+                    <i class="icon-reorder"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="alert hide" style="display: none;">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <span id="modal-message"></span>
+    </div>
+    <div id="{{ resource.id }}-details" class="accordion-body collapse">
+        <ul class="nav nav-tabs" id="details-tab">
+          <li class="active">
+            <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
+          </li>
+          <li><a href="#{{ resource.id }}-share" data-toggle="tab">Share</a></li>
+        </ul>
+        <div class="tab-content">
+          <div data-globalid="{{ resource.global_id }}" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
+            <div class="alert hide">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span id="modal-message"></span>
+            </div>
+            <ul class="unstyled modal-list">
+                <li>Description: <span id="modal-description">{{ resource.metadata.description }}</span>
+                    <button id="edit-description-btn" class="btn btn-mini">edit</button>
+                    <span id="edit-description-form" class="input-append hide" style="margin-bottom: 0px;">
+                        <textarea id="edit-description-textarea" class="input-size-mini">{{ resource.metadata.description }} </textarea>
+                        <button id="update-description" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button>
+                    </span>
+                </li>
+                {% with  resource.metadata.tags|split:"," as tags%}
+                    <li>Tags:
+                        {% for tag in tags %}
+                            <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">{{ tag }}</div><div id="remove-tag" type="button" class="close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                        {% endfor %}
+                        <button id="enter-tag-btn" class="btn btn-mini">Enter tag</button>
+                        <span id="enter-tag-form" class="input-append hide" style="margin-bottom: 0px;"><input id="enter-tag-input" type="text" class="input-medium input-size-mini"><button id="update-tag" class="btn btn-mini" type="button" data-loading-text="Updating...">update</button></span>
+                    </li>
+                    <li>Licence: <span class="label" style="margin-right: 5px;">{{ resource.metadata.licence }}</span> <button class="btn btn-mini">Upload licence</button></li>
+                    <li>Views: {{ resource.metadata.views }}</li>
+                {% endwith %}
+                </ul>
+                <div class="row-fluid" style="font-size: 13px;"><div class="span4">Published: {{ resource.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ resource.metadata.category }}</div><div class="span4">Type: {{ resource.metadata.type }}</div></div>
+          </div>
+          <div class="tab-pane" id="{{ resource.id }}-share">
+               {% if resource.requests %}
+                <h6>Pending requests:</h6>
+                    <table style="width: 100%" class="table table-condensed">
+                        <tbody>
+                        {% for r in resource.requests %}
+                            <tr data-name="{{ r.requestor.username }}" ><td class="user-name">{{ r.requestor.first_name}} {{ r.requestor.last_name}} </td><td class="user-message">{% if r.message %}{{ r.message }}{% else %}<span class="label label-info">No message</span>{% endif %} | Date: <span>{{ r.date }}</span></td><td class="request-accept"><button class="btn btn-mini btn-success">Accept</button>&nbsp<button class="btn btn-mini btn-danger">Refuse</button></td></tr>
+                         {% endfor %}
+                       </tbody>
+                  </table>
+                   <hr/>
+                {% endif %}
+              <h6>Share this resource with new user or group:</h6>
+              <form class="form-inline" style="margin:0px;" action="/groups/{{ group.id }}/addtogroup/" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+                    {{ resource.user_group_finder }}
+                    <label class="checkbox inline">
+                      <input type="checkbox" id="reader" value="reader"> Reader
+                    </label>
+                    <label class="checkbox inline">
+                      <input type="checkbox" id="editor" value="editor"> Editor
+                    </label>
+                    <label class="checkbox inline">
+                      <input type="checkbox" id="manager" value="manager"> Manager
+                    </label>
+                    <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept"><span class="icon-plus icon-white"></span></button>
+              </form>
+              <hr/>
+              {% if resource.sharreduser %}
+              <table class=" table table-striped table-hover">
+                  <thead>
+                      <tr>
+                      <th><span class="label label-info">Users</span> and <span class="label label-success"> Groups</span></th>{% for role in resource.roleslist %}<th>{{ role.name }}</th>{% endfor %}
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for user in resource.sharreduser %}
+                      <tr>
+                      {% if user.username %}
+                          <td><span class="label label-info">{{ user.first_name}} {{ user.last_name}}</span></td>
+                      {% else %}
+                          <td><span class="label label-success">{{user.name}}</span></td>
+                      {% endif %}
+                      {% for role in resource.roleslist %}
+                          <td>
+                              <input type="checkbox" id="reader" value="reader" data-rolename="{{ role.name }}"
+                                     data-name="{% if user.username %}{{ user.username }}{% else %}{{ user.name }}{% endif %}"
+                                     {% if role.name in user.roles %}checked{% endif %}>
+                          </td>
+                      {% endfor %}
+                      </tr>
+
+                  {% endfor %}
+                  </tbody>
+              </table>
+              <hr />
+              {% endif %}
+          </div> <!-- end tabpane2 -->
+        </div><!-- end tabcontent -->
+     </div>
+</div>
+{% endfor %}
+</div>
     <div class="row">
         <div class="span12">
 
