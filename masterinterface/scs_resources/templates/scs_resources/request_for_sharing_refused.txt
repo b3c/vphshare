@@ -1,0 +1,7 @@
+Dear {{ requestor.first_name }},
+we are sorry but the owner of {{ resource.metadata.name }} refused your request for sharring.
+{%if message%}
+Here a message attached by the owner: {{message}}
+{%endif%}
+Best regards,
+The VPH-Share Staff

@@ -9,6 +9,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 from django.core.mail import EmailMultiAlternatives
+from django.core.urlresolvers import reverse
 from permissions.models import PrincipalRoleRelation, Role
 from permissions.utils import add_role, remove_role, has_local_role, has_permission, add_local_role, remove_local_role
 from workflows.utils import get_state, set_workflow, set_state, do_transition
@@ -20,23 +21,10 @@ from masterinterface.atos.metadata_connector import get_resource_metadata, AtosS
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import Resource, Workflow, ResourceRequest
-from config import ResourceRequestWorkflow, request_pending, request_accept_transition, ResourceWorkflow
-from forms import WorkflowForm
+from config import ResourceRequestWorkflow, request_pending, request_accept_transition, ResourceWorkflow, request_refuse_transition
+from forms import WorkflowForm, UsersGroupsForm
 from masterinterface.atos.metadata_connector import *
 from utils import *
-
-
-def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={}):
-    """
-        send an email to alert user
-    """
-
-    text_content = loader.render_to_string('scs_resources/%s.txt' % mail_template, dictionary=dictionary)
-    html_content = loader.render_to_string('scs_resources/%s.html' % mail_template, dictionary=dictionary)
-    msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.content_subtype = "html"
-    msg.send()
 
 
 def resource_detailed_view(request, id='1'):
@@ -125,6 +113,7 @@ def request_for_sharing(request):
 
     resource = Resource.objects.get(id=request.GET.get('id'))
     resource_request, created = ResourceRequest.objects.get_or_create(resource=resource, requestor=request.user)
+    resource_request.message = request.GET.get('message', None)
     resource_request.save()
 
     # TODO these actions should be not necessary
@@ -134,28 +123,31 @@ def request_for_sharing(request):
     set_state(resource_request, request_pending)
 
     # alert owner by email
-    alert_user_by_email(
-        mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
-        mail_to='%s %s <%s>' % (resource.owner.first_name, resource.owner.last_name, resource.owner.email),
-        subject='[VPH-Share] You have receive a request for sharing',
-        mail_template='incoming_request_for_sharing',
-        dictionary={
-            'message': request.GET.get('requestmessage', ''),
-            'resource': resource,
-            'requestor': request.user
-        }
-    )
+    try:
+        alert_user_by_email(
+            mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+            mail_to='%s %s <%s>' % (resource.owner.first_name, resource.owner.last_name, resource.owner.email),
+            subject='[VPH-Share] You have receive a request for sharing',
+            mail_template='incoming_request_for_sharing',
+            dictionary={
+                'message': request.GET.get('message', None),
+                'resource': resource,
+                'requestor': request.user
+            }
+        )
 
-    # alert requestor by email
-    alert_user_by_email(
-        mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
-        mail_to='%s %s <%s>' % (request.user.first_name, request.user.last_name, request.user.email),
-        mail_template='request_for_sharing_sent',
-        subject='[VPH-Share] Your request for sharing has been delivered to resource owner',
-        dictionary={
-            'requestor': request.user
-        }
-    )
+        # alert requestor by email
+        alert_user_by_email(
+            mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+            mail_to='%s %s <%s>' % (request.user.first_name, request.user.last_name, request.user.email),
+            mail_template='request_for_sharing_sent',
+            subject='[VPH-Share] Your request for sharing has been delivered to resource owner',
+            dictionary={
+                'requestor': request.user
+            }
+        )
+    except Exception, e:
+        pass
 
     # return to requestor
     response_body = json.dumps({"status": "OK", "message": "The Resource owner has received your request."})
@@ -169,7 +161,9 @@ def manage_resources(request):
     workflows = []
     datas = []
     applications = []
-
+    collapse = request.session.get('collapse', [])
+    if request.session.get('collapse', None):
+        del request.session['collapse']
     try:
         # update resources list
         resources = filter_resources_by_author(request.user.username)
@@ -201,8 +195,12 @@ def manage_resources(request):
                 except ObjectDoesNotExist, e:
                     pass
 
-            resource.permissions_map = get_permissions_map(resource)
+            #resource.permissions_map = get_permissions_map(resource)
+            resource.roleslist = get_resource_local_roles(resource)
             resource.requests = get_pending_requests_by_resource(resource)
+            resource.sharreduser = get_user_group_permissions_map(resource)
+            resource.user_group_finder = UsersGroupsForm(id="user_group_"+resource.global_id,
+                                                         excludedList=resource.sharreduser)
 
             if str(resource.metadata['type']).lower() in ['dataset', 'file']:
                 datas.append(resource)
@@ -218,12 +216,12 @@ def manage_resources(request):
     except AtosServiceException, e:
         request.session['errormessage'] = 'Metadata server is down. Please try later'
         pass
-
     return render_to_response(
         "scs_resources/manage_resources.html",
         {'workflows': workflows,
          'datas': datas,
          'applications': applications,
+         'collapse': collapse,
         'tkt64': request.COOKIES.get('vph-tkt')},
         RequestContext(request)
     )
@@ -255,6 +253,113 @@ def resource_share_widget(request, id='1'):
     )
 
 
+def acceptRequest(request):
+    if request.method == 'POST':
+        name = request.POST.get('user')
+        role = Role.objects.get(name=request.POST.get('role'))
+        resource = Resource.objects.get(global_id=request.POST.get('resource'))
+
+        principal = grant_permission(name, resource, role)
+
+        # change request state if exists
+        try:
+            resource_request = ResourceRequest.objects.filter(requestor=principal, resource=resource)
+            if resource_request.count() and is_request_pending(resource_request[0]):
+                do_transition(resource_request[0], request_accept_transition, request.user)
+                resource_request[0].delete()
+
+                # alert requestor
+                alert_user_by_email(
+                    mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+                    mail_to='%s %s <%s>' % (principal.first_name, principal.last_name, principal.email),
+                    subject='[VPH-Share] Your request for sharing has been accepted',
+                    mail_template='request_for_sharing_accepted',
+                    dictionary={
+                        'resource': resource,
+                        'requestor': principal
+                    }
+                )
+        except Exception, e:
+            pass
+
+        request.session['collapse'] = [resource.global_id]
+        return redirect(reverse('manage-data') + "#" + str(resource.id))
+    return HttpResponse(status="500")
+
+
+def rejectRequest(request):
+    if request.method == 'POST':
+        name = request.POST.get('user')
+        resource = Resource.objects.get(global_id=request.POST.get('resource'))
+        principal = User.objects.get(username=name)
+        # change request state if exists
+        try:
+            resource_request = ResourceRequest.objects.filter(requestor=principal, resource=resource)
+            if resource_request.count() and is_request_pending(resource_request[0]):
+                do_transition(resource_request[0], request_refuse_transition, request.user)
+                resource_request[0].delete()
+                # alert requestor
+                alert_user_by_email(
+                    mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+                    mail_to='%s %s <%s>' % (principal.first_name, principal.last_name, principal.email),
+                    subject='[VPH-Share] Your request for sharing has been refused',
+                    mail_template='request_for_sharing_refused',
+                    dictionary={
+                        'resource': resource,
+                        'requestor': principal,
+                        'message': request.POST.get('message')
+                    }
+                )
+        except Exception, e:
+            pass
+
+        request.session['collapse'] = [resource.global_id]
+        return redirect(reverse('manage-data') + "#" + str(resource.id))
+    return HttpResponse(status="500")
+
+
+def newshare(request):
+    if request.method == 'POST':
+        input = request.POST.getlist('Usersinput')
+        resource = Resource.objects.get(global_id=request.POST.get('resource'))
+        roles = []
+        if request.POST.get('editor', None):
+            roles.append(request.POST.get('editor', None))
+        if request.POST.get('reader', None):
+            roles.append(request.POST.get('reader', None))
+        if request.POST.get('manager', None):
+            roles.append(request.POST.get('manager', None))
+        if len(roles) > 0:
+            for usergroup in input:
+                splitted = usergroup.split('_')[0]
+                name = usergroup.replace(splitted + '_', '')
+                for role in roles:
+                    role = Role.objects.get(name=role)
+                    principal = grant_permission(name, resource, role)
+                    try:
+                        resource_request = ResourceRequest.objects.filter(requestor=principal, resource=resource)
+                        if resource_request.count() and is_request_pending(resource_request[0]):
+                            do_transition(resource_request[0], request_accept_transition, request.user)
+                            resource_request[0].delete()
+
+                            # alert requestor
+                            alert_user_by_email(
+                                mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+                                mail_to='%s %s <%s>' % (principal.first_name, principal.last_name, principal.email),
+                                subject='[VPH-Share] New resource shared with you',
+                                mail_template='new_share',
+                                dictionary={
+                                    'resource': resource,
+                                    'requestor': principal
+                                }
+                            )
+                    except Exception, e:
+                        pass
+            request.session['collapse'] = [resource.global_id]
+            return redirect(reverse('manage-data') + "#" + str(resource.id))
+    return HttpResponse(status="500")
+
+
 def grant_role(request):
     """
         grant role to user or group
@@ -265,33 +370,14 @@ def grant_role(request):
     role = Role.objects.get(name=request.GET.get('role'))
     resource = Resource.objects.get(global_id=request.GET.get('global_id'))
 
-    try:
-        principal = User.objects.get(username=name)
-    except ObjectDoesNotExist, e:
-        principal = Group.objects.get(name=name)
-
-    # TODO ADD GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
-    try:
-        # look for a group with the dataset name
-        group_name = get_resource_global_group_name(resource, role)
-        group = Group.objects.get(name=group_name)
-        if type(principal) is User:
-            group.user_set.add(principal)
-        group.save()
-
-    except ObjectDoesNotExist, e:
-        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-        # add_role(principal, global_role)
-        pass
-
-    # grant local role to the user
-    add_local_role(resource, principal, role)
+    principal = grant_permission(name, resource, role)
 
     # change request state if exists
     try:
-        resource_request = ResourceRequest.objects.get(requestor=principal, resource=resource)
-        if is_request_pending(resource_request):
-            do_transition(resource_request, request_accept_transition, request.user)
+        resource_request = ResourceRequest.objects.filter(requestor=principal, resource=resource)
+        if resource_request.count() and is_request_pending(resource_request[0]):
+            do_transition(resource_request[0], request_accept_transition, request.user)
+            resource_request[0].delete()
 
             # alert requestor
             alert_user_by_email(
@@ -340,7 +426,7 @@ def revoke_role(request):
         group.save()
 
     except ObjectDoesNotExist, e:
-        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!!
+        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!! and update the security proxy?
         # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
         # remove_role(principal, global_role)
         pass
@@ -351,7 +437,7 @@ def revoke_role(request):
     response = HttpResponse(content=response_body, content_type='application/json')
     return response
 
-
+# I don't know why but nobody use this view TOFIX!
 def create_role(request):
     """
         create the requested role and the relative security

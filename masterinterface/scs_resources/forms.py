@@ -3,10 +3,10 @@ from django.db import models
 from django.contrib import admin
 from django import forms
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from masterinterface.scs_resources.models import Resource, Workflow
 from masterinterface.atos.metadata_connector import set_resource_metadata, update_resource_metadata
-
+from django_select2 import Select2MultipleChoiceField, Select2MultipleWidget
 
 class ResourceForm(forms.ModelForm):
 
@@ -72,3 +72,22 @@ class WorkflowForm(ResourceForm):
                     field.widget.attrs["accept"] = ".t2flow"
             except:
                 pass
+
+
+class UsersGroupsForm(forms.Form):
+
+    Usersinput = Select2MultipleChoiceField()
+
+    def __init__(self, id="", list=[], excludedList=[], *args, **kwargs):
+
+        users = User.objects.all()
+        groups = Group.objects.all()
+
+        usersList = [("user_"+str(user.username),  "%s %s" % (user.first_name, user.last_name)) for user in users if user not in excludedList]
+        groupList = [("group_"+str(group.name),  "%s" % group.name) for group in groups if group not in excludedList]
+        usersList.sort(key=lambda tup: tup[1])
+        groupList.sort(key=lambda tup: tup[1])
+
+        self.base_fields['Usersinput'] = Select2MultipleChoiceField(choices=[('Users',usersList), ('Groups',groupList)], label="")
+        self.base_fields['Usersinput'].widget.attrs = {'id':id}
+        super(UsersGroupsForm, self).__init__(*args, **kwargs)

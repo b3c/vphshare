@@ -3,15 +3,15 @@
     <form action="/security/policy/" method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
-        {% if policy_name %}
-            <input type="hidden" name="name" value="{{ policy_name }}"/>
+        {% if policy_obj %}
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" value="{{ policy_obj.name }}" />
+            <input type="hidden" name="id" value="{{ policy_obj.id }}"/>
         {% else %}
             <legend>Security Policy Name</legend>
             <label for="name">Name</label>
             <input type="text" name="name" id="name" />
             <span class="help-block">A new security policy will be created. The granted role will be equal to the policy name </span>
-            <input type="hidden" name="newpolicy" value="newpolicy" />
-            <input type="submit" name="createwithname" class="btn btn-primary pull-right" value="create" />
         {% endif %}
 
         {% comment %}
@@ -49,18 +49,21 @@
 
         {% endcomment %}
 
-        <legend>File content</legend>
-        <span class="help-block">Update the security policy by editing the file content directly</span>
 
-        <label for="filecontent">Security Policy file content (click to edit)</label>
-                <pre onclick="$('#filecontent').show();$(this).hide();">{{ policy_file }}</pre>
-        <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ policy_file }}</textarea>
-        <input type="submit" name="sumbitwithcontent" class="btn btn-primary pull-right" value="update" />
 
-        <legend>File upload</legend>
-        <span class="help-block">Update the security policy by uploading a file from your filesystem.</span>
-        <input type="file" name="fileupload" accept="application/xml" />
-        <br />
-        <input type="submit" name="sumbitwithfile" class="btn btn-primary pull-right" value="update" />
+        {% if policy_obj %}
+            <legend>File content</legend>
+            <span class="help-block">Update the security policy by editing the file content directly</span>
+            <label for="filecontent">Security Policy file content (click to edit)</label>
+            <pre onclick="$('#filecontent').show();$(this).hide();">{{ policy_file }}</pre>
+            <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ policy_file }}</textarea>
+            <input type="submit" name="sumbit" class="btn btn-primary pull-right" value="update" />
+        {% else %}
+            <legend>File upload</legend>
+            <span class="help-block">Update the security policy by uploading a file from your filesystem.</span>
+            <input type="file" name="fileupload" accept="application/xml" />
+            <br />
+            <input type="submit" name="create" class="btn btn-primary pull-right" value="create" />
+        {% endif %}
     </form>
 </fieldset>

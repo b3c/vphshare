@@ -1,9 +1,12 @@
 __author__ = 'm.balasso@scsitaly.com'
 
 import random
-from django.db.models import Q
+from django.db.models import Q, ObjectDoesNotExist
+from django.contrib.auth.models import User, Group
+from django.template import loader
+from django.core.mail import EmailMultiAlternatives
 from permissions.models import Role, PrincipalRoleRelation
-from permissions.utils import has_local_role, has_permission
+from permissions.utils import has_local_role, has_permission, add_local_role, remove_local_role
 from workflows.utils import get_state
 from masterinterface.scs_resources.config import request_pending
 from masterinterface.scs_resources.models import ResourceRequest, Resource
@@ -56,6 +59,62 @@ def get_permissions_map(resource_of_any_type):
 
     return permissions_map
 
+def get_user_group_permissions_map(resource_of_any_type):
+
+    resource = Resource.objects.get(id=resource_of_any_type.id)
+
+    permissions_map = []
+    resource_roles = get_resource_local_roles(resource)
+
+    # look for user with those roles
+    for role in resource_roles:
+        role_relations = PrincipalRoleRelation.objects.filter(role__name__exact=role.name)
+        for r in role_relations:
+            if r.user is not None and r.content_id == resource.id and has_local_role(r.user, role, resource):
+                if r.user in permissions_map:
+                    index = permissions_map.index(r.user)
+                    if role.name not in permissions_map[index].roles:
+                        permissions_map[index].roles.append(role.name)
+                else:
+                    if getattr(r.user, 'roles', None) is not None:
+                        if role.name not in r.user.roles:
+                            r.user.roles.append(role.name)
+                    else:
+                        r.user.roles = []
+                        r.user.roles.append(role.name)
+                    permissions_map.append(r.user)
+            if r.group is not None and r.content_id == resource.id and has_local_role(r.group, role, resource):
+                try:
+                    vph_smart_group = VPHShareSmartGroup.objects.get(name=r.group.name)
+                    for user in vph_smart_group.user_set.all():
+                        if user in permissions_map:
+                            index = permissions_map.index(user)
+                            if role.name not in permissions_map[index].roles:
+                                permissions_map[index].roles.append(role.name)
+                        else:
+                            if getattr(user, 'roles', None) is not None:
+                                if role.name not in user.roles:
+                                    user.roles.append(role.name)
+                            else:
+                                user.roles = []
+                                user.roles.append(role.name)
+                            permissions_map.append(user)
+                except Exception:
+                    if r.group in permissions_map:
+                        index = permissions_map.index(r.group)
+                        if role.name not in permissions_map[index].roles:
+                            permissions_map[index].roles.append(role.name)
+                    else:
+                        if getattr(r.group, 'roles', None) is not None:
+                            if role.name not in r.group.roles:
+                                r.group.roles.append(role.name)
+                        else:
+                            r.group.roles = []
+                            r.group.roles.append(role.name)
+                        permissions_map.append(r.group)
+                    pass
+
+    return permissions_map
 
 def is_request_pending(r):
     state = get_state(r)
@@ -101,3 +160,41 @@ def get_managed_resources(user):
             managed_resources.append(r.content)
 
     return managed_resources
+
+
+def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={}):
+    """
+        send an email to alert user
+    """
+
+    text_content = loader.render_to_string('scs_resources/%s.txt' % mail_template, dictionary=dictionary)
+    html_content = loader.render_to_string('scs_resources/%s.html' % mail_template, dictionary=dictionary)
+    msg = EmailMultiAlternatives(subject, text_content, mail_from, [mail_to])
+    msg.attach_alternative(html_content, "text/html")
+    msg.content_subtype = "html"
+    msg.send()
+
+
+def grant_permission(name, resource, role):
+    try:
+        principal = User.objects.get(username=name)
+    except ObjectDoesNotExist, e:
+        principal = Group.objects.get(name=name)
+
+    try:
+    # look for a group with the dataset name
+        group_name = get_resource_global_group_name(resource, role)
+        group = Group.objects.get(name=group_name)
+        if type(principal) is User:
+            group.user_set.add(principal)
+        group.save()
+
+    except ObjectDoesNotExist, e:
+        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+        #add_role(principal, global_role)
+        pass
+
+        # grant local role to the user
+    add_local_role(resource, principal, role)
+
+    return principal

@@ -246,9 +246,8 @@ SOCIAL_AUTH_BACKEND_ERROR_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
-# Cyfronet Settings
-CLOUD_PORTLET_LOGIN_URL_TEMPLATE = 'https://vph.cyfronet.pl/puff/portal/clean/default-page-login-clean.psml?user={0}&token={1}&destination={2}'
-CLOUDFACACE_URL = "https://vph.cyfronet.pl/cloudfacade"
+# Cyfronet Settings for develop instance use in local_settigs.py this: https://149.156.10.137/api/v1
+CLOUDFACACE_URL = "https://vph.cyfronet.pl/api/v1"
 CLOUDFACACE_SSL = False
 
 #Atos service

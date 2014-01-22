@@ -7,6 +7,13 @@
     <span class="subtitle">Search LOBCDER resources</span>
 {% endblock%}
 
+{% block extrahead %}
+	<link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
+
 {% block content %}
 	<form action="/cyfronet/lobcderquery" method="POST" class="form-horizontal">
 		{% csrf_token %}
@@ -79,4 +86,9 @@
 	{% else %}
 		No entries
 	{% endif %}
+{% endblock %}
+
+{% block endbodyextra %}
+	<script src="/static/js/fileupload-main.js" type="text/javascript"></script>
+	<script src="/static/js/vendor/jquery.ui.widget.js"></script>
 {% endblock %}

@@ -2,8 +2,9 @@
     <form action="/security/configuration/" method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
-        {% if configuration_name %}
-            <input type="hidden" name="name" value="{{ configuration_name }}"/>
+        {% if configuration_obj %}
+            <input type="hidden" name="name" value="{{ configuration_obj.name }}"/>
+            <input type="hidden" name="id" value="{{ configuration_obj.id }}"/>
         {% else %}
             <legend>Security Proxy Configuration Name</legend>
             <label for="name">Name</label>

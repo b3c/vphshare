@@ -2,11 +2,11 @@
 
 {% block content %}
 
-    {% include 'scs_security/policieslist.html' %}
 
-    {% if policy_name  %}
-        <h3>Security Policy: {{ policy_name }}</h3>
+    {% if policy_obj  %}
+        <h3>Security Policy: {{ policy_obj.name }}</h3>
     {% else %}
+        {% include 'scs_security/policieslist.html' %}
         <h3>Create new security Policy</h3>
     {% endif %}
 

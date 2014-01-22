@@ -7,6 +7,14 @@
     <span class="subtitle">Manage LOBCDER resources</span>
 {% endblock%}
 
+{% block extrahead %}
+	<link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+    <link rel="stylesheet" href="/static/css/jquery.fileupload-ui.css">
+{% endblock %}
+
 {% block content %}
 	<form action="/cyfronet/lobcder{{ path }}" method="POST" class="form-inline">
     	{% csrf_token %}
@@ -160,12 +168,8 @@
 			});
     	}
         $(function() {
-
-
             });
 		jQuery(document).ready(function() {
-
-
 			jQuery('.lobcder-delete').click(function() {
 				if(!confirm("Are you sure you would like to remove one of LOBCDER resources?")) {
 					return false;
@@ -200,4 +204,10 @@
 		    </div>
         </div>
     </form>
+{% endblock %}
+
+{% block endbodyextra %}
+	<script src="/static/js/jquery.fileupload.js" type="text/javascript"></script>
+	<script src="/static/js/fileupload-main.js" type="text/javascript"></script>
+	<script src="/static/js/vendor/jquery.ui.widget.js"></script>
 {% endblock %}
