@@ -149,4 +149,4 @@ def lobcderSearch(request):
 
 @login_required
 def cloud(request):
-    return render_to_response('cyfronet/clew.html', {'cloudFacadeUrl': settings.CLOUD_FACADE_URL}, RequestContext(request))
+    return render_to_response('cyfronet/clew.html', {'cloudFacadeUrl': settings.CLOUDFACACE_URL}, RequestContext(request))

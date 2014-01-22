@@ -246,10 +246,9 @@ SOCIAL_AUTH_BACKEND_ERROR_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/scs_auth/bt_loginform/?error=True'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
-# Cyfronet Settings
+# Cyfronet Settings for develop instance use in local_settigs.py this: https://149.156.10.137/api/v1
 CLOUDFACACE_URL = "https://vph.cyfronet.pl/api/v1"
 CLOUDFACACE_SSL = False
-CLOUD_FACADE_URL = "https://vph.cyfronet.pl/api/v1"
 
 #Atos service
 ATOS_SERVICE_URL = "https://149.156.10.131:47056/ex2vtk/?wsdl"
