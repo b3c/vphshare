@@ -9,7 +9,7 @@ __docformat__ = 'plaintext'
 """
 
 import time
-from flask import Flask
+from flask import Flask, abort
 from flask import request, session, redirect, url_for, render_template, flash
 
 try:
@@ -124,17 +124,17 @@ def user_login():
         password = request.form['password']
         domain = request.form.get("domain", "")
     else:
-        return app.make_response("Error")
+        return abort(403)
 
     if not username and not password:
-        return app.make_response("Error")
+        return abort(403)
 
     else:
         validate_user = validate_username(username)
         validate_bt = validate_to_biomedtown(username, password)
 
         if validate_bt is False:
-            return app.make_response("Error")
+            return abort(403)
         else:
             if validate_user is not True:
                 ins = usersTable.insert().values(name=username).execute()
@@ -185,6 +185,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        domain = request.form.get("domain", "")
 
         if not username and not password:
             return render_template('login.html', error='Insert username and password!')
@@ -220,6 +221,15 @@ def login():
 
                     #ticket = createTicket(app.config['SECRET_KEY'], request.form['username'], tokens=(), user_data=user_data)
                     ticket_b64 = binascii.b2a_base64(ticket).rstrip()
+                    if str(domain).lower().count("vphshare"):
+                        # we have to retrive the user roles from the MI
+                        validate_tkt_response = requests.get(app.config['MASTERINTERFACE_VALIDATE_TKT_SERVICE'] % ticket_b64)
+
+                        mi_user_data = json.loads(validate_tkt_response.text)
+                        tokens = mi_user_data.get('role', [])
+
+                        ticket = TICKET.createTkt(validate_bt['nickname'], tokens=tokens, user_data=user_data, cip=cip, validuntil=validuntil)
+                        ticket_b64 = binascii.b2a_base64(ticket).rstrip()
 
                     if request.args.get("came_from"):
                         came_from = request.args.get("came_from")
@@ -399,7 +409,7 @@ def refresh_tkt(ticket=None):
         elif request.method == 'POST':
             ticket = request.form.get('ticket', "")
         else:
-            return app.make_response("Error")
+            abort(403)
 
         if ticket:
             ticket = binascii.a2b_base64(ticket)
