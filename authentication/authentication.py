@@ -67,7 +67,7 @@ app.config.update(
     DEBUG=True,
     SECRET_KEY='09b63a0aa787db09b73c675b1e04224a',
     TIME_OUT=12 * 60 * 60,  # 12h
-    MASTERINTERFACE_VALIDATE_TKT_SERVICE="http://devel.vph-share.eu/validatetkt/?ticket=%s"
+    MASTERINTERFACE_VALIDATE_TKT_SERVICE="https://devel.vph-share.eu/validatetkt/?ticket=%s"
 )
 
 #TICKET = Ticket(app.config['SECRET_KEY'])
@@ -160,7 +160,10 @@ def user_login():
 
             if str(domain).lower().count("vphshare"):
                 # we have to retrive the user roles from the MI
-                validate_tkt_response = requests.get(app.config['MASTERINTERFACE_VALIDATE_TKT_SERVICE'] % ticket_b64)
+                validate_tkt_response = requests.get(
+                    app.config['MASTERINTERFACE_VALIDATE_TKT_SERVICE'] % ticket_b64,
+                    verify = False
+                )
 
                 mi_user_data = json.loads(validate_tkt_response.text)
                 tokens = mi_user_data.get('role', [])
@@ -223,7 +226,10 @@ def login():
                     ticket_b64 = binascii.b2a_base64(ticket).rstrip()
                     if str(domain).lower().count("vphshare"):
                         # we have to retrive the user roles from the MI
-                        validate_tkt_response = requests.get(app.config['MASTERINTERFACE_VALIDATE_TKT_SERVICE'] % ticket_b64)
+                        validate_tkt_response = requests.get(
+                            app.config['MASTERINTERFACE_VALIDATE_TKT_SERVICE'] % ticket_b64,
+                            verify = False
+                        )
 
                         mi_user_data = json.loads(validate_tkt_response.text)
                         tokens = mi_user_data.get('role', [])
