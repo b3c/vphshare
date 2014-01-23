@@ -9,6 +9,6 @@ urlpatterns = patterns(
     url(r'^lobcdermetadata(.*)$', 'lobcderMetadata'),
     url(r'^lobcderdelete(.*)$', 'lobcderDelete'),
     url(r'^lobcder(.*)$', 'lobcder'),
-    url(r'^cloud/$', 'cloud'),
+    url(r'^tools/$', 'tools'),
     url(r'^retrivevtk/$', 'retriveVtk'),
 )
