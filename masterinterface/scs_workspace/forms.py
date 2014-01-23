@@ -2,13 +2,14 @@ __author__ = 'Matteo Balasso <m.balasso@scsitaly.com>'
 
 from django import forms
 from models import TavernaExecution
+#Hardcoded Taverna appliance ID. To remove in future.
+IMP_CHOICES = ((40,'Taverna 2.5.2 (Prod)'),(33,'Taverna Server 2.4.1 SECURED + ORACLE JAVA (Prod)'), (5,'Taverna Server 2.4.1 SECURED + ORACLE JAVA (Devel)'))
 
-IMP_CHOICES = ()
-from scs.views import search_resource
-results = search_resource('Taverna')[0]
-for result in results:
-    if "Atomic Service" in str(result['type']):
-        IMP_CHOICES += (result['local_id'], result['name']+' '+result['local_id']),
+#from scs.views import search_resource
+#results = search_resource('Taverna')[0]
+#for result in results:
+#    if "Atomic Service" in str(result['type']):
+#        IMP_CHOICES += (result['local_id'], result['name']+' '+result['local_id']),
 
 class TavernaExecutionForm(forms.ModelForm):
 
