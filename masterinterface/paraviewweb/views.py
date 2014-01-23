@@ -32,7 +32,7 @@ def pvw_start_session(request):
                 if pvw_instance is not None:
                     pvw_instance.deletion_time = datetime.now()
                     pvw_instance.save()
-                port = 5000 + ParaviewInstance.objects.filter(deletion_time__isnull=True).count()
+                port = settings.PARAVIEWWEB_PORT  + ParaviewInstance.objects.filter(deletion_time__isnull=True).count()
                 pvw_proces = subprocess.Popen(
                     [settings.PARAVIEW_PYTHON_BIN,
                      settings.PARAVIEWWEB_SERVER,
