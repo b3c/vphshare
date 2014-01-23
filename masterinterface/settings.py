@@ -286,6 +286,7 @@ WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'
 PARAVIEW_PYTHON_BIN = "/usr/local/bin/pvpython"
 PARAVIEWWEB_SERVER = os.path.join(PROJECT_ROOT, 'paraviewweb/app/paraviewweb_xmlrpc.py')
 PARAVIEWWEB_SERVER_TIMEOUT = 600
+PARAVIEWWEB_PORT = 5000
 ##################
 # LOCAL SETTINGS #
 ##################
