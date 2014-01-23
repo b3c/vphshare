@@ -64,31 +64,6 @@
     <div class="container">
         {% if not request.is_ajax %}
             {% block header %}
-                    {% if not OK_COOKIES %}
-                        <script type="text/javascript">
-                            $(function(){
-                                $("#cookies-ok").click(function(){
-                                    $.ajax({
-                                                type: 'get',
-                                                url: '/?cookie-agree=true',
-                                                success: function(data){
-                                                    $('#cookies-message').slideUp();
-                                                    return true;
-                                                },
-                                                error: function(data){
-                                                    $('#cookies-message').slideUp();
-                                                    return true;}
-                                            }
-                                    );
-                                });
-                            });
-
-                        </script>
-                    <div id="cookies-message" class="alert alert-warning" >
-                            <p>We use cookies on our websites to help us offer you the best online experience. We've already placed some of these little packets of information on your browser to do this. By continuing to use our website, you're agreeing to our use of cookies. Alternatively, you can manage them in your browser settings.
-                            <button id="cookies-ok" class="btn btn-success">I accept</button> <a href="/privacy-policy#cookies">FIND OUT MORE ABOUT COOKIES</a></p>
-                    </div>
-                    {% endif %}
                     <!--<div class="alert alert-error" style="text-align: center">
                             <strong>BETA!</strong>
                             The Portal is now accessible only by the VPH-Share Consortium. Please contact <a href="mailto:support@vph-share.eu">our support service</a> if you like to join our Beta User Program.
@@ -153,10 +128,9 @@
                                 <ul class="nav">
                                 <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
                                     <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
+                                    <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools">TOOLS</a></li>
                                     <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
                                     <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search">SEARCH</a></li>
-                                    <li {% if 'dashboard' == request.path|basepath %}class="active" {% endif %}><a href="/dashboard">DASHBOARD</a></li>
-                                    <li {% if 'cloud' == request.path|basepath %}class="active" {% endif %}><a href="/cloud">CLOUD</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -189,6 +163,32 @@
         {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
         {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
         {% block content %} {% endblock %}
+
+        {% if not OK_COOKIES and not request.user.is_authenticated %}
+            <script type="text/javascript">
+                $(function(){
+                    $("#cookies-ok").click(function(){
+                        $.ajax({
+                                    type: 'get',
+                                    url: '/?cookie-agree=true',
+                                    success: function(data){
+                                        $('#cookies-message').slideUp();
+                                        return true;
+                                    },
+                                    error: function(data){
+                                        $('#cookies-message').slideUp();
+                                        return true;}
+                                }
+                        );
+                    });
+                });
+
+            </script>
+        <div id="cookies-message" class="alert alert-warning" >
+                <p>We use cookies on our websites to help us offer you the best online experience. We've already placed some of these little packets of information on your browser to do this. By continuing to use our website, you're agreeing to our use of cookies. Alternatively, you can manage them in your browser settings.
+                <button id="cookies-ok" class="btn btn-success">I accept</button> <a href="/privacy-policy#cookies">FIND OUT MORE ABOUT COOKIES</a></p>
+        </div>
+        {% endif %}
     </div>
 
     {% if not request.is_ajax %}
