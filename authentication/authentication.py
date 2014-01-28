@@ -240,9 +240,9 @@ def login():
                     if request.args.get("came_from"):
                         came_from = request.args.get("came_from")
 
-                        if came_from.count("physiomespace"):
-                            came_from = "%s?ticket=%s" % ( came_from, ticket_b64 )
-                        response = redirect(came_from, 307)
+                        #iif came_from.count("physiomespace"):
+                        came_from = "%s?ticket=%s" % ( came_from, ticket_b64 )
+                        response = redirect(came_from, 302)
                     else:
                         response = app.make_response(render_template('index.html'))
 
