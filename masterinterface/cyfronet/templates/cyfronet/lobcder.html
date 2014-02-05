@@ -84,7 +84,7 @@
 										moviePath: "/static/js/ZeroClipboard-1.3.0.swf"
 									});
 			                    	copyToClipboard.on('dataRequested', function (client, args) {
-										client.setText('{{ entry.path }}');
+										client.setText('lobcder:{{ entry.path }}');
 									});
 									copyToClipboard.on("complete", function (client, args) {
 										jQuery("button#copy-{{ forloop.counter0 }}").addClass('btn-success');
