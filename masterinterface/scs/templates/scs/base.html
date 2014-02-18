@@ -99,6 +99,7 @@
                                             </a>
                                             <ul class="dropdown-menu" style="color: #000000; text-align: center">
                                                 <li><a style="color: #000000;" href="/dashboard/">Dashboard</a></li>
+                                                <li><a style="color: #000000;" href="/workspace/">Workspace</a></li>
                                                 <li><a style="color: #000000;" href="/profile/">Profile</a></li>
                                                 {% if request.user.is_staff %}
                                                     <li><a style="color: #000000;" href="/users_admin/">Admin tools</a></li>
@@ -152,7 +153,7 @@
             {% endblock %}
         {% endif %}
         {% for n in notifications %}
-        <div class="alert alert-info">
+        <div id="notify_{{ n.pk }}" class="alert alert-info">
             <button onclick="hide_notification({{ n.pk }})" type="button" class="close" data-dismiss="alert">&times;</button>
             <span id="statusmessage">
                 {% if n.subject != '' and n.subject %}<h4>{{ n.subject }}</h4>{% endif %}
