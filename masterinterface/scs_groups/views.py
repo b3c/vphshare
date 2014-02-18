@@ -164,7 +164,8 @@ def group_details(request, idGroup=None, idStudy=None):
             if idGroup is not None and vphgroup.pk == int(idGroup):
                 selected_group = vphgroup
                 selected_group.type = 'smart'
-            if request.user in vphgroup.user_set.all() or request.user in vphgroup.managers.all():
+            #if request.user in vphgroup.user_set.all() or request.user in vphgroup.managers.all():
+            if request.user in vphgroup.managers.all():
                 user_groups.append(vphgroup)
             else:
                 other_groups.append(vphgroup)
