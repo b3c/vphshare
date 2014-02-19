@@ -28,16 +28,25 @@ def execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, bac
         Fail : 'False' Something went wrong during the execution, call get_execution_infos() to have all the informations
 
     """
-    taverna_execution = TavernaExecution.objects.get(pk=execution_id)
-    taverna_execution.status = 'Started'
-    taverna_execution.executionstatus = 0
-    taverna_execution.error = 'False'
-    keys = ['error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
-    for key in keys:
-        setattr(taverna_execution, key, '')
-    taverna_execution.save()
-    ret = WorkflowManager.execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, baclava, url)
-    return ret
+    try:
+        user_data = settings.TICKET.validateTkt(base64.b64decode(ticket))
+        ret = WorkflowManager.execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, baclava, url)
+        if ret:
+            ret = WorkflowManager.getWorkflowInformation(execution_id, ticket)
+            while ret != False and (ret.get('executionstatus', -1) < 8 and ret.get('error', False) != True):
+                ret = WorkflowManager.getWorkflowInformation(execution_id, ticket)
+            if user_data:
+                try:
+                    user = User.objects.get(username = user_data[2][0])
+                    subject = "Workflow execution is completed"
+                    message = '%s is completed, click %s/workspace/#%s to see the results.' % (title, settings.BASE_URL, execution_id)
+                    Notification(recipient=user, message=message, subject=subject).save()
+                except Exception, e:
+                    #problem with email notification. Ignored.(only for local instance)
+                    pass
+        return True
+    except Exception, e:
+        return False
 
 
 @shared_task

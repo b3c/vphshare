@@ -154,8 +154,8 @@
                             type: 'post',
                             url: '/workspace/startExecution',
                             data: {eid:self.$executionId},
-                            success: function(data){ self.getExecutioninfo(); return;},
-                            error: function(data){return;}
+                            success: function(data){ self.getExecutioninfo();},
+                            error: function(data){self.getExecutioninfo();}
                         }
                 );
                 //this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);
@@ -194,7 +194,7 @@
                 var self = this;
                 var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id "," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder"];
                 this.$details.empty();
-                var error = data[1] === "True";
+                var error = data[1];
                 var error_msg = data[2];
                 var executionStatusCode = parseInt(data[0]);
 

@@ -292,7 +292,7 @@ PARAVIEWWEB_SERVER_TIMEOUT = 600
 PARAVIEWWEB_PORT = 5000
 
 #CELERY CONFIGS
-BROKER_URL = 'django://'
+BROKER_URL = 'django://develop'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_DISABLE_RATE_LIMITS = True
 ##################
