@@ -13,6 +13,7 @@ ADMINS = (
 )
 
 AUTH_SERVICES = "http://auth.biomedtown.org/api"
+BASE_URL = "https://portal.vph-share.eu"
 
 MANAGERS = ADMINS
 
@@ -168,7 +169,9 @@ INSTALLED_APPS = (
     'datetimewidget',
     'django_select2',
     'masterinterface.scs_workspace',    
-    'paraviewweb'
+    'masterinterface.paraviewweb',
+    'kombu.transport.django',
+    'djcelery'
 
     ##NEW_APP
 )
@@ -287,6 +290,11 @@ PARAVIEW_PYTHON_BIN = "/usr/local/bin/pvpython"
 PARAVIEWWEB_SERVER = os.path.join(PROJECT_ROOT, 'paraviewweb/app/paraviewweb_xmlrpc.py')
 PARAVIEWWEB_SERVER_TIMEOUT = 600
 PARAVIEWWEB_PORT = 5000
+
+#CELERY CONFIGS
+BROKER_URL = 'django://develop'
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+CELERY_DISABLE_RATE_LIMITS = True
 ##################
 # LOCAL SETTINGS #
 ##################

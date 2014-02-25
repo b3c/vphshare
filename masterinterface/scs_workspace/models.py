@@ -1,26 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
-from exceptions import WorkflowManagerException
 from core import WorkflowManager
-
+from celery import group
 
 class TavernaExecutionManager(models.Manager):
 
-    def get(self, *args, **kwargs):
+    def get(self, ticket, *args, **kwargs):
         workflow_execution = super(TavernaExecutionManager, self).get(*args, **kwargs)
-        workflow_execution.update()
+        workflow_execution.update(ticket)
         return workflow_execution
 
-    def all(self):
+    def all(self, ticket):
         workflow_executions = super(TavernaExecutionManager, self).all()
         for workflow_execution in workflow_executions:
-            workflow_execution.update()
+            workflow_execution.update(ticket)
         return workflow_executions
 
-    def filter(self,*args, **kwargs):
+    def filter(self, ticket, *args, **kwargs):
         workflow_executions = super(TavernaExecutionManager, self).filter(*args, **kwargs)
         for workflow_execution in workflow_executions:
-            workflow_execution.update()
+            workflow_execution.update(ticket)
         return workflow_executions
 
 
@@ -35,43 +34,59 @@ class TavernaExecution(models.Model):
     url = models.URLField(blank=True)
     status = models.CharField(max_length=80, default="Initialized")
     taverna_atomic_id = models.CharField(max_length=80, blank=True)
+    task_id = models.CharField(max_length=80, blank=True, null=True, default=None)
+    creation_datetime = models.DateTimeField(blank=True, null=True,auto_now_add=True)
+    #info get by workflowmnager and updated authomaticaly during the workflow execution.
+    #executionstatus = models.IntegerField(blank=True, null=True)
+    #error = models.CharField(max_length=10, blank=True)
+    #error_msg = models.CharField(max_length=120, blank=True)
+    #endpoint = models.CharField(max_length=600, blank=True)
+    #asConfigId = models.CharField(max_length=80, blank=True)
+    #expiry = models.CharField(max_length=80, blank=True)
+    #startTime = models.CharField(max_length=80, blank=True)
+    #Finished = models.CharField(max_length=10, blank=True)
+    #exitcode = models.CharField(max_length=10, blank=True)
+    #stdout = models.TextField(blank=True)
+    #stderr = models.TextField(blank=True)
+    #outputfolder = models.CharField(max_length=600, blank=True)
 
     objects = TavernaExecutionManager()
 
     def __unicode__(self):
         return "%s - %s (%s)" % (self.workflowId, self.status, self.owner.username)
 
-    def submit(self, ticket):
-        ret = WorkflowManager.submitWorkflow(self.title, self.t2flow, self.baclava, ticket)
-        if 'workflowId' in ret and ret['workflowId']:
-            self.workflowId = ret['workflowId']
-        else:
-            raise WorkflowManagerException(ret.get('error.code', ''), ret.get('error.description', ''))
+    def start(self, ticket):
+        from masterinterface.scs_workspace import tasks
+        self.status = 'Started'
+        self.save()
+        task = tasks.execute_workflow.delay(ticket, self.id, self.title, self.taverna_atomic_id, self.t2flow, self.baclava, self.url)
+        self.task_id = task.id
+        self.save()
 
-    def update(self, info=[]):
-        """ update workflow execution details information """
-        return None
-        if not info:
-            try:
-                self.info = WorkflowManager.getWorkflowInformation(self.workflowId)
-                if self.info['status'] == "unknown run UUID":
-                    WorkflowManager.deleteWorkflow(self.workflowId)
-                    WorkflowManager.deleteTavernaServerWorkflow(self.workflowId, user, ticket)
-                    self.delete()
-                self.status = self.info['status']
-            except Exception, e:
-                raise WorkflowManagerException('500', 'Error while updating workflow %s' % self.workflowId)
+    def update(self, ticket):
+        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
+        ret = WorkflowManager.getWorkflowInformation(self.id, ticket)
+        if ret != False:
+            for key in keys:
+                setattr(self, key, ret.get(key, ''))
         else:
-            self.info = info
-            self.status = self.info['status']
+            ret = [0, False, '', '', self.url, '', '', '', '', '', '', '', '', '']
+            for i in range(0, len(keys)):
+                setattr(self, keys[i], ret[i])
 
-    def start(self):
-        ret = WorkflowManager.startWorkflow(self.workflowId)
-        if 'returnValue' in ret and ret['returnValue'] == 'ok':
-            self.update()
-            return True
-        else:
-            raise WorkflowManagerException(ret.get('error.code', ''), ret.get('error.description', ''))
+    def delete(self, ticket, *args, **kwargs):
+        try:
+            WorkflowManager.deleteExecution(self.id, ticket)
+        except Exception, e:
+            pass
+        super(TavernaExecution, self).delete(*args, **kwargs)
+        return True
 
-    def isReady(self):
-        return self.status != 'Created'
+    def is_ready(self):
+        return self.executionstatus == 0 and self.status != 'Started'
+
+    def is_running(self):
+        return self.status == 'Started' and self.executionstatus >= 0 and self.executionstatus < 8
+
+    def is_completed(self):
+        return self.status != 'Completed'

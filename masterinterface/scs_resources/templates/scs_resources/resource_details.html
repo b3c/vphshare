@@ -81,7 +81,7 @@
                     <form action="/workspace/create" enctype="multipart/form-data" method="get">
                     {% csrf_token %}
                     <input type="hidden" name="workflow_id" value="{{ workflow.id }}"/>
-                    <input type="submit" target="_blank"  class="btn btn-block btn-large btn-success" value="Execute workflow"/><br/>
+                    <input type="submit" target="_blank"  class="btn btn-block btn-large btn-success" value="Configure to execute"/><br/>
                     </form>
                 {% endif %}
                 {% if resource.metadata.type == "Dataset" %}

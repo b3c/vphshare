@@ -29,25 +29,28 @@
 {% for execution in executions%}
 <div id="{{ execution.id }}"  class="execution well well-small">
     <div class="row">
-        <div  class="span4">
+        <div  class="span2">
         {{ execution.title }}
         </div>
-        <div class="span5">
+        <div  class="span3">
+        {{ execution.creation_datetime }}
+        </div>
+        <div class="span4">
         Status:<div id="{{ execution.id }}-status" style="display: inline-block" class="inline"> {{ execution.status }}</div>
-
         </div>
 
         <div class="span2">
-            <div class="btn-group">
-                <button id="play-button" class="btn btn-success btn-mini" title="Run workflow"  data-loading-text="<i class='icon-spinner icon-spin'></i>" >
-                        <i class="icon-play"></i>
-                </button>
-                <button id="delete-button" class="btn btn-danger btn-mini" data-loading-text="<i class='icon-spinner icon-spin'></i>" title="Delete workflow">
-                    <i class="icon-remove"></i>
-                </button>
-                <a id="details-button" class="btn btn-warning btn-mini accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ execution.id }}-details">
-                    <i class="icon-reorder"></i>
-                </a>
+            <span class="loading-alert badge badge-warning"><i class='icon-spinner icon-spin'></i> Loading data...</span>
+            <div id="btnGroup" class="hide">
+            <button id="play-button" class="btn btn-success" title="Run workflow"  data-loading-text="<i class='icon-spinner icon-spin'></i>" >
+                    <i class="icon-play"></i>
+            </button>
+            <a id="details-button" class="btn btn-warning accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ execution.id }}-details">
+                <i class="icon-reorder"></i>
+            </a>
+            <button id="delete-button" class="btn btn-danger" data-loading-text="<i class='icon-spinner icon-spin'></i>" title="Delete workflow">
+                <i class="icon-trash"></i>
+            </button>
             </div>
         </div>
     </div>
@@ -64,15 +67,15 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="{{ execution.id }}-status-info">
-              <div class="alert"></div>
-              <div class="alert"></div>
-              <div class="alert"></div>
-              <div class="alert"></div>
-              <div class="alert"></div>
-              <div class="alert"></div>
-              <div class="alert"></div>
-              <div class="alert"></div>
-              <div class="alert"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
+              <div class="alert alert-disable"></div>
           </div>
           <div class="tab-pane " id="{{ execution.id }}-status-details">
               <div class="alert">&nbsp; test</div>
@@ -82,8 +85,8 @@
 </div>
 {% endfor %}
 <div class="alert alert-warning">
-    <h4>Under developing.</h4>
-    <span id="modal-message"> The workspace and the workflow execution are under developing, please contact support@vph-share.eu for any inconvenience.</span>
+    <h4>Under development.</h4>
+    <span id="modal-message"> The workspace and the workflow execution are under development, please contact <a href="mailto:support@vph-share.eu">support@vph-share.eu</a> for any inconvenience.</span>
     <span id="modal-message"> If you want to test this feature try <a href="/resources/686b72a6-738e-4b05-bf35-fea88685b1ad/">this workflow</a>, clicking 'Execute Workflow' (after you ask "request to share")</span>
 </div>
 
@@ -97,7 +100,7 @@
             var console = global.console || {log:function() {}};
 
             var statusMessage = [
-                    'Created.',
+                    'Ready to run.',
                     ['Initializing Atomic service.', 'Atomic service is initialized.'],
                     ['Starting Atomic service.', 'Atomic service is started.'],
                     ['Waiting for taverna.', 'Taverna is ready.'],
@@ -105,7 +108,7 @@
                     ['Configuring the workflow.', 'Workflow is ready.'],
                     'Starting the Workflow.',
                     'Workflow is running.',
-                    'Finished.'
+                    'Completed.'
             ];
             var WfmngProtocol = global.WfmngProtocol = function(element, options) {
                 this.inizialize($(element));
@@ -121,6 +124,7 @@
                 this.$status = wfmngProtocol.find('#'+this.$executionId+'-status');
                 this.$statusInfo = wfmngProtocol.find('#'+this.$executionId+'-status-info');
                 this.$timeoutid = 0;
+                this.$loading = wfmngProtocol.find('.loading-alert');
                 this.$playButton.click(function(){
                     self.startTaverna($(this));
                 });
@@ -150,11 +154,11 @@
                             type: 'post',
                             url: '/workspace/startExecution',
                             data: {eid:self.$executionId},
-                            success: function(data){return;},
-                            error: function(data){return;}
+                            success: function(data){ self.getExecutioninfo();},
+                            error: function(data){self.getExecutioninfo();}
                         }
                 );
-                this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);                
+                //this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);
             };
 
             WfmngProtocol.prototype.deleteWorkflowCallBack = function(data){
@@ -188,18 +192,18 @@
 
             WfmngProtocol.prototype.getExecutioninfoCallBack = function(data){
                 var self = this;
-                var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id ", " Created"," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder"];
+                var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id "," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder"];
                 this.$details.empty();
                 var error = data[1];
                 var error_msg = data[2];
                 var executionStatusCode = parseInt(data[0]);
 
                 if(executionStatusCode<8 && !error){
+                    setTimeout( function(){self.getExecutioninfo();} ,5000);
                     if(executionStatusCode>0)
                         this.$playButton.button('loading');
-                    this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);
+
                 }else{
-                    window.clearTimeout(this.$timeoutid);
                     this.$playButton.button('reset');
                     this.$timeoutid = 0;
                 }
@@ -216,7 +220,7 @@
                         }
                         if(j==0 || j==8){
                             $(alerts[j]).html(this.$status.text()+"<i class='icon-check'></i>");
-                        }else{
+                        }else if(!error){
                             $(alerts[j]).html(this.$status.text()+"<i class='icon-spinner icon-spin'></i>");
                         }
                     }else if (executionStatusCode > j){
@@ -241,18 +245,20 @@
                 for (var i=3; i<data.length;i++){
 
                     if (data[i] != ''){
-                        if (i == 11 || i == 12){
+                        if (i == 10 || i == 11){
                             this.$details.append('<p><strong>'+label[i]+'</strong> <textarea readonly rows="10" style="width:90%">'+data[i]+'</textarea></p>');
 
-                        }else if(i==13){
-                            this.$details.append('<p> <a href="/lobcder'+data[i]+'">'+label[i]+'</a></p>');
+                        }else if(i==12){
+                            this.$details.append('<p> <a target="_blank" href="/lobcder'+data[i]+'">'+label[i]+'</a></p>');
                         }else if(i==4){
-                            this.$details.append('<p><strong>'+label[i]+'</strong> <a href="'+data[i]+'">'+data[i]+'</a></p>');
+                            this.$details.append('<p><strong>'+label[i]+'</strong> <a target="_blank" href="'+data[i]+'">'+data[i]+'</a></p>');
                         }else{
                             this.$details.append('<p><strong>'+label[i]+'</strong> <span>'+data[i]+'</span></p>');
                         }
                     }
                 }
+                this.$loading.hide();
+                this.$playButton.parent().show();
                 //this.$statusInfo.show();
                 //this.$details.show();
             };
@@ -268,7 +274,7 @@
                                 self.getExecutioninfoCallBack(data)
                             },
                             error: function(data){
-                                return;
+                                self.getExecutioninfoCallBack(data)
                             }
                         }
                 );
