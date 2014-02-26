@@ -108,6 +108,205 @@
                         </div>
                     </div>
                 </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse5">
+                            <h3>Workflow<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse5" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h3>/api/workflows</h3>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td><p>Provide a set of API to manage workflows.
+                                        <br/> To have access to the API, it is needed to add in the header the argument 'MI-TICKET' with the corresponding ticket requestor.
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/workflows</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GET</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 200</strong>
+                                            List of accessible workflows.
+                                            <pre>
+[
+    {
+        "t2flow": "base64_of_file",
+        "input_definition": "base64_of_file",
+        "global_id": "3940276e-6067-45ba-baf9-b3191c12f794",
+        "metadata": {
+            "category": "Test",
+            "rating": "0",
+            "updated_date": "1985-10-25 14:50:19.236",
+            "description": "Test description",
+            "author": "author",
+            "views": "9",
+            "tags": null,
+            "global_id": "3940276e-4067-45ba-baf9-b3191c12f794",
+            "creation_date": "1985-10-25 14:50:19.236",
+            "local_id": "12",
+            "status": "active",
+            "licence": "BSD",
+            "semantic_annotations": null,
+            "type": "Workflow",
+            "name": "SCS_TEST_MASTER1"
+        }
+    }
+
+]
+                                            </pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong>Ticket not valid or expired</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/workflows/<strong class="text-info">&lt;global_id&gt;</strong>/</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GET</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 200</strong>
+                                            Get the workflow by global_id
+                                            <pre>
+{
+    "t2flow": "base64_of_file",
+    "input_definition": "base64_of_file",
+    "global_id": "3940276e-6067-45ba-baf9-b3191c12f794",
+    "metadata": {
+        "category": "Test",
+        "rating": "0",
+        "updated_date": "1985-10-25 14:50:19.236",
+        "description": "Test description",
+        "author": "author",
+        "views": "9",
+        "tags": null,
+        "global_id": "3940276e-4067-45ba-baf9-b3191c12f794",
+        "creation_date": "1985-10-25 14:50:19.236",
+        "local_id": "12",
+        "status": "active",
+        "licence": "BSD",
+        "semantic_annotations": null,
+        "type": "Workflow",
+        "name": "SCS_TEST_MASTER1"
+    }
+}
+                                            </pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong>Ticket not valid</p>
+                                            <p><strong>Status code 404</strong>Workflow non found</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/workflows/<strong class="text-info">&lt;global_id&gt;</strong>/</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>DELETE</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 204</strong>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong>Ticket not valid</p>
+                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/workflows</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>POST</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt>name</dt><dd>The name of the workflow<span class="label">required</span></dd>
+                                            <dt>description</dt><dd>The description fo the workflow<span class="label">required</span></dd>
+                                            <dt>category</dt><dd>The category of the workflow<span class="label">required</span></dd>
+                                            <dt>tags</dt><dd>tags separated by comma</dd>
+                                            <dt>semantic_annotations</dt><dd>semantic annotation URI separated by comma</dd>
+                                            <dt>licence</dt><dd>Set the type of licence (BSD, GPL, etc..)<span class="label">required</span></dd>
+                                            <dt>t2flow</dt><dd>the TAverna definition file (.t2flow)<span class="label">required</span></dd>
+                                            <dt>xml</dt><dd>The input definition file (.xml)<span class="label">required</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 200</strong> Return the global_id of the new workflow
+                                            <pre>&lt;global_id&gt;</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong>Ticket not valid</p>
+                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/workflows/<strong class="text-info">&lt;global_id&gt;</strong>/</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>PUT</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>At least one of the POST parameters to update</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 201</strong>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong>Ticket not valid</p>
+                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
        </div>
     </div>

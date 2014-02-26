@@ -50,12 +50,20 @@ class WorkflowForm(ResourceForm):
 
     def is_valid(self):
         super_is_valid = super(ResourceForm, self).is_valid()
-        if not os.path.splitext(self.cleaned_data['t2flow'].name)[1].lower().count("t2flow"):
-            # TODO personalize field error message
-            return False
-        if not os.path.splitext(self.cleaned_data['xml'].name)[1].lower().count("xml"):
-            # TODO personalize field error message
-            return False
+        if getattr(self, 'instance', None) and getattr(self, 'cleaned_data', None):
+            if not os.path.splitext(self.cleaned_data['t2flow'].name)[1].lower().count("t2flow"):
+                # TODO personalize field error message
+                return False
+            if not os.path.splitext(self.cleaned_data['xml'].name)[1].lower().count("xml"):
+                # TODO personalize field error message
+                return False
+        if getattr(self, 'cleaned_data', None):
+            if not os.path.splitext(self.cleaned_data['t2flow'].name)[1].lower().count("t2flow"):
+                # TODO personalize field error message
+                return False
+            if not os.path.splitext(self.cleaned_data['xml'].name)[1].lower().count("xml"):
+                # TODO personalize field error message
+                return False
 
         return super_is_valid
 

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.contrib.auth.models import User
-from masterinterface.atos.metadata_connector import update_resource_metadata, get_resource_metadata
+from masterinterface.atos.metadata_connector import update_resource_metadata, get_resource_metadata, delete_resource_metadata
 from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
 from workflows.utils import do_transition, set_workflow_for_model
 from permissions.utils import add_local_role, add_role
@@ -54,6 +54,10 @@ class Resource(models.Model):
             views = 1
         update_resource_metadata(self.global_id, {'views': str(views)})
         return views
+
+    def delete(self, using=None):
+        delete_resource_metadata(self.global_id)
+        return super(Resource, self).delete(using)
 
 
 class ResourceRequest(models.Model):
