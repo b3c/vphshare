@@ -19,7 +19,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if request.method == 'POST':
@@ -40,7 +43,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if global_id:
@@ -68,7 +74,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if global_id:
@@ -103,7 +112,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
 
