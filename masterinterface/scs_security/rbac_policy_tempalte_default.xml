@@ -1,0 +1,43 @@
+<Policy PolicyId="ExamplePolicy"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+	<Target>
+		<Subjects>
+			<AnySubject />
+		</Subjects>
+		<Resources>
+		</Resources>
+		<Actions>
+			<AnyAction />
+		</Actions>
+	</Target>
+	<Rule RuleId="PermitRole" Effect="Permit">
+		<Target>
+			<Subjects>
+				<AnySubject />
+			</Subjects>
+			<Resources>
+				<AnyResource />
+			</Resources>
+			<Actions>
+ 			</Actions>
+		</Target>
+		<Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+					<SubjectAttributeDesignator
+						DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="role" />
+				</Apply>
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">RoleToBeSet</AttributeValue>
+			</Apply>
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:date-less-than-or-equal">
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:date-one-and-only">
+					<EnvironmentAttributeDesignator
+						MustBePresent="false"
+						AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-date"
+						DataType="http://www.w3.org/2001/XMLSchema#date" />
+				</Apply>
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#date">2100-01-01</AttributeValue>
+			</Apply>
+		</Condition>
+	</Rule>
+</Policy>
