@@ -25,6 +25,7 @@ from config import ResourceRequestWorkflow, request_pending, request_accept_tran
 from forms import WorkflowForm, UsersGroupsForm
 from masterinterface.atos.metadata_connector import *
 from utils import *
+from masterinterface import settings
 
 
 def resource_detailed_view(request, id='1'):
@@ -93,7 +94,7 @@ def resource_detailed_view(request, id='1'):
     try:
         workflow = Workflow.objects.get(global_id=id)
         if str(workflow.metadata['name']).lower().count('aneurist'):
-            resource.related = ['<a href="http://www.onlinehpc.net/" target="_blank">Taverna Online tool</a>']
+            resource.related = ['<a href="http://www.onlinehpc.net/" target="_blank">Taverna Online tool</a>','<a href="http://www.vph-share.eu/content/running-aneuristworkflow-short-workflow" target="_blank">Taverna workbench Tutorial</a>']
     except ObjectDoesNotExist, e:
         workflow = None
 
@@ -101,6 +102,7 @@ def resource_detailed_view(request, id='1'):
         'scs_resources/resource_details.html',
         {'resource': resource,
          'workflow': workflow,
+         'cloudFacadeUrl': settings.CLOUDFACACE_URL,
          'requests': []},
         RequestContext(request)
     )

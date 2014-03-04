@@ -84,7 +84,7 @@ def deleteExecution(request):
 def getExecutionInfo(request):
     if request.method == 'POST' and request.POST.get('eid', None):
         taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'), ticket=request.COOKIES.get('vph-tkt'))
-        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
+        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'is_running']
         results = []
         for key in keys:
             results.append(getattr(taverna_execution, key))
