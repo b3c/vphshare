@@ -25,6 +25,7 @@ from config import ResourceRequestWorkflow, request_pending, request_accept_tran
 from forms import WorkflowForm, UsersGroupsForm
 from masterinterface.atos.metadata_connector import *
 from utils import *
+from masterinterface import settings
 
 
 def resource_detailed_view(request, id='1'):
@@ -101,6 +102,7 @@ def resource_detailed_view(request, id='1'):
         'scs_resources/resource_details.html',
         {'resource': resource,
          'workflow': workflow,
+         'cloudFacadeUrl': settings.CLOUDFACACE_URL,
          'requests': []},
         RequestContext(request)
     )
