@@ -98,6 +98,9 @@
                 {% elif resource.metadata.type == "Workflow" %}
                     <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
                     <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
+                    {% if workflow.owner == user %}
+                        <a  href="/workflows/edit/{{ workflow.id }}/" class="btn btn-block btn-large btn-success">Edit Workflow</a>
+                    {% endif %}
                 {% elif resource.metadata.type == "File"%}
                     <a  href="#" class="btn btn-block btn-large btn-success">Download file</a>
                 {% else %}

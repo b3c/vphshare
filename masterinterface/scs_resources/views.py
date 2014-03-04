@@ -94,7 +94,7 @@ def resource_detailed_view(request, id='1'):
     try:
         workflow = Workflow.objects.get(global_id=id)
         if str(workflow.metadata['name']).lower().count('aneurist'):
-            resource.related = ['<a href="http://www.onlinehpc.net/" target="_blank">Taverna Online tool</a>']
+            resource.related = ['<a href="http://www.onlinehpc.net/" target="_blank">Taverna Online tool</a>','<a href="http://www.vph-share.eu/content/running-aneuristworkflow-short-workflow" target="_blank">Taverna workbench Tutorial</a>']
     except ObjectDoesNotExist, e:
         workflow = None
 
