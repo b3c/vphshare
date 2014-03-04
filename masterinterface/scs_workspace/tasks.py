@@ -30,7 +30,8 @@ def execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, bac
     """
     try:
         user_data = settings.TICKET.validateTkt(base64.b64decode(ticket))
-        ret = WorkflowManager.execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, baclava, url, submitionWorkAround=True)
+        # The task have the submition workaround activated.##
+        ret = WorkflowManager.execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, baclava, url, True)
         if ret:
             ret = WorkflowManager.getWorkflowInformation(execution_id, ticket)
             while ret != False and (ret.get('executionstatus', -1) < 8 and ret.get('error', False) != True):
@@ -46,6 +47,7 @@ def execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, bac
                     pass
         return True
     except Exception, e:
+        print e
         return False
 
 

@@ -3,7 +3,7 @@ __author__ = 'Matteo Balasso <m.balasso@scsitaly.com>'
 from django import forms
 from models import TavernaExecution
 #Hardcoded Taverna appliance ID. To remove in future.
-IMP_CHOICES = ((205,'Taverna 2.5.2 (Prod)'),(143,'TS with logging (Prod)'),(34,'Taverna 2.5.2 (Devel)'), (5,'Taverna Server 2.4.1 SECURED + ORACLE JAVA (Devel)'))
+IMP_CHOICES = ((223 ,'Taverna 2.5.2 (Prod)'),(143,'TS with logging (Prod)'),(34,'Taverna 2.5.2 (Devel)'), (5,'Taverna Server 2.4.1 SECURED + ORACLE JAVA (Devel)'))
 
 #from scs.views import search_resource
 #results = search_resource('Taverna')[0]
