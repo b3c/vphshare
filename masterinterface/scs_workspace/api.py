@@ -54,7 +54,9 @@ class workflows_api(BaseHandler):
             else:
                 return rc.BAD_REQUEST
             if dbWorkflow.owner != user:
-                return rc.FORBIDDEN
+                response = HttpResponse(status=403)
+                response._is_string = True
+                return response
 
             if request.method == 'PUT':
                 for key in dbWorkflow.metadata:
@@ -135,7 +137,9 @@ class workflows_api(BaseHandler):
                             'input_definition': base64.b64encode(inputDefinition),
                             'metadata': workflow.metadata}
                 else:
-                    return rc.FORBIDDEN
+                    response = HttpResponse(status=403)
+                    response._is_string = True
+                    return response
             else:
                 workflows = Workflow.objects.all()
                 results = []

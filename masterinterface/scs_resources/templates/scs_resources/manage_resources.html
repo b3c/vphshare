@@ -49,23 +49,23 @@
     {%for resource in applications%}
         {% usemacro resource_render resource %}
     {% endfor %}
-
-    <ul class="nav nav-pills">
+    <style>
+        .workflow-header>li>a:hover, .workflow-header>li>a:focus {
+            color: #fff;!important;
+            background-color: #04c; !important;
+        }
+    </style>
+    <ul class="nav nav-pills workflow-header">
         <li class="active">
             <a>
                 My Workflows
             </a>
         </li>
         <li style="float: right;margin-left: 10px;" >
-            <button class="btn btn-primary" >
-                <a style="color:#ffffff;" href="/workflows/new/">Upload new workflow</a>
-            </button>
+            <a class="btn btn-primary" style="color:#ffffff;"  target="_blank" class="btn btn-primary" href="http://onlinehpc.com/wizard/workflow/">Taverna Online</a>
         </li>
-
-        <li style="float: right;margin-left:5px;" >
-            <button class="btn btn-primary" >
-                <a target="_blank" style="color:#ffffff;" href="http://onlinehpc.com/wizard/workflow/">Taverna Online</a>
-            </button>
+        <li style="float: right;margin-left: 10px;" >
+            <a class="btn btn-primary" style="color:#ffffff;"  class="btn btn-primary" href="/workflows/new/">Upload new workflow</a>
         </li>
     </ul>
     {% if workflows|length == 0 %}
