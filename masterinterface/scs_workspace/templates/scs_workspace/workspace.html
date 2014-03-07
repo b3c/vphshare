@@ -100,7 +100,7 @@
             var console = global.console || {log:function() {}};
 
             var statusMessage = [
-                    'Ready to run.',
+                    ['Ready to run.','Running..'],
                     ['Initializing Atomic service.', 'Atomic service is initialized.'],
                     ['Starting Atomic service.', 'Atomic service is started.'],
                     ['Waiting for taverna.', 'Taverna is ready.'],
@@ -192,15 +192,15 @@
 
             WfmngProtocol.prototype.getExecutioninfoCallBack = function(data){
                 var self = this;
-                var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id "," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder"];
+                var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id "," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder", "Running"];
                 this.$details.empty();
                 var error = data[1];
                 var error_msg = data[2];
                 var executionStatusCode = parseInt(data[0]);
-
-                if(executionStatusCode<8 && !error){
+                var is_running = data[data.length-1];
+                if(executionStatusCode<8 && !error || is_running){
                     setTimeout( function(){self.getExecutioninfo();} ,5000);
-                    if(executionStatusCode>0)
+                    if(is_running)
                         this.$playButton.button('loading');
 
                 }else{
@@ -214,7 +214,11 @@
                             this.$status.text(error_msg);
                             $(alerts[j]).html(error_msg + "<i class='icon-warning'></i>");
                         }else if ($.isArray(statusMessage[j])){
-                            this.$status.text(statusMessage[j][0]);
+                            if (executionStatusCode == 0 && is_running){
+                                this.$status.text(statusMessage[j][1]);
+                            }else{
+                                this.$status.text(statusMessage[j][0]);
+                            }
                         }else{
                             this.$status.text(statusMessage[j]);
                         }

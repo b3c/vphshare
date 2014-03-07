@@ -30,7 +30,8 @@ def execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, bac
     """
     try:
         user_data = settings.TICKET.validateTkt(base64.b64decode(ticket))
-        ret = WorkflowManager.execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, baclava, url)
+        # The task have the submition workaround activated.##
+        ret = WorkflowManager.execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, baclava, url, True)
         if ret:
             ret = WorkflowManager.getWorkflowInformation(execution_id, ticket)
             while ret != False and (ret.get('executionstatus', -1) < 8 and ret.get('error', False) != True):
@@ -46,6 +47,7 @@ def execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, bac
                     pass
         return True
     except Exception, e:
+        print e
         return False
 
 
@@ -61,12 +63,12 @@ def get_execution_infos(execution_id, ticket):
         Fail : False , It mean that the execution is not started yet, or the execution id requested not exist.
     """
     ret = {}
-    taverna_execution = TavernaExecution.objects.get(pk=execution_id)
+    taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
     keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
     # Update the database every 5 seconds until user delete the execution or the execution is end.
     while not(taverna_execution is None and ret == False) and (ret.get('executionstatus', -1) < 8 and ret.get('error', False) != True):
         ret_new = WorkflowManager.getWorkflowInformation(execution_id, ticket)
-        taverna_execution = TavernaExecution.objects.get(pk=execution_id)
+        taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
         if ret_new != ret and type(ret_new) is not bool:
             ret = ret_new
             for key in keys:
@@ -74,7 +76,7 @@ def get_execution_infos(execution_id, ticket):
             taverna_execution.save()
         time.sleep(5)
     ret_new = WorkflowManager.getWorkflowInformation(execution_id, ticket)
-    taverna_execution = TavernaExecution.objects.get(pk=execution_id)
+    taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
     for key in keys:
         setattr(taverna_execution,key,ret_new.get(key, ''))
     taverna_execution.task_id = None

@@ -19,7 +19,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if request.method == 'POST':
@@ -40,7 +43,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if global_id:
@@ -48,7 +54,9 @@ class workflows_api(BaseHandler):
             else:
                 return rc.BAD_REQUEST
             if dbWorkflow.owner != user:
-                return rc.FORBIDDEN
+                response = HttpResponse(status=403)
+                response._is_string = True
+                return response
 
             if request.method == 'PUT':
                 for key in dbWorkflow.metadata:
@@ -68,7 +76,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if global_id:
@@ -103,7 +114,10 @@ class workflows_api(BaseHandler):
             client_address = request.META['REMOTE_ADDR']
             ticket = request.META.get('HTTP_MI_TICKET', '')
             if ticket:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                try:
+                    user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                except Exception, e:
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
 
@@ -123,7 +137,9 @@ class workflows_api(BaseHandler):
                             'input_definition': base64.b64encode(inputDefinition),
                             'metadata': workflow.metadata}
                 else:
-                    return rc.FORBIDDEN
+                    response = HttpResponse(status=403)
+                    response._is_string = True
+                    return response
             else:
                 workflows = Workflow.objects.all()
                 results = []

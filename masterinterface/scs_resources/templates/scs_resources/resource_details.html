@@ -42,6 +42,12 @@
                 {% for related in resource.related %}<dd>{{ related|safe }}</dd>{% endfor %}
             </dl>
         </div>
+        <div id="endpointDetails" style="visibility: hidden;">
+        	<p style="margin-bottom: 10px;">Available endpoints:</p>
+        	<dl class="dl-horizontal">
+        		
+        	</dl>
+        </div>
     </div>
     <div class="span4">
         <div class="resource-actions">
@@ -92,6 +98,7 @@
                 {% elif resource.metadata.type == "Workflow" %}
                     <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
                     <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
+                    <a  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}" target="_blank" class="btn btn-block btn-large btn-success"><i class="icon-external-link"></i>Edit in Taverna Online</a>
                 {% elif resource.metadata.type == "File"%}
                     <a  href="#" class="btn btn-block btn-large btn-success">Download file</a>
                 {% else %}
@@ -129,6 +136,7 @@
         </div>
     </div>
 
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
     <script type="text/javascript">
 
         function request_for_sharing(){
@@ -166,5 +174,36 @@
             .appendTo("#alert-container");
             $("#request-for-sharing-btn").addClass('disabled').bind('onclick',function(){return true;}).text('Request sent.');
         }
+        
+        $(function() {
+        	if('{{ resource.metadata.type }}' == 'AtomicService' && $.cookie('vph-tkt') != null) {
+        		$.ajax({
+        			url: '{{ cloudFacadeUrl }}/port_mapping_templates?appliance_type_id={{ resource.metadata.local_id }}',
+        			dataType: 'json',
+        			headers: {'MI-TICKET': $.cookie('vph-tkt')},
+        			success: function(response) {
+        				$.each(response.port_mapping_templates, function(index, value) {
+        					$.ajax({
+        						url: '{{ cloudFacadeUrl }}/endpoints?port_mapping_template_id=' + value.id,
+        						dayaType: 'json',
+        						headers: {'MI-TICKET': $.cookie('vph-tkt')},
+        						success: function(response) {
+        							$.each(response.endpoints, function(index, value) {
+        								$('#endpointDetails').css('visibility', 'visible');
+            							$('#endpointDetails').append('<dt><a href="{{ cloudFacadeUrl }}/endpoints/' + value.id + '/descriptor">' + value.name + '</a></dt>');
+            							$('#endpointDetails').append('<dd>' + value.description + '</dd>');
+        							});
+        						}
+        					});
+        				});
+        			}
+        		});
+        		$('#endpointDetails dl').append('<dt><a href="#">Dummy endpoint</a></dt>');
+        		$('#endpointDetails dl').append('<dd>Endpoint description</dd>');
+        		$('#endpointDetails dl').append('<dt><a href="#">Another endpoint</a></dt>');
+        		$('#endpointDetails dl').append('<dd>Another endpoint description</dd>');
+        		$('#endpointDetails').css('visibility', 'visible');
+        	}
+        });
     </script>
 {% endblock %}
