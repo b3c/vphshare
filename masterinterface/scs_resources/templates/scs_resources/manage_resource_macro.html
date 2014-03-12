@@ -4,22 +4,27 @@
 {% macro resource_render resource %}
     <div id="{{ resource.id }}"  class="resource well well-small">
         <div class="row">
-            <div  class="span4">
+            <div  class="span3">
                 {{ resource.metadata.name }}
             </div>
             <div class="span5">
                 Author: {{ resource.metadata.author }} | Published: {{ resource.metadata.creation_date }}
             </div>
 
-            <div class="span2">
-                <div class="btn-group">
-                    <button id="link-button" class="btn btn-info btn-mini" title="Open in new tab" >
-                        <a href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
-                    </button>
-                    <a id="details-button" class="btn btn-warning btn-mini accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ resource.id }}-details">
-                        <i class="icon-reorder"></i>
+            <div class="span3">
+                <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
+                {% if resource.metadata.type == "Workflow" and resource.owner == user%}
+                    <a id="link-button"  class="btn btn-info" title="Edit Workflow" href="/workflows/edit/{{ resource.id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
+                    <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}" target="_blank">
+                       <i class="icon-edit"></i> T.O.
                     </a>
-                </div>
+                {% endif%}
+                <a id="details-button" class="btn btn-warning  accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ resource.id }}-details">
+                    <i class="icon-reorder"></i>
+                </a>
+
+
+
                 {% if resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
             </div>
         </div>

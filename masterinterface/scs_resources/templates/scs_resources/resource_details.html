@@ -98,6 +98,7 @@
                 {% elif resource.metadata.type == "Workflow" %}
                     <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
                     <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
+                    <a  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}" target="_blank" class="btn btn-block btn-large btn-success"><i class="icon-external-link"></i>Edit in Taverna Online</a>
                 {% elif resource.metadata.type == "File"%}
                     <a  href="#" class="btn btn-block btn-large btn-success">Download file</a>
                 {% else %}

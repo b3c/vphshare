@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from core import WorkflowManager
-from celery import group
+from celery.result import AsyncResult
 
 class TavernaExecutionManager(models.Manager):
 
@@ -64,14 +64,26 @@ class TavernaExecution(models.Model):
         self.save()
 
     def update(self, ticket):
-        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
+        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'is_running']
         ret = WorkflowManager.getWorkflowInformation(self.id, ticket)
+        is_running = False
+        try:
+            if self.task_id:
+                is_running = not AsyncResult(self.task_id).ready()
+        except Exception, e:
+            pass
         if ret != False:
             for key in keys:
+                if key == 'is_running':
+                    setattr(self, key, ret.get(key, is_running))
+                    continue
                 setattr(self, key, ret.get(key, ''))
         else:
-            ret = [0, False, '', '', self.url, '', '', '', '', '', '', '', '', '']
+            ret = [0, False, '', '', self.url, '', '', '', '', '', '', '', '', '', is_running]
             for i in range(0, len(keys)):
+                if keys[i] == 'is_running':
+                    setattr(self, keys[i], ret[i])
+                    continue
                 setattr(self, keys[i], ret[i])
 
     def delete(self, ticket, *args, **kwargs):

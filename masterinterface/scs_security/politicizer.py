@@ -12,7 +12,7 @@ def create_policy_file(actions=[], conditions=[]):
     abs_path = os.path.abspath(os.path.dirname(__file__))
     sample_policy = open(os.path.join(abs_path, 'rbac_policy_tempalte_default.xml'), 'r').read()
     #sample_policy = """<Policy PolicyId="ExamplePolicy" RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides"><Target><Subjects><AnySubject/></Subjects><Resources></Resources><Actions><AnyAction/></Actions></Target><Rule RuleId="PermitRole" Effect="Permit"><Target><Subjects><AnySubject/></Subjects><Resources><AnyResource/></Resources><Actions><Action><ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal"><AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue><ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/></ActionMatch></Action></Actions></Target><Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal"><Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only"><ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="role"/></Apply><AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">VPH</AttributeValue></Condition></Rule></Policy>"""
-
+    #chenge Policyid with the name of the policy
     dom = etree.fromstring(sample_policy)
 
     for rule in dom.iterfind(".//Rule"):
