@@ -4,8 +4,8 @@ import requests
 import json
 import time
 
-USER = 'ecoto'
-PASSWD = 'ecoto123'
+USER = ''
+PASSWD = ''
 API_URL = 'http://127.0.0.1:8000/wfmng/'
 
 def getAuthTicket(username, password):
