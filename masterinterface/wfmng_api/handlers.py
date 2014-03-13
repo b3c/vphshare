@@ -10,13 +10,13 @@ import base64
 import random
 
 # SAMPLE POST
-# curl -X POST -H "MI-TICKET:dWlkPWVjb3RvO3ZhbGlkdW50aWw9MTM5NDUwMzQwNztjaXA9MC4wLjAuMDt0b2tlbnM9YWRtaW4sdGVzdCxEZXZlbG9wZXIsdnBoLGRldmVsb3BlcixWUEg7dWRhdGE9ZWNvdG8sRXJuZXN0byBDb3RvLGUuY290b0BzaGVmZmllbGQuYWMudWssLFVOSVRFRCBLSU5HRE9NLFMxNEVUO3NpZz1NQzBDRkd1TWE5cHVMeU1aRW91STlmRXArdjFuNFM4akFoVUF3NjdCM3lLUExIa2djKzRlYWlXYVJzMWNlUkE9" "http://127.0.0.1:8000/wfmng/submit/" -F "global_id=b32e64f7-5897-4c9e-b8d5-cc7365edece2"
+# curl -X POST -H "MI-TICKET:<ticket_here>" "http://127.0.0.1:8000/wfmng/submit/" -F "global_id=b32e64f7-5897-4c9e-b8d5-cc7365edece2"
 
 # SAMPLE GET
-# curl -X GET -H "MI-TICKET:dWlkPWVjb3RvO3ZhbGlkdW50aWw9MTM5NDIyNjM3MTtjaXA9MC4wLjAuMDt0b2tlbnM9YWRtaW4sdGVzdCxEZXZlbG9wZXIsdnBoLGRldmVsb3BlcixWUEg7dWRhdGE9ZWNvdG8sRXJuZXN0byBDb3RvLGUuY290b0BzaGVmZmllbGQuYWMudWssLFVOSVRFRCBLSU5HRE9NLFMxNEVUO3NpZz1NQ3dDRkFqc3MydTUwUDZualUrK0FoYWxRMEtYZzlqakFoUVNTRkdiUmVXeEw3V0RyMEd3eVJ4ZUJpU0NPQT09" "http://127.0.0.1:8000/wfmng/aa878a13-7b2a-4e34-8e8c-8102d439427a?instance_id=1814"
+# curl -X GET -H "MI-TICKET:<ticket_here>" "http://127.0.0.1:8000/wfmng/<run_id_in_wm_database>"
 
 # SAMPLE DELETE
-# curl -X DELETE -H "MI-TICKET:dWlkPWVjb3RvO3ZhbGlkdW50aWw9MTM5NDIyNjM3MTtjaXA9MC4wLjAuMDt0b2tlbnM9YWRtaW4sdGVzdCxEZXZlbG9wZXIsdnBoLGRldmVsb3BlcixWUEg7dWRhdGE9ZWNvdG8sRXJuZXN0byBDb3RvLGUuY290b0BzaGVmZmllbGQuYWMudWssLFVOSVRFRCBLSU5HRE9NLFMxNEVUO3NpZz1NQ3dDRkFqc3MydTUwUDZualUrK0FoYWxRMEtYZzlqakFoUVNTRkdiUmVXeEw3V0RyMEd3eVJ4ZUJpU0NPQT09" "http://127.0.0.1:8000/wfmng/aa878a13-7b2a-4e34-8e8c-8102d439427a?instance_id=1814&ts_id=1334"
+# curl -X DELETE -H "MI-TICKET:<ticket_here>" "http://127.0.0.1:8000/wfmng/<run_id_in_wm_database>"
 
 class WfMngApiHandler(BaseHandler):
     """
