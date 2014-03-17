@@ -274,6 +274,10 @@ LOBCDER_PORT = 8080
 LOBCDER_ROOT = '/lobcder/dav'
 LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder/rest"
 
+LOBCDER_WEBDAV_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/dav'
+LOBCDER_WEBDAV_HREF = '/lobcder/dav'
+LOBCDER_REST_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/rest'
+
 #PARAVIEW settings
 LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
 PARAVIEW_HOST = '46.105.98.182:9000'

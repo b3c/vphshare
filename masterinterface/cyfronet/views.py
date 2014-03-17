@@ -35,45 +35,8 @@ def index(request):
 
 @login_required
 def lobcder(request, path = '/'):
-    """
-        LOBCDER Management Portlet
-    """
-    form = None
-    createDirectoryForm = None
-    if not path:
-        path = '/'
-    webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
-    if request.method == 'POST':
-        if 'createDirectory' in request.POST:
-            log.info('Creating LOBCDER directory in path ' + path)
-            createDirectoryForm = LobcderCreateDirectory(request.POST)
-            if createDirectoryForm.is_valid():
-                webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
-                if not webdav.exists(settings.LOBCDER_ROOT + path + createDirectoryForm.cleaned_data['name']):
-                    webdav.mkdir(settings.LOBCDER_ROOT + path + createDirectoryForm.cleaned_data['name'])
-                    return redirect('/cyfronet/lobcder' + path)
-                else:
-                    createDirectoryForm._errors['name'] = ErrorList(['The directory already exists'])
-        else:
-            log.info('Uploading LOBCDER file ' + request.FILES['files'].name + ' to path ' + path)
-            form = LobcderUpload(request.POST, request.FILES)
-            if form.is_valid():
-                webdav.uploadChunks(request.FILES['files'], settings.LOBCDER_ROOT + path + request.FILES['files'].name)
-    if not form:
-        form = LobcderUpload()
-    if not createDirectoryForm:
-        createDirectoryForm = LobcderCreateDirectory()
-    if not path.endswith('/'):
-        #downloading a file
-        fileName = path.split('/')[-1]
-        response = HttpResponse(webdav.downloadChunks(settings.LOBCDER_ROOT + path), content_type = mimetypes.guess_type(fileName)[0])
-        response['Content-Disposition'] = 'attachment; filename=' + fileName
-        return response
-    else:
-        #listing a directory
-        entries = lobcderEntries(webdav.ls(settings.LOBCDER_ROOT + path), settings.LOBCDER_ROOT, path, request.COOKIES.get('vph-tkt','No ticket'))
-        return render_to_response("cyfronet/lobcder.html", {'path': path, 'entries': entries, 'form': form, 'deleteForm': LobcderDelete(),
-            'createDirectoryForm': createDirectoryForm, 'paraviewHost': settings.PARAVIEW_HOST}, RequestContext(request))
+    return render_to_response("cyfronet/slet.html", {'lobcderWebDavUrl': settings.LOBCDER_WEBDAV_URL, 'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
+            'lobcderRestUrl': settings.LOBCDER_REST_URL}, RequestContext(request))
 
 @csrf_exempt
 def retriveVtk(request):
