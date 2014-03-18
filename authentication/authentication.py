@@ -67,7 +67,7 @@ app.config.update(
     DEBUG=True,
     SECRET_KEY='09b63a0aa787db09b73c675b1e04224a',
     TIME_OUT=12 * 60 * 60,  # 12h
-    MASTERINTERFACE_VALIDATE_TKT_SERVICE="https://portal.vph-share.eu/validatetkt/?ticket=%s"
+    MASTERINTERFACE_VALIDATE_TKT_SERVICE="https://devel.vph-share.eu/validatetkt/?ticket=%s"
 )
 
 #TICKET = Ticket(app.config['SECRET_KEY'])
@@ -188,7 +188,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        domain = request.form.get("domain", "")
+        domain = request.args.get("domain", "")
 
         if not username and not password:
             return render_template('login.html', error='Insert username and password!')
@@ -254,6 +254,7 @@ def login():
         # incoming request from mod auth ticket third party
         ticket_b64 = request.cookies.get('bt-tkt')
         ticket = binascii.a2b_base64(str(ticket_b64))
+        domain = request.args.get("domain", "")
         #if validateTicket(app.config['SECRET_KEY'], ticket, timeout=app.config['TIME_OUT']) is not None:
         try:
             cip = str(request.remote_addr)
@@ -261,8 +262,24 @@ def login():
                 data = ticket
             else:
                 data = ticket, cip
-
+            
             if TICKET.validateTkt(data) is not None:
+                flash("Logged in!")
+                userid, tocken, userdata, validuntil = TICKET.validateTkt(data)
+                validuntil = int(time.time()) + TIMEOUT
+                if str(domain).lower().count("vphshare"):
+                    # we have to retrive the user roles from the MI
+                    validate_tkt_response = requests.get(
+                        app.config['MASTERINTERFACE_VALIDATE_TKT_SERVICE'] % ticket_b64,
+                        verify = False
+                    )
+
+                    mi_user_data = json.loads(validate_tkt_response.text)
+                    tokens = mi_user_data.get('role', [])
+
+                    ticket = TICKET.createTkt(userid, tokens=tokens, user_data=userdata, cip=cip, validuntil=validuntil)
+                    ticket_b64 = binascii.b2a_base64(ticket).rstrip()
+
                 came_from = request.args.get("came_from")
                 target_domain = ".%s" % ".".join(came_from.replace("http://", "").split(".")[1:]).split("/")[0]
 
