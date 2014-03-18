@@ -108,9 +108,11 @@ class Client(object):
             dirs[0] = '/' + dirs[0]
         old_cwd = self.cwd
         try:
-            for dir in dirs:
-                self.mkdir(dir, safe=True)
-                self.cd(dir)
+            prev_dir = dirs[0] + "/" + dirs[1] + "/" # this should be equivalent to LOBCDER_ROOT_IN_WEBDAV
+            for i in range(2, len(dirs)):
+                prev_dir = prev_dir + dirs[i] + "/"
+                if not self.exists(prev_dir):
+                    self.mkdir(prev_dir, safe=True)
         finally:
             self.cd(old_cwd)
     def rmdir(self, path, safe=False):
@@ -160,3 +162,21 @@ class Client(object):
         response = self.session.request('COPY', fromUrl, headers = {'Destination': toUrl, 'Overwrite': 'T' if overwrite else 'F'})
         if response.status_code not in expectedCodes:
             raise OperationFailed('COPY', fromUrl + ' -> ' + toUrl, expectedCodes, response.status_code)
+    def getType(self, path):
+        headers = {'Depth': '0'}
+        try:
+            response = self._send('PROPFIND', path, (207, 301), headers = headers)
+            tree = xml.parse(StringIO(response.content))
+            elements = [elem2file(elem) for elem in tree.findall('{DAV:}response')]
+            if len(elements) == 1:
+                if elements[0].name.endswith('/'):
+                    return 'folder'
+                else:
+                    return 'file'
+            else:
+                raise OperationFailed('PROPFIND', 'There should be only one element for ' + path, expectedCodes, response.status_code)
+        except OperationFailed as e:
+            if e.actual_code == 404:
+                return None
+            else:
+                raise e
