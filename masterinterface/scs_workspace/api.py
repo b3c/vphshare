@@ -1,4 +1,4 @@
-__author__ = 'Alfredo Saglimbeni, Ernesto Coto'
+__author__ = 'Alfredo Saglimbeni'
 import base64
 from django.db.models import Q
 from permissions.models import PrincipalRoleRelation
@@ -31,7 +31,7 @@ class workflows_api(BaseHandler):
             if request.method == 'POST':
                 optionals = ['tags','semantic_annotations']
                 for option in optionals:
-                    if request.POST.get(option, None):
+                    if request.POST.get(option, None) is None:
                         request.POST[option] = ''
                 form = WorkflowForm(request.POST, request.FILES)
                 if form.is_valid():
