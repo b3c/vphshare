@@ -372,20 +372,20 @@
                                             Gets the execution status of the workflow with execution id wfrun_id
                                             <pre>
 {
-    "executionstatus": "",
-    "error": "",
-    "error_msg": "",
-    "workflowId": "", 
-    "endpoint": "",
-    "asConfigId": "",
-    "expiry": "",
-    "startTime": "",
+    "workflowId": "1708",
+    "endpoint": "http://web-2355.vph.cyfronet.pl/taverna-server/rest/runs",
+    "startTime": "2014-03-19T15:01:07.023+01:00",
+    "stdout": "",
+    "asConfigId": "338",
+    "is_running": true,
+    "expiry": "2014-03-20T15:00:44.000+01:00",
     "Finished": "",
-    "exitcode": "", 
-    "stdout": "", 
-    "stderr": "", 
-    "outputfolder": "", 
-    "is_running":
+    "stderr": "",
+    "error": false,
+    "executionstatus": 7,
+    "outputfolder": "/8e5dec8b-42cd-49ec-a5f8-c60202ae203d/",
+    "error_msg": "",
+    "exitcode": ""
 }
                                             </pre>
                                         </div>
@@ -408,7 +408,7 @@
                                     <td><strong>Returns</strong></td>
                                     <td>
                                         <div class="alert alert-success">
-                                            <strong>True</strong> Successful deletion of workflow with execution id wfrun_id
+                                            <strong>Status code 200</strong>  Returns 'true' is the deletion of the workflow with execution id wfrun_id was successful
                                         </div>
                                         <div class="alert alert-error">
                                             <p><strong>Status code 401</strong> Ticket not valid</p>
