@@ -190,10 +190,11 @@ class WfMngApiHandler(BaseHandler):
                 return rc.FORBIDDEN
             if request.method == 'POST':
                 global_id = request.POST.get('global_id', None)
-                if global_id and Workflow.objects.get(global_id=global_id):
+                if global_id is None:
                     return rc.BAD_REQUEST
 
                 workflow = Workflow.objects.get(global_id=global_id)
+                print workflow
                 form = TavernaExecutionForm()
                 taverna_execution = form.save(commit=False)
                 n = TavernaExecution.objects.filter(title__contains=workflow.metadata['name'], ticket=ticket).count() + 1
@@ -214,6 +215,7 @@ class WfMngApiHandler(BaseHandler):
                 if taverna_execution.t2flow!= "" and taverna_execution.baclava!= "":
                     taverna_execution.start(ticket)
                     #return eid
+                    print taverna_execution
                     return taverna_execution.id
                 return rc.INTERNAL_ERROR
         except Exception, e:
@@ -270,7 +272,7 @@ class WfMngApiHandler(BaseHandler):
                     pass #return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
-            if request.method == 'POST' and request.POST.get('eid', None):
+            if wfrun_id is not None:
                 taverna_execution = TavernaExecution.objects.get(pk=wfrun_id, ticket=ticket)
                 if taverna_execution.delete(ticket = ticket):
                     return True
