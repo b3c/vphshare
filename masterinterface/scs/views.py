@@ -226,20 +226,33 @@ def manage_data(request):
 def search_service(request):
 
     if request.method == 'POST':
-        min = int(request.POST['min'])
-        max = int(request.POST['max'])
+        #min = int(request.POST['min'])
+        #max = int(request.POST['max'])
+        page = int(request.POST['page'])
+        countType = request.session['countType']
+        search_text = request.session['search_text']
+        expression = request.session['expression']
+        pages = request.session['pages']
+        results = request.session['results']
+        if page > request.session['page']:
+            results, countType, pages = search_resource(search_text, expression, numResults=50,  page=page)
+            for ctype, counter in countType.items():
+                request.session['countType'][ctype] += counter
+            countType = request.session['countType']
+            request.session['results'] += results
+            request.session['page'] = page
+
+
         filterby = request.POST.get('filterby', None)
-        if filterby == '[]':
-            numResults = len(request.session['results'])
-            results = request.session['results'][min:max]
-        else:
+        if filterby != '[]':
             filterby = json.loads(filterby)
-            results = []
             numResults = 0
+            tmpresults = list(results)
+            results = []
             for filter in filterby:
                 numResults += request.session['types'].get(filter,0)
-            for result in request.session['results']:
-                if result['type'] not in ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution'] and 'Other' in filterby:
+            for result in tmpresults:
+                if result['type'] not in ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'Application', 'User', 'Institution'] and 'Other' in filterby:
                     results.append(result)
                 if result['type'] in filterby:
                     results.append(result)
@@ -247,7 +260,7 @@ def search_service(request):
         resultsRender = render_to_string("scs/search_results.html", {"results": results})
 
         return HttpResponse(status=200,
-                            content=json.dumps({'data': resultsRender, 'numResults': str(numResults)}, sort_keys=False),
+                            content=json.dumps({'data': resultsRender, 'numResults': len(request.session['results']), 'countType': countType}, sort_keys=False),
                             content_type='application/json')
 
     response = HttpResponse(status=403)
@@ -294,7 +307,8 @@ def search(request):
             'licence': licences,
             'tags': tags
         }
-        results, countType = search_resource(search_text, expression)
+
+        results, countType, pages = search_resource(search_text, expression, numResults=50)
 
         from django.db.models import Q
         if types == [] and (filterby == [] or 'User' in filterby):
@@ -328,10 +342,15 @@ def search(request):
         #        countType['Study'] = len(studies)
 
         request.session['results'] = results
+        request.session['search_text'] = search_text
+        request.session['expression'] = expression
+        request.session['countType'] = countType
+        request.session['pages'] = pages
+        request.session['page'] = 1
         request.session['types'] = countType
         return render_to_response("scs/search.html",
-                                  {'search': search, "results": results[0:30], "numresults": len(results), 'countType': countType,
-                                  'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
+                                  {'search': search, "results": results, "numResults": len(results), 'countType': countType, 'pages':pages,
+                                  'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'User', 'Institution']},
                                   RequestContext(request))
     types = request.GET.get('types', [])
     if type(types) in (str, unicode):
@@ -340,8 +359,8 @@ def search(request):
             'type': types,
     }
     return render_to_response("scs/search.html",
-                              {'search': search, "results": None, "numresults": 0, 'countType': {},
-                               'types': ['Dataset', 'Workflow', 'Atomic Service', 'File', 'SWS', 'Application', 'User', 'Institution', 'Other']},
+                              {'search': search, "results": None, "numResults": 0, 'countType': {},
+                               'types': ['Dataset', 'Workflow', 'Application', 'File', 'Semantic Web service', 'User', 'Institution']},
                               RequestContext(request))
 
 @is_staff()
@@ -424,7 +443,7 @@ def delete_tag_service(request):
                 if tag != removed_tag:
                     new_tag['tags'] += "%s," % tag
             new_tag['tags'] = new_tag['tags'].strip()
-            update_resource_metadata(global_id, new_tag)
+            update_resource_metadata(global_id, new_tag, metadata['type'] )
 
             response = HttpResponse(status=200)
             response._is_string = True
@@ -464,7 +483,7 @@ def add_tag_service(request):
                 new_tags = {'tags': "%s, %s" % (metadata['tags'], added_tag)}
             else:
                 new_tags = {'tags': added_tag.strip()}
-            update_resource_metadata(global_id, new_tags)
+            update_resource_metadata(global_id, new_tags, metadata['type'])
 
             response = HttpResponse(status=200)
             response._is_string = True
@@ -488,7 +507,8 @@ def edit_description_service(request):
 
             description = request.POST.get('description', "")
             global_id = request.POST.get('global_id', "")
-            update_resource_metadata(global_id, {'description': description})
+            metadata = get_resource_metadata(global_id)
+            update_resource_metadata(global_id, {'description': description}, metadata['type'])
 
             response = HttpResponse(status=200)
             response._is_string = True

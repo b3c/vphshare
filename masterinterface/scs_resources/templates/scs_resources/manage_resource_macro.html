@@ -15,7 +15,7 @@
                 <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
                 {% if resource.metadata.type == "Workflow" and resource.owner == user%}
                     <a id="link-button"  class="btn btn-info" title="Edit Workflow" href="/workflows/edit/{{ resource.id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
-                    <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}" target="_blank">
+                    <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
                        <i class="icon-edit"></i> T.O.
                     </a>
                 {% endif%}

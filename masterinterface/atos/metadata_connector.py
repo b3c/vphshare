@@ -9,9 +9,10 @@ from exceptions import AtosServiceException
 from ordereddict import OrderedDict
 
 
-def from_dict_to_payload(metadata):
-
-    return "<metadata>%s</metadata>" % "".join(["<%s>%s</%s>" % (key, item, key) for key, item in metadata.items()])
+def from_dict_to_payload(metadata,type):
+    typetag= type[0].lower()+ type[1:]
+    typefield = "<type>%s</type>" % type
+    return "<resource_metadata><%s>%s%s</%s></resource_metadata>" % (typetag, typefield, "".join(["<%s>%s</%s>" % (key, item, key) for key, item in metadata.items()]), typetag)
 
 
 def get_all_resources_metadata():
@@ -32,7 +33,7 @@ def get_all_resources_metadata():
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
 
 
-def set_resource_metadata(metadata):
+def set_resource_metadata(metadata, type):
     """
         given a metadata dictionary create a new entry into the global catalog.
         return the resource global id as a string
@@ -40,7 +41,7 @@ def set_resource_metadata(metadata):
 
     try:
         headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
-        response = requests.post(GLOBAL_METADATA_API, data=from_dict_to_payload(metadata), headers=headers)
+        response = requests.post(GLOBAL_METADATA_API, data=from_dict_to_payload(metadata, type), headers=headers)
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
@@ -64,14 +65,14 @@ def get_resource_metadata(global_id):
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
         metadata = xmltodict.parse(response.text.encode('utf-8'))
-
-        return metadata['resource_metadata']
+        result = metadata['resource_metadata']
+        return result[result.keys()[0]]
 
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
 
 
-def update_resource_metadata(global_id, metadata):
+def update_resource_metadata(global_id, metadata, type):
     """
         given a metadata dictionary and a resource global id, update the resource medatada into the global catalog.
         return the resource global id as a string
@@ -79,7 +80,7 @@ def update_resource_metadata(global_id, metadata):
 
     try:
         headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
-        response = requests.put(RESOURCE_METADATA_API % global_id, data=from_dict_to_payload(metadata), headers=headers)
+        response = requests.put(RESOURCE_METADATA_API % global_id, data=from_dict_to_payload(metadata, type), headers=headers)
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
@@ -119,20 +120,26 @@ def get_facets():
     return FACETS_LIST
 
 
-def filter_resources_by_facet(facet, value):
+def filter_resources_by_facet(type, facet = None, value = None):
     """
         given a facet and a value return the list of the resources that match the query
     """
 
     try:
-        response = requests.get(FACETS_METADATA_API % (facet, value))
+        if facet:
+            response = requests.get(FACETS_METADATA_API % (type, facet, value))
+        else:
+            response = requests.get(TYPE_METADATA_API % type)
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
-
-        metadata = xmltodict.parse(response.text.encode('utf-8'))
         try:
-            return metadata["resource_metadata_list"]['resource_metadata']
+            resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]['resource_metadata']
+            results = []
+            for resource in resources:
+                resource = resource[resource.keys()[0]]
+                results.append(resource)
+            return results
         except Exception, e:
             return []
 
@@ -143,37 +150,33 @@ def filter_resources_by_facet(facet, value):
 def filter_resources_by_author(author):
     """
     """
+    try:
+        query = "(author='%s')" % author
+        response = requests.get(FILTER_METADATA_API % (query, '3000', '1'))
 
-    return filter_resources_by_facet('author', author)
+        if response.status_code != 200:
+            raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
+        try:
+            resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]['resource_metadata']
+            results = []
+            for resource in resources:
+                resource = resource[resource.keys()[0]]
+                results.append(resource)
+            return results
+        except Exception, e:
+            return []
+
+    except BaseException, e:
+        raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
 
 
 def filter_resources_by_type(resource_type):
     """
     """
 
-    return filter_resources_by_facet('type', resource_type)
+    return filter_resources_by_facet(resource_type)
 
-
-def filter_resources_by_facets(query):
-    """
-        given a dictionary query, a list of resources that match all the given condition is returned
-    """
-
-    if not type(query) is dict:
-        raise TypeError("A dictionary type is required for query parameter")
-
-    resources = filter_resources_by_facet(query.keys()[0], query[query.keys()[0]])
-
-    del query[query.keys()[0]]
-
-    for facet, value in query.items():
-        for resource in resources:
-            if not facet in resource or not resource[facet].count(value):
-                resources.remove(resource)
-
-    return resources
-
-
+#not used?
 def filter_resources_by_text(text):
     """
     """
@@ -188,7 +191,7 @@ def filter_resources_by_text(text):
 
 logicalExpressionBase = '(name:"%s" OR description:"%s")'
 
-
+#not used?
 def filter_resources_by_expression(expression):
     """
 
@@ -237,45 +240,59 @@ def filter_resources_by_expression(expression):
         return [],{}
 
 
-def search_resource(text, filters = {}):
+def search_resource(text, filters = {}, numResults=10, page=1):
 
     try:
-        request_url = SEARCH_METADATA_API % text
-        #filters['name'] = text.split()
-        filters_url = "&filters="
-        for key, values in filters.items():
-            if type(values) is list and len(values) > 0:
-                filters_url += '('
-                for value in values:
-                    filters_url += ' %s:"%s" OR' % (key, value)
-                filters_url = filters_url[:-2]
-                filters_url += ') AND '
-        filters_url = filters_url[:-5]
+        if text == '*':
+            filters_url = "(name LIKE '%%25') AND ((status='Active') OR (status='active')) AND "
+            for key, values in filters.items():
+                if type(values) is list and len(values) > 0:
+                    filters_url += '('
+                    for value in values:
+                        if key == 'tags':
+                            filters_url += " %s LIKE '%%25%s%%25' OR" % (key, value)
+                        else:
+                            filters_url += " %s='%s' OR" % (key, value)
+                    filters_url = filters_url[:-2]
+                    filters_url += ") AND "
+            filters_url = filters_url[:-5]
+            response = requests.get(FILTER_METADATA_API % (filters_url, numResults, page))
+        else:
+            request_url = SEARCH_METADATA_API % (text, numResults, page)
+            #filters['name'] = text.split()
+            filters_url = "&filters=((status='Active') OR (status='active')) AND "
+            for key, values in filters.items():
+                if type(values) is list and len(values) > 0:
+                    filters_url += '('
+                    for value in values:
+                        if key == 'tags':
+                            filters_url += " %s LIKE '%%s%' OR" % (key, value)
+                        else:
+                            filters_url += " %s='%s' OR" % (key, value)
+                    filters_url = filters_url[:-2]
+                    filters_url += ') AND '
+            filters_url = filters_url[:-5]
 
-        response = requests.get(request_url + filters_url)
+            response = requests.get(request_url + filters_url)
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
 
         #from collections import OrderedDict
-        resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]["resource_metadata"]
-        countType = {'Dataset': 0, 'Workflow': 0, 'Atomic Service': 0, 'File': 0, 'SWS': 0, 'Application': 0, 'AtomicService': 0}
+        respDict = xmltodict.parse(response.text.encode('utf-8'))
+        pages = (int(respDict["resource_metadata_list"]['@numTotalMetadata'])/numResults) + 1
+        resources = respDict["resource_metadata_list"]["resource_metadata"]
+        countType = {'Dataset': 0, 'Workflow': 0, 'AtomicService': 0, 'File': 0, 'SemanticWebService': 0, 'Workspace': 0}
         if type(resources) in (OrderedDict, dict):
             resources = [resources]
 
+        results = []
         for resource in resources:
-            if resource['type'] not in countType and 'Other' not in countType:
-                countType['Other'] = 0
-            if resource['type'] not in countType and 'Other' in countType:
-                countType['Other'] += 1
-                continue
-            if resource['type'] == 'AtomicService':
-                resource['type'] = 'Atomic Service'
+            resource = resource[resource.keys()[0]]
+            results.append(resource)
             countType[resource['type']] += 1
-
-        del countType['AtomicService']
-        return resources, countType
+        return results, countType, pages
 
     except BaseException, e:
         print e
-        return [], {}
+        return [], {}, 0

@@ -284,6 +284,7 @@ PARAVIEW_HOST = '46.105.98.182:9000'
 
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
+METADATA_TYPE = ['Dataset', 'File', 'SemanticWebService', 'Workflow', 'AtomicService', 'Workspace']
 
 #WORKFLOW MANAGER URL
 WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'

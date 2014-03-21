@@ -63,7 +63,7 @@
                     {% for tags in search.tags %}
                         <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Tags: {{ tags }}</div><div data-value="{{ tags }}" data-field="tags" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
                     {% endfor %}
-                    <p>We've found {{ numresults }} repository results</p>
+                    <p>We've found <div id="numResults">{{ numResults }}</div> repository results</p>
                 </div>
             </div>
             {% for result in results %}
@@ -74,8 +74,12 @@
                             <p><i class="icon-user {{ result.type }}-color"></i><b class="{{ result.type }}-color"> {{ result.name }}</b></p>
                         {% elif result.type == 'Institution' %}
                             <p><i class="icon-group {{ result.type }}-color"></i><a target="_blank" href="/groups/{{ result.id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
+                        {% elif result.type == 'AtomicService' %}
+                            <p><i class="icon-group Application-color-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="Application-color"> {{ result.name }}</b></a></p>
+                        {% elif result.type == 'SemanticWebService' %}
+                            <p><i class="icon-group SWS-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="SWS-color"> {{ result.name }}</b></a></p>
                         {% else %}
-                            <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
+                            <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
                         {% endif %}
                         <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {{ result.type }}</p>
                     </div>
@@ -99,7 +103,13 @@
                 <div class="popover-content">
                     <p><b>Filter By</b></p>
                     {% for type in types %}
-                        <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">{{ type }}<span class="badge pull-right {{ type }}-bkgr text-center">{{countType|keyvalue:type}}</span></div>
+                        {% if type == "AtomicService" %}
+                            <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">Application<span id="count-{{ type }}" class="badge pull-right Application-bkgr text-center">{{countType|keyvalue:type}}</span></div>
+                        {% elif type == "SemanticWebService" %}
+                            <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">Semantic web service<span id="count-{{ type }}" class="badge pull-right SWS-bkgr text-center">{{countType|keyvalue:type}}</span></div>
+                        {% else  %}
+                            <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">{{ type }}<span id="count-{{ type }}" class="badge pull-right {{ type }}-bkgr text-center">{{countType|keyvalue:type}}</span></div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -176,7 +186,9 @@
                 this.$atomic = false;
                 this.$min = 20;
                 this.$max = 40;
-                this.$numResults = {{ numresults }};
+                this.$numResults = {{ numResults }};
+                this.$pages = {{ pages }};
+                this.$page = 1;
                 this.$loadingBox = $('.loading');
                 this.$rigthList = $('.rigth-list');
                 $('.totop').click(function(){$('html, body').animate({ scrollTop: 0 }, 'slow');});
@@ -199,7 +211,8 @@
                 $('.remove-tag').click(function(e){self.removeTag(e,$(this).data('value'),$(this).data('field'));});
                 $('.filter').click(function(e){self.filter($(this),$(this).data('value'));});
                 $(window).scroll(function() {
-                    if($(window).scrollTop() + $(window).height() >= self.$loadingBox.position().top+300 && self.$atomic == false && self.$min < self.$numResults) {
+                    if($(window).scrollTop() + $(window).height() >= self.$loadingBox.position().top+300 && self.$atomic == false && self.$page < self.$pages) {
+                        self.$page = self.$page+1;
                         self.$atomic = true;
                         $('#loading-message').show();
                         self.loading();
@@ -234,10 +247,12 @@
             SearchController.prototype.loadingCallBack = function(data,self){
 
                 $(data['data']).insertBefore(self.$loadingBox);
-                self.$numResults = data['numResults'];
+                self.$numResults = parseInt(data['numResults']);
+                $('#numResults').text(self.$numResults);
+                for (var type in data['countType']) {
+                    $('#count-'+type).text(data['countType'][type]);
+                }
                 self.$loadingBox.find('#loading-message').hide();
-                self.$max = self.$max+20;
-                self.$min = self.$min+20;
                 self.$atomic = false;
 
             };
@@ -247,7 +262,7 @@
                 var self = this;
 
                 $.ajax('/search_results/', {
-                    data: {max:self.$max, min: self.$min, filterby:JSON.stringify(self.$request.filterby)},
+                    data: {page:self.$page, filterby:JSON.stringify(self.$request.filterby)},
                     type: 'POST',
                     success: function(data) { self.loadingCallBack(data,self); },
                     error: function(data) { self.loadingError(data); }

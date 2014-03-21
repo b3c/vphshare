@@ -49,8 +49,8 @@ def resource_detailed_view(request, id='1'):
             resource.save(metadata=metadata)
 
         except ObjectDoesNotExist, e:
-            # TODO create a new user or assign resource temporarly to the President :-)
-            resource = Resource(global_id=id, owner=User.objects.get(username='mbalasso'))
+            # TODO create a new user or assign resource temporarly to the President :-) now I'm the president #asagli
+            resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
             resource.save(metadata=metadata)
 
         finally:
@@ -169,18 +169,21 @@ def manage_resources(request):
     try:
         # update resources list
         resources = filter_resources_by_author(request.user.username)
+        managed_resources = []
 
-        for resource_from_service in resources:
-
-            resource, created = Resource.objects.get_or_create(global_id=resource_from_service['global_id'], owner=request.user)
-            resource.metadata = get_resource_metadata(resource.global_id)
+        for resource_meta in resources:
+            if resource_meta['type'] == "Workflow":
+                resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
+            else:
+                resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
+            managed_resources.append(resource)
 
             if created:
                 resource.save()
                 # TODO set resource workflow
                 # set_workflow(resource, ResourceWorkflow)
 
-        managed_resources = get_managed_resources(request.user)
+        managed_resources += get_managed_resources(request.user)
         for resource in managed_resources:
             if getattr(resource, 'metadata', None) is None:
                 try:
@@ -189,31 +192,30 @@ def manage_resources(request):
                     continue
 
             # look if there are group with the resource name and grant them the local role
-            for role in get_resource_local_roles():
-                group_name = get_resource_global_group_name(resource, role.name)
-                try:
-                    group = Group.objects.get(name=group_name)
-                    add_local_role(resource, group, role)
-                except ObjectDoesNotExist, e:
-                    pass
+            if resource.metadata['type'] is 'Dataset':
+                for role in get_resource_local_roles():
+                    group_name = get_resource_global_group_name(resource, role.name)
+                    try:
+                        group = Group.objects.get(name=group_name)
+                        add_local_role(resource, group, role)
+                    except ObjectDoesNotExist, e:
+                        pass
 
             #resource.permissions_map = get_permissions_map(resource)
             resource.roleslist = get_resource_local_roles(resource)
             resource.requests = get_pending_requests_by_resource(resource)
             resource.sharreduser = get_user_group_permissions_map(resource)
             resource.user_group_finder = UsersGroupsForm(id="user_group_"+resource.global_id,
-                                                         excludedList=resource.sharreduser)
+                                                         excludedList=resource.sharreduser + [request.user] )
 
-            if str(resource.metadata['type']).lower() in ['dataset', 'file']:
+            if str(resource.metadata['type']) in ['Dataset', 'File']:
                 datas.append(resource)
 
-            if str(resource.metadata['type']).lower() in ['application', 'atomicservice', 'atomic service', 'sws']:
+            if str(resource.metadata['type']) in ['AtomicService', 'SemanticWebService']:
                 applications.append(resource)
 
-            if str(resource.metadata['type']).lower() == 'workflow':
+            if str(resource.metadata['type']) == 'Workflow':
                 workflows.append(resource)
-
-        # TODO for all types of resources
 
     except AtosServiceException, e:
         request.session['errormessage'] = 'Metadata server is down. Please try later'
@@ -227,33 +229,6 @@ def manage_resources(request):
         'tkt64': request.COOKIES.get('vph-tkt')},
         RequestContext(request)
     )
-
-
-def resource_share_widget(request, id='1'):
-    """
-        given a data endpoint display all related information
-    """
-
-    resource = Resource.objects.get(id=id)
-
-    # link data to the relative security configuration STATICALLY!
-    # configuration_name = 'TestMatteo'
-    # configuration_file = cloudfacade.get_securityproxy_configuration_content(request.user.username, request.COOKIES.get('vph-tkt'), configuration_name)
-
-    # retrieve roles from the configuration
-    # properties = extract_configurations(configuration_file)
-
-    resource.permissions_map = get_permissions_map(resource)
-
-    return render_to_response(
-        'scs_resources/share_widget.html',
-        {'tkt64': request.COOKIES.get('vph-tkt'),
-         'resource': resource,
-         'requests': [],
-         },
-        RequestContext(request)
-    )
-
 
 def acceptRequest(request):
     if request.method == 'POST':

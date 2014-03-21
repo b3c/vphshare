@@ -40,14 +40,17 @@ DATA_PROPERTIES_RANGES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/d
 
 # Metadata api urls
 
-GLOBAL_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
+GLOBAL_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata'
 
-RESOURCE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/%s'
+RESOURCE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/%s'
 
-FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/facets/%s?value=%s'
+FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s/%s?value=%s'
 
-FILTER_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/filter?logicalExpression=%s'
+TYPE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s?numResults=3000'
 
-SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata/multifield?text=%s'
+FILTER_METADATA_API = "http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s"
+
+SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/multifield?params=name,description,tags&text=%s&numResults=%s&page=%s'
+#SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/multifield?params=name,description,tags&text=%s'
 
 FACETS_LIST = [u'type', u'name', u'description', u'author', u'category', u'tags', u'semantic_annotations', u'licence', u'rating', u'views', u'local_id']

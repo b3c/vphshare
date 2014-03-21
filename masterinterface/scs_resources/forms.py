@@ -4,6 +4,7 @@ from django.contrib import admin
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User, Group
+from masterinterface.scs_groups.models import Institution, Study
 from masterinterface.scs_resources.models import Resource, Workflow
 from masterinterface.atos.metadata_connector import set_resource_metadata, update_resource_metadata
 from django_select2 import Select2MultipleChoiceField, Select2MultipleWidget
@@ -36,9 +37,9 @@ class ResourceForm(forms.ModelForm):
         }
 
         try:
-            update_resource_metadata(self.instance.global_id, metadata_payload)
+            update_resource_metadata(self.instance.global_id, metadata_payload, metadata_payload['type'])
         except Exception, e:
-            resource.global_id = set_resource_metadata(metadata_payload)
+            resource.global_id = set_resource_metadata(metadata_payload, metadata_payload['type'])
             resource.owner = owner
 
         if commit:
@@ -88,11 +89,12 @@ class UsersGroupsForm(forms.Form):
 
     def __init__(self, id="", list=[], excludedList=[], *args, **kwargs):
 
-        users = User.objects.all()
-        groups = Group.objects.all()
-
-        usersList = [("user_"+str(user.username),  "%s %s" % (user.first_name, user.last_name)) for user in users if user not in excludedList]
+        users = User.objects.all().exclude(username='admin')
+        groups = Institution.objects.all()
+        usersList = [("user_"+str(user.username),  "%s %s (%s)" % (user.first_name, user.last_name, user.username)) for user in users if user not in excludedList]
         groupList = [("group_"+str(group.name),  "%s" % group.name) for group in groups if group not in excludedList]
+        groups = Study.objects.all()
+        groupList += [("group_"+str(group.name),  "%s" % group.name) for group in groups if group not in excludedList]
         usersList.sort(key=lambda tup: tup[1])
         groupList.sort(key=lambda tup: tup[1])
 
