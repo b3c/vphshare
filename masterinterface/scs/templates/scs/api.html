@@ -65,9 +65,9 @@
                                 <tbody>
                                 <tr>
                                     <td><strong>Description</strong></td>
-                                    <td><p>Provide the service to notify a specific user or a group members.
-                                        <br />When the serivce is invocated the user (or memebers group) receive an email and in the same time if it load a Master interface page, appears a message popup.
-                                        <br />The notification service can be perfomed by passing the ticket, the recipient (username or groupid), message and the subject, as an URL parameters,
+                                    <td><p>Provides the service to notify a specific user or a group members.
+                                        <br />When the service is invocated the user (or members group) receive an email and in the same time if it load a Master interface page, appears a message popup.
+                                        <br />The notification service can be performed by passing the ticket, the recipient (username or groupid), message and the subject, as an URL parameters,
                                         <br />Returns status code 200 if the notification is delivered, 400 if there is a malformed request, however 403 error.</p></td>
                                 </tr>
                                 <tr>
@@ -86,7 +86,7 @@
                                             <dt>ticket</dt><dd>your authentication ticket<span class="label">required</span></dd>
                                             <dt>recipient</dt><dd>the username or group id<span class="label">required</span></dd>
                                             <dt>message</dt><dd>the content of notification<span class="label">required</span></dd>
-                                            <dt>subject</dt><dd>you have the possibility to specific a notification subject, if need<span class="label">optional</span></dd>
+                                            <dt>subject</dt><dd>you have the possibility to specify a notification subject, if need<span class="label">optional</span></dd>
                                         </dl>
                                     </td>
                                 </tr>
@@ -97,8 +97,8 @@
                                             <strong>Status code 200</strong>
                                         </div>
                                         <div class="alert alert-error">
-                                            <p><strong>Status code 403</strong>Ticket not valid</p>
-                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                            <p><strong>Status code 403</strong> Ticket not valid</p>
+                                            <p><strong>Status code 400</strong> Malformed request</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -121,7 +121,7 @@
                                 <tbody>
                                 <tr>
                                     <td><strong>Description</strong></td>
-                                    <td><p>Provide a set of API to manage workflows.
+                                    <td><p>Provides a set of API to manage workflows.
                                         <br/> To have access to the API, it is needed to add in the header the argument 'MI-TICKET' with the corresponding ticket requestor.
                                     </p></td>
                                 </tr>
@@ -169,7 +169,7 @@
                                             </pre>
                                         </div>
                                         <div class="alert alert-error">
-                                            <p><strong>Status code 401</strong>Ticket not valid or expired</p>
+                                            <p><strong>Status code 401</strong> Ticket not valid or expired</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -214,8 +214,8 @@
                                             </pre>
                                         </div>
                                         <div class="alert alert-error">
-                                            <p><strong>Status code 401</strong>Ticket not valid</p>
-                                            <p><strong>Status code 404</strong>Workflow non found</p>
+                                            <p><strong>Status code 401</strong> Ticket not valid</p>
+                                            <p><strong>Status code 404</strong> Workflow not found</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -235,8 +235,8 @@
                                             <strong>Status code 204</strong>
                                         </div>
                                         <div class="alert alert-error">
-                                            <p><strong>Status code 401</strong>Ticket not valid</p>
-                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                            <p><strong>Status code 401</strong> Ticket not valid</p>
+                                            <p><strong>Status code 400</strong> Malformed request</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -254,7 +254,7 @@
                                     <td>
                                         <dl>
                                             <dt>name</dt><dd>The name of the workflow<span class="label">required</span></dd>
-                                            <dt>description</dt><dd>The description fo the workflow<span class="label">required</span></dd>
+                                            <dt>description</dt><dd>The description of the workflow<span class="label">required</span></dd>
                                             <dt>category</dt><dd>The category of the workflow<span class="label">required</span></dd>
                                             <dt>tags</dt><dd>tags separated by comma</dd>
                                             <dt>semantic_annotations</dt><dd>semantic annotation URI separated by comma</dd>
@@ -268,12 +268,12 @@
                                     <td><strong>Returns</strong></td>
                                     <td>
                                         <div class="alert alert-success">
-                                            <strong>Status code 200</strong> Return the global_id of the new workflow
+                                            <strong>Status code 200</strong> Returns the global_id of the new workflow
                                             <pre>&lt;global_id&gt;</pre>
                                         </div>
                                         <div class="alert alert-error">
-                                            <p><strong>Status code 401</strong>Ticket not valid</p>
-                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                            <p><strong>Status code 401</strong> Ticket not valid</p>
+                                            <p><strong>Status code 400</strong> Malformed request</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -297,8 +297,8 @@
                                             <strong>Status code 201</strong>
                                         </div>
                                         <div class="alert alert-error">
-                                            <p><strong>Status code 401</strong>Ticket not valid</p>
-                                            <p><strong>Status code 400</strong>Malformed request</p>
+                                            <p><strong>Status code 401</strong> Ticket not valid</p>
+                                            <p><strong>Status code 400</strong> Malformed request</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -307,6 +307,121 @@
                         </div>
                     </div>
                 </div>
+                <!-- starts here --> 
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse5">
+                            <h3>Workflow Manager<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse5" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h3>/api/wfmng</h3>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td><p>Provides a set of API to execute workflows remotely.
+                                        <br/> To have access to the API, it is needed to add in the header the argument 'MI-TICKET' with the corresponding ticket requestor.
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/wfmng/submit</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>POST</td>
+                                </tr>
+                               <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt>global_id</dt><dd>The global id of the workflow to be submitted in the metadata catalogue<span class="label">required</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 200</strong> 
+                                            The specified workflow was successfully submitted and started. Returns the execution id of the running workflow <pre>&lt;wfrun_id&gt;</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong> Ticket not valid or expired</p>
+                                            <p><strong>Status code 400</strong> Malformed request</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/wfmng/<strong class="text-info">&lt;wfrun_id&gt;</strong>/</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GET</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 200</strong>
+                                            Gets the execution status of the workflow with execution id wfrun_id
+                                            <pre>
+{
+    "workflowId": "1708",
+    "endpoint": "http://web-2355.vph.cyfronet.pl/taverna-server/rest/runs",
+    "startTime": "2014-03-19T15:01:07.023+01:00",
+    "stdout": "",
+    "asConfigId": "338",
+    "is_running": true,
+    "expiry": "2014-03-20T15:00:44.000+01:00",
+    "Finished": "",
+    "stderr": "",
+    "error": false,
+    "executionstatus": 7,
+    "outputfolder": "/8e5dec8b-42cd-49ec-a5f8-c60202ae203d/",
+    "error_msg": "",
+    "exitcode": ""
+}
+                                            </pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong> Ticket not valid</p>
+                                            <p><strong>Status code 400</strong> Malformed request</p>
+                                        </div> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>{{ request.get_host }}/api/wfmng/<strong class="text-info">&lt;wfrun_id&gt;</strong>/</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>DELETE</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>Status code 200</strong>  Returns 'true' is the deletion of the workflow with execution id wfrun_id was successful
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Status code 401</strong> Ticket not valid</p>
+                                            <p><strong>Status code 400</strong> Malformed request</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- ends here --> 
             </div>
        </div>
     </div>
