@@ -7,7 +7,7 @@ from permissions.models import PrincipalRoleRelation, Role
 from django.http import HttpResponse
 from piston.handler import BaseHandler
 from masterinterface.scs_auth.auth import authenticate
-from masterinterface.atos.metadata_connector import filter_resources_by_facet, get_resource_metadata
+from masterinterface.atos.metadata_connector import filter_resources_by_facet, filter_resources_by_type, get_resource_metadata
 from masterinterface.scs_resources.models import Resource, Workflow
 
 Roles = ['Reader', 'Editor', 'Manager', 'Owner']
