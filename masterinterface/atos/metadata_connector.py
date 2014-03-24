@@ -136,6 +136,8 @@ def filter_resources_by_facet(type, facet = None, value = None):
         try:
             resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]['resource_metadata']
             results = []
+            if not isinstance(resources, list):
+                resources = [resources]
             for resource in resources:
                 resource = resource[resource.keys()[0]]
                 results.append(resource)
@@ -159,6 +161,8 @@ def filter_resources_by_author(author):
         try:
             resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]['resource_metadata']
             results = []
+            if not isinstance(resources, list):
+                resources = [resources]
             for resource in resources:
                 resource = resource[resource.keys()[0]]
                 results.append(resource)
@@ -213,7 +217,7 @@ def filter_resources_by_expression(expression):
 
         #from ordereddict import OrderedDict
         resources = xmltodict.parse(response.text.encode('utf-8'))["resource_metadata_list"]["resource_metadata"]
-        if type(resources) in (OrderedDict, dict):
+        if not isinstance(resources, list):
             resources = [resources]
         results = OrderedDict()
         for resource in resources:
@@ -283,7 +287,7 @@ def search_resource(text, filters = {}, numResults=10, page=1):
         pages = (int(respDict["resource_metadata_list"]['@numTotalMetadata'])/numResults) + 1
         resources = respDict["resource_metadata_list"]["resource_metadata"]
         countType = {'Dataset': 0, 'Workflow': 0, 'AtomicService': 0, 'File': 0, 'SemanticWebService': 0, 'Workspace': 0}
-        if type(resources) in (OrderedDict, dict):
+        if not isinstance(resources, list):
             resources = [resources]
 
         results = []

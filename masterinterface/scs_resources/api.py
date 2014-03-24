@@ -105,8 +105,15 @@ class has_local_roles(BaseHandler):
 
                     for resource in resources:
                         try:
-                            resource_in_db, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata=resource)
-                            resource_in_db.save()
+                            author = User.objects.get(username=resource['author'])
+                            if resource['type'] == "Workflow":
+                                resource_in_db, created = Workflow.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author)
+                                resource_in_db.save()
+                                resource_in_db = resource.resource_ptr
+                            else:
+                                resource_in_db, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author)
+                                resource_in_db.save()
+
                             role_relations = PrincipalRoleRelation.objects.filter(
                                 Q(user=user) | Q(group__in=user.groups.all()),
                                 role__name__in=roles,
