@@ -16,15 +16,17 @@ class ResourceManager(models.Manager):
         return resource, create
 
 
-    def get(self, *args, **kwargs):
+    def get(self,metadata=True, *args, **kwargs):
         resource = super(ResourceManager, self).get(*args, **kwargs)
-        resource.metadata = get_resource_metadata(resource.global_id)
+        if metadata:
+            resource.metadata = get_resource_metadata(resource.global_id)
         return resource
 
-    def all(self):
+    def all(self, metadata=False):
         resources = super(ResourceManager, self).all()
-        for resource in resources:
-            resource.metadata = get_resource_metadata(resource.global_id)
+        if metadata:
+            for resource in resources:
+                resource.metadata = get_resource_metadata(resource.global_id)
         return resources
 
 
@@ -81,7 +83,7 @@ class ResourceRequest(models.Model):
             # grant Reader role to the requestor
             add_local_role(self.resource, self.requestor, resource_reader)
             # TODO REMOVE HACK!
-            add_role("%s_READER" % self.resource.global_id)
+            #add_role("%s_READER" % self.resource.global_id)
 
 
 class Workflow(Resource):
