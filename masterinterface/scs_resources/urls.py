@@ -4,7 +4,6 @@ from views import *
 
 urlpatterns = patterns(
     'scs_resources.views',
-    url(r'^datashare/$', resource_share_widget),
     url(r'^resources/request_for_sharing/$', request_for_sharing),
     url(r'^resources/(?P<id>[\w\-]+)/$', resource_detailed_view),
     url(r'^dashboard/$', manage_resources,  name='manage-data'),

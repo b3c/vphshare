@@ -10,6 +10,12 @@ from django.contrib.contenttypes.models import ContentType
 
 class ResourceManager(models.Manager):
 
+    def get_or_create(self, global_id, metadata = [], **kwargs):
+        resource, create = super(ResourceManager, self).get_or_create(global_id=global_id, **kwargs)
+        resource.metadata = metadata
+        return resource, create
+
+
     def get(self, *args, **kwargs):
         resource = super(ResourceManager, self).get(*args, **kwargs)
         resource.metadata = get_resource_metadata(resource.global_id)
@@ -40,7 +46,7 @@ class Resource(models.Model):
         else:
             # TODO this action should be performed only for workflows!
             # now it is ok since we have only Resource and Workflow
-            update_resource_metadata(self.global_id, {'local_id': self.id, 'type': self.__class__.__name__})
+            update_resource_metadata(self.global_id, {'localID': self.id, 'type': self.__class__.__name__},self.__class__.__name__ )
             add_local_role(self.resource_ptr, self.owner, resource_owner)
 
     def __unicode__(self):
@@ -52,7 +58,7 @@ class Resource(models.Model):
             views = int(metadata['views']) + 1
         except ValueError, e:
             views = 1
-        update_resource_metadata(self.global_id, {'views': str(views)})
+        update_resource_metadata(self.global_id, {'views': str(views)}, metadata['type'])
         return views
 
     def delete(self, using=None):
