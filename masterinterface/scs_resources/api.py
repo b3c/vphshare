@@ -61,16 +61,20 @@ class has_local_roles(BaseHandler):
                     global_ids = request.GET.getlist('global_id', [])
                     resources = []
                     for global_id in global_ids:
-                        metadata = get_resource_metadata(global_id)
-                        author = User.objects.get(username=metadata['author'])
-                        if metadata['type'] == "Workflow":
-                            resource, created = Workflow.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author)
-                            resource.save()
-                            resource = resource.resource_ptr
-                        else:
-                            resource, created = Resource.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author)
-                            resource.save()
-                        resources.append(resource)
+                        try:
+                            resource = Resource.objects.get(global_id=global_id, metadata=False)
+                            resources.append(resource)
+                        except ObjectDoesNotExist, e:
+                            metadata = get_resource_metadata(global_id)
+                            author = User.objects.get(username=metadata['author'])
+                            if metadata['type'] == "Workflow":
+                                resource, created = Workflow.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author)
+                                resource.save()
+                                resource = resource.resource_ptr
+                            else:
+                                resource, created = Resource.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author)
+                                resource.save()
+                            resources.append(resource)
 
                         role_relations = PrincipalRoleRelation.objects.filter(
                             Q(user=user) | Q(group__in=user.groups.all()),
