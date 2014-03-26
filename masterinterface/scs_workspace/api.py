@@ -31,7 +31,7 @@ class workflows_api(BaseHandler):
             if request.method == 'POST':
                 optionals = ['tags','semantic_annotations']
                 for option in optionals:
-                    if request.POST.get(option, None):
+                    if request.POST.get(option, None) is None:
                         request.POST[option] = ''
                 form = WorkflowForm(request.POST, request.FILES)
                 if form.is_valid():
@@ -194,7 +194,6 @@ class WfMngApiHandler(BaseHandler):
                     return rc.BAD_REQUEST
 
                 workflow = Workflow.objects.get(global_id=global_id)
-                print workflow
                 form = TavernaExecutionForm()
                 taverna_execution = form.save(commit=False)
                 n = TavernaExecution.objects.filter(title__contains=workflow.metadata['name'], ticket=ticket).count() + 1
@@ -215,8 +214,11 @@ class WfMngApiHandler(BaseHandler):
                 if taverna_execution.t2flow!= "" and taverna_execution.baclava!= "":
                     taverna_execution.start(ticket)
                     #return eid
-                    print taverna_execution
-                    return taverna_execution.id
+                    #return taverna_execution.id
+                    results = []
+                    results.append({'wfrun_id': taverna_execution.id,
+                                    'output_folder': taverna_execution.outputfolder})                   
+                    return results                    
                 return rc.INTERNAL_ERROR
         except Exception, e:
             print e
