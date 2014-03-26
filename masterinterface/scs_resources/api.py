@@ -105,11 +105,13 @@ class has_local_roles(BaseHandler):
 
                     for resource in resources:
                         try:
+                            if resource['localID'] not in local_ids:
+                                continue
                             author = User.objects.get(username=resource['author'])
                             if resource['type'] == "Workflow":
                                 resource_in_db, created = Workflow.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author)
                                 resource_in_db.save()
-                                resource_in_db = resource.resource_ptr
+                                resource_in_db = resource_in_db.resource_ptr
                             else:
                                 resource_in_db, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author)
                                 resource_in_db.save()
@@ -121,9 +123,11 @@ class has_local_roles(BaseHandler):
                             )
 
                             if role_relations.count() == 0:
+                                print 'no permission'
                                 return False
 
                         except ObjectDoesNotExist, e:
+                            print e
                             # not in local db, no roles
                             return False
 
@@ -135,6 +139,7 @@ class has_local_roles(BaseHandler):
                 return response
 
         except Exception, e:
+            print e
             response = HttpResponse(status=500)
             response._is_string = True
             return response
