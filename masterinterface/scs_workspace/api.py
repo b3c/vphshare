@@ -215,7 +215,6 @@ class WfMngApiHandler(BaseHandler):
                     taverna_execution.start(ticket)
                     #return eid
                     return taverna_execution.id
-                    return results                    
                 return rc.INTERNAL_ERROR
         except Exception, e:
             print e
