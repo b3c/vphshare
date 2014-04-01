@@ -108,9 +108,11 @@ class Client(object):
             dirs[0] = '/' + dirs[0]
         old_cwd = self.cwd
         try:
-            for dir in dirs:
-                self.mkdir(dir, safe=True)
-                self.cd(dir)
+            prev_dir = dirs[0] + "/" + dirs[1] + "/" # this should be equivalent to LOBCDER_ROOT_IN_WEBDAV
+            for i in range(2, len(dirs)):
+                prev_dir = prev_dir + dirs[i] + "/"
+                if not self.exists(prev_dir):
+                    self.mkdir(prev_dir, safe=True)
         finally:
             self.cd(old_cwd)
     def rmdir(self, path, safe=False):

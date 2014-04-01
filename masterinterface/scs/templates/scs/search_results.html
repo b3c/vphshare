@@ -6,8 +6,12 @@
                 <p><i class="icon-user {{ result.type }}-color"></i><b class="{{ result.type }}-color"> {{ result.name }}</b></p>
             {% elif result.type == 'Institution' %}
                 <p><i class="icon-group {{ result.type }}-color"></i><a target="_blank" href="/groups/{{ result.id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
+            {% elif result.type == 'AtomicService' %}
+                <p><i class="icon-group Application-color-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="Application-color"> {{ result.name }}</b></a></p>
+            {% elif result.type == 'SemanticWebService' %}
+                <p><i class="icon-group SWS-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="SWS-color"> {{ result.name }}</b></a></p>
             {% else %}
-                <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.global_id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
+                <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
             {% endif %}
             <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {{ result.type }}</p>
         </div>

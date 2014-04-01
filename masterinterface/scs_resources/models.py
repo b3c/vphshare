@@ -10,15 +10,23 @@ from django.contrib.contenttypes.models import ContentType
 
 class ResourceManager(models.Manager):
 
-    def get(self, *args, **kwargs):
+    def get_or_create(self, global_id, metadata = [], **kwargs):
+        resource, create = super(ResourceManager, self).get_or_create(global_id=global_id, **kwargs)
+        resource.metadata = metadata
+        return resource, create
+
+
+    def get(self,metadata=True, *args, **kwargs):
         resource = super(ResourceManager, self).get(*args, **kwargs)
-        resource.metadata = get_resource_metadata(resource.global_id)
+        if metadata:
+            resource.metadata = get_resource_metadata(resource.global_id)
         return resource
 
-    def all(self):
+    def all(self, metadata=False):
         resources = super(ResourceManager, self).all()
-        for resource in resources:
-            resource.metadata = get_resource_metadata(resource.global_id)
+        if metadata:
+            for resource in resources:
+                resource.metadata = get_resource_metadata(resource.global_id)
         return resources
 
 
@@ -40,7 +48,7 @@ class Resource(models.Model):
         else:
             # TODO this action should be performed only for workflows!
             # now it is ok since we have only Resource and Workflow
-            update_resource_metadata(self.global_id, {'local_id': self.id, 'type': self.__class__.__name__})
+            update_resource_metadata(self.global_id, {'localID': self.id, 'type': self.__class__.__name__},self.__class__.__name__ )
             add_local_role(self.resource_ptr, self.owner, resource_owner)
 
     def __unicode__(self):
@@ -52,7 +60,7 @@ class Resource(models.Model):
             views = int(metadata['views']) + 1
         except ValueError, e:
             views = 1
-        update_resource_metadata(self.global_id, {'views': str(views)})
+        update_resource_metadata(self.global_id, {'views': str(views)}, metadata['type'])
         return views
 
     def delete(self, using=None):
@@ -75,7 +83,7 @@ class ResourceRequest(models.Model):
             # grant Reader role to the requestor
             add_local_role(self.resource, self.requestor, resource_reader)
             # TODO REMOVE HACK!
-            add_role("%s_READER" % self.resource.global_id)
+            #add_role("%s_READER" % self.resource.global_id)
 
 
 class Workflow(Resource):
