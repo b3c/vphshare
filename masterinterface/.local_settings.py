@@ -17,3 +17,15 @@ CLOUDFACACE_URL = "http://149.156.10.137/api/v1"
 WORKFLOW_MANANAGER_URL = 'http://devwfmng.vph-share.eu/api'
 #PARAVIEW SETTINGS
 PARAVIEWWEB_PORT = 5500
+
+# Imposta il tuo DSN
+RAVEN_CONFIG = {
+    'dsn': 'http://f8d7b671cbf543818e2d8ac961ee8fba:7705a91a1cd14d44a086644a14134d7a@sentry.vph-share.eu/3',
+}
+
+# Aggiungi raven alla lista delle INSTALLED APPS
+INSTALLED_APPS = INSTALLED_APPS + (
+    # ...
+    'raven.contrib.django.raven_compat',
+)
+

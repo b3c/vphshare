@@ -171,7 +171,8 @@ INSTALLED_APPS = (
     'masterinterface.scs_workspace',    
     'masterinterface.paraviewweb',
     'kombu.transport.django',
-    'djcelery'
+    'djcelery',
+    'raven.contrib.django.raven_compat'
 
     ##NEW_APP
 )
