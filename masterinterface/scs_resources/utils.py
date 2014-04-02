@@ -15,12 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 
 def get_resource_local_roles(resource=None):
 
-    # TODO HACK! role list is now static :-(
-
-    if resource is not None and resource.metadata['type'] and resource.metadata['type'].lower().replace(" ", "") == 'atomicservice':
-        return Role.objects.filter(name__in=['Manager', 'Developer', 'Invoker'])
-    else:
-        return Role.objects.filter(name__in=['Reader', 'Editor', 'Manager'])
+    return Role.objects.filter(name__in=['Reader', 'Editor', 'Manager'])
 
 
 def get_resource_global_group_name(resource, local_role_name='read'):
@@ -166,9 +161,33 @@ def susheel_random(digits):
 def get_random_citation_link():
     return "".join(['doi:', susheel_random(2), '.', susheel_random(5), '/SHAR', susheel_random(2),'.', susheel_random(4), '.', susheel_random(2)])
 
+def get_readable_resources(user):
+    role_relations = PrincipalRoleRelation.objects.filter(
+        Q(user=user) | Q(group__in=user.groups.all()),
+        role__name__in=['Reader', 'Editor', 'Manager']
+    ).exclude( content_id=None, content_type=None)
+    managed_resources = []
+    for r in role_relations:
+        if r.content is not None and r.content not in managed_resources:
+            if PrincipalRoleRelation.objects.filter(Q(user=user), role__name='Owner', content_id= r.content_id).count() == 0:
+                managed_resources.append(r.content)
+
+    return managed_resources
+
+def get_editable_resources(user):
+    role_relations = PrincipalRoleRelation.objects.filter(
+        Q(user=user) | Q(group__in=user.groups.all()),
+        role__name__in=['Editor', 'Manager']
+    ).exclude( content_id=None, content_type=None)
+    managed_resources = []
+    for r in role_relations:
+        if r.content is not None and r.content not in managed_resources:
+            if PrincipalRoleRelation.objects.filter(Q(user=user), role__name='Owner', content_id= r.content_id).count() == 0:
+                managed_resources.append(r.content)
+
+    return managed_resources
 
 def get_managed_resources(user):
-    #TODO check all groups hiteracy
     role_relations = PrincipalRoleRelation.objects.filter(
         Q(user=user) | Q(group__in=user.groups.all()),
         role__name__in=['Manager']

@@ -56,7 +56,7 @@ class workflows_api(BaseHandler):
                 dbWorkflow = Workflow.objects.get(global_id=global_id)
             else:
                 return rc.BAD_REQUEST
-            if dbWorkflow.owner != user:
+            if not dbWorkflow.resource_ptr.can_edit(user):
                 response = HttpResponse(status=403)
                 response._is_string = True
                 return response
@@ -89,7 +89,7 @@ class workflows_api(BaseHandler):
                 dbWorkflow = Workflow.objects.get(global_id=global_id)
             else:
                 return rc.BAD_REQUEST
-            if dbWorkflow.owner != user:
+            if not dbWorkflow.resource_ptr.can_edit(user):
                 return rc.FORBIDDEN
             if request.method == 'DELETE':
                 dbWorkflow.delete()
@@ -129,7 +129,7 @@ class workflows_api(BaseHandler):
                     workflow = Workflow.objects.get(global_id=global_id)
                 except:
                     return rc.NOT_FOUND
-                if user is not None and PrincipalRoleRelation.objects.filter( Q(user=user) | Q(group__in=user.groups.all()), content_id=workflow.resource_ptr.id ).count() > 0:
+                if user is not None and workflow.resource_ptr.can_read(user):
                     t2flow = inputDefinition = ''
                     if workflow.t2flow:
                         t2flow = workflow.t2flow.read()
@@ -147,7 +147,7 @@ class workflows_api(BaseHandler):
                 workflows = Workflow.objects.all()
                 results = []
                 for workflow in workflows:
-                    if user is not None and PrincipalRoleRelation.objects.filter( Q(user=user) | Q(group__in=user.groups.all()), content_id=workflow.resource_ptr.id ).count() > 0:
+                    if user is not None and workflow.resource_ptr.can_read(user):
                         t2flow = inputDefinition = ''
                         if workflow.t2flow:
                             t2flow = workflow.t2flow.read()

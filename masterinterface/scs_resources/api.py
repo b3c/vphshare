@@ -37,24 +37,28 @@ class has_local_roles(BaseHandler):
         """
         try:
             client_address = request.META['REMOTE_ADDR']
-            if request.GET.get('ticket'):
-                user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
-            else:
-                auth = request.META['HTTP_AUTHORIZATION'].split()
-                if len(auth) == 2:
-                    if auth[0].lower() == 'basic':
-                        # Currently, only basic http auth is used.
-                        username, ticket = base64.b64decode(auth[1]).split(':')
-                        user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+            try:
+                if request.GET.get('ticket'):
+                    user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
+                else:
+                    auth = request.META['HTTP_AUTHORIZATION'].split()
+                    if len(auth) == 2:
+                        if auth[0].lower() == 'basic':
+                            # Currently, only basic http auth is used.
+                            username, ticket = base64.b64decode(auth[1]).split(':')
+                            user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+            except Exception, e:
+                response = HttpResponse(status=401)
+                response._is_string = True
+                return response
 
             if user is not None:
-                if request.GET['role'] in Roles:
-                    roles = Roles[Roles.index(Role.objects.get(name=request.GET['role']).name):]
-                else:
+                if request.GET.get('role','') not in Roles:
                     response = HttpResponse(status=403)
                     response._is_string = True
                     return response
 
+                role = request.GET['role']
 
                 # if global_id is provided, look for local resources
                 if 'global_id' in request.GET:
@@ -63,7 +67,6 @@ class has_local_roles(BaseHandler):
                     for global_id in global_ids:
                         try:
                             resource = Resource.objects.get(global_id=global_id, metadata=False)
-                            resources.append(resource)
                         except ObjectDoesNotExist, e:
                             metadata = get_resource_metadata(global_id)
                             author = User.objects.get(username=metadata['author'])
@@ -74,15 +77,10 @@ class has_local_roles(BaseHandler):
                             else:
                                 resource, created = Resource.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author)
                                 resource.save()
+
+                        if resource.can_I(role, user):
                             resources.append(resource)
-
-                        role_relations = PrincipalRoleRelation.objects.filter(
-                            Q(user=user) | Q(group__in=user.groups.all()),
-                            role__name__in=roles,
-                            content_id=resource.id
-                        )
-
-                        if role_relations.count() == 0:
+                        else:
                             return False
 
                     if len(resources) == 0:
@@ -118,15 +116,8 @@ class has_local_roles(BaseHandler):
                                 resource_in_db, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author)
                                 resource_in_db.save()
 
-                            role_relations = PrincipalRoleRelation.objects.filter(
-                                Q(user=user) | Q(group__in=user.groups.all()),
-                                role__name__in=roles,
-                                content_id=resource_in_db.id
-                            )
-
-                            if role_relations.count() == 0:
+                            if not resource_in_db.can_I(role, user):
                                 return False
-
                         except ObjectDoesNotExist, e:
                             # not in local db, no roles
                             return False
@@ -169,56 +160,66 @@ class get_resources_list(BaseHandler):
 
         try:
             client_address = request.META['REMOTE_ADDR']
-            if request.GET.get('ticket'):
-                user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
-            else:
-                auth = request.META['HTTP_AUTHORIZATION'].split()
-                if len(auth) == 2:
-                    if auth[0].lower() == 'basic':
-                        # Currently, only basic http auth is used.
-                        username, ticket = base64.b64decode(auth[1]).split(':')
-                        user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+            try:
+                if request.GET.get('ticket'):
+                    user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
+                else:
+                    auth = request.META['HTTP_AUTHORIZATION'].split()
+                    if len(auth) == 2:
+                        if auth[0].lower() == 'basic':
+                            # Currently, only basic http auth is used.
+                            username, ticket = base64.b64decode(auth[1]).split(':')
+                            user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+            except Exception, e:
+                response = HttpResponse(status=401)
+                response._is_string = True
+                return response
 
             if user is not None:
-                if request.GET['role'] in Roles:
-                    roles = Roles[Roles.index(Role.objects.get(name=request.GET['role']).name):]
-                else:
+                if request.GET('role','') not in Roles:
                     response = HttpResponse(status=403)
                     response._is_string = True
                     return response
 
-                resources = filter_resources_by_type(resource_type=request.GET['type'])
-                user_resources = []
+                role = request.GET['role']
+                if  request.GET.get('type', None) is not None:
+                    resources = filter_resources_by_type(resource_type=request.GET['type'])
+                    user_resources = []
 
-                for metadata in resources:
-                    try:
+                    for metadata in resources:
                         try:
-                            author = User.objects.get(username=metadata['author'])
-                        except Exception, e:
+                            try:
+                                author = User.objects.get(username=metadata['author'])
+                            except Exception, e:
+                                continue
+                            if metadata['type'] == "Workflow":
+                                resource, created = Workflow.objects.get_or_create(global_id=metadata['globalID'], metadata=metadata, owner=author)
+                                resource.save()
+                                resource = resource.resource_ptr
+                                resource.metadata = metadata
+                            else:
+                                resource, created = Resource.objects.get_or_create(global_id=metadata['globalID'], metadata=metadata, owner=author)
+                                resource.save()
+
+                            if resource.can_I(role,user):
+                                user_resources.append(resource)
+
+                        except ObjectDoesNotExist, e:
+                            # not in local db, no roles
                             continue
-                        if metadata['type'] == "Workflow":
-                            resource, created = Workflow.objects.get_or_create(global_id=metadata['globalID'], metadata=metadata, owner=author)
-                            resource.save()
-                            resource = resource.resource_ptr
-                            resource.metadata = metadata
-                        else:
-                            resource, created = Resource.objects.get_or_create(global_id=metadata['globalID'], metadata=metadata, owner=author)
-                            resource.save()
-                        role_relations = PrincipalRoleRelation.objects.filter(
-                            Q(user=user) | Q(group__in=user.groups.all()),
-                            role__name__in=roles,
-                            content_id=resource.id
-                        )
+                        return [{"local_id": r.metadata['localID'], "global_id": r.global_id} for r in user_resources]
+                else:
+                    user_resources = []
+                    roles = Roles[Roles.index(Role.objects.get(role).name):]
+                    role_relations = PrincipalRoleRelation.objects.filter(
+                        Q(user=user) | Q(group__in=user.groups.all()),
+                        role__name__in=roles,
+                    )
+                    for role_relation in role_relations:
+                            if isinstance(role_relation.content, Resource) and role_relation.content not in user_resources:
+                                user_resources.append(role_relation.content)
 
-                        if role_relations.count() > 0:
-                            user_resources.append(resource)
-
-                    except ObjectDoesNotExist, e:
-                        # not in local db, no roles
-                        continue
-
-                return [{"local_id": r.metadata['localID'], "global_id": r.global_id} for r in user_resources]
-
+                    return [r.global_id for r in user_resources]
             else:
                 response = HttpResponse(status=403)
                 response._is_string = True

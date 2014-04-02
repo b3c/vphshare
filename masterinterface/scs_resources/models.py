@@ -6,7 +6,11 @@ from config import request_accept_transition, resource_reader, ResourceWorkflow,
 from workflows.utils import do_transition, set_workflow_for_model
 from permissions.utils import add_local_role, add_role
 from django.contrib.contenttypes.models import ContentType
+from permissions.models import PrincipalRoleRelation, Role
+from django.db.models import Q
+from masterinterface.scs_groups.models import VPHShareSmartGroup
 
+Roles = ['Reader', 'Editor', 'Manager', 'Owner']
 
 class ResourceManager(models.Manager):
 
@@ -60,12 +64,71 @@ class Resource(models.Model):
             views = int(metadata['views']) + 1
         except ValueError, e:
             views = 1
-        update_resource_metadata(self.global_id, {'views': str(views)}, metadata['type'])
+        #update_resource_metadata(self.global_id, {'views': str(views)}, metadata['type'])
         return views
 
     def delete(self, using=None):
         delete_resource_metadata(self.global_id)
         return super(Resource, self).delete(using)
+
+    def can_I(self,role, user):
+        roles = Roles[Roles.index(Role.objects.get(role).name):]
+        role_relations = PrincipalRoleRelation.objects.filter(
+            Q(user=user) | Q(group__in=user.groups.all()),
+            role__name__in=roles,
+            content_id=self.id
+        )
+
+        if role_relations.count() == 0:
+            return False
+        return True
+
+    def can_read(self, user):
+
+        role_relations = PrincipalRoleRelation.objects.filter(
+            Q(user=user) | Q(group__in=user.groups.all()),
+            role__name__in=['Reader', 'Editor', 'Manager', 'Owner'],
+            content_id=self.id
+        )
+
+        if role_relations.count() == 0:
+            return False
+        return True
+
+    def can_edit(self, user):
+        role_relations = PrincipalRoleRelation.objects.filter(
+            Q(user=user) | Q(group__in=user.groups.all()),
+            role__name__in=['Editor', 'Manager', 'Owner'],
+            content_id=self.id
+        )
+
+        if role_relations.count() == 0:
+            return False
+        return True
+
+    def can_manage(self, user):
+        role_relations = PrincipalRoleRelation.objects.filter(
+            Q(user=user) | Q(group__in=user.groups.all()),
+            role__name__in=['Manager', 'Owner'],
+            content_id=self.id
+        )
+
+        if role_relations.count() == 0:
+            return False
+        return True
+
+    def is_owner(self, user):
+        for group in user.groups.all():
+            VPHShareSmartGroup.objects.filter(Q())
+        role_relations = PrincipalRoleRelation.objects.filter(
+            Q(user=user) | Q(group__in=user.groups.all()),
+            role__name__in=['Owner'],
+            content_id=self.id
+        )
+
+        if role_relations.count() == 0:
+            return False
+        return True
 
 
 class ResourceRequest(models.Model):
