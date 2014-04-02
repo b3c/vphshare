@@ -7,22 +7,98 @@ from django.contrib.auth.models import User, Group
 from masterinterface.scs_groups.models import Institution, Study
 from masterinterface.scs_resources.models import Resource, Workflow
 from masterinterface.atos.metadata_connector import set_resource_metadata, update_resource_metadata
-from django_select2 import Select2MultipleChoiceField, Select2MultipleWidget
+from django_select2 import Select2MultipleChoiceField, Select2ChoiceField, HeavySelect2TagField, HeavySelect2MultipleChoiceField
+from django_select2.widgets import Select2Mixin
+from django.core.files.storage import default_storage
+from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
+
+
+class Select2CommaTags(Select2Mixin, forms.TextInput):
+
+    def __init__(self, **kwargs):
+        select2_options = kwargs.pop('select2_options', {})
+        select2_options['tokenSeparators']=[","]
+        select2_options['tags']=[""]
+        kwargs['select2_options'] = select2_options
+        super(Select2CommaTags, self).__init__(**kwargs)
+
+    def init_options(self):
+            self.options.pop('multiple', None)
 
 class ResourceForm(forms.ModelForm):
 
-    name = forms.CharField(label="Resource Name", required=True)
-    description = forms.CharField(label="Resource Description", required=True, widget=forms.Textarea)
-    category = forms.CharField(help_text="Resource Category", required=False, label="Category")
-    tags = forms.CharField(help_text="Tags (separated by comma)", required=False, label="Tags")
-    semantic_annotations = forms.CharField(help_text="The annotations uri (separated by comma)", required=False, label="Semantic annotations")
-    licence = forms.CharField(help_text="Licence type (es. GPL, BSD, MIT, ..)", required=True, label='Licence *')
+    name = forms.CharField(label="Name *", required=True)
+    description = forms.CharField(label="Description *", required=True, widget=forms.Textarea)
+    licence = Select2ChoiceField(choices=(('GPL','GPL'),('LGPL','LGPL'),('EULA','EULA'), ('OLP','OLP'), ('TLP','TLP'), ('VLP','VLP'), ('EDU','EDU'), ('GOV','GOV'), ('BSD','BSD'), ('MIT','MIT')), help_text="Licence type", required=True, label='Licence *', initial="")
+    category = Select2ChoiceField(choices=(('Cardiovascular', 'Cardiovascular'), ('Respiratory','Respiratory'),('Genetics','Genetics'),('Infection & Immunology', 'Infection & Immunology'), ('Musculoskeletal', 'Musculoskeletal'), ('Gastroenerology','Gastroenerology'),('Neurology','Neurology') ,('Oncology','Oncology'), ('Multidisciplinary','Multidisciplinary') ,('Information Technology','Information Technology')),
+        help_text="Category", required=False, label="Category", initial=""
+    )
+    tags = forms.CharField(widget=Select2CommaTags(), required=False, label="Tags", help_text="Type tags")
+    semanticAnnotations = forms.CharField(widget=Select2CommaTags(), required=False, label="Semantic annotations", help_text="Type concept URI")
+    resourceURL = forms.URLField(required=False, help_text="Resource URL", label="Resource URL")
+    type = forms.CharField(widget=forms.HiddenInput)
+    author = forms.CharField(widget=forms.HiddenInput)
+    localID = forms.CharField(widget=forms.HiddenInput)
+    relatedResources = HeavySelect2MultipleChoiceField(help_text="Search for related resources", required=False, label="Related resources", data_view="smart_get_resources", choices=())
 
     class Meta:
         model = Resource
         exclude = ('global_id', 'owner', 'security_policy', 'security_configuration')
+        relatedChoice = ()
 
-    def save(self, commit=True, owner=None):
+    def __init__(self, *args, **kwargs):
+        super(ResourceForm, self).__init__(*args, **kwargs)
+        if self.data.get('relatedResources',None) is not None:
+            try:
+                relatedResources = self.data.getlist('relatedResources')
+                for global_id in relatedResources:
+                    r = Resource.objects.get(global_id=global_id)
+                    self.fields['relatedResources'].choices += ((global_id,r.metadata['name']),)
+            except Exception, e:
+                if not isinstance(self.data['relatedResources']['relatedResource'], list):
+                    relatedResources = [self.data['relatedResources']['relatedResource'].copy()]
+                else:
+                    relatedResources = self.data['relatedResources']['relatedResource'].copy()
+                self.data['relatedResources'] = []
+                for global_id in relatedResources:
+                    r = Resource.objects.get(global_id=global_id['resourceID'])
+                    self.fields['relatedResources'].choices += ((global_id['resourceID'],r.metadata['name']),)
+                    self.data['relatedResources'].append(global_id['resourceID'])
+        if self.data.get('semanticAnnotations',None) is not None:
+            try:
+                if not isinstance(self.data['semanticAnnotations']['semanticConcept'], list):
+                    relatedResources = [self.data['semanticAnnotations']['semanticConcept'].copy()]
+                else:
+                    relatedResources = self.data['semanticAnnotations']['semanticConcept'].copy()
+                self.data['semanticAnnotations'] = ''
+                for conceptURI in relatedResources:
+                    self.data['semanticAnnotations'] = ','.join([self.data['semanticAnnotations'],conceptURI['conceptURI']])
+            except Exception, e:
+                pass
+        #decompose Additional component - Link
+        new_link = AdditionalLink().value_from_datadict(self.data, self.files, 0)
+        #decompose Additional component - File
+        new_file = AdditionalFile().value_from_datadict(self.data, self.files, 0)
+        if self.data.get('linkedTo', None) is None or new_link or new_file:
+            #if linkedTo is empty or user post new values
+            self.data['linkedTo'] = []
+            self.data['linkedTo'] += [{'link':{'linkURI':linkURI,'linkType':linkType}} for linkType, linkURI in new_link]
+            for fileDescription, filePayLoad in new_file:
+                path = default_storage.save(''.join(['./additionalFiles/',filePayLoad.name]),filePayLoad)
+                fileURI = ''.join([settings.BASE_URL, default_storage.url(path)])
+                self.data['linkedTo'] += [{'link':{'linkURI':fileURI,'linkType':fileDescription}} ]
+        else:
+            #if the form is load for first time
+            linkedTo = self.data['linkedTo'].copy()
+            self.data['linkedTo'] = []
+            for link in linkedTo['link']:
+                self.data['linkedTo'] += [{'link':{'linkURI':link['linkURI'],'linkType':link['linkType']}}]
+
+
+
+
+    def save(self, commit=True, owner=None, additional_metadata = None):
+        if not additional_metadata: additional_metadata = {}
         resource = super(ResourceForm, self).save(commit=False)
         metadata_payload = {
             'name': self.data['name'],
@@ -30,12 +106,15 @@ class ResourceForm(forms.ModelForm):
             'author': owner.username,
             'category': self.data['category'],
             'tags': self.data['tags'],
-            'semantic_annotations': self.data['semantic_annotations'],
+            'semanticAnnotations': [ {'semanticConcept':{'conceptURI':conceptURI}} for conceptURI in self.data['semanticAnnotations'].split(',') if conceptURI is not ''],
             'licence': self.data['licence'],
-            'local_id': '',
-            'type': resource.__class__.__name__
+            'localID': self.data['localID'],
+            'resourceURL': self.data['resourceURL'],
+            'type': self.data['type'],
+            'relatedResources': [{'relatedResource':{'resourceID':gId}} for gId in self.data.getlist('relatedResources')],
+            'linkedTo' :  self.data['linkedTo']
         }
-
+        metadata_payload.update(additional_metadata)
         try:
             update_resource_metadata(self.instance.global_id, metadata_payload, metadata_payload['type'])
         except Exception, e:
@@ -46,11 +125,28 @@ class ResourceForm(forms.ModelForm):
             resource.save()
         return resource
 
+class DatasetForm(ResourceForm):
+    sparqlEndPoint = forms.URLField(required=True, label="SPARQL endpoint *", help_text="endpoint URI")
+
+    def save(self, commit=True, owner=None, additional_metadata = None):
+        if not additional_metadata: additional_metadata = {}
+        additional_metadata['sparqlEndPoint'] = self.data['sparqlEndPoint']
+        super(DatasetForm, self).save(commit, owner, additional_metadata)
+
+class SWSForm(ResourceForm):
+    semanticWebServiceType = Select2ChoiceField(choices=(('Rest','Rest'),('Soap','Soap')), help_text="", required=True, label='SWS type', initial="Rest")
+    semanticWebServiceURL = forms.URLField(required=True, label="SWS url *", help_text="semantic web service URL")
+
+    def save(self, commit=True, owner=None, additional_metadata=None):
+        if not additional_metadata: additional_metadata = {}
+        additional_metadata['semanticWebServiceType'] = self.data['semanticWebServiceType']
+        additional_metadata['semanticWebServiceURL'] = self.data['semanticWebServiceURL']
+        super(SWSForm, self).save(commit, owner, additional_metadata)
 
 class WorkflowForm(ResourceForm):
 
     def is_valid(self):
-        super_is_valid = super(ResourceForm, self).is_valid()
+        super_is_valid = super(WorkflowForm, self).is_valid()
         if getattr(self, 'instance', None) and getattr(self, 'cleaned_data', None):
             if not os.path.splitext(self.cleaned_data['t2flow'].name)[1].lower().count("t2flow"):
                 # TODO personalize field error message
@@ -101,3 +197,4 @@ class UsersGroupsForm(forms.Form):
         self.base_fields['Usersinput'] = Select2MultipleChoiceField(choices=[('Users',usersList), ('Groups',groupList)], label="")
         self.base_fields['Usersinput'].widget.attrs = {'id':id}
         super(UsersGroupsForm, self).__init__(*args, **kwargs)
+

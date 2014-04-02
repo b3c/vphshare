@@ -9,23 +9,17 @@
     <![endif]-->
 {% endblock %}
 
-{%  block title %} VPH-Share Workflows {% endblock %}
+{%  block title %} VPH-Share - edit metadata {% endblock %}
 
 {% block page-title %}
-    <span class="title">Workflows</span>
-    <span class="subtitle">the availables workflow definition files</span>
+    <span class="title">Metadata</span>
+    <span class="subtitle"></span>
 {% endblock%}
 
 {%  block content %}
-
-
         {% if form %}
             <div class="span9">
-            {% if edit  %}
-                <h3>Edit workflow</h3>
-            {% else %}
-                <h3>Upload a new workflow</h3>
-            {% endif %}
+            <h3>Edit metadata</h3>
         <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
         {% csrf_token %}
             {% for hidden in form.hidden_fields %}
@@ -52,20 +46,35 @@
                         Additional Contents
                 </label>
                 <div class="controls">
-                    <div class="btn btn-primary" id="addlink">Additional link</div> <div id="addFile" class="btn btn-primary">Additional File</div>
+                    <div class="btn btn-primary" id="addlink">Add link</div> <div id="addFile" class="btn btn-primary">Add File</div>
                 </div>
-                <div class="additional-link row-fluid hide">
-                    <div class="span4 text-center">Description</div>
+                <hr>
+                <div class="additional-link row-fluid {% if not form.data.linkedTo %}hide{% endif %}">
+                    <div class="span4 text-center">Label</div>
                     <div class="span4 text-center"> Link </div>
                     <div class="span3 text-center"> &nbsp </div>
+                    {% for link in form.data.linkedTo %}
+                        <div class="row-fluid"><div class="span4"><input class="link-description" type="text" name="description_key[0]" value="{{ link.link.linkType }}" ></div><div class="span4"> <input class="link-value" type="text" name="link_value[0]" value="{{ link.link.linkURI }}"></div><div class="btn btn-danger span3">Remove</div></div>
+                    {% endfor %}
                 </div>
                 <div class="additional-file row-fluid hide ">
-                    <div class="span4 text-center">Description</div>
+                    <div class="span4 text-center">Label</div>
                     <div class="span4 text-center"> Attachment </div>
                     <div class="span3 text-center"> &nbsp </div>
                 </div>
                 <script type="application/javascript">
                     $(function(){
+                        $('.btn-danger').each(function(){
+                            var object = $(this);
+                            object.click(function(){
+                                object.parent().slideUp({complete:function(){
+                                    object.parent().remove();
+                                    if ($('.link-value').length == 0)
+                                        $('.additional-link').slideUp();
+                                }});
+
+                            });
+                        });
                         $('#addlink').click(function(){
                             $('.additional-link').slideDown();
                             $.ajax('/resources/form/addLink/', {
@@ -115,48 +124,9 @@
             <div class="control-group">
                 <div class="control-label"><i>* Required fields.</i></div>
             </div>
-            {% if edit  %}
-                <input type="submit" class="btn btn-primary" value="Update Workflow" />
-            {% else %}
-                <input type="submit" class="btn btn-primary" value="Create Workflow" />
-            {% endif %}
+            <input type="submit" class="btn btn-primary" value="Update metadata" />
         </form>
         </div>
-        {% else %}
-        <div class="row row-contet">
-        <div class="span9" style="margin-top:15px;">
-            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Browse Workflows</b></p><p>Browse the list of available workflows.</p></h6></div><div class="span4"><a href="/workflows/search-workflow/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo1.png"/></a></div> </div>
-            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Search Workflows</b></p><p>Search for available workflows.</p></h6></div><div class="span4"><a href="/search/?types=Workflow,"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo1.png"/></a></div> </div>
-            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Upload a new workflow</b></p><p>Upload your new workflow.</p></h6></div><div class="span4"><a href="/workflows/new"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo2.png"/></a></div> </div>
-            <div class="row" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Dashboard</b></p><p>Manage your workflows, set access permissions, control meta-data tags and view usage statistics.</p></h6></div><div class="span4"><a href="/dashboard/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo3.png"/></a></div> </div>
-        </div>
-        <div class="span3 rigth-list" >
-            <div class="popover-list">
-                <div class="popover-content">
-                    <p><i class="icon-bookmark"></i><b>Documents</b></p>
-                    <p>Data Sharing Policy</p>
-                    <p>Use of Data Guidelines</p>
-                </div>
-
-            </div>
-            <div class="popover-list">
-                <div class="popover-content">
-                    <p><i class="icon-th"></i><b>Applications</b></p>
-                    {% if request.user.is_authenticated %}
-                        <p><a href="/static/Data Publication Suite v1.1-b4.msi">Data Publications Suite (DPS)</a></p>
-                        <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test DataSet</a></p>
-                        <p><a href="/workspace">Workspace</a></p>
-                    {% else %}
-                    <p>Data Publications Suite (login required)</p>
-                    {% endif %}
-                    <p><a href="/lobcder">LOBCDER</a></p>
-                    <p><a href="/lobcderquery">LOBCDER Search</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     {% endif %}
 
 {% endblock %}

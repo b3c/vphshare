@@ -22,10 +22,12 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import Resource, Workflow, ResourceRequest
 from config import ResourceRequestWorkflow, request_pending, request_accept_transition, ResourceWorkflow, request_refuse_transition
-from forms import WorkflowForm, UsersGroupsForm
+from forms import WorkflowForm, UsersGroupsForm, ResourceForm, SWSForm, DatasetForm
 from masterinterface.atos.metadata_connector import *
 from utils import *
 from masterinterface import settings
+from django.views.decorators.csrf import csrf_exempt
+from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
 
 
 def resource_detailed_view(request, id='1'):
@@ -473,16 +475,83 @@ def search_workflow(request):
     return render_to_response("scs/search_workflows.html", {'workflows': workflows}, RequestContext(request))
 
 @login_required
+def edit_resource(request, id=False):
+    try:
+        global_id=id
+        if global_id:
+            dbResource = Resource.objects.get(global_id=global_id)
+            if dbResource.metadata['type'] == "Workflow":
+                dbResource = Workflow.objects.get(global_id=global_id)
+            role_relations = PrincipalRoleRelation.objects.filter(
+                Q(user=request.user) | Q(group__in=request.user.groups.all()),
+                role__name__in=['Editor','Manager','Owner'],
+                content_id=dbResource.id
+            )
+
+            if role_relations.count() == 0:
+                return render_to_response('scs/no_permission.html',
+                    context_instance=RequestContext(request)
+                )
+
+        if request.method == "GET":
+            dbResource.metadata['title'] = dbResource.metadata['name']
+            if dbResource.metadata['type'] == "Workflow":
+                form = WorkflowForm(dbResource.metadata, instance=dbResource)
+            elif dbResource.metadata['type'] == "SemanticWebService":
+                form = SWSForm(dbResource.metadata, instance=dbResource)
+            elif dbResource.metadata['type'] == "Dataset":
+                form = DatasetForm(dbResource.metadata, instance=dbResource)
+            else:
+                form = ResourceForm(dbResource.metadata, instance=dbResource)
+
+        if request.method == "POST":
+            if dbResource.metadata['type'] == "Workflow":
+                form = WorkflowForm(request.POST, request.FILES, instance=dbResource)
+            elif dbResource.metadata['type'] == "SemanticWebService":
+                form = SWSForm(request.POST, request.FILES, instance=dbResource)
+            elif dbResource.metadata['type'] == "Dataset":
+                form = DatasetForm(request.POST, request.FILES, instance=dbResource)
+            else:
+                form = ResourceForm(request.POST, request.FILES, instance=dbResource)
+
+            if form.is_valid():
+                resource = form.save(commit=False, owner=dbResource.owner)
+                resource.save()
+                request.session['statusmessage'] = 'Changes were successful'
+                return redirect('/resources/%s' % resource.global_id)
+
+        return render_to_response("scs_resources/edit_resources.html",
+                                  {'form':form, 'edit':True,'type':dbResource.metadata['type']},
+                                  RequestContext(request))
+    except AtosServiceException, e:
+        request.session['errormessage'] = 'Metadata service not work, please try later.'
+        return render_to_response("scs_resources/edit_resources.html",
+                  {'form':form, 'edit':True,'type':dbResource.metadata['type']},
+                  RequestContext(request))
+
+    except Exception, e:
+        if not request.session.get('errormessage', False):
+            request.session['errormessage'] = 'Some errors occurs, please try later. '
+        return redirect('/resources/%s' % global_id)
+
+@login_required
 def edit_workflow(request, id=False):
     try:
         if id:
             dbWorkflow = Workflow.objects.get(id=id)
-            if request.user != dbWorkflow.owner:
-                raise
+            role_relations = PrincipalRoleRelation.objects.filter(
+                Q(user=request.user) | Q(group__in=request.user.groups.all()),
+                role__name__in=['Editor','Manager','Owner'],
+                content_id=dbWorkflow.resource_ptr.id
+            )
 
-            metadata = get_resource_metadata(dbWorkflow.global_id)
-            metadata['title'] = metadata['name']
-            form = WorkflowForm(metadata, instance=dbWorkflow)
+            if role_relations.count() == 0:
+                return render_to_response('scs/no_permission.html',
+                    context_instance=RequestContext(request)
+                )
+
+            dbWorkflow.metadata['title'] = dbWorkflow.metadata['name']
+            form = WorkflowForm(dbWorkflow.metadata, instance=dbWorkflow)
 
         if request.method == "POST":
             form = WorkflowForm(request.POST, request.FILES, instance=dbWorkflow)
@@ -538,3 +607,54 @@ def api_help(request):
         'scs_resources/api.html',
         RequestContext(request)
     )
+
+@csrf_exempt
+def add_file_to_form(request):
+    if request.POST.get('key', None):
+        new_file = AdditionalFile()
+        return HttpResponse(content=new_file.render(request.POST.get('key', None),None))
+    return HttpResponse(status=403)
+
+@csrf_exempt
+def add_link_to_form(request):
+    if request.POST.get('key', None):
+        new_link = AdditionalLink()
+        return HttpResponse(content=new_link.render(request.POST.get('key', None),None))
+    return HttpResponse(status=403)
+
+
+def smart_get_AS(request):
+    if request.GET.get('term',None):
+        results = filter_resources_by_facet('AtomicService', 'name', request.GET.get('term',None))
+        response = []
+        for result in results:
+            response.append((result['globalID'], result['name']))
+    else:
+        response = []
+    from django_select2.views import Select2View
+    res = Select2View()
+    return res.render_to_response(res._results_to_context(('nil', False, response)))
+
+def smart_get_SWS(request):
+    if request.GET.get('term',None):
+        results = filter_resources_by_facet('SemanticWebService', 'name', request.GET.get('term',None))
+        response = []
+        for result in results:
+            response.append((result['globalID'], result['name']))
+    else:
+        response = []
+    from django_select2.views import Select2View
+    res = Select2View()
+    return res.render_to_response(res._results_to_context(('nil', False, response)))
+
+def smart_get_resources(request):
+    if request.GET.get('term',None):
+        results = filter_resources_by_facet('GenericMetadata', 'name', request.GET.get('term',None))
+        response = []
+        for result in results:
+            response.append((result['globalID'], result['name']))
+    else:
+        response = []
+    from django_select2.views import Select2View
+    res = Select2View()
+    return res.render_to_response(res._results_to_context(('nil', False, response)))
