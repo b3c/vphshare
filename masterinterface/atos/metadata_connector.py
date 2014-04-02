@@ -8,11 +8,28 @@ from masterinterface.atos.config import *
 from exceptions import AtosServiceException
 from ordereddict import OrderedDict
 
+def decompose_payload(sub_metadata):
+
+    s = "<%s>%s</%s>"
+    results = ""
+    for key, item in sub_metadata.items():
+        content = ""
+        if isinstance(item, list):
+            for i in item:
+                content += decompose_payload(i)
+        elif isinstance(item, dict):
+            content = decompose_payload(item)
+        else:
+            content = item
+        results += s %(key,content,key)
+    return results
+
 
 def from_dict_to_payload(metadata,type):
     typetag= type[0].lower()+ type[1:]
     typefield = "<type>%s</type>" % type
-    return "<resource_metadata><%s>%s%s</%s></resource_metadata>" % (typetag, typefield, "".join(["<%s>%s</%s>" % (key, item, key) for key, item in metadata.items()]), typetag)
+    #"".join(["<%s>%s</%s>" % (key, item, key) for key, item in metadata.items()]
+    return "<resource_metadata><%s>%s%s</%s></resource_metadata>" % (typetag, typefield, decompose_payload(metadata), typetag)
 
 
 def get_all_resources_metadata():
@@ -296,7 +313,6 @@ def search_resource(text, filters = {}, numResults=10, page=1):
             results.append(resource)
             countType[resource['type']] += 1
         return results, countType, pages
-
     except BaseException, e:
         print e
         return [], {}, 0
