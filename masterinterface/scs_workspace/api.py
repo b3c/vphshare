@@ -214,11 +214,7 @@ class WfMngApiHandler(BaseHandler):
                 if taverna_execution.t2flow!= "" and taverna_execution.baclava!= "":
                     taverna_execution.start(ticket)
                     #return eid
-                    #return taverna_execution.id
-                    results = []
-                    results.append({'wfrun_id': taverna_execution.id,
-                                    'output_folder': taverna_execution.outputfolder})                   
-                    return results                    
+                    return taverna_execution.id
                 return rc.INTERNAL_ERROR
         except Exception, e:
             print e

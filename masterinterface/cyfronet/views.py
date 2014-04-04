@@ -78,38 +78,5 @@ def retriveVtk(request):
     return response
 
 @login_required
-def lobcderDelete(request, path = '/'):
-    log.info('Deleting LOBCDER resource with path ' + path)
-    webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username = 'user', password = request.COOKIES.get('vph-tkt','No ticket'))
-    if path.endswith('/'):
-        webdav.rmdir(settings.LOBCDER_ROOT + path)
-    else:
-        webdav.delete(settings.LOBCDER_ROOT + path)
-    return redirect('/cyfronet/lobcder' + path.rstrip('/')[0:path.rstrip('/').rfind('/')] + '/')
-
-@login_required
-def lobcderMetadata(request, path = '/'):
-    log.info('Updating LOBCDER metadata for path ' + path)
-    read = request.POST['read']
-    write = request.POST['write']
-    uid = request.POST['uid']
-    owner = request.POST['owner']
-    driSupervised = True if request.POST.get('driSupervised', '') else False
-    try:
-        updateMetadata(uid, owner, read, write, driSupervised, request.COOKIES.get('vph-tkt','No ticket'))
-    except LobcderException as e:
-        log.error('LOBCDER metadata update request failed: ' + e.message)
-        return HttpResponse(e.code)
-    return HttpResponse('OK')
-
-@login_required
-def lobcderSearch(request):
-    entries = None
-    if request.method == 'POST':
-        entries = lobcderQuery(request.POST['resourceName'], request.POST['createdAfter'], request.POST['createdBefore'],
-            request.POST['modifiedAfter'], request.POST['modifiedBefore'], request.COOKIES.get('vph-tkt','No ticket'))
-    return render_to_response('cyfronet/lobcderSearch.html', {'entries': entries}, RequestContext(request))
-
-@login_required
 def tools(request):
     return render_to_response('cyfronet/clew.html', {'cloudFacadeUrl': settings.CLOUDFACACE_URL}, RequestContext(request))

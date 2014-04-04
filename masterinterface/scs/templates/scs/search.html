@@ -63,7 +63,7 @@
                     {% for tags in search.tags %}
                         <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Tags: {{ tags }}</div><div data-value="{{ tags }}" data-field="tags" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
                     {% endfor %}
-                    <p>We've found <div id="numResults">{{ numResults }}</div> repository results</p>
+                    <div>We've found <div style="display:inline" id="numResults">{{ numResults }}</div> repository results</div>
                 </div>
             </div>
             {% for result in results %}

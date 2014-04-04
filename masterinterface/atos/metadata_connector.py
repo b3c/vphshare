@@ -316,6 +316,7 @@ def search_resource(text, filters = {}, numResults=10, page=1):
             results.append(resource)
             countType[resource['type']] += 1
         return results, countType, pages
+
     except BaseException, e:
         print e
         return [], {}, 0
