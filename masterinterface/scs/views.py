@@ -235,7 +235,7 @@ def search_service(request):
         pages = request.session['pages']
         results = request.session['results']
         if page > request.session['page']:
-            results, countType, pages = search_resource(search_text, expression, numResults=50,  page=page)
+            results, countType, pages = search_resource(search_text, expression, numResults=20,  page=page)
             for ctype, counter in countType.items():
                 request.session['countType'][ctype] += counter
             countType = request.session['countType']

@@ -302,7 +302,10 @@ def search_resource(text, filters = {}, numResults=10, page=1):
         #from collections import OrderedDict
         respDict = xmltodict.parse(response.text.encode('utf-8'))
         pages = 1
-        resources = respDict["resource_metadata_list"]["resource_metadata"]
+        if respDict["resource_metadata_list"].get("resource_metadata",None) is not None:
+            resources = respDict["resource_metadata_list"]["resource_metadata"]
+        else:
+            resources = []
         countType = {'Dataset': 0, 'Workflow': 0, 'AtomicService': 0, 'File': 0, 'SemanticWebService': 0, 'Workspace': 0}
         if not isinstance(resources, list):
             resources = [resources]
