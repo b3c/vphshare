@@ -1,0 +1,197 @@
+{% load scs_extras %}
+{% load django_select2_tags %}
+
+<div class="alert hide" style="display: none;">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <span id="modal-message"></span>
+</div>
+{% if resource.requests %}
+    <h6>Pending requests:</h6>
+    <table style="width: 100%;table-layout: fixed;" class="table table-condensed">
+        <tbody class="pendig-users">
+        {% for r in resource.requests %}
+            <tr data-name="{{ r.requestor.username }}" >
+                <td class="user-name">{{ r.requestor.first_name}} {{ r.requestor.last_name}} </td>
+                <td class="user-message">
+                    {% if r.message %}
+                        <a href="#request-{{ r.id }}" role="button" class="btn btn-mini" data-toggle="modal">Read attached message</a>
+                        <!-- Modal -->
+                        <div id="request-{{ r.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h3 id="myModalLabel">Message from {{ r.requestor.first_name}} {{ r.requestor.last_name}}</h3>
+                            </div>
+                            <div class="modal-body">
+                                <p>{{ r.message }}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <span class="label label-info">No message</span>
+                    {% endif %}
+                    | Date: <span>{{ r.date }}</span>
+                </td>
+                <td class="request-accept" >
+                        <form id="accept-request" class="form-inline  roles-buttons" style="margin:0px;display: inline-block;" action="/dashboard/acceptRequest" method="POST">
+                            <input type="hidden" name="user" value="{{ r.requestor.username }}">
+                            <input type="hidden" name="resource" value="{{ resource.global_id }}">
+                            {% csrf_token %}
+                            <div class="btn-group hide accept-roles" style="display: none;">
+                                {% for role in resource.roleslist %}
+                                    {% if resource.metadata.type == "Atomicservice" %}
+                                        {% if r.requestor|user_has_role:'developer' or r.requestor|user_has_role:'Developer' %}
+                                            <input type="submit" name="role" class="btn btn-mini btn-success" value="{{ role.name }}">
+                                        {% elif role == "Reader" %}
+                                            <input type="submit" name="role" class="btn btn-mini btn-success" value="{{ role.name }}">
+                                        {% endif %}
+                                    {% else %}
+                                        <input type="submit" name="role" class="btn btn-mini btn-success" value="{{ role.name }}">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </form>
+
+                    <button class="btn btn-mini btn-success accept">Accept</button>&nbsp
+                    <a href="#reject-{{ r.id }}" role="button" class="btn btn-mini" data-toggle="modal">Refuse</a>
+                    <!-- Modal -->
+                    <div id="reject-{{ r.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3>Attach message for {{ r.requestor.first_name}} {{ r.requestor.last_name}}</h3>
+                        </div>
+                        <form id="reject-request" action="/dashboard/rejectRequest" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" name="user" value="{{ r.requestor.username }}">
+                                <input type="hidden" name="resource" value="{{ resource.global_id }}">
+                                <textarea style="width: 80%;" placeholder="You could write the reason for the refusal." rows="3" name="message"></textarea>
+                                {% csrf_token %}
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                <button type="submit" class="btn btn-primary" >Confirm</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <hr/>
+{% endif %}
+<h6>Share this resource with new user or group:</h6>
+<form id="newshare" class="form-inline inline" style="margin:0px;" action="/dashboard/newshare" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="resource" value="{{ resource.global_id }}">
+    {{ resource.user_group_finder }}
+    <label class="checkbox inline">
+        <input type="checkbox" name="reader" value="Reader"> Reader
+    </label>
+    <label class="checkbox inline">
+        <input type="checkbox" name="editor" value="Editor"> Editor
+    </label>
+    <label class="checkbox inline">
+        <input type="checkbox" name="manager" value="Manager"> Manager
+    </label>
+    <button class="btn btn-mini btn-success" type="submit" name="operation" value="accept"><span class="icon-plus icon-white"></span></button>
+</form>
+<hr>
+    <script type="application/javascript">
+        (function() {
+            var global = this;
+            var $ = global.$;
+            var markpublic = global.markpublic = function(btn){
+                var self = this;
+                btn.button('loading');
+                $.ajax('{{ BASE_URL }}/dashboard/markpublic/{{ resource.global_id }}/', {
+                    type: 'GET',
+                    success: function() {
+                        btn.button('reset');
+                        btn.html('Mark as private ');
+                        btn.unbind('click');
+                        btn.click(function(e){
+                            e.preventDefault();
+                            markprivate(btn);
+                        })
+                        return true;
+                    },
+                    error: function() { btn.button('reset'); return true; }
+                });
+            };
+
+            var markprivate = global.markprivate = function(btn){
+                var self = this;
+                btn.button('loading');
+                $.ajax('{{ BASE_URL }}/dashboard/markprivate/{{ resource.global_id }}/', {
+                    type: 'GET',
+                    success: function() {
+                        btn.button('reset');
+                        btn.html('Mark as public ');
+                        btn.unbind('click');
+                        btn.click(function(e){
+                            e.preventDefault();
+                            markpublic(btn);
+                        })
+                        return true;
+                    },
+                    error: function() {  btn.button('reset'); return true; }
+                });
+            };
+
+            $('#public-button').click(function(e){
+                e.preventDefault();
+                markpublic($(this));
+            });
+
+            $('#private-button').click(function(e){
+                e.preventDefault();
+                markprivate($(this));
+            });
+
+        }).call(this);
+    </script>
+    {% if resource|is_public %}
+        <button id="private-button"  class="btn btn-info" data-loading-text="Sending request..." style="color:#ffffff;" >Mark as private </button> <span>If you mark as public this resource will be readable by all users in vph-share.</span>
+    {% else %}
+        <button id="public-button"  class="btn btn-info" data-loading-text="Sending request..."  style="color:#ffffff;" >Mark as public </button> <span>If you mark as public this resource will be readable by all users in vph-share.</span>
+    {% endif %}
+<hr>
+{% if resource.sharreduser %}
+    <table class=" table table-striped table-hover" style="table-layout: fixed;">
+        <thead>
+        <tr>
+            <th><span class="label label-info">Users</span> and <span class="label label-success"> Groups</span></th>{% for role in resource.roleslist %}<th>{{ role.name }}</th>{% endfor %}
+        </tr>
+        </thead>
+        <tbody class="permissions-map">
+        {% for user in resource.sharreduser %}
+            <tr>
+                <td>
+                {% if user.username %}
+                    <span class="label label-info">{{ user.first_name}} {{ user.last_name}}</span>
+                {% else %}
+                    <span class="label label-success">{{user.name}}</span>
+                {% endif %}
+                    <span class="updating-alert badge badge-warning hide"><i class='icon-spinner icon-spin'></i> Updating...</span> <span class="updating-ok badge badge-warning hide"><i class='icon-check'></i> OK</span> <span class="updating-error badge badge-warning hide"><i class='icon-check'></i> Error</span>
+                </td>
+                {% for role in resource.roleslist %}
+                    <td>
+                        <label class="checkbox inline">
+                        <input class="roles" type="checkbox" value="reader" data-rolename="{{ role.name }}"
+                               data-name="{% if user.username %}{{ user.username }}{% else %}{{ user.name }}{% endif %}"
+                               {% if role.name in user.roles %}checked{% endif %} />
+                        </label>
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <hr />
+{% endif %}
+<script>
+    $(function(){ShareTab.autoDiscover();});
+</script>

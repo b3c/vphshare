@@ -75,6 +75,14 @@ def can_edit(user, resource):
 def can_manage(user, resource):
     return resource.can_manage(user)
 
+@register.filter
+def is_public(resource):
+    return resource.is_public()
+
+@register.filter
+def is_active(resource):
+    return resource.is_active()
+
 @register.filter(is_safe=True, needs_autoescape=True)
 @stringfilter
 def urlizetrunctarget(value, limit, autoescape=None):

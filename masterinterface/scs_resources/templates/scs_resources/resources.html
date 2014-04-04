@@ -1,6 +1,6 @@
 {% extends 'scs/base.html' %}
 {% load scs_extras %}
-{%  block title %} Dashboard {% endblock %}
+{%  block title %} Browse resources in vph-share {% endblock %}
 
 {% block extrahead %}
     <link rel="stylesheet" href="/static/font-awesome.min.css">
@@ -17,24 +17,24 @@
 {%  block content %}
 <div>
     <ul class="nav nav-pills">
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/data/" class="resource-tab active">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/data/" class="resource-tab active">
           <a>
-            My Data
+            Data
           </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/application/" class="resource-tab">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/application/" class="resource-tab">
             <a>
-                My Applications
+                Applications
             </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/workflow/" class="resource-tab">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/workflow/" class="resource-tab">
         <a>
-            My Workflows
+            Workflows
         </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/sws/" class="resource-tab">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/sws/" class="resource-tab">
         <a>
-            My Semantic Web services
+            Semantic Web services
         </a>
       </li>
       <script>$(function(){
@@ -194,18 +194,15 @@
                 });
             });
 
-            shareModal.find('#accept-request').find('input[type=submit]').click(function(e){
+            shareModal.find('#accept-request').submit(function(e){
                 e.preventDefault();
-                var self = $(this);
-                form = self.closest('form');
-                var formData = form.serializeArray();
-                formData.push({ name: self.attr('name'), value: self.val() });
+                var form = $(this);
                 $.ajax( {
                   type: "POST",
                   url: form.attr( 'action' ),
-                  data: formData,
+                  data: form.serialize(),
                   success: function( response ) {
-                        self.parents('.accordion-body').find('#details-tab >li')[1].click();
+                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
                   }
                 } );
             });
@@ -235,7 +232,6 @@
                   }
                 } );
             });
-
 
             shareModal.find('.pendig-users > tr').each(function(index, element){
 

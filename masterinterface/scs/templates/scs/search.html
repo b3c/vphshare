@@ -187,7 +187,7 @@
                 this.$min = 20;
                 this.$max = 40;
                 this.$numResults = {{ numResults }};
-                this.$pages = {{ pages }};
+                this.$pages = {% if pages %}{{ pages }}{% else %}1{% endif %};
                 this.$page = 1;
                 this.$loadingBox = $('.loading');
                 this.$rigthList = $('.rigth-list');

@@ -1,209 +1,84 @@
-{% extends 'scs/base.html' %}
-
 {% load scs_extras %}
-{% load permissions_tags %}
 
-{% block breadcrumbs %}
-    <div id="breadcrumbs-wrapper">
-        <ul id="breadcrumbs" class="breadcrumb">
-            <li><a href="/" title="Home">home</a><span class="divider">|</span></li>
 
-            <li><a href="/resources/" title="resources">resources</a><span class="divider">|</span></li>
-
-            <li class="active"><a href="/resources/{{ resource.global_id }}/" title="{{ resource.metadata.name }}">{{ resource.metadata.name }}</a></li>
-
-        </ul>
-    </div>
-{% endblock %}
-{%  block content %}
-    <div id="alert-container"></div>
-    <div class="span7">
-        <div class="resource-title">
-            <h2> {{ resource.metadata.name }}</h2>
-            <dl class="dl-horizontal">
-                <dt>Description</dt>
-                <dd>{% autoescape off %}{{ resource.metadata.description|urlizetrunctarget:60000 }}{% endautoescape %}</dd>
-            </dl>
-        </div>
-        <div class="resource-details">
-            <dl class="dl-horizontal">
-                <dt>Date Created:</dt>
-                <dd>{{ resource.metadata.creation_date|strTodate|date:"SHORT_DATE_FORMAT" }}</dd>
-                <dt>Language:</dt>
-                <dd>{{ resource.language }}</dd>
-                <dt>Status:</dt>
-                <dd>{{ resource.status}}</dd>
-                <br />
-                <dt>Citations:</dt>
-                {% for citation in resource.citations %}
-                    <dd> {{ citation.citation }}<br /><a href="#">{{ citation.link }}</a></dd>
+    <ul class="unstyled modal-list">
+        <li>Description: <span id="modal-description">{{ resource.metadata.description }}</span></li>
+        {% with  resource.metadata.tags|split:"," as tags%}
+            <li>Tags:
+                {% for tag in tags %}
+                    <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">{{ tag }}</div></span>
                 {% endfor %}
-                <dt>Related Resources:</dt>
-                {% for related in resource.related %}<dd>{{ related|safe }}</dd>{% endfor %}
-            </dl>
-        </div>
-        <div id="endpointDetails" style="visibility: hidden;">
-        	<p style="margin-bottom: 10px;">Available endpoints:</p>
-        	<dl class="dl-horizontal">
-        		
-        	</dl>
-        </div>
-    </div>
-    <div class="span4">
-        <div class="resource-actions">
-            <p><strong>Type:</strong> {{ resource.metadata.type }}</p>
-            <p><strong>Views:</strong> {{ resource.metadata.views }}</p>
-            <p><strong>Version: </strong> {{ resource.version }}</p>
-            <br /> <br />
-            <p><strong>Tags</strong></p>
-            {% with  resource.metadata.tags|split:"," as tags%}
-                <ul class="inline">
-                    {% for tag in tags %}
-                        <li><span class="label"><a target="_blank" href="/search/?search_text=*&amp;tags={{ tag }},">{{ tag }}</a></span></li>
-                    {% endfor %}
-                </ul>
-            {% endwith %}
-            <br /> <br />
-            <p><strong>Licence:</strong></p>
-            <ul class="inline">
-                <li><span class="label">{{ resource.metadata.licence }}</span></li>
-                <li><a href="#">Download</a></li>
-            </ul>
-            <br /> <br />
-            <p><strong>Semantic Annotations:</strong></p>
-            {% with  resource.metadata.semantic_annotations|split:" " as annotations%}
-                <ul class="inline">
-                    {% for annotation in annotations%}
-                        <li><span class="label">{{ annotation}}</span></li>
-                    {% empty %}
-                        <li>This resource has not semantic annotations.</li>
-                    {% endfor %}
-                </ul>
-            {% endwith %}
+            </li>
+            <li>Licence: <span class="label" style="margin-right: 5px;">{{ resource.metadata.licence }}</span></li>
+            <li>Views: {{ resource.metadata.views }}</li>
+        {% endwith %}
+    </ul>
+    {% if user|can_edit:resource %}
+        <div class="row-fluid" style="margin-bottom: 5px;">
+                <script type="application/javascript">
+                (function() {
+                    var global = this;
+                    var $ = global.$;
+                    var publishResoruce = global.publishResoruce = function(btn){
+                        var self = this;
+                        btn.button('loading');
+                        $.ajax('{{ BASE_URL }}/dashboard/publish/{{ resource.global_id }}/', {
+                            type: 'GET',
+                            success: function() {
+                                btn.button('reset');
+                                btn.text('Unpublish');
+                                btn.attr('title', 'Unpublish resource');
+                                btn.unbind('click');
+                                btn.click(function(e){
+                                    e.preventDefault();
+                                    unpublishResoruce(btn);
+                                })
+                                return true;
+                            },
+                            error: function() { btn.button('reset');  return true; }
+                        });
+                    };
 
-            {% if request.user.is_authenticated %}
-            {% if request.user|can_read:resource or resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service"%}
-                {% if workflow and workflow.t2flow %}
-                    <form action="/workspace/create" enctype="multipart/form-data" method="get">
-                    {% csrf_token %}
-                    <input type="hidden" name="workflow_id" value="{{ workflow.id }}"/>
-                    <input type="submit" target="_blank"  class="btn btn-block btn-large btn-success" value="Configure to execute"/><br/>
-                    </form>
-                {% endif %}
-                {% if resource.metadata.type == "Dataset" %}
-                    <a  href="/semantic-search/concept/?dataset=sparqlEndpoint%3D{{ resource.metadata.local_id }}/sparql%26&datasetLabel={{ resource.metadata.local_id }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
-                {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
-                    <a  href="#" class="btn btn-block btn-large btn-success">Invoke service</a>
-                    <p class="help-inline">This functionality is currently under development.</p>
-                {% elif resource.metadata.type == "Workflow" %}
-                    <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
-                    <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
-                    <a  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank" class="btn btn-block btn-large btn-success"><i class="icon-external-link"></i>Edit in Taverna Online</a>
-                {% elif resource.metadata.type == "File"%}
-                    <a  href="#" class="btn btn-block btn-large btn-success">Download file</a>
+                    var unpublishResoruce = global.unpublishResoruce = function(btn){
+                        var self = this;
+                        btn.button('loading');
+                        $.ajax('{{ BASE_URL }}/dashboard/unpublish/{{ resource.global_id }}/', {
+                            type: 'GET',
+                            success: function() {
+                                btn.button('reset');
+                                btn.text('Publish');
+                                btn.attr('title', 'Publish resource');
+                                btn.unbind('click');
+                                btn.click(function(e){
+                                    e.preventDefault();
+                                    publishResoruce(btn);
+                                })
+                                return true;
+                            },
+                            error: function() {  btn.button('reset');  return true; }
+                        });
+                    };
+
+                    $('#publish-button').click(function(e){
+                        e.preventDefault();
+                        publishResoruce($(this));
+                    });
+
+                    $('#unpublish-button').click(function(e){
+                        e.preventDefault();
+                        unpublishResoruce($(this));
+                    });
+
+                }).call(this);
+                </script>
+            <div class="span2">
+                {% if resource.metadata.status == 'Active' or  resource.metadata.status == 'active'%}
+                    <button id="unpublish-button"  class="btn btn-info" title="Unpublish resource"  data-loading-text="Sending request..."  style="color:#ffffff;" >Unpublish</button>
                 {% else %}
-                    <a  href="#" class="btn btn-block btn-large btn-success">Download</a>
+                    <button id="publish-button"  class="btn btn-info" title="Publish resource" data-loading-text="Sending request..."   style="color:#ffffff;" target="_blank">Publish</button>
                 {% endif %}
-
-            {% else %}
-                {% if not resource.already_requested %}
-                <a href="#request-{{ resource.id }}" role="button" class="btn btn-block btn-large btn-warning" data-toggle="modal">Request for sharing</a>
-                <!-- Modal -->
-                <div id="request-{{ resource.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="myModalLabel">Attach a message to your request</h3>
-                    </div>
-                    <form id="request-for-sharing-form" method="GET" action="/resources/request_for_sharing/">
-                        <div class="modal-body">
-                            {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ resource.id }}" />
-                            <textarea style="width: 80%;" rows="3" name="message"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                            <button id="request-for-sharing-btn"  aria-hidden="true"  data-dismiss="modal" class="btn btn-primary" onclick="request_for_sharing();">Send request</button>
-                        </div>
-                    </form>
-                </div>
-                {% else %}
-                    <button id="request-for-sharing-btn" class="btn btn-block btn-large btn-warning disabled">You have already requested this resource</button>
-                {% endif %}
-            {% endif %}
-            {% else %}
-                <button class="btn btn-block btn-large btn-danger" onclick="$('#login').popover('show');">Please login to access to this resource</button>
-            {% endif %}
+            </div>
+            <div class="span2"><a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i>Edit metadata</a></div>
         </div>
-    </div>
-
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
-    <script type="text/javascript">
-
-        function request_for_sharing(){
-            $("#request-for-sharing-btn").button('loading');
-            var form = $("#request-for-sharing-form");
-            var url = $(form).attr( "action" );
-            var method = $(form).attr("method") || "get"; // default method get
-            var data = $(form).find(":input").serializeArray();
-
-            $.ajax({
-                    dataType: "json",
-                    type: method,
-                    url: url,
-                    data: data,
-                    success: RequestForSharingAjaxResponseHandler,
-                    error: RequestForSharingAjaxResponseHandler
-                }
-            );
-
-            $('#new-role').popover('hide');
-        }
-
-        function RequestForSharingAjaxResponseHandler(responseText, statusText, xhr, jqform){
-            $("#alert-container").empty();
-            $("<div/>", {
-              "class": "alert fade in " +responseText.alertclass,
-              html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
-            })
-            .alert()
-            .fadeIn()
-            .delay(3000)
-            .fadeOut(1000, function(){
-                    $(this).find('#modal-message').text('');
-            })
-            .appendTo("#alert-container");
-            $("#request-for-sharing-btn").addClass('disabled').bind('onclick',function(){return true;}).text('Request sent.');
-        }
-        
-        $(function() {
-        	if('{{ resource.metadata.type }}' == 'AtomicService' && $.cookie('vph-tkt') != null) {
-        		$.ajax({
-        			url: '{{ cloudFacadeUrl }}/port_mapping_templates?appliance_type_id={{ resource.metadata.local_id }}',
-        			dataType: 'json',
-        			headers: {'MI-TICKET': $.cookie('vph-tkt')},
-        			success: function(response) {
-        				$.each(response.port_mapping_templates, function(index, value) {
-        					$.ajax({
-        						url: '{{ cloudFacadeUrl }}/endpoints?port_mapping_template_id=' + value.id,
-        						dayaType: 'json',
-        						headers: {'MI-TICKET': $.cookie('vph-tkt')},
-        						success: function(response) {
-        							$.each(response.endpoints, function(index, value) {
-        								$('#endpointDetails').css('visibility', 'visible');
-            							$('#endpointDetails').append('<dt><a href="{{ cloudFacadeUrl }}/endpoints/' + value.id + '/descriptor">' + value.name + '</a></dt>');
-            							$('#endpointDetails').append('<dd>' + value.description + '</dd>');
-        							});
-        						}
-        					});
-        				});
-        			}
-        		});
-        		$('#endpointDetails dl').append('<dt><a href="#">Dummy endpoint</a></dt>');
-        		$('#endpointDetails dl').append('<dd>Endpoint description</dd>');
-        		$('#endpointDetails dl').append('<dt><a href="#">Another endpoint</a></dt>');
-        		$('#endpointDetails dl').append('<dd>Another endpoint description</dd>');
-        		$('#endpointDetails').css('visibility', 'visible');
-        	}
-        });
-    </script>
-{% endblock %}
+    {% endif %}
+<div class="row-fluid" style="font-size: 13px;"><div class="span4">Created: {{ resource.metadata.creationDate|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ resource.metadata.category }}</div><div class="span4">Type: {{ resource.metadata.type }}</div></div>

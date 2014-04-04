@@ -176,13 +176,13 @@ class get_resources_list(BaseHandler):
                 return response
 
             if user is not None:
-                if request.GET('role','') not in Roles:
+                if request.GET.get('role','') not in Roles:
                     response = HttpResponse(status=403)
                     response._is_string = True
                     return response
 
                 role = request.GET['role']
-                if  request.GET.get('type', None) is not None:
+                if request.GET.get('type', None) is not None:
                     resources = filter_resources_by_type(resource_type=request.GET['type'])
                     user_resources = []
 

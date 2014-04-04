@@ -137,16 +137,16 @@ def get_facets():
     return FACETS_LIST
 
 
-def filter_resources_by_facet(type, facet = None, value = None):
+def filter_resources_by_facet(type, facet = None, value = None, page=1):
     """
         given a facet and a value return the list of the resources that match the query
     """
 
     try:
         if facet:
-            response = requests.get(FACETS_METADATA_API % (type, facet, value))
+            response = requests.get(FACETS_METADATA_API % (type, facet, value, page))
         else:
-            response = requests.get(TYPE_METADATA_API % type)
+            response = requests.get(TYPE_METADATA_API % (type, page))
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
@@ -301,7 +301,7 @@ def search_resource(text, filters = {}, numResults=10, page=1):
 
         #from collections import OrderedDict
         respDict = xmltodict.parse(response.text.encode('utf-8'))
-        pages = (int(respDict["resource_metadata_list"]['@numTotalMetadata'])/numResults) + 1
+        pages = 1
         resources = respDict["resource_metadata_list"]["resource_metadata"]
         countType = {'Dataset': 0, 'Workflow': 0, 'AtomicService': 0, 'File': 0, 'SemanticWebService': 0, 'Workspace': 0}
         if not isinstance(resources, list):

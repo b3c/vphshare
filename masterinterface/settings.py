@@ -300,6 +300,15 @@ PARAVIEWWEB_PORT = 5000
 BROKER_URL = 'django://develop'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_DISABLE_RATE_LIMITS = True
+
+
+#CACHE CONFIGS
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'sharecache',
+    }
+}
 ##################
 # LOCAL SETTINGS #
 ##################

@@ -28,7 +28,9 @@ from utils import *
 from masterinterface import settings
 from django.views.decorators.csrf import csrf_exempt
 from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
-
+from django.template.loader import render_to_string
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 def resource_detailed_view(request, id='1'):
     """
@@ -73,14 +75,11 @@ def resource_detailed_view(request, id='1'):
         resource.metadata = metadata
 
     # Count visit hit
+    resource.metadata['rating'] = float(resource.metadata['rating'])
     resource.metadata['views'] = resource.update_views_counter()
 
     # INJECT DEFAULT VALUES
-    resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
-    resource.status = "Published"
-    resource.language = "English"
-    resource.version = "1.0"
-    resource.related = []
+    #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
 
     # check if the resource has been already requested by user
     if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
@@ -101,13 +100,25 @@ def resource_detailed_view(request, id='1'):
         workflow = None
 
     return render_to_response(
-        'scs_resources/resource_details.html',
+        'scs_resources/resource.html',
         {'resource': resource,
          'workflow': workflow,
          'cloudFacadeUrl': settings.CLOUDFACACE_URL,
          'requests': []},
         RequestContext(request)
     )
+
+@login_required
+def rate_resource(request, global_id, rate):
+    if request.method == 'GET':
+        try:
+            resource = Resource.objects.get(global_id=global_id)
+            if resource.can_read(request.user):
+                resource.rate(request.user,rate)
+            return HttpResponse(status=200)
+        except Exception, e:
+            return HttpResponse(status=500)
+    return HttpResponse(status=500)
 
 
 def request_for_sharing(request):
@@ -158,79 +169,209 @@ def request_for_sharing(request):
     response = HttpResponse(content=response_body, content_type='application/json')
     return response
 
+def resources(request,tab=''):
+    return render_to_response(
+        "scs_resources/resources.html",
+        {
+         'tab':tab
+        },
+        RequestContext(request)
+    )
+
+
+def get_resources_list(request, resource_type, page=1):
+    if request.method == 'GET':
+        try:
+            if resource_type == "data":
+                resources = filter_resources_by_facet('Dataset', page=page) + filter_resources_by_facet('File', page=page)
+                types= ['Dataset', 'File']
+            if resource_type == "application":
+                resources = filter_resources_by_facet('AtomicService', page=page)
+                types= ['AtomicService']
+            if resource_type == "workflow":
+                resources = filter_resources_by_facet('Workflow', page=page)
+                types= ['Workflow']
+            if resource_type == "sws":
+                resources = filter_resources_by_facet('SemanticWebService', page=page)
+                types= ['SemanticWebService']
+            managed_resources = []
+
+            for resource_meta in resources:
+                try:
+                    user = User.objects.get(username=resource_meta['author'])
+                except Exception, e:
+                    continue
+                if resource_meta['type'] == "Workflow":
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                else:
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                # look if there are group with the resource name and grant them the local role
+                if resource.metadata['type'] is 'Dataset':
+                    for role in get_resource_local_roles():
+                        group_name = get_resource_global_group_name(resource, role.name)
+                        try:
+                            group = Group.objects.get(name=group_name)
+                            add_local_role(resource, group, role)
+                        except ObjectDoesNotExist, e:
+                            pass
+                managed_resources.append(resource)
+
+                if created:
+                    resource.save()
+
+            resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
+
+            return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500)
+
 
 @login_required
-def manage_resources(request):
+def manage_resources(request,tab=''):
+    return render_to_response(
+        "scs_resources/manage_resources.html",
+        {
+         'tab':tab
+        },
+        RequestContext(request)
+    )
 
-    workflows = []
-    datas = []
-    applications = []
-    collapse = request.session.get('collapse', [])
-    if request.session.get('collapse', None):
-        del request.session['collapse']
-    try:
-        # update resources list
-        resources = filter_resources_by_author(request.user.username)
-        managed_resources = []
+@login_required
+def get_resources_list_by_author(request, resource_type, page=1):
+    if request.method == 'GET':
+        try:
+            if resource_type == "data":
+                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page) + filter_resources_by_facet('File','author',request.user.username, page=page)
+                types= ['Dataset', 'File']
+            if resource_type == "application":
+                resources = filter_resources_by_facet('AtomicService','author',request.user.username, page=page)
+                types= ['AtomicService']
+            if resource_type == "workflow":
+                resources = filter_resources_by_facet('Workflow','author',request.user.username, page=page)
+                types= ['Workflow']
+            if resource_type == "sws":
+                resources = filter_resources_by_facet('SemanticWebService','author',request.user.username, page=page)
+                types= ['SemanticWebService']
+            managed_resources = []
 
-        for resource_meta in resources:
-            if resource_meta['type'] == "Workflow":
-                resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
-            else:
-                resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
-            managed_resources.append(resource)
+            for resource_meta in resources:
+                if resource_meta['type'] == "Workflow":
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
+                else:
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
+                managed_resources.append(resource)
 
-            if created:
-                resource.save()
-                # TODO set resource workflow
-                # set_workflow(resource, ResourceWorkflow)
-
-        managed_resources += get_managed_resources(request.user)
-        for resource in managed_resources:
-            if getattr(resource, 'metadata', None) is None:
-                try:
-                    resource.metadata = get_resource_metadata(resource.global_id)
-                except AtosServiceException, e:
-                    continue
-
-            # look if there are group with the resource name and grant them the local role
-            if resource.metadata['type'] is 'Dataset':
-                for role in get_resource_local_roles():
-                    group_name = get_resource_global_group_name(resource, role.name)
+                if created:
+                    resource.save()
+            if page == 1:
+                managed_resources += get_readable_resources(request.user)
+            ##TO OPTIMIZE get_readable_resource non ha filtro per tipo da inserire una volta modificato il modello
+            ## now fixed in teh template
+            for resource in managed_resources:
+                if getattr(resource, 'metadata', None) is None:
                     try:
-                        group = Group.objects.get(name=group_name)
-                        add_local_role(resource, group, role)
-                    except ObjectDoesNotExist, e:
-                        pass
+                        resource.metadata = get_resource_metadata(resource.global_id)
+                    except AtosServiceException, e:
+                        continue
 
-            #resource.permissions_map = get_permissions_map(resource)
+                # look if there are group with the resource name and grant them the local role
+                if resource.metadata['type'] is 'Dataset':
+                    for role in get_resource_local_roles():
+                        group_name = get_resource_global_group_name(resource, role.name)
+                        try:
+                            group = Group.objects.get(name=group_name)
+                            add_local_role(resource, group, role)
+                        except ObjectDoesNotExist, e:
+                            pass
+                resource.requests = get_pending_requests_by_resource(resource)
+
+            resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources,"types":types, "type":resource_type, 'user':request.user, 'page':page})
+
+            return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500)
+
+
+def get_resources_details(request, global_id):
+    if request.method == 'GET':
+        try:
+            resource = Resource.objects.get(global_id=global_id)
+            resource.requests = get_pending_requests_by_resource(resource)
+            resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user})
+
+            return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500)
+
+@login_required
+def get_resources_share(request, global_id):
+    if request.method == 'GET':
+        try:
+            resource = Resource.objects.get(global_id=global_id)
             resource.roleslist = get_resource_local_roles(resource)
             resource.requests = get_pending_requests_by_resource(resource)
             resource.sharreduser = get_user_group_permissions_map(resource)
             resource.user_group_finder = UsersGroupsForm(id="user_group_"+resource.global_id,
                                                          excludedList=resource.sharreduser + [request.user] )
+            from django.core.context_processors import csrf
+            context = {"resource": resource, 'user':request.user}
+            context.update(csrf(request))
+            resultsRender = render_to_string("scs_resources/resource_security.html", context)
+            return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500)
 
-            if str(resource.metadata['type']) in ['Dataset', 'File']:
-                datas.append(resource)
+def publish_resource(request, global_id):
+    if request.method == 'GET':
+        try:
+            resource = Resource.objects.get(global_id=global_id)
+            update_resource_metadata(global_id, {'status':'Active'}, resource.metadata['type'])
+            cache.delete(global_id)
+            return HttpResponse(status=200)
+        except Exception, e:
+            return HttpResponse(status=500)
+    return HttpResponse(status=500)
 
-            if str(resource.metadata['type']) in ['AtomicService', 'SemanticWebService']:
-                applications.append(resource)
+def unpublish_resource(request, global_id):
+    if request.method == 'GET':
+        try:
+            resource = Resource.objects.get(global_id=global_id)
+            update_resource_metadata(global_id, {'status':'Inactive'}, resource.metadata['type'])
+            cache.delete(global_id)
+            return HttpResponse(status=200)
+        except Exception, e:
+            return HttpResponse(status=500)
+    return HttpResponse(status=500)
 
-            if str(resource.metadata['type']) == 'Workflow':
-                workflows.append(resource)
+def mark_resource_public(request, global_id):
+    if request.method == 'GET':
+        try:
+            resource = Resource.objects.get(global_id=global_id, metadata=False)
+            role = Role.objects.get(name='Reader')
+            add_local_role(resource, None, role)
+            return HttpResponse(status=200)
+        except Exception, e:
+            return HttpResponse(status=500)
+    return HttpResponse(status=500)
 
-    except AtosServiceException, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-    return render_to_response(
-        "scs_resources/manage_resources.html",
-        {'workflows': workflows,
-         'datas': datas,
-         'applications': applications,
-         'collapse': collapse,
-        'tkt64': request.COOKIES.get('vph-tkt')},
-        RequestContext(request)
-    )
+def mark_resource_private(request, global_id):
+    if request.method == 'GET':
+        try:
+            resource = Resource.objects.get(global_id=global_id, metadata=False)
+            role = Role.objects.get(name='Reader')
+            remove_local_role(resource,None, role)
+            return HttpResponse(status=200)
+        except Exception, e:
+            return HttpResponse(status=500)
+    return HttpResponse(status=500)
 
 def acceptRequest(request):
     if request.method == 'POST':
@@ -463,9 +604,10 @@ def search_workflow(request):
     workflows = []
 
     try:
-        dbWorkflows = Workflow.objects.all()
-        for workflow in dbWorkflows:
-            workflows.append(workflow)
+        metadata_workflows = filter_resources_by_facet('Workflow')
+        #dbWorkflows = Workflow.objects.all(metadata=True)
+        for workflow in metadata_workflows:
+            workflows.append(Workflow.objects.get(global_id = workflow['globalID']))
 
     except Exception, e:
         request.session['errormessage'] = 'Metadata server is down. Please try later'

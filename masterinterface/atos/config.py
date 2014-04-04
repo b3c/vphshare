@@ -44,9 +44,9 @@ GLOBAL_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/me
 
 RESOURCE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/%s'
 
-FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s/%s?value=%s'
+FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s/%s?value=%s&numResults=50&page=%s'
 
-TYPE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s?numResults=3000'
+TYPE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s?numResults=50&page=%s'
 
 FILTER_METADATA_API = "http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s"
 

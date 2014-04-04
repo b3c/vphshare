@@ -163,7 +163,7 @@ def get_random_citation_link():
 
 def get_readable_resources(user):
     role_relations = PrincipalRoleRelation.objects.filter(
-        Q(user=user) | Q(group__in=user.groups.all()),
+        Q(user=user) | Q(group__in=user.groups.all()) | Q(user=None, group=None),
         role__name__in=['Reader', 'Editor', 'Manager']
     ).exclude( content_id=None, content_type=None)
     managed_resources = []
@@ -215,26 +215,29 @@ def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={
 
 
 def grant_permission(name, resource, role):
-    try:
-        principal = User.objects.get(username=name)
-    except ObjectDoesNotExist, e:
-        principal = Group.objects.get(name=name)
-
-    if resource.metadata['type'] == 'Dataset':
+    if name is not None:
         try:
-        # look for a group with the dataset name
-            group_name = get_resource_global_group_name(resource, role)
-            group = Group.objects.get(name=group_name)
-            if type(principal) is User:
-                group.user_set.add(principal)
-            group.save()
-
+            principal = User.objects.get(username=name)
         except ObjectDoesNotExist, e:
-            # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-            #add_role(principal, global_role)
-            pass
+            principal = Group.objects.get(name=name)
 
-            # grant local role to the user
+        if resource.metadata['type'] == 'Dataset':
+            try:
+            # look for a group with the dataset name
+                group_name = get_resource_global_group_name(resource, role)
+                group = Group.objects.get(name=group_name)
+                if type(principal) is User:
+                    group.user_set.add(principal)
+                group.save()
+
+            except ObjectDoesNotExist, e:
+                # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+                #add_role(principal, global_role)
+                pass
+
+                # grant local role to the user
+    else:
+        principal = None
 
     add_local_role(resource, principal, role)
 
