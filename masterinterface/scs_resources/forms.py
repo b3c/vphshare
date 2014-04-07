@@ -38,7 +38,7 @@ class ResourceForm(forms.ModelForm):
     resourceURL = forms.URLField(required=False, help_text="Resource URL", label="Resource URL")
     type = forms.CharField(widget=forms.HiddenInput)
     author = forms.CharField(widget=forms.HiddenInput)
-    localID = forms.CharField(widget=forms.HiddenInput)
+    localID = forms.CharField(widget=forms.HiddenInput, required=False)
     relatedResources = HeavySelect2MultipleChoiceField(help_text="Search for related resources", required=False, label="Related resources", data_view="smart_get_resources", choices=())
 
     class Meta:

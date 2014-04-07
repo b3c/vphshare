@@ -8,8 +8,13 @@
     <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
     <![endif]-->
 {% endblock %}
-
-{%  block title %} VPH-Share - edit metadata {% endblock %}
+{%  block title %}
+    {% if edit %}
+         VPH-Share - edit metadata
+    {% else %}
+        VPH-Share - new workflow
+    {% endif %}
+{% endblock %}
 
 {% block page-title %}
     <span class="title">Metadata</span>
@@ -19,7 +24,13 @@
 {%  block content %}
         {% if form %}
             <div class="span9">
-            <h3>Edit metadata</h3>
+
+            {% if edit %}
+                <h3>Edit metadata.</h3>
+            {% else %}
+                <h3>Upload new workflow.</h3>
+            {% endif %}
+
         <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
         {% csrf_token %}
             {% for hidden in form.hidden_fields %}
@@ -124,7 +135,14 @@
             <div class="control-group">
                 <div class="control-label"><i>* Required fields.</i></div>
             </div>
-            <input type="submit" class="btn btn-primary" value="Update metadata" />
+
+            {% if edit %}
+                 <input type="submit" class="btn btn-primary" value="Update metadata" />
+            {% else %}
+                 <input type="submit" class="btn btn-primary" value="Upload Workflow" />
+            {% endif %}
+
+
         </form>
         </div>
     {% endif %}

@@ -1,5 +1,5 @@
 {% load scs_extras %}
-{% if type == 'workflow'  and page == 1%}
+{% if type == 'workflow'  and page == 1 and user.is_authenticated %}
     <style>
         .workflow-header>li>a:hover, .workflow-header>li>a:focus {
             color: #fff;!important;

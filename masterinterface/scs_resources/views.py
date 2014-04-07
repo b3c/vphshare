@@ -77,7 +77,23 @@ def resource_detailed_view(request, id='1'):
     # Count visit hit
     resource.metadata['rating'] = float(resource.metadata['rating'])
     resource.metadata['views'] = resource.update_views_counter()
-
+    if resource.metadata['relatedResources']:
+        if  not isinstance(resource.metadata['relatedResources']['relatedResource'], list):
+            relatedResources = [resource.metadata['relatedResources']['relatedResource'].copy()]
+        else:
+            relatedResources = resource.metadata['relatedResources']['relatedResource'][:]
+        resource.metadata['relatedResources'] = []
+        for global_id in relatedResources:
+            r = Resource.objects.get(global_id=global_id['resourceID'])
+            resource.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
+    if request.user.is_authenticated() and resource.can_read(request.user):
+        #get the path information using the lobcder services.
+        try:
+            lobcder_item = xmltodict.parse(requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=(request.user.username, request.COOKIES['vph-tkt']), verify=False).text.encode('utf-8'))
+            resource.metadata['lobcderPath'] = lobcder_item['logicalDataWrapped']['path']
+        except Exception,e:
+            resource.metadata['lobcderPath'] = None
+            pass
     # INJECT DEFAULT VALUES
     #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
 
@@ -618,8 +634,12 @@ def search_workflow(request):
 
 @login_required
 def edit_resource(request, id=False):
+
     try:
+
         global_id=id
+        dbResource = None
+        edit = True
         if global_id:
             dbResource = Resource.objects.get(global_id=global_id)
             if dbResource.metadata['type'] == "Workflow":
@@ -636,18 +656,34 @@ def edit_resource(request, id=False):
                 )
 
         if request.method == "GET":
-            dbResource.metadata['title'] = dbResource.metadata['name']
-            if dbResource.metadata['type'] == "Workflow":
-                form = WorkflowForm(dbResource.metadata, instance=dbResource)
-            elif dbResource.metadata['type'] == "SemanticWebService":
-                form = SWSForm(dbResource.metadata, instance=dbResource)
-            elif dbResource.metadata['type'] == "Dataset":
-                form = DatasetForm(dbResource.metadata, instance=dbResource)
+            if id:
+                dbResource.metadata['title'] = dbResource.metadata['name']
+                if dbResource.metadata['type'] == "Workflow":
+                    form = WorkflowForm(dbResource.metadata, instance=dbResource)
+                elif dbResource.metadata['type'] == "SemanticWebService":
+                    form = SWSForm(dbResource.metadata, instance=dbResource)
+                elif dbResource.metadata['type'] == "Dataset":
+                    form = DatasetForm(dbResource.metadata, instance=dbResource)
+                else:
+                    form = ResourceForm(dbResource.metadata, instance=dbResource)
             else:
-                form = ResourceForm(dbResource.metadata, instance=dbResource)
+                #the workflow create request
+                form = WorkflowForm()
+                return render_to_response("scs_resources/edit_resources.html",
+                                  {'form':form, 'edit':False,'type':'Workflow'},
+                                  RequestContext(request))
 
         if request.method == "POST":
-            if dbResource.metadata['type'] == "Workflow":
+            if dbResource is None:
+                request.POST.update({'author':request.user.username, 'localID':'','type':'Workflow'})
+                form = WorkflowForm(request.POST, request.FILES)
+                edit = False
+                if form.is_valid():
+                    resource = form.save(commit=False, owner=request.user)
+                    resource.save()
+                    request.session['statusmessage'] = 'Workflow created'
+                    return redirect('/resources/%s' % resource.global_id)
+            elif dbResource.metadata['type'] == "Workflow":
                 form = WorkflowForm(request.POST, request.FILES, instance=dbResource)
             elif dbResource.metadata['type'] == "SemanticWebService":
                 form = SWSForm(request.POST, request.FILES, instance=dbResource)
@@ -661,14 +697,21 @@ def edit_resource(request, id=False):
                 resource.save()
                 request.session['statusmessage'] = 'Changes were successful'
                 return redirect('/resources/%s' % resource.global_id)
-
+        if dbResource:
+            type_request = dbResource.metadata['type']
+        else:
+            type_request = 'Workflow'
         return render_to_response("scs_resources/edit_resources.html",
-                                  {'form':form, 'edit':True,'type':dbResource.metadata['type']},
+                                  {'form':form, 'edit':edit,'type':type_request},
                                   RequestContext(request))
     except AtosServiceException, e:
+        if dbResource:
+            type_request = dbResource.metadata['type']
+        else:
+            type_request = 'Workflow'
         request.session['errormessage'] = 'Metadata service not work, please try later.'
         return render_to_response("scs_resources/edit_resources.html",
-                  {'form':form, 'edit':True,'type':dbResource.metadata['type']},
+                  {'form':form, 'edit':edit,'type':type_request},
                   RequestContext(request))
 
     except Exception, e:

@@ -88,7 +88,7 @@
                                 <input disabled type="radio" id="star4" name="rating" value="4"  {% if resource.metadata.rating >= 3.5 and resource.metadata.rating < 4.5 %}checked{% endif %} /><label for="star4" title="Pretty good">4 stars</label>
                                 <input disabled type="radio" id="star3" name="rating" value="3"  {% if resource.metadata.rating >= 2.5 and resource.metadata.rating < 3.5 %}checked{% endif %} /><label for="star3" title="Meh">3 stars</label>
                                 <input disabled type="radio" id="star2" name="rating" value="2"  {% if resource.metadata.rating >= 1.5 and resource.metadata.rating < 2.5 %}checked{% endif %} /><label for="star2" title="Kinda bad">2 stars</label>
-                                <input disabled type="radio" id="star1" name="rating" value="1"  {% if resource.metadata.rating >= 0 and resource.metadata.rating < 1.5 %}checked{% endif %} /><label for="star1" title="Sucks big time">1 star</label>
+                                <input disabled type="radio" id="star1" name="rating" value="1"  {% if resource.metadata.rating >= 1.0 and resource.metadata.rating < 1.5 %}checked{% endif %} /><label for="star1" title="">1 star</label>
                             </fieldset></dd>
                         </dl>
                     {% endif %}
@@ -110,18 +110,17 @@
                         <br/>
                         {% if resource.metadata.relatedResources %}
                             <dt>Related Resources:</dt>
-                            {% for related in resource.metadata.relatedResources %}<dd><a target="_blank" href="{{ BASE_URL }}/resources/{{ related.gloabl_id }}">{{ related.metadata.name|safe }}</a></dd>{% endfor %}
+                            {% for related in resource.metadata.relatedResources %}<dd><a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a></dd>{% endfor %}
                         {% endif %}
                         <dt>Annotations:</dt>
-                            {% for annotation in resource.metadata.semanticAnnotations %}
-                                <dd><span class="label">{{ annotation}}</span></dd>
+                            {% for key, annotation  in resource.metadata.semanticAnnotations.semanticConcept.items %}
+                                <dd><span class="label">{{ annotation }}</span></dd>
                             {% empty %}
                                 <dd>This resource has not semantic annotations.</dd>
                             {% endfor %}
-                    <dt>Additional content:</dt>
                         {% if resource.metadata.linkedTo %}
                             <dt>Additional contents:</dt>
-                            {% for link in resource.metadata.linkedTo.link  %}
+                            {% for key, link in resource.metadata.linkedTo.items  %}
                                 <dd><a target="_blank" href="{{ link.linkURI }}">{{ link.linkType }}</a></dd>
                             {% endfor %}
                         {% endif  %}
@@ -185,17 +184,22 @@
                         {% elif resource.metadata.type == "Dataset" %}
                             <a  href="/semantic-search/concept/?dataset=sparqlEndpoint%3D{{ resource.metadata.sparqlEndpoint }}%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
                         {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
-                            <a  href="#" class="btn btn-block btn-large btn-success">Invoke service</a>
-                            <p class="help-inline">This functionality is currently under development.</p>
+                            <a  href="{{ BASE_URL }}/tools/#start?id={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
                         {% elif resource.metadata.type == "Workflow" %}
-                            <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
-                            <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
-                            <a  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank" class="btn btn-block btn-large btn-success"><i class="icon-external-link"></i>Edit in Taverna Online</a>
+                            {% if workflow.t2flow %}
+                                <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
+                                <a  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank" class="btn btn-block btn-large btn-success"><i class="icon-external-link"></i>Edit in Taverna Online</a>
+                                {% if workflow.xml %}
+                                    <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
+                                {% endif %}
+                            {% endif %}
                         {% elif resource.metadata.type == "File"%}
-                            {% if resource.metadata.fileType == "File" %}
-                                <a  href="{{ resource.metadata.resourceURL }}" class="btn btn-block btn-large btn-success">Download file</a>
-                            {% else %}
-                                <a  href="{{ resource.metadata.resourceURL }}" class="btn btn-block btn-large btn-success">Open folder</a>
+                            {% if resource.metadata.lobcderPath %}
+                                {% if resource.metadata.fileType == "File" %}
+                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}" class="btn btn-block btn-large btn-success">Go to file</a>
+                                {% else %}
+                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}" class="btn btn-block btn-large btn-success">Go to folder</a>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
 
