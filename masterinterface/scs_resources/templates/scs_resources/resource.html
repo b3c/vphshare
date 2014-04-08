@@ -198,7 +198,7 @@
                                 {% if resource.metadata.fileType == "File" %}
                                     <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}" class="btn btn-block btn-large btn-success">Go to file</a>
                                 {% else %}
-                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}" class="btn btn-block btn-large btn-success">Go to folder</a>
+                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}/" class="btn btn-block btn-large btn-success">Go to folder</a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}

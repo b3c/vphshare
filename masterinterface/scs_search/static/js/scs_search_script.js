@@ -150,6 +150,7 @@ function complexSearchS1CallBack(results) {
 
         var termName = termsResults[item][0];
         var conceptName = termsResults[item][1];
+        var description = termsResults[item][2];
         var addTerm = term.clone();
         var id = conceptName + termName;
 
@@ -175,7 +176,7 @@ function complexSearchS1CallBack(results) {
         addTerm.show();
         addTerm.popover({
             title: conceptName,
-            content: termName,
+            content: description,
             trigger: 'hover',
             placement: 'left',
             delay: { show: 500, hide: 100 }

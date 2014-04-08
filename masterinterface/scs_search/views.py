@@ -50,9 +50,10 @@ def advance_search_view(request):
         load_groups = simplejson.loads(groups_query)
 
         ####### Save History #######
-        query_obj = Query(name=name, query=groups_query)
-        query_obj.save()
-        query_obj.user.add(user)
+        if user.is_authenticated():
+            query_obj = Query(name=name, query=groups_query)
+            query_obj.save()
+            query_obj.user.add(user)
 
         results = complex_query_connector(load_groups)
         breadcrum[0] = 1
@@ -64,12 +65,13 @@ def advance_search_view(request):
 
         ####### Save History #######
         query_obj = Query.objects.get(id=id)
-        if not query_obj.saved:
-            query_obj.name = name
-        query_obj.query = groups_query
-        query_obj.date = datetime.utcnow()
-        query_obj.save()
-        query_obj.user.add(user)
+        if user.is_authenticated():
+            if not query_obj.saved:
+                query_obj.name = name
+            query_obj.query = groups_query
+            query_obj.date = datetime.utcnow()
+            query_obj.save()
+            query_obj.user.add(user)
 
         results = complex_query_connector(load_groups)
         breadcrum[0] = 1
@@ -91,7 +93,7 @@ def class_search_view(request):
 
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
-        allConcepts = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1')['1']
+        allConcepts = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
     else:
 
         return HttpResponseRedirect(reverse('automaticSearch'))
@@ -145,7 +147,7 @@ def annotation_search_view(request):
         datasetLabel = unquote(request.GET['datasetLabel'])
         conceptClass = unquote(request.GET['conceptClass'])
         conceptClassLabel = unquote(request.GET['conceptLabel'])
-        #annotations = annotation_search_connector(None, dataset, conceptClass, num_max_hits='200', page_num='10')
+        annotations = annotation_search_connector(None, dataset, conceptClass, conceptClassLabel, num_max_hits='200', page_num='1')
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
@@ -245,8 +247,9 @@ def complex_query_service(request):
                     query_obj.name = name
                 query_obj.query = groups_query
                 query_obj.date = datetime.utcnow()
-            query_obj.save()
-            query_obj.user.add(user)
+            if user.is_authenticated():
+                query_obj.save()
+                query_obj.user.add(user)
         except Exception, e:
             pass
             ############################
