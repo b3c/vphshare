@@ -82,13 +82,14 @@ def guided_search_s1_connector(free_text, num_max_hits, page_num):
         results['page_num'] = page[1].text or None
         results['num_pages'] = page[2].text or None
 
-        concept_list = page[3][0].xpath('concept')
+        concept_list = page[3].xpath('concept')
 
         for concept_elem in concept_list:
-            uri_concept = concept_elem[0].text
-            name_concept = concept_elem[2].text
-            ontology_name = concept_elem[3].text
-            concepts[uri_concept] = [name_concept, ontology_name]
+            uri_concept = concept_elem[3].text
+            name_concept = concept_elem[0].text
+            ontology_name = concept_elem[1].text
+            description = concept_elem[4].text
+            concepts[uri_concept] = [name_concept, ontology_name, description]
 
         results[page_num] = concepts
 
@@ -238,7 +239,7 @@ def class_search_connector(free_text, dataset, num_max_hits, page_num):
             found = True
             break
     if not found:
-        return ''
+        return {}
 
     #End Find dataset
     response = requests.get(CLASSES_TABLES
@@ -611,7 +612,7 @@ def dataset_query_connector(query, endpoint_url, username='', ticket=''):
     print endpoint_url.group(1) + "?query=" + quote(query)
     try:
         response = requests.get(endpoint_url.group(1) + "?query=" + quote(query), verify=False, auth=(username, ticket))
-        if response.status_code == 401:
+        if response.status_code in [401,403]:
             raise AtosPermissionException
         concept_list = etree.fromstring(
             response.text.encode().replace('xmlns="http://www.w3.org/2005/sparql-results#"', ''))
