@@ -253,7 +253,7 @@
                             this.$details.append('<p><strong>'+label[i]+'</strong> <textarea readonly rows="10" style="width:90%">'+data[i]+'</textarea></p>');
 
                         }else if(i==12){
-                            this.$details.append('<p> <a target="_blank" href="/lobcder'+data[i]+'">'+label[i]+'</a></p>');
+                            this.$details.append('<p> <a target="_blank" href="{{ BASE_URL }}/lobcder#show?'+data[i]+'/">'+label[i]+'</a></p>');
                         }else if(i==4){
                             this.$details.append('<p><strong>'+label[i]+'</strong> <a target="_blank" href="'+data[i]+'">'+data[i]+'</a></p>');
                         }else{
