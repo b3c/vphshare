@@ -86,6 +86,15 @@ def resource_detailed_view(request, id='1'):
         for global_id in relatedResources:
             r = Resource.objects.get(global_id=global_id['resourceID'])
             resource.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
+
+    if resource.metadata['linkedTo']:
+        if  not isinstance(resource.metadata['linkedTo']['link'], list):
+            resource.metadata['linkedTo']['link'] = [resource.metadata['linkedTo']['link'].copy()]
+
+    if resource.metadata['semanticAnnotations']:
+        if  not isinstance(resource.metadata['semanticAnnotations']['semanticConcept'], list):
+            resource.metadata['semanticAnnotations']['semanticConcept'] = [resource.metadata['semanticAnnotations']['semanticConcept'].copy()]
+
     if request.user.is_authenticated() and resource.can_read(request.user):
         #get the path information using the lobcder services.
         try:
