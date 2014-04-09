@@ -1,5 +1,51 @@
-<div id="term-list-block" class="span6 k-header">
-    <div id="wait-terms" class="wait">
+{% if conceptClass %}
+<div id="table-list-block" class="span3 k-header">
+    <div id="wait-tables" class="wait">
+        <div class="img"></div>
+        <div class="info"></div>
+    </div>
+
+    <!-- START tools for tables list -->
+    <div class="tables-tools" style="padding: 17px; padding-bottom: 0px;">
+    <span class="label label-info"style="text-align:center;width:85%;font-size: 16px;margin-bottom: 10px;">Select concept class</span>
+    </div>
+    <!-- END tools for tables list -->
+
+    <!-- START tables list -->
+    <ul id="tables-list-base" class="unstyled" style="padding: 15px;padding-top: 0px;">
+        {% for class, classLabel in conceptClass.items %}
+            <li class="table-base"  style="margin: 5px;">
+                <div class="btn btn-small select-class" data-class="{{ class }}" style="width: 80%">{{ classLabel.0 }}</div>
+            </li>
+        {% endfor %}
+    </ul>
+    <script type="application/javascript">
+        $(function(){
+            $('.select-class').click(function(obj){
+                $('.select-class').removeClass('btn-primary');
+                var self = $(this);
+                var classValue =  self.data('class');
+                var classLabel = self.text();
+                self.addClass('btn-primary');
+                $('#class-value').val(classValue);
+                $('#class-label').val(classLabel);
+                annotationSearchCall('');
+            });
+        });
+    </script>
+
+    <div id="tables-pagination-base" class="pagination pagination-centered hide">
+        <ul>
+            <li id="prev" class="page" page="prev"><a>«</a></li>
+            <li id="next" class="page" page="next"><a>»</a></li>
+        </ul>
+    </div>
+    <!-- END tables list -->
+
+</div>
+{% endif %}
+<div id="term-list-block" class="{% if conceptClass %}span3{% else %}span6{% endif %} k-header">
+    <div id="wait-terms" class="loading hide">
         <div class="img"></div>
         <div class="info"></div>
     </div>
@@ -14,10 +60,10 @@
     <!-- END tools for terms list -->
 
     <!-- START terms list -->
-    <ul id="terms-list-base" class="ui-state-default" style="display:none;">
+    <ul id="terms-list-base" class="ui-state-default" style="display:none;word-wrap:break-word;">
 
-        <li id="term-base" class="term" style="display:none;">
-            <span class="k-sprite folder"></span>
+        <li id="term-base" class="term" style="display:none;word-wrap:break-word;">
+            <span class="k-sprite folder" style="word-wrap:break-word;"></span>
         </li>
     </ul>
 

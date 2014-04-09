@@ -18,8 +18,10 @@ urlpatterns = patterns(
     url(r'^semantic-search/advanced/', advance_search_view, name='advanceSearch'),
 
     url(r'^semantic-search/concept/', class_search_view, name='classSearch'),
+    url(r'^semantic-search/get_concept/', class_search_view, name='classSearch'),
 
     url(r'^semantic-search/annotation/', annotation_search_view, name='annotationSearch'),
+    url(r'^semantic-search/results/', annotation_search_view_results, name='annotationSearch'),
 
     url(r'^semantic-search/', automatic_search_view, name='automaticSearch'),
 

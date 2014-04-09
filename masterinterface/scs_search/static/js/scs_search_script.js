@@ -16,6 +16,8 @@ function resultsCallback(results) {
     var datasetLabel;
     var numMatch;
     var rdfLink;
+    var globalID;
+    var permision;
     var conceptItem;
     var conceptItemBase = $('#concept-base').clone();
     $('.media-list').html(conceptItemBase);
@@ -35,11 +37,20 @@ function resultsCallback(results) {
                     var datasetItem =  datasetItemBase.clone();
                     numMatch = dataset[datasetLabel][0];
                     rdfLink = dataset[datasetLabel][1];
+                    globalID = dataset[datasetLabel][2];
+                    permision = dataset[datasetLabel][3];
                     datasetItem.show();
                     datasetItem.find('.dataset-label').text(datasetLabel);
                     datasetItem.find('.dataset-description').text('Match : ' + numMatch);
                     //conceptItem.find( '.link-to-data' ).attr( 'onclick', "datasetSearchReady( '"+rdfLink+"', '"+datasetLabel+"' );" );
-                    datasetItem.find('.link-to-data').attr('href', "/semantic-search/concept/?dataset=" + encodeURIComponent(rdfLink) + "&datasetLabel=" + encodeURIComponent(datasetLabel));
+                    if (permision) {
+                        datasetItem.find('.link-to-data').attr('href', "/semantic-search/annotation/?dataset=" + encodeURIComponent(rdfLink) + "&datasetLabel=" + encodeURIComponent(datasetLabel));
+                    } else {
+                        datasetItem.find('.link-to-data').attr('href', "/resources/" + globalID);
+                        datasetItem.find('.link-to-data').text('Get access!');
+                        datasetItem.find('.link-to-data').removeClass('btn-primary');
+                        datasetItem.find('.link-to-data').addClass('btn-warning');
+                    }
                     datasetItem.insertAfter(datasetItemBase);
 
                 }
@@ -280,16 +291,16 @@ function annotationSearchCallBack(results) {
         var id = item;
         var termName;
         if (annotationDisplayText != '') {
-            termName = parentInternalName + ' > ' + annotationDisplayText;
+            termName = annotationDisplayText;
         } else {
 
             termName = parentInternalName + ' > ' + item;
 
         }
 
-        if (termName.length > 40) {
+        if (termName.length > 20) {
 
-            addTerm.append(termName.substr(0, 40) + "...");
+            addTerm.append(termName.substr(0, 20) + "...");
 
         } else {
 
@@ -307,14 +318,15 @@ function annotationSearchCallBack(results) {
         addTerm.append(fieldset);
 
         termList.append(addTerm);
-
+        addTerm.css('word-wrap:break-word;');
         addTerm.show();
         addTerm.popover({
             title: parentInternalName,
-            content: termName,
+            content: $('<div style="word-wrap:break-word;">'+termName+'</div>'),
             trigger: 'hover',
             placement: 'left',
-            delay: { show: 500, hide: 100 }
+            delay: { show: 500, hide: 100 },
+            html: true
         });
 
         addTerm.draggable({
@@ -420,6 +432,8 @@ function datasetQueryCallback(results) {
 
     $("#dataset-table-block").show();
     $("#dataset-results").show();
+    $('html, body').animate({ scrollTop: $("#dataset-results").position().top }, 'slow');
+
 
 }
 
@@ -721,6 +735,7 @@ function datasetQueryCall(saveToken) {
     }
     else {
         var datasetEndpoint = $('#dataset-uri').val();
+        var datasetLabel = $('#dataset-value').val();
         var queryUrl;
         var id = "";//$( '#queryID' ).val();
         if (id !== undefined && id !== "") {
@@ -729,7 +744,7 @@ function datasetQueryCall(saveToken) {
 
         } else {
 
-            queryUrl = '?dataset_query=' + encodeURIComponent(stringJSON) + '&endpoint=' + encodeURIComponent(datasetEndpoint);
+            queryUrl = '?groups_query=' + encodeURIComponent(stringJSON) + '&dataset=' + encodeURIComponent(datasetEndpoint)+'&datasetLabel='+datasetLabel;
 
         }
 
@@ -857,7 +872,7 @@ $(function () {
 
     $(".exclude").tooltip({title: "Exclude"});
 
-    $("#slider-range-min").slider({
+    $(".terms-tools > #slider-range-min").slider({
         range: "min",
         value: 20,
         min: 20,
@@ -882,7 +897,7 @@ $(function () {
         }
     });
 
-    $("#amount").val("$" + $("#slider-range-min").slider("value"));
+    $("#amount").val("$" + $(".terms-tools > #slider-range-min").slider("value"));
 
 
     $('.group').kendoTreeView({
@@ -1479,7 +1494,7 @@ function complexSearchReady() {
     $("#max-terms").text(20);
     $("#num-terms").text('').parent().hide();
     $("#page-num").val(1);
-    $("#slider-range-min").slider('value', '20');
+    $(".terms-tools > #slider-range-min").slider('value', '20');
     $("#termsPagination").remove();
 
     $('.group > .term').bind('remove', function (e) {
@@ -1539,7 +1554,7 @@ function guidedSearchReady() {
     $("#max-terms").text(20);
     $("#num-terms").text('').parent().hide();
     $("#page-num").val(1);
-    $("#slider-range-min").slider('value', '20');
+    $(".terms-tools > #slider-range-min").slider('value', '20');
     $("#termsPagination").remove();
 
     $('.group > .term').bind('remove', function (e) {
@@ -1558,15 +1573,22 @@ function guidedSearchReady() {
 
 }
 
-
 function datasetSearchReady(dataset, datasetLabel) {
+    var conceptClass = $('.select-class').first();
+    $('#dataset-uri').val(dataset);
+    conceptClass.addClass('btn-primary');
+    $('#dataset-value').val(datasetLabel);
+    datasetTermSearch(conceptClass.data('class'),conceptClass.val());
+}
+
+function datasetTermSearch(classValue, classLabel) {
 
     "use strict";
     //remember the selected dataset from guideserachS2 results
-    $('#dataset-uri').val(dataset);
-    $('#dataset-value').val(datasetLabel);
+    $('#class-value').val(classValue);
+    $('#class-label').val(classLabel);
     $('#legend-step3').removeClass('muted').addClass('selected');
-    $('#legend-step3').after("<div id='legend-dataset'>" + datasetLabel + "</div>");
+    $('#legend-step3').after("<div id='legend-dataset'>" + $('#dataset-value').val() + "</div>");
     $('#history-button').hide();
     $(".terms-tools").hide();
     $('#right-nav-search').show();
@@ -1591,7 +1613,7 @@ function datasetSearchReady(dataset, datasetLabel) {
         datasetQueryCall('False');
         return;
     });
-    $('#free-text').attr('placeholder', 'Filter Annotations');
+    $('#free-text').attr('placeholder', 'Filter Annotations in selected class');
     $('#free-text').val('');
     $('#annotation-value').val('');
     var setAnnotationForm = $('#set-annotation-value-form');
@@ -1607,7 +1629,7 @@ function datasetSearchReady(dataset, datasetLabel) {
     $("#max-terms").text(20);
     $("#num-terms").text('').parent().hide();
     $("#page-num").val(1);
-    $("#slider-range-min").slider('value', '20');
+    $(".terms-tools > #slider-range-min").slider('value', '20');
     $("#termsPagination").remove();
 
     $('.group > .term').remove();
