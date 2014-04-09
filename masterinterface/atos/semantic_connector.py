@@ -15,7 +15,8 @@ from django.conf import settings
 from exceptions import AtosPermissionException
 
 from masterinterface.atos.config import *
-
+from masterinterface.atos.metadata_connector import filter_resources_by_facet
+from masterinterface.scs_resources.models import Resource
 
 def automatic_search_connector(free_text):
     """
@@ -42,9 +43,16 @@ def automatic_search_connector(free_text):
 
         for dataset_elem in concept_elem:
             dataset_label = dataset_elem.attrib['label']
+            MetadataDataset = filter_resources_by_facet('Dataset','localID',dataset_label)
+            permision = False
+            globalID = ''
+            if MetadataDataset:
+                r = Resource.objects.get(global_id=MetadataDataset[0]['globalID'])
+                permision = r.can_read(user)
+                globalID = MetadataDataset[0]['globalID']
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
-            dataset_dict[dataset_label] = [num_metch, rdf_data]
+            dataset_dict[dataset_label] = [num_metch, rdf_data, globalID, permision]
 
         results[concept_uri] = dataset_dict
 
@@ -133,7 +141,7 @@ def guided_search_s2_connector(concept_uri_list):
     return json_results
 
 
-def complex_query_connector(load_groups):
+def complex_query_connector(load_groups, user):
     """
         guided_search_complex_query_connector: Call the guided search ComplexQuery API
         and extract the result from XML.
@@ -213,9 +221,16 @@ def complex_query_connector(load_groups):
 
         for dataset_elem in concept_elem:
             dataset_label = dataset_elem.attrib['label']
+            MetadataDataset = filter_resources_by_facet('Dataset','localID',dataset_label)
+            permision = False
+            globalID = ''
+            if MetadataDataset:
+                r = Resource.objects.get(global_id=MetadataDataset[0]['globalID'])
+                permision = r.can_read(user)
+                globalID = MetadataDataset[0]['globalID']
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
-            dataset[dataset_label] = [num_metch, rdf_data]
+            dataset[dataset_label] = [num_metch, rdf_data, globalID, permision ]
 
         results[concept_uri] = dataset
 

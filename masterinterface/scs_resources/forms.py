@@ -11,6 +11,7 @@ from django_select2 import Select2MultipleChoiceField, Select2ChoiceField, Heavy
 from django_select2.widgets import Select2Mixin
 from django.core.files.storage import default_storage
 from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
+from django.core.cache import cache
 
 
 class Select2CommaTags(Select2Mixin, forms.TextInput):
@@ -58,7 +59,7 @@ class ResourceForm(forms.ModelForm):
                 if not isinstance(self.data['relatedResources']['relatedResource'], list):
                     relatedResources = [self.data['relatedResources']['relatedResource'].copy()]
                 else:
-                    relatedResources = self.data['relatedResources']['relatedResource'].copy()
+                    relatedResources = self.data['relatedResources']['relatedResource'][:]
                 self.data['relatedResources'] = []
                 for global_id in relatedResources:
                     r = Resource.objects.get(global_id=global_id['resourceID'])
@@ -69,10 +70,13 @@ class ResourceForm(forms.ModelForm):
                 if not isinstance(self.data['semanticAnnotations']['semanticConcept'], list):
                     relatedResources = [self.data['semanticAnnotations']['semanticConcept'].copy()]
                 else:
-                    relatedResources = self.data['semanticAnnotations']['semanticConcept'].copy()
+                    relatedResources = self.data['semanticAnnotations']['semanticConcept'][:]
                 self.data['semanticAnnotations'] = ''
                 for conceptURI in relatedResources:
-                    self.data['semanticAnnotations'] = ','.join([self.data['semanticAnnotations'],conceptURI['conceptURI']])
+                    if self.data['semanticAnnotations'] == '':
+                        self.data['semanticAnnotations'] = conceptURI['conceptURI']
+                    else:
+                        self.data['semanticAnnotations'] = ','.join([self.data['semanticAnnotations'],conceptURI['conceptURI']])
             except Exception, e:
                 pass
         #decompose Additional component - Link
@@ -89,6 +93,9 @@ class ResourceForm(forms.ModelForm):
                 self.data['linkedTo'] += [{'link':{'linkURI':fileURI,'linkType':fileDescription}} ]
         else:
             #if the form is load for first time
+
+            if  not isinstance(self.data['linkedTo']['link'], list):
+                self.data['linkedTo']['link'] = [self.data['linkedTo']['link'].copy()]
             linkedTo = self.data['linkedTo'].copy()
             self.data['linkedTo'] = []
             for link in linkedTo['link']:
@@ -116,8 +123,11 @@ class ResourceForm(forms.ModelForm):
         }
         metadata_payload.update(additional_metadata)
         try:
+            cache.delete(self.instance.global_id)
             update_resource_metadata(self.instance.global_id, metadata_payload, metadata_payload['type'])
         except Exception, e:
+            if self.instance:
+                raise e
             resource.global_id = set_resource_metadata(metadata_payload, metadata_payload['type'])
             resource.owner = owner
 

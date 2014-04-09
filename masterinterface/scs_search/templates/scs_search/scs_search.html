@@ -57,21 +57,19 @@
 
 
 {% block content %}
-    <div id="wait" class="wait span12">
+
+    <div id="search" class="container-fluid" style="padding:20px;position: relative">
+    <div id="wait" class="loading span12 hide">
             <div class="img"></div>
             <div class="info"></div>
         </div>
-    <div id="search" class="container-fluid" style="padding:20px;">
         <legend style="margin-bottom: 15px;border-bottom: none;">
             <div class="wizard">
                 <div id="1wizard" class="current"><span class="badge badge-inverse">1</span> Search dataset</div>
                 <div id="2wizard" class="{% if breadcrum.0 %} current {% endif %}"><span class="badge badge-inverse">2</span> Select
                     dataset
                 </div>
-                <div id="3wizard" class="{% if breadcrum.1 %} current {% endif %}"><span class="badge badge-inverse">3</span> Select
-                    concept
-                </div>
-                <div id="4wizard" class="{% if breadcrum.2 %} current {% endif %}"><span class="badge badge-inverse">4</span> Query
+                <div id="4wizard" class="{% if breadcrum.2 %} current {% endif %}"><span class="badge badge-inverse">3</span> Query
                     dataset
                 </div>
             </div>

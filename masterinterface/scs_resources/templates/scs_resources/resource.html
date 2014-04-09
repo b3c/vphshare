@@ -113,14 +113,14 @@
                             {% for related in resource.metadata.relatedResources %}<dd><a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a></dd>{% endfor %}
                         {% endif %}
                         <dt>Annotations:</dt>
-                            {% for key, annotation  in resource.metadata.semanticAnnotations.semanticConcept.items %}
-                                <dd><span class="label">{{ annotation }}</span></dd>
+                            {% for annotation  in resource.metadata.semanticAnnotations.semanticConcept %}
+                                <dd><span class="label">{{ annotation.conceptURI }}</span></dd>
                             {% empty %}
                                 <dd>This resource has not semantic annotations.</dd>
                             {% endfor %}
                         {% if resource.metadata.linkedTo %}
                             <dt>Additional contents:</dt>
-                            {% for key, link in resource.metadata.linkedTo.items  %}
+                            {% for link in resource.metadata.linkedTo.link  %}
                                 <dd><a target="_blank" href="{{ link.linkURI }}">{{ link.linkType }}</a></dd>
                             {% endfor %}
                         {% endif  %}
@@ -180,9 +180,13 @@
                                 });
                                 </script>
                             <a class="btn btn-block btn-large btn-success" id="copy-description" href="#copied">Copy endpoint to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span>
-                            <div  class="copy hide">{{ resource.metadata.semanticWebServiceURL }}</div>
+                            <div id="copy" class="copy hide">{{ resource.metadata.semanticWebServiceURL }}</div>
                         {% elif resource.metadata.type == "Dataset" %}
-                            <a  href="/semantic-search/concept/?dataset=sparqlEndpoint%3D{{ resource.metadata.sparqlEndpoint }}%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                            {% if resource.metadata.sparqlEndpoint  %}
+                            \   <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.sparqlEndpoint }}%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                            {% else %}
+                                <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.localID }}/sparql%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                            {% endif %}
                         {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
                             <a  href="{{ BASE_URL }}/tools/#start?id={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
                         {% elif resource.metadata.type == "Workflow" %}
