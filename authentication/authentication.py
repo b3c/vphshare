@@ -247,6 +247,7 @@ def login():
                         response = app.make_response(render_template('index.html'))
 
                     response.set_cookie('bt-tkt', ticket_b64, domain='.biomedtown.org')
+                    response.set_cookie('bt-tkt', ticket_b64, domain='.vph-share.eu')
 
                     return response
 
