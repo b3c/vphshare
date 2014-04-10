@@ -29,6 +29,7 @@ urlpatterns = patterns(
     url(r'^403/$', page403 , name='bad_request'),
     url(r'^404/$', page404 , name='bad_request'),
     url(r'^500/$', page500 , name='bad_request'),
+    url(r'^monitoring/$', TemplateView.as_view(template_name='scs/monitoring.html') , name='monitoring'),
     url(r'^users_admin/$', users_access_admin , name='users_access_admin'),
     url(r'^hide_notification/$', hide_notification, name="hide_notification"),
     # manage-data modal services
