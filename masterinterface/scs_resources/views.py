@@ -152,13 +152,11 @@ def request_for_sharing(request):
     """
 
     resource = Resource.objects.get(id=request.GET.get('id'))
+    relatedResources = request.GET.getlist('relatedResources', [])
     resource_request, created = ResourceRequest.objects.get_or_create(resource=resource, requestor=request.user)
     resource_request.message = request.GET.get('message', None)
     resource_request.save()
 
-    # TODO these actions should be not necessary
-    # Check int the models package
-    # set_workflow_for_model(ContentType.objects.get_for_model(ResourceRequest), ResourceRequestWorkflow)
     set_workflow(resource_request, ResourceRequestWorkflow)
     set_state(resource_request, request_pending)
 
@@ -172,7 +170,8 @@ def request_for_sharing(request):
             dictionary={
                 'message': request.GET.get('message', None),
                 'resource': resource,
-                'requestor': request.user
+                'requestor': request.user,
+                'BASE_URL': settings.BASE_URL
             }
         )
 
@@ -188,6 +187,43 @@ def request_for_sharing(request):
         )
     except Exception, e:
         pass
+
+    for related in relatedResources:
+        resource = Resource.objects.get(global_id=related)
+        resource_request, created = ResourceRequest.objects.get_or_create(resource=resource, requestor=request.user)
+        resource_request.message = request.GET.get('message', None)
+        resource_request.save()
+
+        set_workflow(resource_request, ResourceRequestWorkflow)
+        set_state(resource_request, request_pending)
+
+        # alert owner by email
+        try:
+            alert_user_by_email(
+                mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+                mail_to='%s %s <%s>' % (resource.owner.first_name, resource.owner.last_name, resource.owner.email),
+                subject='[VPH-Share] You have receive a request for sharing',
+                mail_template='incoming_request_for_sharing',
+                dictionary={
+                    'message': request.GET.get('message', None),
+                    'resource': resource,
+                    'requestor': request.user,
+                    'BASE_URL': settings.BASE_URL
+                }
+            )
+
+            # alert requestor by email
+            alert_user_by_email(
+                mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
+                mail_to='%s %s <%s>' % (request.user.first_name, request.user.last_name, request.user.email),
+                mail_template='request_for_sharing_sent',
+                subject='[VPH-Share] Your request for sharing has been delivered to resource owner',
+                dictionary={
+                    'requestor': request.user
+                }
+            )
+        except Exception, e:
+            pass
 
     # return to requestor
     response_body = json.dumps({"status": "OK", "message": "The Resource owner has received your request."})
@@ -426,7 +462,8 @@ def acceptRequest(request):
                     mail_template='request_for_sharing_accepted',
                     dictionary={
                         'resource': resource,
-                        'requestor': principal
+                        'requestor': principal,
+                        'BASE_URL': settings.BASE_URL
                     }
                 )
         except Exception, e:

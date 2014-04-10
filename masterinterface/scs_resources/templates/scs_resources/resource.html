@@ -17,6 +17,7 @@
     {% endblock %}
 {% endif %}
     {%  block content %}
+        <div class="row-fluid">
         {% if resource|is_active or request.user|can_manage:resource %}
             <div id="alert-container"></div>
             <div class="span7">
@@ -31,7 +32,7 @@
                                 <input  type="radio" id="star3" name="rating" value="3" class="rate" {% if resource.metadata.rating >= 2.5 and resource.metadata.rating < 3.5 %}checked{% endif %} /><label for="star3" title="Meh">3 stars</label>
                                 <input  type="radio" id="star2" name="rating" value="2" class="rate" {% if resource.metadata.rating >= 1.5 and resource.metadata.rating < 2.5 %}checked{% endif %} /><label for="star2" title="Kinda bad">2 stars</label>
                                 <input  type="radio" id="star1" name="rating" value="1" class="rate" {% if resource.metadata.rating >= 0 and resource.metadata.rating < 1.5 %}checked{% endif %} /><label for="star1" title="Sucks big time">1 star</label>
-                            </fieldset></dd>
+                            </fieldset><span id="rate-message" class="hide badge badge-info">Thank you for your vote!</span></dd>
                             <script type="application/javascript">
                                 (function() {
                                     var global = this;
@@ -42,6 +43,7 @@
                                         $.ajax('{{ BASE_URL }}/resources/{{ resource.global_id }}/rate/'+rate+'/', {
                                             type: 'GET',
                                             success: function() {
+                                                $('#rate-message').show();
                                                 return true;
                                             },
                                             error: function() { return true; }
@@ -49,7 +51,7 @@
                                     };
 
                                     $('.rate').click(function(e){
-                                        e.preventDefault();
+
                                         rateresource($(this));
                                     });
 
@@ -220,7 +222,21 @@
                                 <div class="modal-body">
                                     {% csrf_token %}
                                     <input type="hidden" name="id" value="{{ resource.id }}" />
+                                    <inpu type="hidden"/>
                                     <textarea style="width: 80%;" rows="3" name="message"></textarea>
+                                    {% if resource.metadata.relatedResources  and resource.metadata.type == 'Workflow'%}
+                                    <hr/>
+                                    <span>To execute properly the workflow you requested needs to execute/access other resources: an automatic request for sharing will be sent to those other resources. Please be aware that until all requests have been approved the workflow might not behave correctly.</span>
+                                    <ul>
+                                        {% for related in resource.metadata.relatedResources %}
+                                            <li>
+                                                <a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a>
+                                                <input type="hidden" name="relatedResources" value="{{ related.0 }}"/>
+                                            </li>
+
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -316,4 +332,5 @@
             </h6>
         </div>
         {% endif %}
+        </div>
     {% endblock %}

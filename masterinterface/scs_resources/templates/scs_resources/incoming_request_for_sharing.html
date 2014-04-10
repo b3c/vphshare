@@ -4,12 +4,12 @@
     <p>Dear {{ resource.owner.first_name }}, you have received a new request for sharing!</p>
 
     <ul>
-        <li>Resource: {{ resource.metadata.name }}</li>
+        <li>Resource: <a href="{{ BASE_URL }}/resources/{{ resource.metadata.globalID }}">{{ resource.metadata.name }}</a></li>
         <li>Requestor: {{ requestor.first_name }} {{ requestor.last_name }}</li>
         <li>Message: {{ message }}</li>
     </ul>
 
-    <p>Please visit your dashboard to manage this request.</p>
+    <p>Please visit your <a href="{{ BASE_URL }}/dashboard">dashboard</a> to manage this request.</p>
 
     <p>Best regards, <br /> The VPH-Share Staff</p>
 
