@@ -235,7 +235,12 @@ def get_resources_list(request, resource_type, page=1):
                     for role in get_resource_local_roles():
                         group_name = get_resource_global_group_name(resource, role.name)
                         try:
-                            group = Group.objects.get(name=group_name)
+                            group, created = VPHShareSmartGroup.objects.get_or_create(name=group_name)
+                            if created:
+                                group.managers.add(user)
+                                group.user_set.add(user)
+                            if resource.can_I(role.name,request.user):
+                                group.user_set.add(request.user)
                             add_local_role(resource, group, role)
                         except ObjectDoesNotExist, e:
                             pass

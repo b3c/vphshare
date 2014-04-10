@@ -29,3 +29,63 @@
     </form>
 
 </div>
+
+<script type="application/javascript">
+    $(function(){
+       var query = {{ load_groups|safe }};
+
+        query = $.parseJSON(decodeURIComponent(query));
+        $('.group > .term').remove();
+
+        var group0 = $('#group0');
+        groups = [];
+        groups[0] = group0;
+
+        //$( '#queryID' ).attr( 'value', $( this ).attr('id') );
+        //$( '#nameQuery' ).val( $( this ).text() );
+        //$( '#nameQuery' ).attr( 'placeholder', $( this ).text() );
+
+        for (var i = 0; i < query.length; i++) {
+
+            for (var j = 1; j < query[i].length; j++) {
+                var itemSetvalue = query[i][j][1];
+                var itemSetOperator = query[i][j][4];
+                if (itemSetOperator == 'regex'){
+                    var itemSetOperatorString = "⊃";
+                }else{
+                    var itemSetOperatorString =  itemSetOperator;
+                }
+                var item = $('<li  class="term ui-draggable k-item" style="" data-original-title=""  role="treeitem"><div class="k-mid"><span class="k-in"><span class="k-sprite folder"></span>'+itemSetvalue+'<fieldset class="fieldsetTerm hide"><input name="inputConceptUri" type="hidden" value="' + query[i][j][0] + '"> <input name="inputTermName" type="hidden" value="' + query[i][j][1] + '"> <input name="inputConceptName" type="hidden" value="' + query[i][j][2] + '"><input class="term-type" type="hidden" value="'+query[i][j][5]+'"><div class="input hide"><select class="operator"><option value="'+query[i][j][4]+'" selected>'+query[i][j][4]+'</option></select><input id="annotation-value" value="'+query[i][j][3]+'" type="text" placeholder="String value"></div> <input type="hidden" class="term-value" value="'+query[i][j][3]+'"><input type="hidden" class="term-operator" value="'+query[i][j][4]+'"></fieldset><a id="delete-link" class="icon-remove" href="#" style="float: right;"></a><a id="edit-annotation" class="icon-pencil" href="#" style="float:right"></a><div id="term-value-text" style="text-align:right;padding-right: 29px;">Value '+itemSetOperator+' '+query[i][j][3]+'</div></span></div></li>');
+                if ($('#group' + i).length === 0) {
+
+                    $.createNewGroup(item, $('#new-group'));
+
+                } else {
+
+                    $.dropTerm(item, $('#group' + i));
+
+                }
+                var exclude = $('#group' + i).find('.exclude > .btn ');
+                if (query[i][0] === "NOT") {
+
+                    if (!exclude.hasClass('active'))
+                        exclude.addClass('active');
+
+                } else {
+
+                    exclude.removeClass('active');
+
+                }
+
+            }
+
+
+        }
+        $('.group').each(function () {
+
+            var group = $(this);
+            if (group.attr('id') !== "new-group")
+                $.groupCheckContent(group, 0);
+        });
+    });
+</script>

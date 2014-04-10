@@ -199,15 +199,17 @@ def annotation_search_view_results(request):
         r = re.compile('sparqlEndpoint=(.*?)&')
         endpoint_url = r.search(dataset)
         ####### Save History #######
-        query_obj = Query(name=name, query=groups_query)
-        query_obj.save()
-        query_obj.user.add(user)
+        if request.user.is_authenticated():
+            query_obj = Query(name=name, query=groups_query)
+            query_obj.save()
+            query_obj.user.add(user)
+
         query_sparql = json2sparql(load_groups)
         results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', ''))
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'queryresults': results, 'dataset': dataset, 'datasetLabel': datasetLabel
-                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'classLabel': conceptLabel, 'conceptClass': conceptClass},
+                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'load_groups': json.dumps(groups_query) , 'conceptClass':conceptClass},
                               RequestContext(request))
 
 
