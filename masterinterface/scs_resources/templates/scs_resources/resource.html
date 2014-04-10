@@ -154,7 +154,7 @@
                         <li><span class="label">{{ resource.metadata.licence }}</span></li>
                     </ul>
                     {% if request.user.is_authenticated %}
-                    {% if request.user|can_read:resource or resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service"%}
+                    {% if request.user|can_read:resource%}
                         {% if workflow and workflow.t2flow %}
                             <form action="/workspace/create" enctype="multipart/form-data" method="get">
                             {% csrf_token %}
