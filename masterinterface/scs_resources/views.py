@@ -231,7 +231,7 @@ def get_resources_list(request, resource_type, page=1):
                 else:
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
                 # look if there are group with the resource name and grant them the local role
-                if resource.metadata['type'] is 'Dataset':
+                if resource.metadata['type'] == 'Dataset':
                     for role in get_resource_local_roles():
                         group_name = get_resource_global_group_name(resource, role.name)
                         try:
@@ -300,18 +300,28 @@ def get_resources_list_by_author(request, resource_type, page=1):
             ##TO OPTIMIZE get_readable_resource non ha filtro per tipo da inserire una volta modificato il modello
             ## now fixed in teh template
             for resource in managed_resources:
+
                 if getattr(resource, 'metadata', None) is None:
                     try:
                         resource.metadata = get_resource_metadata(resource.global_id)
                     except AtosServiceException, e:
                         continue
+                try:
+                    user = User.objects.get(username=resource.metadata['author'])
+                except Exception, e:
+                    continue
 
                 # look if there are group with the resource name and grant them the local role
-                if resource.metadata['type'] is 'Dataset':
+                if resource.metadata['type'] == 'Dataset':
                     for role in get_resource_local_roles():
                         group_name = get_resource_global_group_name(resource, role.name)
                         try:
-                            group = Group.objects.get(name=group_name)
+                            group, created = VPHShareSmartGroup.objects.get_or_create(name=group_name)
+                            if created:
+                                group.managers.add(user)
+                                group.user_set.add(user)
+                            if resource.can_I(role.name,request.user):
+                                group.user_set.add(request.user)
                             add_local_role(resource, group, role)
                         except ObjectDoesNotExist, e:
                             pass
