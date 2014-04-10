@@ -1,6 +1,6 @@
-<div id="dataset-results" class="hide">
+<div id="dataset-results" class="{% if not queryresults %}hide{% endif %}">
     <legend>Available resources</legend>
-    <table id="dataset-table-block" class="tableuserlits table table-hover table-bordered hide">
+    <table id="dataset-table-block" class="tableuserlits table table-hover table-bordered {% if not queryresults %}hide{% endif %}">
         <thead>
         <tr>
             <th style="text-align: center;" id="resource-count-label">Resources</th>
@@ -10,6 +10,18 @@
         <tr class="term hide">
             <td class="dataset-value" style="text-align: center;"></td>
         </tr>
+        {% for data in queryresults %}
+            <tr class="term">
+                <td class="dataset-value" style="text-align: center;"><a target="_blank" href="{{ data }}">{{ data }}</a></td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
+{% if queryresults %}
+<script type="application/javascript">
+    $(function(){
+       $('html, body').animate({ scrollTop: $("#dataset-results").position().top }, 'slow');
+    });
+</script>
+{% endif %}

@@ -747,7 +747,8 @@ function datasetQueryCall(saveToken) {
             queryUrl = '?groups_query=' + encodeURIComponent(stringJSON) + '&dataset=' + encodeURIComponent(datasetEndpoint)+'&datasetLabel='+datasetLabel;
 
         }
-
+        window.location.replace('/semantic-search/results/'+queryUrl);
+        return;
         //$.address.state($.address.baseURL().split('?')[0]).value(queryUrl);
 
         $.ajax({
@@ -1025,7 +1026,7 @@ $(function () {
          } );*/
 
     }
-
+    $.createNewGroup = createNewGroup;
     function checkDuplicate(item, group) {
 
         var duplicate = false;
@@ -1113,6 +1114,12 @@ $(function () {
         var operator = setAnnotationForm.find('.operator').val();
         var textOperator = setAnnotationForm.find('.operator option:selected').text();
         var itemSetvalue = item.find(".term-value").val();
+        var itemSetOperator = item.find(".term-operator").val();
+        if (itemSetOperator == 'regex'){
+            var itemSetOperatorString = "⊃";
+        }else{
+            var itemSetOperatorString =  itemSetOperator;
+        }
         //if term dropped is not present in group , it can be dropped
         if (!checkDuplicate(item, dropTarget)) {
 
@@ -1137,7 +1144,7 @@ $(function () {
             }
 
             //if term came from other groups or from term-list search results
-            if (item.parents('.group').length > 0) {
+            if (item.parents('.group').length > 0 || itemSetvalue !== undefined) {
 
                 groupCheckContent(item.parents('.group'), 2);
                 itemCloned = item;
@@ -1190,6 +1197,7 @@ $(function () {
             });
         }
     }
+    $.dropTerm = dropTerm;
 
     //verify if group have to be delete (no more terms inside it)
     function groupCheckContent(parent, minLength) {
@@ -1223,7 +1231,7 @@ $(function () {
 
         }
     }
-
+    $.groupCheckContent = groupCheckContent;
     /* END callback from animations  */
 
     /* START click event */
