@@ -1,17 +1,3 @@
 {% extends "layout.html" %}
 
-{% block body %}
-  <h2>Login</h2>
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  <form action="" method=post>
-    <dl>
-      <dt>Username:
-      <dd><input type=text name=username>
-      <dt>Password:
-      <dd><input type=password name=password onfocus="if(!this._haschanged){this.value=''};this._haschanged=true;">
-      <dt>Remember Me:
-      <dd><input type=checkbox name=remember value=yes>
-      <dd><input type=submit value=Login>
-    </dl>
-  </form>
-{% endblock %}
+
