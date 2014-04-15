@@ -13,7 +13,7 @@
             {% else %}
                 <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
             {% endif %}
-            <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {{ result.type }}</p>
+            <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {% if result.type == "AtomicService" %}Application{% elif result.type == "SemanticWebService" %}Semantic web service{% else %}{{ result.type }}{% endif %}</p>
         </div>
     </div>
 {% endfor %}

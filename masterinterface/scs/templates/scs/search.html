@@ -29,7 +29,8 @@
 
                         {% for type in types %}
                             {% if type != 'Other' %}
-                            <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">{{ type }}
+                            <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">
+                                {% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}
                                 <span class="pull-right {% if type in search.type %} icon-ok {% endif %}"></span></a></li>
                             {% endif %}
                         {% endfor %}
@@ -49,7 +50,7 @@
             <div class="popover-list ">
                 <div class="popover-content">
                     {% for type in search.type %}
-                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{{ type }}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
+                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
                     {% endfor %}
                     {% for category in search.categories %}
                         <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >Category: {{ category }}</div><div data-value="{{ category }}" data-field="categories" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
@@ -81,7 +82,7 @@
                         {% else %}
                             <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
                         {% endif %}
-                        <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {{ result.type }}</p>
+                        <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {% if result.type == "AtomicService" %}Application{% elif result.type == "SemanticWebService" %}Semantic web service{% else %}{{ result.type }}{% endif %}</p>
                     </div>
                 </div>
                 {% endif %}
