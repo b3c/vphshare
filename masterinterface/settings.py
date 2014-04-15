@@ -133,7 +133,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
-    'paraviewweb.middleware.paraviewWebMiddleware'
+    'paraviewweb.middleware.paraviewWebMiddleware',
+    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware'
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -171,7 +172,8 @@ INSTALLED_APPS = (
     'masterinterface.scs_workspace',    
     'masterinterface.paraviewweb',
     'kombu.transport.django',
-    'djcelery'
+    'djcelery',
+    'raven.contrib.django.raven_compat'
 
     ##NEW_APP
 )
@@ -295,6 +297,11 @@ PARAVIEWWEB_PORT = 5000
 BROKER_URL = 'django://develop'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_DISABLE_RATE_LIMITS = True
+
+#SENTRY AND RAVEN CONFIGS
+RAVEN_CONFIG = {
+    'dsn': 'http://2d9a99aec6be407cb4fff11ec2fdf236:86c4c065a476469b9dbf57744e21254a@sentry.vph-share.eu/2',
+}
 ##################
 # LOCAL SETTINGS #
 ##################
