@@ -213,8 +213,8 @@ def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={
     msg.content_subtype = "html"
     msg.send()
 
-
-def grant_permission(name, resource, role):
+#TODO create the complementary method revoke_permision.
+def grant_permission(name, resource, role, ticket=None):
     if name is not None:
         try:
             principal = User.objects.get(username=name)
@@ -224,7 +224,7 @@ def grant_permission(name, resource, role):
         if resource.metadata['type'] == 'Dataset':
             try:
             # look for a group with the dataset name
-                group_name = get_resource_global_group_name(resource, role)
+                group_name = get_resource_global_group_name(resource, role.name)
                 group = Group.objects.get(name=group_name)
                 if type(principal) is User:
                     group.user_set.add(principal)
@@ -238,6 +238,28 @@ def grant_permission(name, resource, role):
                 # grant local role to the user
     else:
         principal = None
+
+    #set the role for files in lobcder repository
+    if resource.metadata['type'] == 'File':
+        import requests
+        import xmltodict
+        from django.conf import settings
+        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket)).text)
+        file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
+        if principal is None:
+            # set the role to all users, vph is the default group for all users in vph-share
+            name = 'vph'
+        if settings.DEBUG:
+            name = name+"_dev"
+        if permissions['permissions'].get(file_permissions_match[role.name], None) is None:
+            permissions['permissions'][file_permissions_match[role.name]] = [name]
+        elif isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
+            permissions['permissions'][file_permissions_match[role.name]] += [name]
+        else:
+            permissions['permissions'][file_permissions_match[role.name]] = [permissions['permissions'][file_permissions_match[role.name]], name]
+
+        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), data=xmltodict.unparse(permissions))
+    #end lobcder repository update
 
     add_local_role(resource, principal, role)
 

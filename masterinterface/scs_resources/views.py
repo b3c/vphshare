@@ -441,8 +441,24 @@ def mark_resource_public(request, global_id):
 def mark_resource_private(request, global_id):
     if request.method == 'GET':
         try:
-            resource = Resource.objects.get(global_id=global_id, metadata=False)
+            resource = Resource.objects.get(global_id=global_id)
             role = Role.objects.get(name='Reader')
+            if resource.metadata['type'] == 'File':
+                import requests
+                import xmltodict
+                from django.conf import settings
+                permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket)).text)
+                file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
+                name = 'vph'
+                if settings.DEBUG:
+                    name = name+"_dev"
+                if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
+                    index = permissions['permissions'][file_permissions_match[role.name]].index(name)
+                    del permissions['permissions'][file_permissions_match[role.name]][index]
+                else:
+                    del permissions['permissions'][file_permissions_match[role.name]]
+
+                result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), data=xmltodict.unparse(permissions))
             remove_local_role(resource,None, role)
             return HttpResponse(status=200)
         except Exception, e:
@@ -455,7 +471,7 @@ def acceptRequest(request):
         role = Role.objects.get(name=request.POST.get('role'))
         resource = Resource.objects.get(global_id=request.POST.get('resource'))
 
-        principal = grant_permission(name, resource, role)
+        principal = grant_permission(name, resource, role, request.ticket)
 
         # change request state if exists
         try:
@@ -532,7 +548,7 @@ def newshare(request):
                 name = usergroup.replace(splitted + '_', '')
                 for role in roles:
                     role = Role.objects.get(name=role)
-                    principal = grant_permission(name, resource, role)
+                    principal = grant_permission(name, resource, role, request.ticket)
                     try:
                         resource_request = ResourceRequest.objects.filter(requestor=principal, resource=resource)
                         if resource_request.count() and is_request_pending(resource_request[0]):
@@ -567,7 +583,7 @@ def grant_role(request):
     role = Role.objects.get(name=request.GET.get('role'))
     resource = Resource.objects.get(global_id=request.GET.get('global_id'))
 
-    principal = grant_permission(name, resource, role)
+    principal = grant_permission(name, resource, role, request.ticket)
 
     # change request state if exists
     try:
@@ -627,6 +643,23 @@ def revoke_role(request):
         # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
         # remove_role(principal, global_role)
         pass
+    if resource.metadata['type'] == 'File':
+        import requests
+        import xmltodict
+        from django.conf import settings
+        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket)).text)
+        file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
+
+        if settings.DEBUG:
+            name = name+"_dev"
+
+        if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
+            index = permissions['permissions'][file_permissions_match[role.name]].index(name)
+            del permissions['permissions'][file_permissions_match[role.name]][index]
+        else:
+            del permissions['permissions'][file_permissions_match[role.name]]
+
+        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), data=xmltodict.unparse(permissions))
 
     remove_local_role(resource, principal, role)
 
