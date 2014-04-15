@@ -40,17 +40,17 @@ DATA_PROPERTIES_RANGES = 'http://vphshare.atosresearch.eu/crawling/rest/schema/d
 
 # Metadata api urls
 
-GLOBAL_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata'
+GLOBAL_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended-test/rest/metadata'
 
-RESOURCE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/%s'
+RESOURCE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended-test/rest/metadata/%s'
 
-FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s/%s?value=%s&numResults=50&page=%s'
+FACETS_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended-test/rest/metadata/facets/%s/%s?value=%s&numResults=50&page=%s'
 
-TYPE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/facets/%s?numResults=50&page=%s'
+TYPE_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended-test/rest/metadata/facets/%s?numResults=50&page=%s'
 
-FILTER_METADATA_API = "http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s"
+FILTER_METADATA_API = "http://vphshare.atosresearch.eu/metadata-extended-test/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s"
 
-SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/multifield?params=name,description,tags&text=%s&numResults=%s&page=%s'
-#SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended/rest/metadata/multifield?params=name,description,tags&text=%s'
+SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended-test/rest/metadata/multifield?params=name,description,tags&text=%s&numResults=%s&page=%s'
+#SEARCH_METADATA_API = 'http://vphshare.atosresearch.eu/metadata-extended-test/rest/metadata/multifield?params=name,description,tags&text=%s'
 
 FACETS_LIST = [u'type', u'name', u'description', u'author', u'category', u'tags', u'semantic_annotations', u'licence', u'rating', u'views', u'local_id']
