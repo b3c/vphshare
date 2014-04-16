@@ -113,7 +113,7 @@ class ResourceForm(forms.ModelForm):
             'author': owner.username,
             'category': self.data['category'],
             'tags': self.data['tags'],
-            'semanticAnnotations': [ {'semanticConcept':{'conceptURI':conceptURI}} for conceptURI in self.data['semanticAnnotations'].split(',') if conceptURI is not ''],
+            'semanticAnnotations': [ {'semanticConcept':{'conceptURI':conceptURI}} for conceptURI in self.data['semanticAnnotations'].split(',') if str(conceptURI) is not ''],
             'licence': self.data['licence'],
             'localID': self.data['localID'],
             'resourceURL': self.data['resourceURL'],

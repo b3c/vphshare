@@ -1,4 +1,4 @@
-__author__ = 'Alfredo Saglimbeni'
+__author__ = 'Alfredo Saglimbeni, Ernesto Coto'
 import base64
 from django.db.models import Q
 from permissions.models import PrincipalRoleRelation

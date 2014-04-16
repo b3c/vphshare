@@ -133,7 +133,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
-    'paraviewweb.middleware.paraviewWebMiddleware'
+    'paraviewweb.middleware.paraviewWebMiddleware',
+    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware'
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -284,7 +285,7 @@ LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
 PARAVIEW_HOST = '46.105.98.182:9000'
 
 #METADATA SERVICE URL
-ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
+ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-extended'
 METADATA_TYPE = ['Dataset', 'File', 'SemanticWebService', 'Workflow', 'AtomicService', 'Workspace']
 
 #WORKFLOW MANAGER URL
@@ -309,6 +310,11 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
         'LOCATION': 'sharecache',
     }
+}
+
+#SENTRY AND RAVEN CONFIGS
+RAVEN_CONFIG = {
+    'dsn': 'http://2d9a99aec6be407cb4fff11ec2fdf236:86c4c065a476469b9dbf57744e21254a@sentry.vph-share.eu/2',
 }
 ##################
 # LOCAL SETTINGS #

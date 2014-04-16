@@ -252,7 +252,7 @@ def search_service(request):
             for filter in filterby:
                 numResults += request.session['types'].get(filter,0)
             for result in tmpresults:
-                if result['type'] not in ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'Application', 'User', 'Institution'] and 'Other' in filterby:
+                if result['type'] not in ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'User', 'Institution'] and 'Other' in filterby:
                     results.append(result)
                 if result['type'] in filterby:
                     results.append(result)
@@ -360,7 +360,7 @@ def search(request):
     }
     return render_to_response("scs/search.html",
                               {'search': search, "results": None, "numResults": 0, 'countType': {},
-                               'types': ['Dataset', 'Workflow', 'Application', 'File', 'Semantic Web service', 'User', 'Institution']},
+                               'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'User', 'Institution']},
                               RequestContext(request))
 
 @is_staff()
