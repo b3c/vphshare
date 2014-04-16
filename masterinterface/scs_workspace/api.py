@@ -10,6 +10,7 @@ from masterinterface.scs_resources.models import Workflow
 from masterinterface.scs_workspace.models import TavernaExecution
 from masterinterface.scs_workspace.forms import TavernaExecutionForm
 from masterinterface.scs.utils import get_file_data
+from raven.contrib.django.raven_compat.models import client
 from piston.utils import rc
 
 class workflows_api(BaseHandler):
@@ -144,7 +145,7 @@ class workflows_api(BaseHandler):
                     response._is_string = True
                     return response
             else:
-                workflows = Workflow.objects.all()
+                workflows = Workflow.objects.all(metadata=True)
                 results = []
                 for workflow in workflows:
                     if user is not None and workflow.resource_ptr.can_read(user):
@@ -162,6 +163,7 @@ class workflows_api(BaseHandler):
         except Exception, e:
             response = HttpResponse(status=500)
             response._is_string = True
+            client.captureException()
             return response
 
 class WfMngApiHandler(BaseHandler):
