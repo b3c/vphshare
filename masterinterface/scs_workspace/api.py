@@ -185,13 +185,13 @@ class WfMngApiHandler(BaseHandler):
                 try:
                     user, tkt64 = authenticate(ticket=ticket, cip=client_address)
                 except Exception, e:
-                    pass #return rc.FORBIDDEN
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if request.method == 'POST':
                 global_id = request.POST.get('global_id', None)
-                if global_id and Workflow.objects.get(global_id=global_id):
-                    return rc.BAD_REQUEST
+                if global_id and Workflow.objects.filter(global_id=global_id).count() == 0:
+                    return rc.NOT_FOUND
 
                 workflow = Workflow.objects.get(global_id=global_id)
                 form = TavernaExecutionForm()
@@ -270,7 +270,7 @@ class WfMngApiHandler(BaseHandler):
                     pass #return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
-            if request.method == 'POST' and request.POST.get('eid', None):
+            if wfrun_id is not None:                
                 taverna_execution = TavernaExecution.objects.get(pk=wfrun_id, ticket=ticket)
                 if taverna_execution.delete(ticket = ticket):
                     return True
