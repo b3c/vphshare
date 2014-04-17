@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib import admin
 from django.db.models.signals import post_save
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
+from raven.contrib.django.raven_compat.models import client
 
 
 class Notification(models.Model):
@@ -45,6 +45,7 @@ def notification_created(sender, instance, created, **kwargs):
                 }
             )
     except Exception, e:
+        client.captureException()
         pass
 
 post_save.connect(notification_created, Notification)

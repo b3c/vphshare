@@ -48,6 +48,8 @@ class VPHShareSmartGroup(Group):
                     parent = parent.parent
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             return False
 
         return False

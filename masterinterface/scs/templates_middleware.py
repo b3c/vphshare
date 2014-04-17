@@ -1,6 +1,7 @@
 #from models import message as mess
 from django.utils.importlib import import_module
 from masterinterface.scs.models import Notification
+from raven.contrib.django.raven_compat.models import client
 
 def statusMessage(request):
     """
@@ -23,6 +24,7 @@ def statusMessage(request):
                 'errormessage': message,
                 }
     except Exception, e:
+        client.captureException()
         pass
     return {}
 
@@ -35,6 +37,7 @@ def get_notifications(request):
 
         return {'notifications': notifications}
     except Exception, e:
+        client.captureException()
         pass
     return {'notifications': []}
 
