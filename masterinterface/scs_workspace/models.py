@@ -90,6 +90,8 @@ class TavernaExecution(models.Model):
         try:
             WorkflowManager.deleteExecution(self.id, ticket)
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             pass
         super(TavernaExecution, self).delete(*args, **kwargs)
         return True

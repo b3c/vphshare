@@ -302,6 +302,8 @@ def users_access_search(request):
             return HttpResponse('FALSE')
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         return HttpResponse('FALSE')
 
 
@@ -356,6 +358,8 @@ def users_update_role_map(request):
 
             return HttpResponse('TRUE')
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         return HttpResponse("FALSE")
 
     Roles = Role.objects.all()

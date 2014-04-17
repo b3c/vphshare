@@ -9,6 +9,7 @@ from piston.handler import BaseHandler
 from masterinterface.scs_auth.auth import authenticate
 from masterinterface.atos.metadata_connector import filter_resources_by_facet, filter_resources_by_type, get_resource_metadata
 from masterinterface.scs_resources.models import Resource, Workflow
+from raven.contrib.django.raven_compat.models import client
 
 Roles = ['Reader', 'Editor', 'Manager', 'Owner']
 class has_local_roles(BaseHandler):
@@ -132,6 +133,7 @@ class has_local_roles(BaseHandler):
                 return response
 
         except Exception, e:
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -228,6 +230,7 @@ class get_resources_list(BaseHandler):
                 return response
 
         except Exception, e:
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response

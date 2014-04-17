@@ -54,6 +54,8 @@ class search_user(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -105,6 +107,8 @@ class search_userandgroup(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -149,6 +153,8 @@ class search_group(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -239,6 +245,8 @@ class create_group(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -300,6 +308,8 @@ class delete_group(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -379,6 +389,8 @@ class add_to_group(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -445,6 +457,8 @@ class remove_user_from_group(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -497,6 +511,8 @@ class group_members(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -545,6 +561,8 @@ class user_groups(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -608,6 +626,8 @@ class promote_user(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response
@@ -669,6 +689,8 @@ class downgrade_user(BaseHandler):
                     return response
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
             return response

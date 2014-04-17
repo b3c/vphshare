@@ -68,7 +68,8 @@ def startExecution(request):
             taverna_execution.start(request.COOKIES.get('vph-tkt'))
             return HttpResponse(content=json.dumps(True))
     except Exception, e:
-        print e
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         pass
     return HttpResponse(status=403)
 

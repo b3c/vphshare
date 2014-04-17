@@ -1,5 +1,5 @@
 from pysimplesoap.client import SoapClient
-
+from raven.contrib.django.raven_compat.models import client
 
 
 
@@ -47,6 +47,7 @@ def invokeSoapService( wsdl_url, service, port, method, requestParameters, reque
         #response=response2Html(response)
 
     except Exception, e:
+        client.captureException()
         response= "there was an error: %s" %str(e)
 
     # if response is a list the type in wsdl is arrayofType

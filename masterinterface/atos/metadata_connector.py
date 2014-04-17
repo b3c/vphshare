@@ -1,12 +1,15 @@
 __author__ = 'm.balasso@scsitaly.com, a.saglimbeni@scsitaly.com'
 
-
 import re
+
 import requests
 import xmltodict
+from ordereddict import OrderedDict
+from raven.contrib.django.raven_compat.models import client
+
 from masterinterface.atos.config import *
 from exceptions import AtosServiceException
-from ordereddict import OrderedDict
+
 
 def decompose_payload(sub_metadata):
 
@@ -160,6 +163,7 @@ def filter_resources_by_facet(type, facet = None, value = None, page=1):
                 results.append(resource)
             return results
         except Exception, e:
+            client.captureException()
             return []
 
     except BaseException, e:
@@ -185,6 +189,7 @@ def filter_resources_by_author(author):
                 results.append(resource)
             return results
         except Exception, e:
+            client.captureException()
             return []
 
     except BaseException, e:

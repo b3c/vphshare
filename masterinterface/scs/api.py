@@ -1,10 +1,11 @@
 __author__ = 'Alfredo Saglimbeni <a.saglimbeni@scsitaly.com>'
 
-import json
 from django.db.models import ObjectDoesNotExist
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from piston.handler import BaseHandler
+from raven.contrib.django.raven_compat.models import client
+
 from masterinterface.scs_auth.auth import authenticate
 from masterinterface.scs.models import Notification
 
@@ -95,6 +96,7 @@ class Notify(BaseHandler):
                     raise Exception
 
         except Exception, e:
+            client.captureException()
             response = HttpResponse(status=403)
             response._is_string = True
             return response
