@@ -32,10 +32,11 @@ def statusMessage(request):
 def get_notifications(request):
     try:
         notifications = []
-        for n in Notification.objects.filter(recipient=request.user, hidden=False).order_by('-pk'):
-            notifications.append({'pk': n.pk, 'subject': n.subject, 'content': n.message})
+        if request.user.is_authenticated():
+            for n in Notification.objects.filter(recipient=request.user, hidden=False).order_by('-pk'):
+                notifications.append({'pk': n.pk, 'subject': n.subject, 'content': n.message})
 
-        return {'notifications': notifications}
+            return {'notifications': notifications}
     except Exception, e:
         client.captureException()
         pass
