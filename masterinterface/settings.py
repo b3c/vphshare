@@ -134,7 +134,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
     'paraviewweb.middleware.paraviewWebMiddleware',
-    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware'
+    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
+    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -222,23 +223,44 @@ PASSWORD_HASHERS = (
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
+    'handlers': {
+        'sentry': {
             'level': 'ERROR',
-            'propagate': True,
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
-        'cyfronet': {
-            'level': 'DEBUG'
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         }
-    }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
 }
 
 LOGIN_URL = '/login/'
