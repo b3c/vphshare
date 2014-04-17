@@ -40,6 +40,7 @@ class workflows_api(BaseHandler):
                     return workflow.global_id
             return rc.BAD_REQUEST
         except Exception, e:
+            client.captureException()
             return rc.INTERNAL_ERROR
 
     def update(self, request, global_id=None, *args, **kwargs):
@@ -73,6 +74,7 @@ class workflows_api(BaseHandler):
                     return rc.CREATED
             return rc.BAD_REQUEST
         except Exception, e:
+            client.captureException()
             return rc.INTERNAL_ERROR
 
     def delete(self, request, global_id=None, *args, **kwargs):
@@ -97,6 +99,7 @@ class workflows_api(BaseHandler):
                 return rc.DELETED
             return rc.BAD_REQUEST
         except Exception, e:
+            client.captureException()
             return rc.INTERNAL_ERROR
 
     def read(self, request, global_id=None):
@@ -217,9 +220,9 @@ class WfMngApiHandler(BaseHandler):
                     taverna_execution.start(ticket)
                     #return eid
                     return taverna_execution.id
-                return rc.INTERNAL_ERROR
+                return rc.BAD_REQUEST
         except Exception, e:
-            print e
+            client.captureException()
             return rc.INTERNAL_ERROR
 
 
@@ -250,7 +253,7 @@ class WfMngApiHandler(BaseHandler):
                 return results
             return rc.BAD_REQUEST
         except Exception, e:
-            print e
+            client.captureException()
             return rc.INTERNAL_ERROR
 
 
@@ -278,5 +281,5 @@ class WfMngApiHandler(BaseHandler):
                     return True
             return rc.BAD_REQUEST
         except Exception, e:
-            print e
+            client.captureException()
             return rc.INTERNAL_ERROR
