@@ -11,7 +11,7 @@ from time import time
 from paraview import simple, web, servermanager, web_helper
 from vtkParaViewWebCorePython import vtkPVWebInteractionEvent
 from vtkParaViewWebCorePython import vtkPVWebApplication
-
+from raven.contrib.flask import Sentry
 # =============================================================================
 #
 # Base class for any ParaView based protocol
@@ -352,7 +352,7 @@ class ParaViewWebProtocol(object):
             id = self.reader.GetGlobalIDAsString()
             self.rep = simple.GetDisplayProperties()
         except Exception, e:
-            print e
+            sentry.captureException()
             self.reader = None
         print "id:"+id
         return id
@@ -693,6 +693,8 @@ app = Flask(__name__)
 handler = XMLRPCHandler('api')
 handler.connect(app, '/api')
 
+app.config['SENTRY_DSN'] = 'http://1c3c7d624a8a497589d27e007fb8f35f:a7dc3fa664474ddeb52ee8e6229f8cb3@sentry.vph-share.eu/5'
+sentry = Sentry(app)
 
 @handler.register
 def ready():
@@ -716,6 +718,7 @@ def pvw_call_method(method=None, args="[]"):
         else:
             return json.dumps(result)
     except Exception, e:
+        sentry.captureException()
         print "Errore"
         print e
 

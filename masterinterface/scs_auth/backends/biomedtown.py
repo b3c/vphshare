@@ -322,6 +322,8 @@ class BiomedTownTicketBackend (RemoteUserBackend):
             return None
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             return None
 
     def configure_user(self, user):
@@ -379,6 +381,8 @@ class FromTicketBackend (BiomedTownTicketBackend):
             return user, tkt64
 
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             return None
 
 

@@ -1,15 +1,16 @@
 # Create your views here.
-from django.shortcuts import render_to_response, RequestContext
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
 from xmlrpclib import ServerProxy
-from .models import ParaviewInstance
 from datetime import datetime
 import subprocess
-from django.conf import settings
-
 import json
-import os
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from django.conf import settings
+from raven.contrib.django.raven_compat.models import client
+
+from .models import ParaviewInstance
+
 PVW_START_PORT = 5000
 
 
@@ -54,6 +55,7 @@ def pvw_start_session(request):
 
             return HttpResponse(content='TRUE')
     except Exception,e:
+        client.captureException()
         pass
 
     response = HttpResponse(status=403)

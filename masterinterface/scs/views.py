@@ -452,6 +452,8 @@ def delete_tag_service(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response
@@ -492,6 +494,8 @@ def add_tag_service(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response
@@ -517,6 +521,8 @@ def edit_description_service(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response
@@ -540,6 +546,8 @@ def hide_notification(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response
