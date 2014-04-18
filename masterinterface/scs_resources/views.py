@@ -1,137 +1,140 @@
 
 # Create your views here.
 
-from django.http import HttpResponse
+import json
+
+from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.template import loader
 from django.template import RequestContext
 from django.contrib.auth.models import User, Group
 from django.db.models import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
-from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from permissions.models import PrincipalRoleRelation, Role
-from permissions.utils import add_role, remove_role, has_local_role, has_permission, add_local_role, remove_local_role
+from permissions.utils import add_local_role, remove_local_role
 from workflows.utils import get_state, set_workflow, set_state, do_transition
-import json
-from masterinterface.scs_security.politicizer import create_policy_file, extract_permission_map
-from masterinterface.scs_security.configurationizer import create_configuration_file, extract_configurations
-from masterinterface.cyfronet import cloudfacade
-from masterinterface.atos.metadata_connector import get_resource_metadata, AtosServiceException
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
+from django.core.cache import cache
+
+from masterinterface.scs_security.politicizer import create_policy_file
+from masterinterface.cyfronet import cloudfacade
+from masterinterface.atos.metadata_connector import get_resource_metadata, AtosServiceException
 from .models import Resource, Workflow, ResourceRequest
-from config import ResourceRequestWorkflow, request_pending, request_accept_transition, ResourceWorkflow, request_refuse_transition
+from config import ResourceRequestWorkflow, request_pending, request_accept_transition, request_refuse_transition
 from forms import WorkflowForm, UsersGroupsForm, ResourceForm, SWSForm, DatasetForm
 from masterinterface.atos.metadata_connector import *
 from utils import *
 from masterinterface import settings
-from django.views.decorators.csrf import csrf_exempt
 from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
-from django.template.loader import render_to_string
-from django.views.decorators.cache import cache_page
-from django.core.cache import cache
+
 
 def resource_detailed_view(request, id='1'):
     """
         return the detailed view for a given resource
     """
-
     try:
-        resource = Resource.objects.get(global_id=id)
-    except ObjectDoesNotExist, e:
-        # create into local database the resource
-        metadata = get_resource_metadata(id)
-        # look for resource owner, if he exists locally
         try:
-            resource_owner = User.objects.get(username=metadata['author'])
-            # TODO create a particular type of resource rather than a Resource
-            if str(metadata['type']).lower() == "workflow":
-                resource = Workflow(global_id=id, owner=resource_owner)
-            else:
-                resource = Resource(global_id=id, owner=resource_owner)
-            resource.save(metadata=metadata)
-
+            resource = Resource.objects.get(global_id=id)
         except ObjectDoesNotExist, e:
-            # TODO create a new user or assign resource temporarly to the President :-) now I'm the president #asagli
-            resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
-            resource.save(metadata=metadata)
+            # create into local database the resource
+            metadata = get_resource_metadata(id)
+            # look for resource owner, if he exists locally
+            try:
+                resource_owner = User.objects.get(username=metadata['author'])
+                # TODO create a particular type of resource rather than a Resource
+                if str(metadata['type']).lower() == "workflow":
+                    resource = Workflow(global_id=id, owner=resource_owner)
+                else:
+                    resource = Resource(global_id=id, owner=resource_owner)
+                resource.save(metadata=metadata)
 
-        finally:
+            except ObjectDoesNotExist, e:
+                # TODO create a new user or assign resource temporarly to the President :-) now I'm the president #asagli
+                resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
+                resource.save(metadata=metadata)
+
+            finally:
+                resource.metadata = metadata
+                # TODO set resource workflow
+                # set_workflow(resource, ResourceWorkflow)
+
+        except MultipleObjectsReturned:
+
+            # seems like the President has stolen something :-)
+            resources = Resource.objects.filter(global_id=id)
+            metadata = get_resource_metadata(global_id=id)
+            for r in resources:
+                if r.owner.username != metadata['author']:
+                    r.delete()
+
+            resource = Resource.objects.get(global_id=id)
             resource.metadata = metadata
-            # TODO set resource workflow
-            # set_workflow(resource, ResourceWorkflow)
 
-    except MultipleObjectsReturned:
+        # Count visit hit
+        resource.metadata['rating'] = float(resource.metadata['rating'])
+        resource.metadata['views'] = resource.update_views_counter()
+        if resource.metadata['relatedResources']:
+            if  not isinstance(resource.metadata['relatedResources']['relatedResource'], list):
+                relatedResources = [resource.metadata['relatedResources']['relatedResource'].copy()]
+            else:
+                relatedResources = resource.metadata['relatedResources']['relatedResource'][:]
+            resource.metadata['relatedResources'] = []
+            for global_id in relatedResources:
+                r = Resource.objects.get(global_id=global_id['resourceID'])
+                resource.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
 
-        # seems like the President has stolen something :-)
-        resources = Resource.objects.filter(global_id=id)
-        metadata = get_resource_metadata(global_id=id)
-        for r in resources:
-            if r.owner.username != metadata['author']:
-                r.delete()
+        if resource.metadata['linkedTo']:
+            if  not isinstance(resource.metadata['linkedTo']['link'], list):
+                resource.metadata['linkedTo']['link'] = [resource.metadata['linkedTo']['link'].copy()]
 
-        resource = Resource.objects.get(global_id=id)
-        resource.metadata = metadata
+        if resource.metadata['semanticAnnotations']:
+            if  not isinstance(resource.metadata['semanticAnnotations']['semanticConcept'], list):
+                resource.metadata['semanticAnnotations']['semanticConcept'] = [resource.metadata['semanticAnnotations']['semanticConcept'].copy()]
 
-    # Count visit hit
-    resource.metadata['rating'] = float(resource.metadata['rating'])
-    resource.metadata['views'] = resource.update_views_counter()
-    if resource.metadata['relatedResources']:
-        if  not isinstance(resource.metadata['relatedResources']['relatedResource'], list):
-            relatedResources = [resource.metadata['relatedResources']['relatedResource'].copy()]
-        else:
-            relatedResources = resource.metadata['relatedResources']['relatedResource'][:]
-        resource.metadata['relatedResources'] = []
-        for global_id in relatedResources:
-            r = Resource.objects.get(global_id=global_id['resourceID'])
-            resource.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
+        if request.user.is_authenticated() and resource.can_read(request.user):
+            #get the path information using the lobcder services.
+            try:
+                lobcder_item = xmltodict.parse(requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=(request.user.username, request.COOKIES['vph-tkt']), verify=False).text.encode('utf-8'))
+                resource.metadata['lobcderPath'] = lobcder_item['logicalDataWrapped']['path']
+            except Exception,e:
+                resource.metadata['lobcderPath'] = None
+                pass
+        # INJECT DEFAULT VALUES
+        #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
 
-    if resource.metadata['linkedTo']:
-        if  not isinstance(resource.metadata['linkedTo']['link'], list):
-            resource.metadata['linkedTo']['link'] = [resource.metadata['linkedTo']['link'].copy()]
+        # check if the resource has been already requested by user
+        if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
+            try:
+                resource_request = ResourceRequest.objects.get(resource=resource, requestor=request.user)
+                resource_request_state = get_state(resource_request)
+                if resource_request_state.name in ['Pending', 'Refused']:
+                    resource.already_requested = True
+                    resource.request_status = resource_request_state.name
+            except ObjectDoesNotExist, e:
+                resource.already_requested = False
 
-    if resource.metadata['semanticAnnotations']:
-        if  not isinstance(resource.metadata['semanticAnnotations']['semanticConcept'], list):
-            resource.metadata['semanticAnnotations']['semanticConcept'] = [resource.metadata['semanticAnnotations']['semanticConcept'].copy()]
-
-    if request.user.is_authenticated() and resource.can_read(request.user):
-        #get the path information using the lobcder services.
         try:
-            lobcder_item = xmltodict.parse(requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=(request.user.username, request.COOKIES['vph-tkt']), verify=False).text.encode('utf-8'))
-            resource.metadata['lobcderPath'] = lobcder_item['logicalDataWrapped']['path']
-        except Exception,e:
-            resource.metadata['lobcderPath'] = None
-            pass
-    # INJECT DEFAULT VALUES
-    #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
-
-    # check if the resource has been already requested by user
-    if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
-        try:
-            resource_request = ResourceRequest.objects.get(resource=resource, requestor=request.user)
-            resource_request_state = get_state(resource_request)
-            if resource_request_state.name in ['Pending', 'Refused']:
-                resource.already_requested = True
-                resource.request_status = resource_request_state.name
+            workflow = Workflow.objects.get(global_id=id)
+            if str(workflow.metadata['name']).lower().count('aneurist'):
+                resource.related = ['<a href="http://www.onlinehpc.net/" target="_blank">Taverna Online tool</a>','<a href="http://www.vph-share.eu/content/running-aneuristworkflow-short-workflow" target="_blank">Taverna workbench Tutorial</a>']
         except ObjectDoesNotExist, e:
-            resource.already_requested = False
+            workflow = None
 
-    try:
-        workflow = Workflow.objects.get(global_id=id)
-        if str(workflow.metadata['name']).lower().count('aneurist'):
-            resource.related = ['<a href="http://www.onlinehpc.net/" target="_blank">Taverna Online tool</a>','<a href="http://www.vph-share.eu/content/running-aneuristworkflow-short-workflow" target="_blank">Taverna workbench Tutorial</a>']
-    except ObjectDoesNotExist, e:
-        workflow = None
-
-    return render_to_response(
-        'scs_resources/resource.html',
-        {'resource': resource,
-         'workflow': workflow,
-         'cloudFacadeUrl': settings.CLOUDFACACE_URL,
-         'requests': []},
-        RequestContext(request)
-    )
+        return render_to_response(
+            'scs_resources/resource.html',
+            {'resource': resource,
+             'workflow': workflow,
+             'cloudFacadeUrl': settings.CLOUDFACACE_URL,
+             'requests': []},
+            RequestContext(request)
+        )
+    except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
+        raise Http404
 
 @login_required
 def rate_resource(request, global_id, rate):
