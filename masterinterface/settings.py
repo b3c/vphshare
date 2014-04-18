@@ -293,10 +293,8 @@ TICKET = SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 #TICKET =  Ticket(SECRET_KEY)
 
 #LOBCDER settings
-LOBCDER_HOST = '149.156.10.138'
-LOBCDER_PORT = 8080
+LOBCDER_HOST = 'lobcder.vph.cyfronet.pl'
 LOBCDER_ROOT = '/lobcder/dav'
-LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder/rest"
 
 LOBCDER_WEBDAV_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/dav'
 LOBCDER_WEBDAV_HREF = '/lobcder/dav'
