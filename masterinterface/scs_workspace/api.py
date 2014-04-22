@@ -212,7 +212,7 @@ class WfMngApiHandler(BaseHandler):
                 taverna_execution.executionstatus = 0
                 ## only for test mode
                 taverna_execution.url = ''
-                taverna_execution.taverna_atomic_id = 223
+                taverna_execution.taverna_atomic_id = 245
                 ####
                 taverna_execution.save()
 
