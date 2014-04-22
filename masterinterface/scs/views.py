@@ -316,7 +316,7 @@ def search(request):
             users = User.objects.filter(
                 Q(username__icontains=search_text) | Q(email__icontains=search_text) | Q(first_name__icontains=search_text) | Q(last_name__icontains=search_text)
             )
-            users = [{"description": user.username, "name": "%s %s" % (user.first_name, user.last_name), "email": user.email, "type": 'User'} for user in users]
+            users = [{"description": user.username, "name": "%s %s (%s)" % (user.first_name, user.last_name, user.username), "email": user.email, "type": 'User'} for user in users]
             results += users
             if 'User' not in countType:
                 countType['User'] = len(users)
