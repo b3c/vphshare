@@ -29,9 +29,14 @@
                                 <div class="span10"><h4 class="dataset-label media-heading">{{ dataset_name }}</h4>
 
                                     <p class="dataset-description">Match : {{ data.0 }}</p></div>
-                                <div class="span1"><a class="link-to-data btn btn-primary"
-                                                      href="/semantic-search/concept/?dataset={{ data.1|urlencode }}&datasetLabel={{ dataset_name|urlencode }}">Query
-                                    dataset</a></div>
+                                {% if data.3 %}
+                                    <div class="span1"><a class="link-to-data btn btn-primary"
+                                                          href="/semantic-search/annotation/?dataset={{ data.1|urlencode }}&datasetLabel={{ dataset_name|urlencode }}">Query
+                                        dataset</a></div>
+                                {% else %}
+                                    <div class="span1"><a class="link-to-data btn btn-warning"
+                                                          href="/resources/{{ data.2 }}">Get access!</a></div>
+                                {% endif %}
                             </div>
                         </div>
 

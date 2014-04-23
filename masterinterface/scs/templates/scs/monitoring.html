@@ -1,0 +1,19 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %}Infrastructure status {% endblock %}
+
+
+
+{% block page-title %}
+        <span class="title">Infrastructure status</span>
+        <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="row-fluid">
+        <div class="span12">
+            <div>If you don't see the page below <a href="http://guest:guest@54.217.240.87/nagios/cgi-bin/status.cgi?hostgroup=all&style=detail" target="_blank">click here</a></div>
+            <iframe src="http://guest:guest@54.217.240.87/nagios/cgi-bin/status.cgi?hostgroup=all&style=detail" frameborder="0" style="width: 100%;min-height: 500px;height: 100%"></iframe>
+        </div>
+    </div>
+{% endblock %}

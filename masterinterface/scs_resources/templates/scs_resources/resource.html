@@ -1,0 +1,336 @@
+{% extends 'scs/base.html' %}
+
+{% load scs_extras %}
+
+{% if resource|is_active or request.user|can_manage:resource %}
+    {% block breadcrumbs %}
+        <div id="breadcrumbs-wrapper">
+            <ul id="breadcrumbs" class="breadcrumb">
+                <li><a href="/" title="Home">home</a><span class="divider">|</span></li>
+
+                <li><a href="/resources/" title="resources">resources</a><span class="divider">|</span></li>
+
+                <li class="active"><a href="/resources/{{ resource.global_id }}/" title="{{ resource.metadata.name }}">{{ resource.metadata.name }}</a></li>
+
+            </ul>
+        </div>
+    {% endblock %}
+{% endif %}
+    {%  block content %}
+        <div class="row-fluid">
+        {% if resource|is_active or request.user|can_manage:resource %}
+            <div id="alert-container"></div>
+            <div class="span7">
+                <div class="resource-title">
+                    <h2> {{ resource.metadata.name }}</h2>
+                    {% if request.user|can_read:resource %}
+                        <dl class="dl-horizontal">
+                            <dt>Rating:</dt>
+                            <dd><fieldset class="rating">
+                                <input  type="radio" id="star5" name="rating" value="5" class="rate"  {% if resource.metadata.rating >= 4.5 and resource.metadata.rating <= 5 %}checked{% endif %} /><label for="star5" title="Rocks!">5 stars</label>
+                                <input  type="radio" id="star4" name="rating" value="4" class="rate" {% if resource.metadata.rating >= 3.5 and resource.metadata.rating < 4.5 %}checked{% endif %} /><label for="star4" title="Pretty good">4 stars</label>
+                                <input  type="radio" id="star3" name="rating" value="3" class="rate" {% if resource.metadata.rating >= 2.5 and resource.metadata.rating < 3.5 %}checked{% endif %} /><label for="star3" title="Meh">3 stars</label>
+                                <input  type="radio" id="star2" name="rating" value="2" class="rate" {% if resource.metadata.rating >= 1.5 and resource.metadata.rating < 2.5 %}checked{% endif %} /><label for="star2" title="Kinda bad">2 stars</label>
+                                <input  type="radio" id="star1" name="rating" value="1" class="rate" {% if resource.metadata.rating >= 0 and resource.metadata.rating < 1.5 %}checked{% endif %} /><label for="star1" title="Sucks big time">1 star</label>
+                            </fieldset><span id="rate-message" class="hide badge badge-info">Thank you for your vote!</span></dd>
+                            <script type="application/javascript">
+                                (function() {
+                                    var global = this;
+                                    var $ = global.$;
+                                    var rateresource = global.rateresource = function(input){
+                                        var self = this;
+                                        var rate = input.val()
+                                        $.ajax('{{ BASE_URL }}/resources/{{ resource.global_id }}/rate/'+rate+'/', {
+                                            type: 'GET',
+                                            success: function() {
+                                                $('#rate-message').show();
+                                                return true;
+                                            },
+                                            error: function() { return true; }
+                                        });
+                                    };
+
+                                    $('.rate').click(function(e){
+
+                                        rateresource($(this));
+                                    });
+
+                                }).call(this);
+                            </script>
+                             <style>
+                                 .rating:not(:checked) > label {
+                                    cursor:pointer;
+                                }
+                                .rating:not(:checked) > label:hover,
+                                .rating:not(:checked) > label:hover ~ label {
+                                    color: gold;
+                                    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+                                }
+
+                                .rating > input:checked + label:hover,
+                                .rating > input:checked + label:hover ~ label,
+                                .rating > input:checked ~ label:hover,
+                                .rating > input:checked ~ label:hover ~ label,
+                                .rating > label:hover ~ input:checked ~ label {
+                                    color: #ea0;
+                                    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+                                }
+                                .rating > label:active {
+                                    position:relative;
+                                    top:2px;
+                                    left:2px;
+                                }
+                             </style>
+                        </dl>
+                    {% else %}
+                        <dl class="dl-horizontal">
+                            <dt>Rating:</dt>
+                            <dd><fieldset class="rating">
+                                <input disabled  type="radio" id="star5" name="rating" value="5"  {% if resource.metadata.rating >= 4.5 and resource.metadata.rating <= 5 %}checked{% endif %} /><label for="star5" title="Rocks!">5 stars</label>
+                                <input disabled type="radio" id="star4" name="rating" value="4"  {% if resource.metadata.rating >= 3.5 and resource.metadata.rating < 4.5 %}checked{% endif %} /><label for="star4" title="Pretty good">4 stars</label>
+                                <input disabled type="radio" id="star3" name="rating" value="3"  {% if resource.metadata.rating >= 2.5 and resource.metadata.rating < 3.5 %}checked{% endif %} /><label for="star3" title="Meh">3 stars</label>
+                                <input disabled type="radio" id="star2" name="rating" value="2"  {% if resource.metadata.rating >= 1.5 and resource.metadata.rating < 2.5 %}checked{% endif %} /><label for="star2" title="Kinda bad">2 stars</label>
+                                <input disabled type="radio" id="star1" name="rating" value="1"  {% if resource.metadata.rating >= 1.0 and resource.metadata.rating < 1.5 %}checked{% endif %} /><label for="star1" title="">1 star</label>
+                            </fieldset></dd>
+                        </dl>
+                    {% endif %}
+                    <dl class="dl-horizontal">
+                        <dt>Description</dt>
+                        <dd>{% autoescape off %}{{ resource.metadata.description|urlizetrunctarget:60000 }}{% endautoescape %}</dd>
+                    </dl>
+
+                </div>
+                <div class="resource-details">
+                    <dl class="dl-horizontal">
+                        <dt>Created:</dt>
+                        <dd>{{ resource.metadata.creationDate|strTodate|date:"DATETIME_FORMAT" }}</dd>
+                        <dt>Last update:</dt>
+                        <dd>{{ resource.metadata.updateDate|strTodate|date:"DATETIME_FORMAT" }}</dd>
+                        <dt>Status:</dt><dd>{% if resource|is_active %} published{% else %} not published{% endif %}</dd>
+                        {% if resource.metadata.format %}<dt>Format:</dt><dd>{{ resource.metadata.format }}</dd>{% endif %}
+                        {% if resource.metadata.semanticWebServiceType %}<dt>SWS type:</dt><dd>{{ resource.metadata.semanticWebServiceType }}</dd>{% endif %}
+                        <br/>
+                        {% if resource.metadata.relatedResources %}
+                            <dt>Related Resources:</dt>
+                            {% for related in resource.metadata.relatedResources %}<dd><a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a></dd>{% endfor %}
+                        {% endif %}
+                        <dt>Annotations:</dt>
+                            {% for annotation  in resource.metadata.semanticAnnotations.semanticConcept %}
+                                <dd><span class="label">{{ annotation.conceptURI }}</span></dd>
+                            {% empty %}
+                                <dd>This resource has not semantic annotations.</dd>
+                            {% endfor %}
+                        {% if resource.metadata.linkedTo %}
+                            <dt>Additional contents:</dt>
+                            {% for link in resource.metadata.linkedTo.link  %}
+                                <dd><a target="_blank" href="{{ link.linkURI }}">{{ link.linkType }}</a></dd>
+                            {% endfor %}
+                        {% endif  %}
+                    </dl>
+                </div>
+                <div id="endpointDetails" style="visibility: hidden;">
+                    <p style="margin-bottom: 10px;">Available endpoints:</p>
+                    <dl class="dl-horizontal">
+
+                    </dl>
+                </div>
+            </div>
+            <div class="span4">
+                <div class="resource-actions">
+                    <ul class="inline"><li><strong>Type:</strong></li><li><span class="label"><a target="_blank" href="/search/?search_text=*&amp;types={{ resource.metadata.type }},">{{ resource.metadata.type }}</a></span></li></ul>
+                    <ul class="inline"><li><strong>Views:</strong></li><li> {{ resource.metadata.views }}</li></ul>
+                    {% if resource.metadata.category %}
+                        <ul class="inline"><li><strong>Category:</strong></li><li><span class="label"><a target="_blank" href="/search/?search_text=*&amp;category={{ resource.metadata.category }},">{{ resource.metadata.category }}</a></span></li></ul>
+                    {% endif %}
+                    {% with  resource.metadata.tags|split:"," as tags%}
+                        <ul class="inline">
+                            <li><strong>Tags</strong></li>
+                            {% for tag in tags %}
+                                <li><span class="label"><a target="_blank" href="/search/?search_text=*&amp;tags={{ tag }},">{{ tag }}</a></span></li>
+                            {% endfor %}
+                        </ul>
+                    {% endwith %}
+                    <br /> <br />
+                    <p><strong>Licence:</strong></p>
+                    <ul class="inline">
+                        <li><span class="label">{{ resource.metadata.licence }}</span></li>
+                    </ul>
+                    {% if request.user.is_authenticated %}
+                    {% if request.user|can_read:resource%}
+                        {% if workflow and workflow.t2flow %}
+                            <form action="/workspace/create" enctype="multipart/form-data" method="get">
+                            {% csrf_token %}
+                            <input type="hidden" name="workflow_id" value="{{ workflow.id }}"/>
+                            <input type="submit" target="_blank"  class="btn btn-block btn-large btn-success" value="Configure to execute"/><br/>
+                            </form>
+                        {% endif %}
+                        {% if resource.metadata.type == "SemanticWebService" %}
+                                <script type="text/javascript" src="/static/jquery.zclip.min.js"></script>
+                                <script type="text/javascript">
+
+                                $(document).ready(function(){
+
+                                    $('a#copy-description').zclip({
+                                        path:'/static/ZeroClipboard.swf',
+                                        copy:$('div#copy').text(),
+                                        afterCopy:function(){
+                                            $('#copied-message').removeClass("invisible");
+                                            $(this).preventDefault();
+                                        }
+                                    });
+
+                                });
+                                </script>
+                            <a class="btn btn-block btn-large btn-success" id="copy-description" href="#copied">Copy endpoint to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span>
+                            <div id="copy" class="copy hide">{{ resource.metadata.semanticWebServiceURL }}</div>
+                        {% elif resource.metadata.type == "Dataset" %}
+                            {% if resource.metadata.sparqlEndpoint  %}
+                            \   <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.sparqlEndpoint }}%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                            {% else %}
+                                <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.localID }}/sparql%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                            {% endif %}
+                        {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
+                            <a  href="{{ BASE_URL }}/tools/#startInstance?applianceTypeId={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
+                        {% elif resource.metadata.type == "Workflow" %}
+                            {% if workflow.t2flow %}
+                                <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
+                                <a  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank" class="btn btn-block btn-large btn-success"><i class="icon-external-link"></i>Edit in Taverna Online</a>
+                                {% if workflow.xml %}
+                                    <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
+                                {% endif %}
+                            {% endif %}
+                        {% elif resource.metadata.type == "File"%}
+                            {% if resource.metadata.lobcderPath %}
+                                {% if resource.metadata.fileType == "File" %}
+                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}" class="btn btn-block btn-large btn-success">Go to file</a>
+                                {% else %}
+                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}/" class="btn btn-block btn-large btn-success">Go to folder</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+
+                    {% else %}
+                        {% if not resource.already_requested %}
+                        <a id="request-for-sharing-btn" href="#request-{{ resource.id }}" role="button" class="btn btn-block btn-large btn-warning" data-toggle="modal">Request for sharing</a>
+                        <!-- Modal -->
+                        <div id="request-{{ resource.id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h3 id="myModalLabel">Attach a message to your request</h3>
+                            </div>
+                            <form id="request-for-sharing-form" method="GET" action="/resources/request_for_sharing/">
+                                <div class="modal-body">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ resource.id }}" />
+                                    <inpu type="hidden"/>
+                                    <textarea style="width: 80%;" rows="3" name="message"></textarea>
+                                    {% if resource.metadata.relatedResources  and resource.metadata.type == 'Workflow'%}
+                                    <hr/>
+                                    <span>To execute properly the workflow you requested needs to execute/access other resources: an automatic request for sharing will be sent to those other resources. Please be aware that until all requests have been approved the workflow might not behave correctly.</span>
+                                    <ul>
+                                        {% for related in resource.metadata.relatedResources %}
+                                            <li>
+                                                <a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a>
+                                                <input type="hidden" name="relatedResources" value="{{ related.0 }}"/>
+                                            </li>
+
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                    <button id="request-for-sharing-btn"  aria-hidden="true"  data-dismiss="modal" class="btn btn-primary" onclick="request_for_sharing();">Send request</button>
+                                </div>
+                            </form>
+                        </div>
+                        {% else %}
+                            <button id="request-for-sharing-btn" class="btn btn-block btn-large btn-warning disabled">You have already requested this resource</button>
+                        {% endif %}
+                    {% endif %}
+                    {% else %}
+                        <button class="btn btn-block btn-large btn-danger" onclick="$('#login').popover('show');">Please login to access to this resource</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
+            <script type="text/javascript">
+
+                function request_for_sharing(){
+                    $("#request-for-sharing-btn").button('loading');
+                    var form = $("#request-for-sharing-form");
+                    var url = $(form).attr( "action" );
+                    var method = $(form).attr("method") || "get"; // default method get
+                    var data = $(form).find(":input").serializeArray();
+
+                    $.ajax({
+                            dataType: "json",
+                            type: method,
+                            url: url,
+                            data: data,
+                            success: RequestForSharingAjaxResponseHandler,
+                            error: RequestForSharingAjaxResponseHandler
+                        }
+                    );
+
+                    $('#new-role').popover('hide');
+                }
+
+                function RequestForSharingAjaxResponseHandler(responseText, statusText, xhr, jqform){
+                    $("#alert-container").empty();
+                    $("<div/>", {
+                      "class": "alert fade in " +responseText.alertclass,
+                      html: "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button><strong>"+responseText.status+"</strong>   " + responseText.message
+                    })
+                    .alert()
+                    .fadeIn()
+                    .delay(3000)
+                    .fadeOut(1000, function(){
+                            $(this).find('#modal-message').text('');
+                    })
+                    .appendTo("#alert-container");
+                    $("#request-for-sharing-btn").unbind('click');
+                    $("#request-for-sharing-btn").addClass('disabled').bind('onclick',function(){return true;}).text('Request sent.');
+                }
+
+                $(function() {
+                    if('{{ resource.metadata.type }}' == 'AtomicService' && $.cookie('vph-tkt') != null) {
+                        $.ajax({
+                            url: '{{ cloudFacadeUrl }}/port_mapping_templates?appliance_type_id={{ resource.metadata.local_id }}',
+                            dataType: 'json',
+                            headers: {'MI-TICKET': $.cookie('vph-tkt')},
+                            success: function(response) {
+                                $.each(response.port_mapping_templates, function(index, value) {
+                                    $.ajax({
+                                        url: '{{ cloudFacadeUrl }}/endpoints?port_mapping_template_id=' + value.id,
+                                        dayaType: 'json',
+                                        headers: {'MI-TICKET': $.cookie('vph-tkt')},
+                                        success: function(response) {
+                                            $.each(response.endpoints, function(index, value) {
+                                                $('#endpointDetails').css('visibility', 'visible');
+                                                $('#endpointDetails').append('<dt><a href="{{ cloudFacadeUrl }}/endpoints/' + value.id + '/descriptor">' + value.name + '</a></dt>');
+                                                $('#endpointDetails').append('<dd>' + value.description + '</dd>');
+                                            });
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                        $('#endpointDetails dl').append('<dt><a href="#">Dummy endpoint</a></dt>');
+                        $('#endpointDetails dl').append('<dd>Endpoint description</dd>');
+                        $('#endpointDetails dl').append('<dt><a href="#">Another endpoint</a></dt>');
+                        $('#endpointDetails dl').append('<dd>Another endpoint description</dd>');
+                        $('#endpointDetails').css('visibility', 'visible');
+                    }
+                });
+            </script>
+        {% else %}
+            <div class="row"><div class="span6"><h3>Resource doesn't available</h3>
+            <h6 style="color: black;">
+                The owner has not published this resource yet.<br/>
+            </h6>
+        </div>
+        {% endif %}
+        </div>
+    {% endblock %}

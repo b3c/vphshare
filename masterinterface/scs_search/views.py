@@ -50,11 +50,12 @@ def advance_search_view(request):
         load_groups = simplejson.loads(groups_query)
 
         ####### Save History #######
-        query_obj = Query(name=name, query=groups_query)
-        query_obj.save()
-        query_obj.user.add(user)
+        if user.is_authenticated():
+            query_obj = Query(name=name, query=groups_query)
+            query_obj.save()
+            query_obj.user.add(user)
 
-        results = complex_query_connector(load_groups)
+        results = complex_query_connector(load_groups, request.user)
         breadcrum[0] = 1
     elif request.GET.get('id', None) is not None:
 
@@ -64,14 +65,15 @@ def advance_search_view(request):
 
         ####### Save History #######
         query_obj = Query.objects.get(id=id)
-        if not query_obj.saved:
-            query_obj.name = name
-        query_obj.query = groups_query
-        query_obj.date = datetime.utcnow()
-        query_obj.save()
-        query_obj.user.add(user)
+        if user.is_authenticated():
+            if not query_obj.saved:
+                query_obj.name = name
+            query_obj.query = groups_query
+            query_obj.date = datetime.utcnow()
+            query_obj.save()
+            query_obj.user.add(user)
 
-        results = complex_query_connector(load_groups)
+        results = complex_query_connector(load_groups, request.user)
         breadcrum[0] = 1
 
     return render_to_response('scs_search/scs_search.html',
@@ -91,7 +93,7 @@ def class_search_view(request):
 
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
-        allConcepts = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1')['1']
+        allConcepts = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
     else:
 
         return HttpResponseRedirect(reverse('automaticSearch'))
@@ -100,6 +102,21 @@ def class_search_view(request):
                               {'search': 'guided', 'results': allConcepts, 'dataset': dataset, 'datasetLabel': datasetLabel,
                                'class': '', 'breadcrum': [1, 1, 0], 'classLabel': ''},
                               RequestContext(request))
+
+def class_search_view_service(request):
+    """
+        Guided Search view
+    """
+    dataset = ''
+    datasetLabel = ''
+
+    if request.GET.get('dataset', None) is not None:
+
+        dataset = unquote(request.GET['dataset'])
+        datasetLabel = unquote(request.GET['datasetLabel'])
+        allConcepts = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
+
+        return HttpResponse(content=json.dumps(allConcepts), content_type='application/json')
 
 
 def annotation_search_view(request):
@@ -117,13 +134,19 @@ def annotation_search_view(request):
 
         groups_query = unquote(request.GET['groups_query'])
         load_groups = simplejson.loads(groups_query)
+        dataset = unquote(request.GET['dataset'])
+        datasetLabel = unquote(request.GET['datasetLabel'])
+        conceptClass = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
 
+        import re
+        r = re.compile('sparqlEndpoint=(.*?)&')
+        endpoint_url = r.search(dataset)
         ####### Save History #######
         query_obj = Query(name=name, query=groups_query)
         query_obj.save()
         query_obj.user.add(user)
-
-        results = complex_query_connector(load_groups)
+        query_sparql = json2sparql(load_groups)
+        results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', ''))
     elif request.GET.get('id', None) is not None:
 
         query_obj = Query.objects.get(id=request.GET['id'])
@@ -139,17 +162,54 @@ def annotation_search_view(request):
         query_obj.save()
         query_obj.user.add(user)
 
-        results = complex_query_connector(load_groups)
+        results = complex_query_connector(load_groups, request.user)
     if request.GET.get('dataset', None) is not None:
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
-        conceptClass = unquote(request.GET['conceptClass'])
-        conceptClassLabel = unquote(request.GET['conceptLabel'])
-        #annotations = annotation_search_connector(None, dataset, conceptClass, num_max_hits='200', page_num='10')
+        conceptClass = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
+        #conceptClass = unquote(request.GET['conceptClass'])
+        #conceptClassLabel = unquote(request.GET['conceptLabel'])
+        #annotations = annotation_search_connector(None, dataset, conceptClass, conceptClassLabel, num_max_hits='200', page_num='1')
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
-                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'classLabel': conceptClassLabel},
+                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'classLabel': conceptLabel, 'conceptClass': conceptClass},
+                              RequestContext(request))
+
+def annotation_search_view_results(request):
+    """
+        annotation Search view
+    """
+    dataset = ''
+    datasetLabel = ''
+    conceptClass = ''
+    conceptLabel = ''
+    user = request.user
+    name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
+    results = ''
+    if request.GET.get('groups_query', None) is not None:
+
+        groups_query = unquote(request.GET['groups_query'])
+        load_groups = simplejson.loads(groups_query)
+        dataset = unquote(request.GET['dataset'])
+        datasetLabel = unquote(request.GET['datasetLabel'])
+        conceptClass = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
+
+        import re
+        r = re.compile('sparqlEndpoint=(.*?)&')
+        endpoint_url = r.search(dataset)
+        ####### Save History #######
+        if request.user.is_authenticated():
+            query_obj = Query(name=name, query=groups_query)
+            query_obj.save()
+            query_obj.user.add(user)
+
+        query_sparql = json2sparql(load_groups)
+        results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', ''))
+
+    return render_to_response('scs_search/scs_search.html',
+                              {'search': 'complex', 'queryresults': results, 'dataset': dataset, 'datasetLabel': datasetLabel
+                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'load_groups': json.dumps(groups_query) , 'conceptClass':conceptClass},
                               RequestContext(request))
 
 
@@ -245,13 +305,14 @@ def complex_query_service(request):
                     query_obj.name = name
                 query_obj.query = groups_query
                 query_obj.date = datetime.utcnow()
-            query_obj.save()
-            query_obj.user.add(user)
+            if user.is_authenticated():
+                query_obj.save()
+                query_obj.user.add(user)
         except Exception, e:
             pass
             ############################
 
-        connector = json.dumps(complex_query_connector(load_groups), sort_keys=False)
+        connector = json.dumps(complex_query_connector(load_groups,request.user), sort_keys=False)
 
         response = HttpResponse(content=connector,
                                 content_type='application/json ')

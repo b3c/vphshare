@@ -29,7 +29,8 @@
 
                         {% for type in types %}
                             {% if type != 'Other' %}
-                            <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">{{ type }}
+                            <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">
+                                {% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}
                                 <span class="pull-right {% if type in search.type %} icon-ok {% endif %}"></span></a></li>
                             {% endif %}
                         {% endfor %}
@@ -44,12 +45,12 @@
         </div>
     </div>
     {% if results != None %}
-    <div class="row row-contet" style="min-height: 566px;">
+    <div class="row-contet row-fluid" style="min-height: 566px;">
         <div class="span9 left-list search-list">
             <div class="popover-list ">
                 <div class="popover-content">
                     {% for type in search.type %}
-                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{{ type }}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
+                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
                     {% endfor %}
                     {% for category in search.categories %}
                         <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >Category: {{ category }}</div><div data-value="{{ category }}" data-field="categories" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
@@ -81,14 +82,14 @@
                         {% else %}
                             <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
                         {% endif %}
-                        <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {{ result.type }}</p>
+                        <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {% if result.type == "AtomicService" %}Application{% elif result.type == "SemanticWebService" %}Semantic web service{% else %}{{ result.type }}{% endif %}</p>
                     </div>
                 </div>
                 {% endif %}
             {% endfor %}
-            <div class="popover-list loading">
+            <div id="loading-wait" class="popover-list loading hide" style="position: relative">
                 <div  class="popover-content">
-                    <div id="loading-message" class="hide"><span><b> Loading results </b><div class="wait-img"></div></span></div>
+
                 </div>
             </div>
         </div>
@@ -187,7 +188,7 @@
                 this.$min = 20;
                 this.$max = 40;
                 this.$numResults = {{ numResults }};
-                this.$pages = {{ pages }};
+                this.$pages = true;
                 this.$page = 1;
                 this.$loadingBox = $('.loading');
                 this.$rigthList = $('.rigth-list');
@@ -211,10 +212,10 @@
                 $('.remove-tag').click(function(e){self.removeTag(e,$(this).data('value'),$(this).data('field'));});
                 $('.filter').click(function(e){self.filter($(this),$(this).data('value'));});
                 $(window).scroll(function() {
-                    if($(window).scrollTop() + $(window).height() >= self.$loadingBox.position().top+300 && self.$atomic == false && self.$page < self.$pages) {
+                    if($(window).scrollTop() + $(window).height() >= self.$loadingBox.position().top+300 && self.$atomic == false && self.$pages ) {
                         self.$page = self.$page+1;
                         self.$atomic = true;
-                        $('#loading-message').show();
+                        $('#loading-wait').show();
                         self.loading();
                     }
                 });
@@ -246,13 +247,15 @@
 
             SearchController.prototype.loadingCallBack = function(data,self){
 
+                if (data['data'].trim() == "")
+                    self.$pages = false;
                 $(data['data']).insertBefore(self.$loadingBox);
                 self.$numResults = parseInt(data['numResults']);
                 $('#numResults').text(self.$numResults);
                 for (var type in data['countType']) {
                     $('#count-'+type).text(data['countType'][type]);
                 }
-                self.$loadingBox.find('#loading-message').hide();
+                self.$loadingBox.hide();
                 self.$atomic = false;
 
             };
@@ -284,7 +287,7 @@
                 self.$min = 0;
                 self.$max = 20;
                 self.$atomic = true;
-                $('#loading-message').show();
+                $('#loading-wait').show();
                 this.loading();
             };
 

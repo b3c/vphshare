@@ -3,7 +3,7 @@ from auth import authenticate
 import binascii
 
 
-class masterInterfaceMiddleware:
+class masterInterfaceMiddleware(object):
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         """
@@ -21,19 +21,22 @@ class masterInterfaceMiddleware:
                 except:
                     logout(request)
                     request.META['VPH_TKT_COOKIE'] = True
+                    request.ticket = None
                     return
 
                 if user is None:
                     logout(request)
                     request.META['VPH_TKT_COOKIE'] = True
+                    request.ticket = None
                     return
-
+                request.ticket = tkt64
                 request.META['VPH_TKT_COOKIE'] = tkt64
 
             else:
 
                 if request.user.is_authenticated() and not request.user.username == 'admin':
                     logout(request)
+                    request.ticket = None
                     request.META['VPH_TKT_COOKIE'] = True
                     return
 

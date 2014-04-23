@@ -8,9 +8,11 @@ from masterinterface.scs.utils import get_file_data
 from masterinterface.scs_resources.models import Workflow
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 import json
 
 
+@login_required
 def workspace(request):
 
     executions = TavernaExecution.objects.filter(owner=request.user, ticket=request.COOKIES.get('vph-tkt')).order_by('-creation_datetime')
@@ -21,7 +23,7 @@ def workspace(request):
         RequestContext(request)
     )
 
-
+@login_required
 def create(request):
     if request.method == 'POST' and request.POST.get('workflowId',None):
         form = TavernaExecutionForm()
@@ -66,7 +68,8 @@ def startExecution(request):
             taverna_execution.start(request.COOKIES.get('vph-tkt'))
             return HttpResponse(content=json.dumps(True))
     except Exception, e:
-        print e
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         pass
     return HttpResponse(status=403)
 

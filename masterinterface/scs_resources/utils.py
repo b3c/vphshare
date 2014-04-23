@@ -15,12 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 
 def get_resource_local_roles(resource=None):
 
-    # TODO HACK! role list is now static :-(
-
-    if resource is not None and resource.metadata['type'] and resource.metadata['type'].lower().replace(" ", "") == 'atomicservice':
-        return Role.objects.filter(name__in=['Manager', 'Developer', 'Invoker'])
-    else:
-        return Role.objects.filter(name__in=['Reader', 'Editor', 'Manager'])
+    return Role.objects.filter(name__in=['Reader', 'Editor', 'Manager'])
 
 
 def get_resource_global_group_name(resource, local_role_name='read'):
@@ -166,9 +161,33 @@ def susheel_random(digits):
 def get_random_citation_link():
     return "".join(['doi:', susheel_random(2), '.', susheel_random(5), '/SHAR', susheel_random(2),'.', susheel_random(4), '.', susheel_random(2)])
 
+def get_readable_resources(user):
+    role_relations = PrincipalRoleRelation.objects.filter(
+        Q(user=user) | Q(group__in=user.groups.all()) | Q(user=None, group=None),
+        role__name__in=['Reader', 'Editor', 'Manager']
+    ).exclude( content_id=None, content_type=None)
+    managed_resources = []
+    for r in role_relations:
+        if r.content is not None and r.content not in managed_resources:
+            if PrincipalRoleRelation.objects.filter(Q(user=user), role__name='Owner', content_id= r.content_id).count() == 0:
+                managed_resources.append(r.content)
+
+    return managed_resources
+
+def get_editable_resources(user):
+    role_relations = PrincipalRoleRelation.objects.filter(
+        Q(user=user) | Q(group__in=user.groups.all()),
+        role__name__in=['Editor', 'Manager']
+    ).exclude( content_id=None, content_type=None)
+    managed_resources = []
+    for r in role_relations:
+        if r.content is not None and r.content not in managed_resources:
+            if PrincipalRoleRelation.objects.filter(Q(user=user), role__name='Owner', content_id= r.content_id).count() == 0:
+                managed_resources.append(r.content)
+
+    return managed_resources
 
 def get_managed_resources(user):
-    #TODO check all groups hiteracy
     role_relations = PrincipalRoleRelation.objects.filter(
         Q(user=user) | Q(group__in=user.groups.all()),
         role__name__in=['Manager']
@@ -194,28 +213,53 @@ def alert_user_by_email(mail_from, mail_to, subject, mail_template, dictionary={
     msg.content_subtype = "html"
     msg.send()
 
-
-def grant_permission(name, resource, role):
-    try:
-        principal = User.objects.get(username=name)
-    except ObjectDoesNotExist, e:
-        principal = Group.objects.get(name=name)
-
-    if resource.metadata['type'] == 'Dataset':
+#TODO create the complementary method revoke_permision.
+def grant_permission(name, resource, role, ticket=None):
+    if name is not None:
         try:
-        # look for a group with the dataset name
-            group_name = get_resource_global_group_name(resource, role)
-            group = Group.objects.get(name=group_name)
-            if type(principal) is User:
-                group.user_set.add(principal)
-            group.save()
-
+            principal = User.objects.get(username=name)
         except ObjectDoesNotExist, e:
-            # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-            #add_role(principal, global_role)
-            pass
+            principal = Group.objects.get(name=name)
 
-            # grant local role to the user
+        if resource.metadata['type'] == 'Dataset':
+            try:
+            # look for a group with the dataset name
+                group_name = get_resource_global_group_name(resource, role.name)
+                group = Group.objects.get(name=group_name)
+                if type(principal) is User:
+                    group.user_set.add(principal)
+                group.save()
+
+            except ObjectDoesNotExist, e:
+                # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
+                #add_role(principal, global_role)
+                pass
+
+                # grant local role to the user
+    else:
+        principal = None
+
+    #set the role for files in lobcder repository
+    if resource.metadata['type'] == 'File':
+        import requests
+        import xmltodict
+        from django.conf import settings
+        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket)).text)
+        file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
+        if principal is None:
+            # set the role to all users, vph is the default group for all users in vph-share
+            name = 'vph'
+        if settings.DEBUG:
+            name = name+"_dev"
+        if permissions['permissions'].get(file_permissions_match[role.name], None) is None:
+            permissions['permissions'][file_permissions_match[role.name]] = [name]
+        elif isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
+            permissions['permissions'][file_permissions_match[role.name]] += [name]
+        else:
+            permissions['permissions'][file_permissions_match[role.name]] = [permissions['permissions'][file_permissions_match[role.name]], name]
+
+        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), data=xmltodict.unparse(permissions))
+    #end lobcder repository update
 
     add_local_role(resource, principal, role)
 

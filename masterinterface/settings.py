@@ -133,7 +133,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
-    'paraviewweb.middleware.paraviewWebMiddleware'
+    'paraviewweb.middleware.paraviewWebMiddleware',
+    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
+    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -221,23 +223,44 @@ PASSWORD_HASHERS = (
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
+    'handlers': {
+        'sentry': {
             'level': 'ERROR',
-            'propagate': True,
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
-        'cyfronet': {
-            'level': 'DEBUG'
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         }
-    }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
 }
 
 LOGIN_URL = '/login/'
@@ -270,10 +293,8 @@ TICKET = SignedTicket(MOD_AUTH_PUBTICKET,MOD_AUTH_PRIVTICKET)
 #TICKET =  Ticket(SECRET_KEY)
 
 #LOBCDER settings
-LOBCDER_HOST = '149.156.10.138'
-LOBCDER_PORT = 8080
+LOBCDER_HOST = 'lobcder.vph.cyfronet.pl'
 LOBCDER_ROOT = '/lobcder/dav'
-LOBCDER_REST = 'http://' + LOBCDER_HOST + ":" + str(LOBCDER_PORT) + "/lobcder/rest"
 
 LOBCDER_WEBDAV_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/dav'
 LOBCDER_WEBDAV_HREF = '/lobcder/dav'
@@ -284,7 +305,7 @@ LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
 PARAVIEW_HOST = '46.105.98.182:9000'
 
 #METADATA SERVICE URL
-ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-retrieval/rest/metadata'
+ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-extended'
 METADATA_TYPE = ['Dataset', 'File', 'SemanticWebService', 'Workflow', 'AtomicService', 'Workspace']
 
 #WORKFLOW MANAGER URL
@@ -301,6 +322,20 @@ PARAVIEWWEB_PORT = 5000
 BROKER_URL = 'django://develop'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_DISABLE_RATE_LIMITS = True
+
+
+#CACHE CONFIGS
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'sharecache',
+    }
+}
+
+#SENTRY AND RAVEN CONFIGS
+RAVEN_CONFIG = {
+    'dsn': 'http://2d9a99aec6be407cb4fff11ec2fdf236:86c4c065a476469b9dbf57744e21254a@sentry.vph-share.eu/2',
+}
 ##################
 # LOCAL SETTINGS #
 ##################

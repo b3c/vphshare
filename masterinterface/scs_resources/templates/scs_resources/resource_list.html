@@ -1,0 +1,95 @@
+{% load scs_extras %}
+{% if type == 'workflow'  and page == 1 and user.is_authenticated %}
+    <style>
+        .workflow-header>li>a:hover, .workflow-header>li>a:focus {
+            color: #fff;!important;
+            background-color: #04c; !important;
+        }
+    </style>
+    <ul class="nav nav-pills workflow-header">
+
+        <li style="float: right;margin-left: 10px;" >
+            <a class="btn btn-primary" style="color:#ffffff;"  target="_blank" class="btn btn-primary" href="http://onlinehpc.com/wizard/workflow/">Taverna Online</a>
+        </li>
+        <li style="float: right;margin-left: 10px;" >
+            <a class="btn btn-primary" style="color:#ffffff;"  class="btn btn-primary" href="/workflows/new/">Upload new workflow</a>
+        </li>
+    </ul>
+{% endif %}
+{% if resources|length == 0  and 'dashboard' in request.path and page == 1%}
+    <div class="alert alert-info">
+        <span> you don't have {{ type }} yet.</span>
+    </div>
+{% endif %}
+{%for resource in resources%}
+        {% if resource.metadata.type in types %}
+            {% if resource|is_active or user|can_manage:resource%}
+                <div id="{{ resource.id }}"  class="resource well well-small">
+                <div class="row">
+                    <div  class="span3">
+                        {{ resource.metadata.name }}
+                    </div>
+                    <div class="span5">
+                        Owner: {{ resource.metadata.author }} | Updated: {{ resource.metadata.metadataUpdateDate|strTodate|date:"SHORT_DATE_FORMAT" }}
+                    </div>
+
+                    <div class="span3">
+                        <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
+                        {% if user|can_edit:resource %}
+                        <a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
+                            {% if resource.metadata.type == "Workflow"%}
+                                <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
+                                   <i class="icon-edit"></i> T.O.
+                                </a>
+                            {% endif%}
+                        {% endif %}
+                        <a id="details-button" class="btn btn-warning  accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ resource.id }}-details">
+                            <i class="icon-reorder"></i>
+                        </a>
+                        {% if user|can_manage:resource %}
+                            {% if resource.requests and resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div id="{{ resource.id }}-details" class="accordion-body collapse {% if resource.global_id in collapse %}in{% endif %}">
+                    <ul class="nav nav-tabs" id="details-tab">
+                        <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
+                            <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
+                        </li>
+                        {% if user|can_manage:resource %}
+                        <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
+                            <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
+                        </li>
+                        {% endif %}
+                        <script>
+                            $(function(){
+                                $('#{{ resource.id }}-details > ul > li').each(function(index, element) {
+                                    new LoadDashboard(element);
+                                });
+                                var start = true;
+                                $('#{{ resource.id }}-details').on('shown', function(){
+                                    if (start)
+                                        $('#{{ resource.id }}-details > ul > li').first().click();
+                                    start = false;
+                                })
+                            });
+                        </script>
+                    </ul>
+                    <div class="tab-content">
+                    <div class="alert hide">
+                        <span id="modal-message"></span>
+                    </div>
+                        <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
+                        &nbsp
+                        </div>
+                        {% if user|can_manage:resource %}
+                        <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
+                        &nbsp
+                        </div> <!-- end tabpane2 -->
+                        {% endif %}
+                    </div><!-- end tabcontent -->
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endfor %}

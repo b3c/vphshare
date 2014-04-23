@@ -1,26 +1,18 @@
 # Create your views here.
+import logging
+import json
+import os
+
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.shortcuts import redirect
 from django.http import HttpResponse
-from django.forms.util import ErrorList
+from raven.contrib.django.raven_compat.models import client
+
 from masterinterface import settings
-from forms import LobcderUpload
-from forms import LobcderDelete
-from forms import LobcderCreateDirectory
 import easywebdav
-from lobcder import lobcderEntries
-from lobcder import updateMetadata
-from lobcder import lobcderQuery
-from lobcder import LobcderException
-import mimetypes
-from StringIO import StringIO
-import logging
-import json
-import os
-import cloudfacade
+
 
 log = logging.getLogger('cyfronet')
 
@@ -46,8 +38,8 @@ def retriveVtk(request):
         if not path:
             path = '/'
         try:
-            webdav = easywebdav.connect(settings.LOBCDER_HOST, settings.LOBCDER_PORT, username='user',
-                                        password=request.COOKIES.get('vph-tkt', 'No ticket')
+            webdav = easywebdav.connect(settings.LOBCDER_HOST, username='user',
+                                        password=request.COOKIES.get('vph-tkt', 'No ticket'), protocol='http'
                                         )
             fileName = path.split('/')[-1]
             fileToDownload = os.path.join(settings.LOBCDER_DOWNLOAD_DIR, fileName)
@@ -66,6 +58,7 @@ def retriveVtk(request):
             return response
 
         except Exception, e:
+            client.captureException()
             response = HttpResponse(status=500)
             response._is_string = True
 

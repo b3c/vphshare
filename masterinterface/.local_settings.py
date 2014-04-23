@@ -1,4 +1,3 @@
-
 DEBUG = True
 
 DATABASES = {
@@ -29,3 +28,5 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'raven.contrib.django.raven_compat',
 )
 
+
+ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-extended-test'

@@ -67,7 +67,7 @@ app.config.update(
     DEBUG=True,
     SECRET_KEY='09b63a0aa787db09b73c675b1e04224a',
     TIME_OUT=12 * 60 * 60,  # 12h
-    MASTERINTERFACE_VALIDATE_TKT_SERVICE="https://devel.vph-share.eu/validatetkt/?ticket=%s"
+    MASTERINTERFACE_VALIDATE_TKT_SERVICE="https://portal.vph-share.eu/validatetkt/?ticket=%s"
 )
 
 #TICKET = Ticket(app.config['SECRET_KEY'])
@@ -247,6 +247,7 @@ def login():
                         response = app.make_response(render_template('index.html'))
 
                     response.set_cookie('bt-tkt', ticket_b64, domain='.biomedtown.org')
+                    response.set_cookie('bt-tkt', ticket_b64, domain='.vph-share.eu')
 
                     return response
 

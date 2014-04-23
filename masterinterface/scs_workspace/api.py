@@ -1,4 +1,4 @@
-__author__ = 'Alfredo Saglimbeni'
+__author__ = 'Alfredo Saglimbeni, Ernesto Coto'
 import base64
 from django.db.models import Q
 from permissions.models import PrincipalRoleRelation
@@ -10,6 +10,7 @@ from masterinterface.scs_resources.models import Workflow
 from masterinterface.scs_workspace.models import TavernaExecution
 from masterinterface.scs_workspace.forms import TavernaExecutionForm
 from masterinterface.scs.utils import get_file_data
+from raven.contrib.django.raven_compat.models import client
 from piston.utils import rc
 
 class workflows_api(BaseHandler):
@@ -39,6 +40,7 @@ class workflows_api(BaseHandler):
                     return workflow.global_id
             return rc.BAD_REQUEST
         except Exception, e:
+            client.captureException()
             return rc.INTERNAL_ERROR
 
     def update(self, request, global_id=None, *args, **kwargs):
@@ -56,7 +58,7 @@ class workflows_api(BaseHandler):
                 dbWorkflow = Workflow.objects.get(global_id=global_id)
             else:
                 return rc.BAD_REQUEST
-            if dbWorkflow.owner != user:
+            if not dbWorkflow.resource_ptr.can_edit(user):
                 response = HttpResponse(status=403)
                 response._is_string = True
                 return response
@@ -72,6 +74,7 @@ class workflows_api(BaseHandler):
                     return rc.CREATED
             return rc.BAD_REQUEST
         except Exception, e:
+            client.captureException()
             return rc.INTERNAL_ERROR
 
     def delete(self, request, global_id=None, *args, **kwargs):
@@ -89,13 +92,14 @@ class workflows_api(BaseHandler):
                 dbWorkflow = Workflow.objects.get(global_id=global_id)
             else:
                 return rc.BAD_REQUEST
-            if dbWorkflow.owner != user:
+            if not dbWorkflow.resource_ptr.can_edit(user):
                 return rc.FORBIDDEN
             if request.method == 'DELETE':
                 dbWorkflow.delete()
                 return rc.DELETED
             return rc.BAD_REQUEST
         except Exception, e:
+            client.captureException()
             return rc.INTERNAL_ERROR
 
     def read(self, request, global_id=None):
@@ -129,7 +133,7 @@ class workflows_api(BaseHandler):
                     workflow = Workflow.objects.get(global_id=global_id)
                 except:
                     return rc.NOT_FOUND
-                if user is not None and PrincipalRoleRelation.objects.filter( Q(user=user) | Q(group__in=user.groups.all()), content_id=workflow.resource_ptr.id ).count() > 0:
+                if user is not None and workflow.resource_ptr.can_read(user):
                     t2flow = inputDefinition = ''
                     if workflow.t2flow:
                         t2flow = workflow.t2flow.read()
@@ -144,10 +148,10 @@ class workflows_api(BaseHandler):
                     response._is_string = True
                     return response
             else:
-                workflows = Workflow.objects.all()
+                workflows = Workflow.objects.all(metadata=True)
                 results = []
                 for workflow in workflows:
-                    if user is not None and PrincipalRoleRelation.objects.filter( Q(user=user) | Q(group__in=user.groups.all()), content_id=workflow.resource_ptr.id ).count() > 0:
+                    if user is not None and workflow.resource_ptr.can_read(user):
                         t2flow = inputDefinition = ''
                         if workflow.t2flow:
                             t2flow = workflow.t2flow.read()
@@ -162,6 +166,7 @@ class workflows_api(BaseHandler):
         except Exception, e:
             response = HttpResponse(status=500)
             response._is_string = True
+            client.captureException()
             return response
 
 class WfMngApiHandler(BaseHandler):
@@ -185,13 +190,13 @@ class WfMngApiHandler(BaseHandler):
                 try:
                     user, tkt64 = authenticate(ticket=ticket, cip=client_address)
                 except Exception, e:
-                    pass #return rc.FORBIDDEN
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
             if request.method == 'POST':
                 global_id = request.POST.get('global_id', None)
-                if global_id and Workflow.objects.get(global_id=global_id):
-                    return rc.BAD_REQUEST
+                if global_id and Workflow.objects.filter(global_id=global_id).count() == 0:
+                    return rc.NOT_FOUND
 
                 workflow = Workflow.objects.get(global_id=global_id)
                 form = TavernaExecutionForm()
@@ -207,7 +212,7 @@ class WfMngApiHandler(BaseHandler):
                 taverna_execution.executionstatus = 0
                 ## only for test mode
                 taverna_execution.url = ''
-                taverna_execution.taverna_atomic_id = 223
+                taverna_execution.taverna_atomic_id = 245
                 ####
                 taverna_execution.save()
 
@@ -215,9 +220,9 @@ class WfMngApiHandler(BaseHandler):
                     taverna_execution.start(ticket)
                     #return eid
                     return taverna_execution.id
-                return rc.INTERNAL_ERROR
+                return rc.BAD_REQUEST
         except Exception, e:
-            print e
+            client.captureException()
             return rc.INTERNAL_ERROR
 
 
@@ -248,7 +253,7 @@ class WfMngApiHandler(BaseHandler):
                 return results
             return rc.BAD_REQUEST
         except Exception, e:
-            print e
+            client.captureException()
             return rc.INTERNAL_ERROR
 
 
@@ -270,11 +275,11 @@ class WfMngApiHandler(BaseHandler):
                     pass #return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
-            if request.method == 'POST' and request.POST.get('eid', None):
+            if wfrun_id is not None:                
                 taverna_execution = TavernaExecution.objects.get(pk=wfrun_id, ticket=ticket)
                 if taverna_execution.delete(ticket = ticket):
                     return True
             return rc.BAD_REQUEST
         except Exception, e:
-            print e
+            client.captureException()
             return rc.INTERNAL_ERROR

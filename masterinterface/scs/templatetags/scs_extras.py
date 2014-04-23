@@ -5,6 +5,7 @@ from permissions.models import PrincipalRoleRelation
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
 from django.utils.html import urlize as urlize_impl
+from permissions.utils import get_roles
 # get a register Library instance
 register = template.Library()
 
@@ -58,24 +59,29 @@ def keyvalue(dict, key):
         return dict[key]
     return '0'
 
+@register.filter
+def user_has_role(user, role):
+    return role in get_roles(user)
 
+@register.filter
 def can_read(user, resource):
-    # TODO check permissions rather than roles!
-    # if resource.__class__.__name__ == "Resource":
-    #     return has_permission(resource, user, 'can_read_resource')
-    # else:
-    #     parent = resource.resource_ptr
-    #     return has_permission(parent, user, 'can_read_resource')
+    return resource.can_read(user)
 
-    role_relations = PrincipalRoleRelation.objects.filter(
-        Q(user=user) | Q(group__in=user.groups.all()),
-        content_id=resource.id
-    )
+@register.filter
+def can_edit(user, resource):
+    return resource.can_edit(user)
 
-    if role_relations.count() > 0:
-        return True
+@register.filter
+def can_manage(user, resource):
+    return resource.can_manage(user)
 
-    return False
+@register.filter
+def is_public(resource):
+    return resource.is_public()
+
+@register.filter
+def is_active(resource):
+    return resource.is_active()
 
 @register.filter(is_safe=True, needs_autoescape=True)
 @stringfilter
@@ -95,4 +101,4 @@ register.filter('breadcrumbs', breadcrumbs)
 register.filter('basepath', basepath)
 register.filter('split', split)
 register.filter('strTodate', strTodate)
-register.filter('can_read',can_read)
+

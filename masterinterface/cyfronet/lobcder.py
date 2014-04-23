@@ -38,7 +38,7 @@ class LobcderEntry:
 
 
 def getMetadata(path, ticket):
-    response = requests.get(settings.LOBCDER_REST + '/items/query?path=' + path, auth = ('user', ticket))
+    response = requests.get(settings.LOBCDER_REST_URL + '/items/query?path=' + path, auth = ('user', ticket))
     return response.content
 
 def fillInMetadata(entry, metadata):
@@ -102,11 +102,11 @@ def updateMetadata(uid, owner, read, write, driSupervised, ticket):
             perms.append(wElement)
     requestBody = xml.tostring(perms, pretty_print = True)
     headers = {'content-type': 'application/xml'}
-    response = requests.put(settings.LOBCDER_REST + '/item/permissions/' + uid, headers = headers, data = requestBody, auth = ('user', ticket))
+    response = requests.put(settings.LOBCDER_REST_URL + '/item/permissions/' + uid, headers = headers, data = requestBody, auth = ('user', ticket))
     log.debug('LOBCDER permission update response url, code and content: ' + response.url + ', ' + str(response.status_code) + ' - ' + response.content)
     if response.status_code != 204:
         raise LobcderException('LOBCDER permissions could not be updated and returned code ' + str(response.status_code), str(response.status_code))
-    response = requests.put(settings.LOBCDER_REST + '/item/dri/' + uid + '/supervised/' + ('TRUE' if driSupervised else 'FALSE'), auth = ('user', ticket))
+    response = requests.put(settings.LOBCDER_REST_URL + '/item/dri/' + uid + '/supervised/' + ('TRUE' if driSupervised else 'FALSE'), auth = ('user', ticket))
     log.debug('LOBCDER DRI supervised update response url, code and content: ' + response.url + ', ' + str(response.status_code) + ' - ' + response.content)
     if response.status_code != 204:
         raise LobcderException('LOBCDER DRI flag could not be updated and returned code ' + str(response.status_code), str(response.status_code))
@@ -145,6 +145,6 @@ def lobcderQuery(resourceName, createdAfter, createdBefore, modifiedAfter, modif
     if modifiedBefore:
         modifiedBeforeSeconds = datetime.strptime(modifiedBefore, '%m-%d-%Y').strftime('%s')
     params = {'path': '/', 'name': resourceName, 'cStartDate': createdAfterSeconds, 'cEndDate': createdBeforeSeconds, 'mStartDate': modifiedAfterSeconds, 'mEndDate': modifiedBeforeSeconds}
-    response = requests.get(settings.LOBCDER_REST + '/items/query', params = params, auth = ('user', ticket))
+    response = requests.get(settings.LOBCDER_REST_URL + '/items/query', params = params, auth = ('user', ticket))
     metadata = response.content
     return extractEntriesFromMetadata(metadata)

@@ -235,7 +235,7 @@ def search_service(request):
         pages = request.session['pages']
         results = request.session['results']
         if page > request.session['page']:
-            results, countType, pages = search_resource(search_text, expression, numResults=50,  page=page)
+            results, countType, pages = search_resource(search_text, expression, numResults=20,  page=page)
             for ctype, counter in countType.items():
                 request.session['countType'][ctype] += counter
             countType = request.session['countType']
@@ -252,7 +252,7 @@ def search_service(request):
             for filter in filterby:
                 numResults += request.session['types'].get(filter,0)
             for result in tmpresults:
-                if result['type'] not in ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'Application', 'User', 'Institution'] and 'Other' in filterby:
+                if result['type'] not in ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'User', 'Institution'] and 'Other' in filterby:
                     results.append(result)
                 if result['type'] in filterby:
                     results.append(result)
@@ -316,7 +316,7 @@ def search(request):
             users = User.objects.filter(
                 Q(username__icontains=search_text) | Q(email__icontains=search_text) | Q(first_name__icontains=search_text) | Q(last_name__icontains=search_text)
             )
-            users = [{"description": user.username, "name": "%s %s" % (user.first_name, user.last_name), "email": user.email, "type": 'User'} for user in users]
+            users = [{"description": user.username, "name": "%s %s (%s)" % (user.first_name, user.last_name, user.username), "email": user.email, "type": 'User'} for user in users]
             results += users
             if 'User' not in countType:
                 countType['User'] = len(users)
@@ -360,7 +360,7 @@ def search(request):
     }
     return render_to_response("scs/search.html",
                               {'search': search, "results": None, "numResults": 0, 'countType': {},
-                               'types': ['Dataset', 'Workflow', 'Application', 'File', 'Semantic Web service', 'User', 'Institution']},
+                               'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'User', 'Institution']},
                               RequestContext(request))
 
 @is_staff()
@@ -452,6 +452,8 @@ def delete_tag_service(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response
@@ -492,6 +494,8 @@ def add_tag_service(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response
@@ -517,6 +521,8 @@ def edit_description_service(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response
@@ -540,6 +546,8 @@ def hide_notification(request):
         raise
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         response = HttpResponse(status=403)
         response._is_string = True
         return response

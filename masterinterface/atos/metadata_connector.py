@@ -1,18 +1,38 @@
 __author__ = 'm.balasso@scsitaly.com, a.saglimbeni@scsitaly.com'
 
-
 import re
+
 import requests
 import xmltodict
+from ordereddict import OrderedDict
+from raven.contrib.django.raven_compat.models import client
+
 from masterinterface.atos.config import *
 from exceptions import AtosServiceException
-from ordereddict import OrderedDict
+
+
+def decompose_payload(sub_metadata):
+
+    s = "<%s>%s</%s>"
+    results = ""
+    for key, item in sub_metadata.items():
+        content = ""
+        if isinstance(item, list):
+            for i in item:
+                content += decompose_payload(i)
+        elif isinstance(item, dict):
+            content = decompose_payload(item)
+        else:
+            content = item
+        results += s %(key,content,key)
+    return results
 
 
 def from_dict_to_payload(metadata,type):
     typetag= type[0].lower()+ type[1:]
     typefield = "<type>%s</type>" % type
-    return "<resource_metadata><%s>%s%s</%s></resource_metadata>" % (typetag, typefield, "".join(["<%s>%s</%s>" % (key, item, key) for key, item in metadata.items()]), typetag)
+    #"".join(["<%s>%s</%s>" % (key, item, key) for key, item in metadata.items()]
+    return "<resource_metadata><%s>%s%s</%s></resource_metadata>" % (typetag, typefield, decompose_payload(metadata), typetag)
 
 
 def get_all_resources_metadata():
@@ -120,16 +140,16 @@ def get_facets():
     return FACETS_LIST
 
 
-def filter_resources_by_facet(type, facet = None, value = None):
+def filter_resources_by_facet(type, facet = None, value = None, page=1):
     """
         given a facet and a value return the list of the resources that match the query
     """
 
     try:
         if facet:
-            response = requests.get(FACETS_METADATA_API % (type, facet, value))
+            response = requests.get(FACETS_METADATA_API % (type, facet, value, page))
         else:
-            response = requests.get(TYPE_METADATA_API % type)
+            response = requests.get(TYPE_METADATA_API % (type, page))
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
@@ -143,6 +163,7 @@ def filter_resources_by_facet(type, facet = None, value = None):
                 results.append(resource)
             return results
         except Exception, e:
+            client.captureException()
             return []
 
     except BaseException, e:
@@ -168,6 +189,7 @@ def filter_resources_by_author(author):
                 results.append(resource)
             return results
         except Exception, e:
+            client.captureException()
             return []
 
     except BaseException, e:
@@ -244,7 +266,7 @@ def filter_resources_by_expression(expression):
         return [],{}
 
 
-def search_resource(text, filters = {}, numResults=50, page=1):
+def search_resource(text, filters = {}, numResults=10, page=1):
 
     try:
         if text == '*':
@@ -284,9 +306,11 @@ def search_resource(text, filters = {}, numResults=50, page=1):
 
         #from collections import OrderedDict
         respDict = xmltodict.parse(response.text.encode('utf-8'))
-        #pages = (int(respDict["resource_metadata_list"]['@numTotalMetadata'])/numResults) + 1
         pages = 1
-        resources = respDict["resource_metadata_list"]["resource_metadata"]
+        if respDict["resource_metadata_list"].get("resource_metadata",None) is not None:
+            resources = respDict["resource_metadata_list"]["resource_metadata"]
+        else:
+            resources = []
         countType = {'Dataset': 0, 'Workflow': 0, 'AtomicService': 0, 'File': 0, 'SemanticWebService': 0, 'Workspace': 0}
         if not isinstance(resources, list):
             resources = [resources]
