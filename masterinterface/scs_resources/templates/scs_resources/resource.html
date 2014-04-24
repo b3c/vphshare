@@ -297,7 +297,7 @@
                 $(function() {
                     if('{{ resource.metadata.type }}' == 'AtomicService' && $.cookie('vph-tkt') != null) {
                         $.ajax({
-                            url: '{{ cloudFacadeUrl }}/port_mapping_templates?appliance_type_id={{ resource.metadata.local_id }}',
+                            url: '{{ cloudFacadeUrl }}/port_mapping_templates?appliance_type_id={{ resource.metadata.localID }}',
                             dataType: 'json',
                             headers: {'MI-TICKET': $.cookie('vph-tkt')},
                             success: function(response) {
@@ -309,19 +309,14 @@
                                         success: function(response) {
                                             $.each(response.endpoints, function(index, value) {
                                                 $('#endpointDetails').css('visibility', 'visible');
-                                                $('#endpointDetails').append('<dt><a href="{{ cloudFacadeUrl }}/endpoints/' + value.id + '/descriptor">' + value.name + '</a></dt>');
-                                                $('#endpointDetails').append('<dd>' + value.description + '</dd>');
+                                                $('#endpointDetails dl').append('<dt><a href="{{ cloudFacadeUrl }}/endpoints/' + value.id + '/descriptor">' + value.name + '</a></dt>');
+												$('#endpointDetails dl').append('<dd>' + value.description + '</dd>');
                                             });
                                         }
                                     });
                                 });
                             }
                         });
-                        $('#endpointDetails dl').append('<dt><a href="#">Dummy endpoint</a></dt>');
-                        $('#endpointDetails dl').append('<dd>Endpoint description</dd>');
-                        $('#endpointDetails dl').append('<dt><a href="#">Another endpoint</a></dt>');
-                        $('#endpointDetails dl').append('<dd>Another endpoint description</dd>');
-                        $('#endpointDetails').css('visibility', 'visible');
                     }
                 });
             </script>
