@@ -54,6 +54,7 @@ def resource_detailed_view(request, id='1'):
             except ObjectDoesNotExist, e:
                 # TODO create a new user or assign resource temporarly to the President :-) now I'm the president #asagli
                 resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
+                update_resource_metadata(id, {'author':'asagli'}, metadata['type'])
                 resource.save(metadata=metadata)
 
             finally:
