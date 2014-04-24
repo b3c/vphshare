@@ -380,7 +380,7 @@ def get_resources_details(request, global_id):
         try:
             resource = Resource.objects.get(global_id=global_id)
             resource.requests = get_pending_requests_by_resource(resource)
-            resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user})
+            resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user, 'ticket':request.ticket})
 
             return HttpResponse(status=200,
                             content=json.dumps({'data': resultsRender}, sort_keys=False),
@@ -450,7 +450,7 @@ def mark_resource_private(request, global_id):
                 import requests
                 import xmltodict
                 from django.conf import settings
-                permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket)).text)
+                permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket)).text)
                 file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
                 name = 'vph'
                 if settings.DEBUG:
@@ -461,7 +461,7 @@ def mark_resource_private(request, global_id):
                 else:
                     del permissions['permissions'][file_permissions_match[role.name]]
 
-                result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), data=xmltodict.unparse(permissions))
+                result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions))
             remove_local_role(resource,None, role)
             return HttpResponse(status=200)
         except Exception, e:
@@ -650,7 +650,7 @@ def revoke_role(request):
         import requests
         import xmltodict
         from django.conf import settings
-        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket)).text)
+        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket)).text)
         file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
 
         if settings.DEBUG:
@@ -662,7 +662,7 @@ def revoke_role(request):
         else:
             del permissions['permissions'][file_permissions_match[role.name]]
 
-        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), data=xmltodict.unparse(permissions))
+        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions))
 
     remove_local_role(resource, principal, role)
 
