@@ -190,7 +190,7 @@
                                 <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.localID }}/sparql%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
                             {% endif %}
                         {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
-                            <a  href="{{ BASE_URL }}/tools/#startInstance?applianceTypeId={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
+                            <a  href="{{ BASE_URL }}/tools/#startInstance?{{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
                         {% elif resource.metadata.type == "Workflow" %}
                             {% if workflow.t2flow %}
                                 <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>

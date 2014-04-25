@@ -134,7 +134,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
     'paraviewweb.middleware.paraviewWebMiddleware',
-    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
 )
 

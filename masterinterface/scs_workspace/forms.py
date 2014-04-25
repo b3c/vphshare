@@ -3,7 +3,7 @@ __author__ = 'Matteo Balasso <m.balasso@scsitaly.com>'
 from django import forms
 from models import TavernaExecution
 #Hardcoded Taverna appliance ID. To remove in future.
-IMP_CHOICES = ((245 ,'Taverna 2.5.3'))
+IMP_CHOICES = ((245 ,'Taverna 2.5.3'),)
 
 #from scs.views import search_resource
 #results = search_resource('Taverna')[0]

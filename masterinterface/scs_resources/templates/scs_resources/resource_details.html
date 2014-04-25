@@ -79,6 +79,7 @@
                 {% endif %}
             </div>
             <div class="span2"><a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i>Edit metadata</a></div>
+            {% if resource.metadata.type == "SemanticWebService" %}<div class="span2"><a id="link-button"  class="btn btn-info" title="Edit metadata" href="http://vph-services.kmi.open.ac.uk/sweet/?globalId={{ resource.global_id }}&ticket={{ ticket }}" style="color:#ffffff;" target="_blank">Edit Semantic annotations</a></div>{% endif %}
         </div>
     {% endif %}
 <div class="row-fluid" style="font-size: 13px;"><div class="span4">Created: {{ resource.metadata.creationDate|strTodate|date:"SHORT_DATE_FORMAT" }} </div><div class="span4">Category: {{ resource.metadata.category }}</div><div class="span4">Type: {{ resource.metadata.type }}</div></div>

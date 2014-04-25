@@ -80,8 +80,9 @@ class Resource(models.Model):
         update_resource_metadata(self.global_id, {'views': str(views)}, metadata['type'])
         return views
 
-    def delete(self, using=None):
-        delete_resource_metadata(self.global_id)
+    def delete(self, using=None, delete_metadata = False):
+        if delete_metadata:
+            delete_resource_metadata(self.global_id)
         return super(Resource, self).delete(using)
 
     def can_I(self,role, user):
