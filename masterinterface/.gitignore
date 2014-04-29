@@ -10,5 +10,6 @@ docs/_build
 media/
 css/style-dev.css
 data_paraview/
-
-
+/static
+celery.log
+/backup

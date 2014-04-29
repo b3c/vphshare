@@ -803,6 +803,8 @@ def edit_resource(request, id=False):
                                   {'form':form, 'edit':edit,'type':type_request},
                                   RequestContext(request))
     except AtosServiceException, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         if dbResource:
             type_request = dbResource.metadata['type']
         else:
@@ -813,6 +815,8 @@ def edit_resource(request, id=False):
                   RequestContext(request))
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         if not request.session.get('errormessage', False):
             request.session['errormessage'] = 'Some errors occurs, please try later. '
         return redirect('/resources/%s' % global_id)
@@ -855,6 +859,8 @@ def edit_workflow(request, id=False):
                                   RequestContext(request))
 
     except Exception, e:
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         if not request.session.get('errormessage', False):
             request.session['errormessage'] = 'Some errors occurs, please try later. '
         return redirect('/workflows')

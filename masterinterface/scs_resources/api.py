@@ -196,6 +196,7 @@ class get_resources_list(BaseHandler):
                                 author = User.objects.get(username=metadata['author'])
                             except Exception, e:
                                 continue
+
                             if metadata['type'] == "Workflow":
                                 resource, created = Workflow.objects.get_or_create(global_id=metadata['globalID'], metadata=metadata, owner=author)
                                 resource.save()
@@ -208,13 +209,14 @@ class get_resources_list(BaseHandler):
                             if resource.can_I(role,user):
                                 user_resources.append(resource)
 
+
                         except ObjectDoesNotExist, e:
                             # not in local db, no roles
                             continue
-                        return [{"local_id": r.metadata['localID'], "global_id": r.global_id} for r in user_resources]
+                    return [{"local_id": r.metadata['localID'], "global_id": r.global_id} for r in user_resources]
                 else:
                     user_resources = []
-                    roles = Roles[Roles.index(Role.objects.get(role).name):]
+                    roles = Roles[Roles.index(Role.objects.get(name=role).name):]
                     role_relations = PrincipalRoleRelation.objects.filter(
                         Q(user=user) | Q(group__in=user.groups.all()),
                         role__name__in=roles,

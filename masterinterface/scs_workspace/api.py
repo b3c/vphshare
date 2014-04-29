@@ -30,7 +30,7 @@ class workflows_api(BaseHandler):
             else:
                 return rc.FORBIDDEN
             if request.method == 'POST':
-                optionals = ['tags','semantic_annotations']
+                optionals = ['tags','semanticAnnotations']
                 for option in optionals:
                     if request.POST.get(option, None) is None:
                         request.POST[option] = ''
