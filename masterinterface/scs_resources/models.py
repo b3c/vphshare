@@ -98,10 +98,11 @@ class Resource(models.Model):
             content_id=self.id
             )
 
-            if role_relations.count() == 0 and read_all_relations.count() == 0:
+            if role_relations.count() == 0 and read_all_relations.count() == 0:            
                 return False
-        if role_relations.count() == 0:
-            return False
+        else:
+            if role_relations.count() == 0:
+                return False
         return True
 
     def can_read(self, user):
