@@ -91,14 +91,16 @@ class Resource(models.Model):
             role__name__in=roles,
             content_id=self.id
         )
-
-        read_all_relations = PrincipalRoleRelation.objects.filter(
+        if role == 'Reader':
+            read_all_relations = PrincipalRoleRelation.objects.filter(
             user=None, group=None,
             role__name__in=['Reader'],
             content_id=self.id
-        )
+            )
 
-        if role_relations.count() == 0 and read_all_relations.count() == 0:
+            if role_relations.count() == 0 and read_all_relations.count() == 0:
+                return False
+        if role_relations.count() == 0:
             return False
         return True
 
