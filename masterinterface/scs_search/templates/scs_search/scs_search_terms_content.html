@@ -14,7 +14,7 @@
     <!-- START tables list -->
     <ul id="tables-list-base" class="unstyled" style="padding: 15px;padding-top: 0px;">
         {% for class, classLabel in conceptClass.items %}
-            <li class="table-base"  style="margin: 5px;">
+            <li class="table-base"  style="margin: 5px;word-wrap:break-word;">
                 <div class="btn btn-small select-class" data-class="{{ class }}" style="width: 80%">{{ classLabel.0 }}</div>
             </li>
         {% endfor %}
