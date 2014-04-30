@@ -1,0 +1,4 @@
+{% for field in contactForm.data.items %}
+    {{ field.0 }}:{{ field.1 }}
+
+{% endfor %}

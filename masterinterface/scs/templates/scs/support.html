@@ -1,0 +1,46 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} Report a bug. {% endblock %}
+
+
+
+{% block page-title %}
+        <span class="title">Report a bug.</span>
+        <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+    <div class="row">
+        <div class="span9">
+            {% if reported == 'False' %}
+                <h3>Report a bug</h3>
+                <form class="form-horizontal" enctype="multipart/form-data" method="post" action="/support/">
+                {% csrf_token %}
+                    {% for hidden in contactForm.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {% for field in contactForm.visible_fields %}
+                        <div class="control-group{% if field.errors %}{% endif %}">
+                            <label class="control-label" for="{{ field.id }}">
+                                {{ field.label }}
+                            </label>
+                            <div class="controls">
+                                {{ field }}
+                                {% if field.errors %}
+                                    <span class="badge badge-important" title="{{ field.errors|first }}">!</span><span class="help-inline"> {{ field.errors|first }}</span>
+                                {% else %}
+                                    <span class="help-inline">{{ field.help_text }}</span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                    <input type="submit" class="btn btn-primary" value="Report" />
+                </form>
+            {% else %}
+                <h3>Thank you for reporting</h3>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}
