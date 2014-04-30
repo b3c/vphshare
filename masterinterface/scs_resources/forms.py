@@ -31,7 +31,7 @@ class ResourceForm(forms.ModelForm):
     name = forms.CharField(label="Name *", required=True)
     description = forms.CharField(label="Description *", required=True, widget=forms.Textarea)
     licence = Select2ChoiceField(choices=(('GPL','GPL'),('LGPL','LGPL'),('EULA','EULA'), ('OLP','OLP'), ('TLP','TLP'), ('VLP','VLP'), ('EDU','EDU'), ('GOV','GOV'), ('BSD','BSD'), ('MIT','MIT')), help_text="Licence type", required=True, label='Licence *', initial="")
-    category = Select2ChoiceField(choices=(('Cardiovascular', 'Cardiovascular'), ('Respiratory','Respiratory'),('Genetics','Genetics'),('Infection & Immunology', 'Infection & Immunology'), ('Musculoskeletal', 'Musculoskeletal'), ('Gastroenerology','Gastroenerology'),('Neurology','Neurology') ,('Oncology','Oncology'), ('Multidisciplinary','Multidisciplinary') ,('Information Technology','Information Technology')),
+    category = Select2ChoiceField(choices=(('Cardiovascular', 'Cardiovascular'), ('Respiratory','Respiratory'),('Genetics','Genetics'),('Infection and Immunology', 'Infection & Immunology'), ('Musculoskeletal', 'Musculoskeletal'), ('Gastroenerology','Gastroenerology'),('Neurology','Neurology') ,('Oncology','Oncology'), ('Multidisciplinary','Multidisciplinary') ,('Information Technology','Information Technology')),
         help_text="Category", required=False, label="Category", initial=""
     )
     tags = forms.CharField(widget=Select2CommaTags(), required=False, label="Tags", help_text="Type tags")
@@ -126,7 +126,7 @@ class ResourceForm(forms.ModelForm):
             cache.delete(self.instance.global_id)
             update_resource_metadata(self.instance.global_id, metadata_payload, metadata_payload['type'])
         except Exception, e:
-            if self.instance:
+            if self.instance.global_id is not None:
                 raise e
             resource.global_id = set_resource_metadata(metadata_payload, metadata_payload['type'])
             resource.owner = owner
