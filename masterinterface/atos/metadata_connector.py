@@ -140,16 +140,16 @@ def get_facets():
     return FACETS_LIST
 
 
-def filter_resources_by_facet(type, facet = None, value = None, page=1):
+def filter_resources_by_facet(type, facet = None, value = None, page=1, numResults=50):
     """
         given a facet and a value return the list of the resources that match the query
     """
 
     try:
         if facet:
-            response = requests.get(FACETS_METADATA_API % (type, facet, value, page))
+            response = requests.get(FACETS_METADATA_API % (type, facet, value,numResults, page))
         else:
-            response = requests.get(TYPE_METADATA_API % (type, page))
+            response = requests.get(TYPE_METADATA_API % (type, numResults, page))
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
@@ -199,8 +199,22 @@ def filter_resources_by_author(author):
 def filter_resources_by_type(resource_type):
     """
     """
+    results = []
+    page = 1
+    exit = True
+    try:
+#        while exit:
 
-    return filter_resources_by_facet(resource_type)
+        result = filter_resources_by_facet(resource_type,page=page,numResults=200)
+#            if result == []:
+#                exit= False
+        results += result
+#            page+=1            
+        return results
+    except:
+        return results
+
+    
 
 #not used?
 def filter_resources_by_text(text):

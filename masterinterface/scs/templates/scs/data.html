@@ -11,33 +11,43 @@
 
 {%  block content %}
     <div class="row-fluid"><div class="span12 text-center"><h1><p>Biomedical Data at your Fingertips</p></h1></div></div>
-    <div class="row-fluid"><div class="span8"><h6>Whether you are looking for data to use in research, development, or clinical practice or the owner of data, wishing to share it with the community, VPH-Share will provide you with the right tools for the job. Our rich data library has been populated by an array of VPH research projects, allowing users to search for data from across the complete range of biological sub-systems. VPH-Share supports data owners upload data and manage the sharing process.</h6></div><div class="span4"><img class="img-rounded" src="/static/img/data_logo6.jpg"/></div> </div>
+    <div class="row-fluid"><div class="span8"><h6>Whether you are looking for data to use in research, development, or clinical practice or you are the owner of data, wishing to share it with the community, VPH-Share will provide you with the right tools for the job. Our rich data library has been populated by an array of VPH research projects, allowing users to search for data from across the complete range of biological sub-systems. VPH-Share supports data owners upload data and manage the sharing process.</h6></div><div class="span4"><img class="img-rounded" src="/static/img/data_logo6.jpg"/></div> </div>
     <div class="row-fluid row-contet">
         <div class="span9" style="margin-top:15px;">
             <div class="row-fluid" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Browse Data</b></p><p>Browse or view an A-Z list of available VPH data sets.</p></h6></div><div class="span4"><a href="/data/search-data/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo1.png"/></a></div> </div>
             <div class="row-fluid" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Search Data</b></p><p>Search for available VPH data sets.</p></h6></div><div class="span4"><a href="/search/?types=Dataset,"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo1.png"/></a></div> </div>
             <div class="row-fluid" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Upload Data</b></p><p>Upload both structured or unstructured data sets, using our specially designed applications.</p></h6></div><div class="span4"><a href="/data/upload-data/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo2.png"/></a></div> </div>
-            <div class="row-fluid" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Dashboard</b></p><p>Manage your data, set access permissions, control meta-data tags and view usage statistics.</p></h6></div><div class="span4"><a href="/dashboard/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo3.png"/></a></div> </div>
+            {% if request.user.is_authenticated %}
+                <div class="row-fluid" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Dashboard</b></p><p>Manage your data, set access permissions, control meta-data tags and view usage statistics.</p></h6></div><div class="span4"><a href="/dashboard/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo3.png"/></a></div> </div>
+            {% else %}
+                <div class="row-fluid" style="padding-bottom: 20px;"><div class="span5"><h6><p><b>Dashboard (login required)</b></p><p>Manage your data, set access permissions, control meta-data tags and view usage statistics.</p></h6></div><div class="span4"><a href="/dashboard/"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo3.png"/></a></div> </div>
+            {% endif %}
         </div>
-        <div class="span3 rigth-list" >
-            <div class="popover-list">
+        <div class="span2">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Documents</h3>
                 <div class="popover-content">
-                    <p><i class="icon-bookmark"></i><b>Documents</b></p>
-                    <p>Data Sharing Policy</p>
-                    <p>Use of Data Guidelines</p>
+                    <p><a href="http://www.vph-share.eu/content/users-manual">User's manual</a></p>
+                    <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
+                    <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
                 </div>
 
             </div>
-            <div class="popover-list">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
-                    <p><i class="icon-th"></i><b>Applications</b></p>
                     {% if request.user.is_authenticated %}
-                        <p><a href="/static/Data Publication Suite v1.1-b4.msi">Data Publications Suite (DPS)</a></p>
-                        <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test DataSet</a></p>
+                        <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></p>
+                        <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
                     {% else %}
-                    <p>Data Publications Suite (login required)</p>
+                        <p>Data Publications Suite (login required)</p>
                     {% endif %}
-                    <p><a href="/lobcder">LOBCDER</a></p>
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/lobcder">Upload unstructured data</a></p>
+                    {% else %}
+                        <p>Upload unstructured data (login required)</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

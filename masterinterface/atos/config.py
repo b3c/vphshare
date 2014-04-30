@@ -44,9 +44,9 @@ GLOBAL_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata'
 
 RESOURCE_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/%s'
 
-FACETS_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s/%s?value=%s&numResults=50&page=%s'
+FACETS_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s/%s?value=%s&numResults=%s&page=%s'
 
-TYPE_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s?numResults=50&page=%s'
+TYPE_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s?numResults=%s&page=%s'
 
 FILTER_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s'
 
