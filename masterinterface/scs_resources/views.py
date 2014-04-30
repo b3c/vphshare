@@ -434,9 +434,10 @@ def unpublish_resource(request, global_id):
 def mark_resource_public(request, global_id):
     if request.method == 'GET':
         try:
-            resource = Resource.objects.get(global_id=global_id, metadata=False)
+            resource = Resource.objects.get(global_id=global_id)
             role = Role.objects.get(name='Reader')
-            add_local_role(resource, None, role)
+            grant_permission(None,resource,role,request.ticket)
+            #add_local_role(resource, None, role)
             return HttpResponse(status=200)
         except Exception, e:
             return HttpResponse(status=500)
@@ -451,7 +452,7 @@ def mark_resource_private(request, global_id):
                 import requests
                 import xmltodict
                 from django.conf import settings
-                permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket)).text)
+                permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), verify=False).text)
                 file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
                 name = 'vph'
                 if settings.DEBUG:
@@ -462,7 +463,9 @@ def mark_resource_private(request, global_id):
                 else:
                     del permissions['permissions'][file_permissions_match[role.name]]
 
-                result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions))
+                result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False,  headers = {'content-type': 'application/xml'})
+                if result.status_code not in [204,201,200]:
+                    raise Exception('LOBCDER permision set error')
             remove_local_role(resource,None, role)
             return HttpResponse(status=200)
         except Exception, e:
@@ -651,19 +654,21 @@ def revoke_role(request):
         import requests
         import xmltodict
         from django.conf import settings
-        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket)).text)
+        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), verify=False).text)
         file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
 
         if settings.DEBUG:
             name = name+"_dev"
+        if permissions['permissions'].get(file_permissions_match[role.name], None) is not None:
+            if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
+                index = permissions['permissions'][file_permissions_match[role.name]].index(name)
+                del permissions['permissions'][file_permissions_match[role.name]][index]
+            else:
+                del permissions['permissions'][file_permissions_match[role.name]]
 
-        if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
-            index = permissions['permissions'][file_permissions_match[role.name]].index(name)
-            del permissions['permissions'][file_permissions_match[role.name]][index]
-        else:
-            del permissions['permissions'][file_permissions_match[role.name]]
-
-        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions))
+            result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False, headers = {'content-type': 'application/xml'})
+            if result.status_code not in [204,201,200]:
+                raise Exception('LOBCDER permision set error')
 
     remove_local_role(resource, principal, role)
 

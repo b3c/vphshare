@@ -244,7 +244,7 @@ def grant_permission(name, resource, role, ticket=None):
         import requests
         import xmltodict
         from django.conf import settings
-        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket)).text)
+        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), verify=False).text)
         file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
         if principal is None:
             # set the role to all users, vph is the default group for all users in vph-share
@@ -258,7 +258,9 @@ def grant_permission(name, resource, role, ticket=None):
         else:
             permissions['permissions'][file_permissions_match[role.name]] = [permissions['permissions'][file_permissions_match[role.name]], name]
 
-        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), data=xmltodict.unparse(permissions))
+        result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', ticket), verify=False, data=xmltodict.unparse(permissions),  headers = {'content-type': 'application/xml'})
+        if result.status_code not in [204,201,200]:
+            raise Exception('LOBCDER permision set error')
     #end lobcder repository update
 
     add_local_role(resource, principal, role)
