@@ -33,7 +33,7 @@
 
 
 {%  block content %}
-    <div class="row"><div class="span12"><h6 >Browse or search VPH-Share’s data library to discover and use resources from from hundreds of VPH projects. Each data set includes a description of its contents, details of its parent project and information on how to access it.</h6></div></div>
+    <div class="row"><div class="span12"><h6 >Browse or search VPH-Share’s data library to discover and use resources from hundreds of VPH projects. Each data set includes a description of its contents, details of its parent project and information on how to access it.</h6></div></div>
     
     <div class="row row-list" >
         <div class="span12"><a href="/search/?search_text=cardiovascular&amp;types=Dataset" class="search-data-link" style="background: url('/static/img/search_data1.jpg');" ></a><a href="/search/?search_text=respiratory&amp;types=Dataset" class="search-data-link" style="background: url('/static/img/search_data2.jpg');" ></a><a href="/search/?search_text=genetics&amp;types=Dataset" class="search-data-link" style="background: url('/static/img/search_data3.jpg');" ></a><a href="/search/?search_text=infection%20immunology&amp;types=Dataset" class="search-data-link" style="background: url('/static/img/search_data4.jpg');" ></a><a href="/search/?search_text=musculoskeletal&amp;types=Dataset" class="search-data-link" style="background: url('/static/img/search_data5.jpg');" ></a></div>
@@ -64,24 +64,31 @@
         <div class="span9">
             <h3><a href="/data/browse">Browse Data A-Z</a></h3>
         </div>
-        <div class="span3 rigth-list" >
-            <div class="popover-list">
+
+         <div class="span2">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Documents</h3>
                 <div class="popover-content">
-                    <p><i class="icon-bookmark"></i><b>Documents</b></p>
-                    <p>Data Sharing Policy</p>
-                    <p>Use of Data Guidlines</p>
+                    <p><a href="http://www.vph-share.eu/content/users-manual">User's manual</a></p>
+                    <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
+                    <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
                 </div>
             </div>
-            <div class="popover-list">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
-                    <p><i class="icon-th"></i><b>Applications</b></p>
-                    {% if request.user.is_authenticated %}
-                        <p><a href="/static/Data Publication Suite v1.1-b4.msi">Data Publications Suite (DPS)</a></p>
+                                    {% if request.user.is_authenticated %}
+                        <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></p>
                         <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
                     {% else %}
-                    <p>Data Publications Suite (login required)</p>
+                        <p>Data Publications Suite (login required)</p>
                     {% endif %}
-                    <p><a href="/lobcder">LOBCDER</a></p>
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/lobcder">Upload unstructured data</a></p>
+                    {% else %}
+                        <p>Upload unstructured data (login required)</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

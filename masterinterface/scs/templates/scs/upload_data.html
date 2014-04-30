@@ -23,31 +23,37 @@
             <ul class="inline unstyled">
                 <li class="span4 text-center" >
                     <a href="/lobcder"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo4.png"/></a>
-                    <h6><b>Upload Unstructured Data</b></h6><p>(e.g. images and scans)</p>
+                    <h6><b>Upload Unstructured Data</b></h6><p>(e.g. images and scans)</p><p>login required</p>
                 </li>
                 <li class="span4 text-center" >
                     <a href="/data/upload-structured-data"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo5.png"/></a>
                     <h6><b>Upload Structured Data</b></h6><p>(e.g. tables and spreadsheets)</p>
                 </li></ul>
         </div>
-        <div class="span3 rigth-list" >
-            <div class="popover-list">
+         <div class="span2">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Documents</h3>
                 <div class="popover-content">
-                    <p><i class="icon-bookmark"></i><b>Documents</b></p>
-                    <p>Data Sharing Policy</p>
-                    <p>Use of Data Guidlines</p>
+                    <p><a href="http://www.vph-share.eu/content/users-manual">User's manual</a></p>
+                    <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
+                    <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
                 </div>
             </div>
-            <div class="popover-list">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
-                    <p><i class="icon-th"></i><b>Applications</b></p>
                     {% if request.user.is_authenticated %}
-                        <p><a href="/static/Data Publication Suite v1.1-b4.msi">Data Publications Suite (DPS)</a></p>
+                        <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></p>
                         <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
                     {% else %}
-                    <p>Data Publications Suite (login required)</p>
+                        <p>Data Publications Suite (login required)</p>
                     {% endif %}
-                    <p><a href="/lobcder">LOBCDER</a></p>
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/lobcder">Upload unstructured data</a></p>
+                    {% else %}
+                        <p>Upload unstructured data (login required)</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

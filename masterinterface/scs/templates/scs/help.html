@@ -24,7 +24,7 @@
                         <div class="accordion-inner">
                             <h6 style="color: black;">We are looking for bugs reporting, and suggestions for improvements from all our users.  These feedbacks will be used to keep updated a page with the issues already reported and fixed publicly available. </h6>
                         </br>
-                            <h6 style="color: black;">If you would like to report any issue just drop an email to support@vph-share.eu and the technical team will be back to you as soon as possible!</h6>
+                            <h6 style="color: black;">If you would like to report any issue just drop an email to <a href="mailto:support@vph-share.eu">support@vph-share.eu</a> and the technical team will be back to you as soon as possible!</h6>
                         </div>
                     </div>
                 </div>
@@ -36,8 +36,9 @@
                     </div>
                     <div id="collapseTwo" class="accordion-body collapse in">
                         <div class="accordion-inner">
-                            <h6 style="color: black;">You can contact the support team at: support@vph-share.eu</br>
-You can write to the user group at: beta.users@vph-share.eu  (if you'd like to be added to this discussion group, please let us know).
+                            <h6 style="color: black;">You can contact the support team by:
+                                <li>email: <a href="mailto:support@vph-share.eu">support@vph-share.eu</a></li>
+                                <li>phone: +39-3939761599</li></br>
 </br>
 We have also created a web presence on the major social network platforms: <a href="http://twitter.com/vphshare">Twitter</a>, <a href="https://www.facebook.com/pages/Vph-Share/195897340533954">Facebook</a>, <a href="https://plus.google.com/u/0/109251527630883747208/posts">Google+</a>, and <a href="http://www.linkedin.com/groups/VPHShare-project-5025771?home=&gid=5025771&trk=anet_ug_hm">LinkedIn</a>. So get in contact with us on your favourite platform!</h6>
                         </div>
@@ -50,20 +51,27 @@ We have also created a web presence on the major social network platforms: <a hr
                 <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
                     {% if request.user.is_authenticated %}
-                        <p><a href="/static/Data Publication Suite v1.1-b4.msi">Data Publications Suite (DPS)</a></p>
+                        <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></p>
                         <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
                     {% else %}
-                    <p>Data Publications Suite (login required)</p>
+                        <p>Data Publications Suite (login required)</p>
+                    {% endif %}
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/lobcder">Upload unstructured data</a></p>
+                    {% else %}
+                        <p>Upload unstructured data (login required)</p>
                     {% endif %}
                     <p><a href="http://www.taverna.org.uk/download/workbench/">Taverna Workbench</a></p>
-                    <p><a href="/lobcder">Filestore Browser (LOBCDER)</a></p>
                 </div>
             </div>
             <div class="popover popover-mod">
                 <h3 class="popover-title">Documents</h3>
                 <div class="popover-content">
-                    <p><a href="http://www.vph-share.eu/content/users-manual">VPH-Share Help</a></p>
-                    <p><a href="api">Developer API</a></p>
+                    <p><a href="http://www.vph-share.eu/content/users-manual">User's manual</a></p>
+                    <p><a href="/help/api/">Developer's APIs</a></p>
+                    <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
+                    <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
                 </div>
             </div>
         </div>
