@@ -33,13 +33,13 @@
                 {% endif %}
                 </div>
             {% endif %}
-            <div class="span1">
+            <div class="span1" style="word-wrap:break-word;">
                 <strong>{{ group.name|truncatechars:10 }}</strong>
             </div>
-            <div class="span1">
+            <div class="span1" style="word-wrap:break-word;">
                 <span class="muted">{{ group.country }}</span>
             </div>
-            <div class="span1">
+            <div class="span1" style="word-wrap:break-word;">
                 <span title="number of subscribers"><span class="icon-user"></span>{{ group.user_set.all|length }}</span>
             </div>
         </div>

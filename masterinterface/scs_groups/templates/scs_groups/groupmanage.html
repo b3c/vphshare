@@ -15,22 +15,22 @@
                         <img src="/static/logo.png" class="img-polaroid" alt="logo">
                     </div>
                 {% endif %}
-                <div class="span1">
+                <div class="span1" style="word-wrap:break-word;">
                     <strong>{{ group.name }}</strong>
                 </div>
-                <div class="span1">
+                <div class="span1" style="word-wrap:break-word;">
                     <span class="muted">{{ group.country }}</span>
                 </div>
-                <div class="span2">
+                <div class="span2" style="word-wrap:break-word;">
                     <strong>Description:</strong>
                     <p> {{ group.description }}</p>
                 </div>
                 {% if group.type == 'institution' %}
-                    <div class="span2">
+                    <div class="span2" style="word-wrap:break-word;">
                         <strong>Address:</strong>
                         <p> {{ group.address }}</p>
                     </div>
-                    <div class="span2">
+                    <div class="span2" style="word-wrap:break-word;">
                             <strong>Admin: </strong>{{ group.admin_fullname }} <div style="display: inline-block;cursor: pointer"><i id="admin-info" class="icon-info-sign"></i></div>
                     </div>
                     <script type="text/javascript">
@@ -41,7 +41,7 @@
                         });
                     </script>
                     {% if  group.formal_fullname %}
-                        <div class="span2">
+                        <div class="span2" style="word-wrap:break-word;">
                                 <strong>Formal: </strong>{{ group.formal_fullname }} <div style="display: inline-block;cursor: pointer"><i id="formal-info" class="icon-info-sign"></i></div>
                         </div>
                         <script type="text/javascript">
@@ -53,7 +53,7 @@
                         </script>
                     {% endif %}
                     {% if  group.breach_fullname %}
-                        <div class="span2">
+                        <div class="span2" style="word-wrap:break-word;">
                                 <strong>Breach: </strong>{{ group.breach_fullname }} <div style="display: inline-block;cursor: pointer"><i id="breach-info" class="icon-info-sign"></i></div>
                         </div>
                         <script type="text/javascript">
@@ -64,22 +64,22 @@
                             });
                         </script>
                     {% endif %}
-                    <div class="span2">
+                    <div class="span2" style="word-wrap:break-word;">
                         <strong>DSA: </strong> {% if group.signed_dsa  %} Yes {% else %} No {% endif %}
                     </div>
                     {% if  group.policies_url %}
-                        <div class="span2">
+                        <div class="span2" style="word-wrap:break-word;">
                             <strong><a href="{{ group.policies_url }}">Policies link</a></strong>
                         </div>
                     {% endif %}
 
                     {% endif %}
-                <div class="span2">
+                <div class="span2" style="word-wrap:break-word;">
                     <span title="number of subscribers"><span class="icon-user"></span> {{ group.user_set.all|length }}
                     {% if not group.pending_subscriptions|length_is:0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.pending_subscriptions|length }}</span>{% endif %}</span>
                 </div>
                 {% if group.studies %}
-                <div class="span2">
+                <div class="span2" style="word-wrap:break-word;">
                     <span title="number of studies"><span class="icon-book"></span> {{ group.studies|length }} {% if group.studies_actions > 0 and request.user in group.managers.all %}<span class="badge badge-important">{{ group.studies_actions }}</span>{% endif %}</span>
                 </div>
                 {% endif %}
@@ -362,22 +362,22 @@
                             {% endif %}
                         </div>
                     {% endif %}
-                    <div class="span1">
+                    <div class="span1" style="word-wrap:break-word;">
                         <strong>{{ group.name }}</strong>
                     </div>
-                    <div class="span1">
+                    <div class="span1" style="word-wrap:break-word;" >
                         <span class="muted">{{ group.country }}</span>
                     </div>
-                    <div class="span2">
+                    <div class="span2" style="word-wrap:break-word;">
                         <strong>Description:</strong>
                         <p> {{ group.description }}</p>
                     </div>
                     {% if group.type == 'institution' %}
-                        <div class="span2">
+                        <div class="span2" style="word-wrap:break-word;">
                             <strong>Address:</strong>
                             <p> {{ group.address }}</p>
                         </div>
-                        <div class="span2">
+                        <div class="span2" style="word-wrap:break-word;">
                                 <strong>Admin: </strong>{{ group.admin_fullname }} <div style="display: inline-block;cursor: pointer"><i id="admin-info" class="icon-info-sign"></i></div>
                         </div>
                         <script type="text/javascript">
@@ -388,7 +388,7 @@
                             });
                         </script>
                         {% if  group.formal_fullname %}
-                            <div class="span2">
+                            <div class="span2" style="word-wrap:break-word;">
                                     <strong>Formal: </strong>{{ group.formal_fullname }} <div style="display: inline-block;cursor: pointer"><i id="formal-info" class="icon-info-sign"></i></div>
                             </div>
                             <script type="text/javascript">
@@ -400,7 +400,7 @@
                             </script>
                         {% endif %}
                         {% if  group.breach_fullname %}
-                            <div class="span2">
+                            <div class="span2" style="word-wrap:break-word;">
                                     <strong>Breach: </strong>{{ group.breach_fullname }} <div style="display: inline-block;cursor: pointer"><i id="breach-info" class="icon-info-sign"></i></div>
                             </div>
                             <script type="text/javascript">
@@ -411,11 +411,11 @@
                                 });
                             </script>
                         {% endif %}
-                        <div class="span2">
+                        <div class="span2" style="word-wrap:break-word;">
                             <strong>DSA: </strong> {% if group.signed_dsa  %} Yes {% else %} No {% endif %}
                         </div>
                         {% if  group.policies_url %}
-                            <div class="span2">
+                            <div class="span2" style="word-wrap:break-word;">
                                 <strong><a href="{{ group.policies_url }}">Policies link</a></strong>
                             </div>
                         {% endif %}
@@ -423,7 +423,7 @@
                 </div>
             </li>
             {% if request.user.is_superuser %}
-            <li class="main-item main-item-tab3" style="vertical-align: middle;">
+            <li class="main-item main-item-tab3" style="vertical-align: middle;" >
                 <form class="form-inline" action="/groups/manage_group_request/" enctype="multipart/form-data" method="post" style="padding: 120px 20px;">
                     {% csrf_token %}
                     <input type="hidden" name="group" value="{{ group.name }}" />
