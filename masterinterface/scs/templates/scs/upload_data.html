@@ -23,11 +23,11 @@
             <ul class="inline unstyled">
                 <li class="span4 text-center" >
                     <a href="/lobcder"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo4.png"/></a>
-                    <h6><b>Upload Unstructured Data</b></h6><p>(e.g. images and scans)</p><p>login required</p>
+                    <h6><b>FileStore</br>Upload Unstructured Data</b></h6><p>(e.g. images and scans)</p>
                 </li>
                 <li class="span4 text-center" >
                     <a href="/data/upload-structured-data"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo5.png"/></a>
-                    <h6><b>Upload Structured Data</b></h6><p>(e.g. tables and spreadsheets)</p>
+                    <h6><b>DPS</br>Upload Structured Data</b></h6><p>(e.g. tables and spreadsheets)</p>
                 </li></ul>
         </div>
          <div class="span2">
@@ -43,16 +43,16 @@
                 <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
                     {% if request.user.is_authenticated %}
-                        <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></p>
-                        <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></p>
+                        <p><a href="/static/Dps.Setup.x64.msi">DPS installer x64</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">DPS installer x86</a></p>
                         <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
                     {% else %}
                         <p>Data Publications Suite (login required)</p>
                     {% endif %}
                     {% if request.user.is_authenticated %}
-                        <p><a href="/lobcder">Upload unstructured data</a></p>
+                        <p><a href="/lobcder">FileStore</a></p>
                     {% else %}
-                        <p>Upload unstructured data (login required)</p>
+                        <p>FileStore (login required)</p>
                     {% endif %}
                 </div>
             </div>

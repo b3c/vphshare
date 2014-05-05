@@ -21,7 +21,7 @@
     <div class="row row-contet" >
         <div class="span9" style="margin-top:15px;">
             <p>In VPH-Share we primarily refer to tabular, and potentially relational, data sources such as CSV extracts and relational databases, as Structured Data.</p><br>
-            <p>A desktop application, <a href="http://www.vph-share.eu/content/structured-data-data-publication-suite">Data Publication Suite</a>, has been developed to support the process of
+            <p>A desktop application, <a href="http://www.vph-share.eu/content/structured-data-data-publication-suite">Data Publication Suite (DPS)</a>, has been developed to support the process of
                 publishing clinical or research data sets in a secure internet accessible way.
                 The data once published may browsed using an <a href="http://dblp.l3s.de/d2r/">RDF Browser</a> or queried using <a href="https://en.wikipedia.org/wiki/SPARQL">SPARQL</a> and an <a href="https://en.wikipedia.org/wiki/SQL">SQL</a> type protocol from the <a href="http://sourceforge.net/apps/trac/ogsa-dai/"> OGSA-DAI</a> project.</p><br>
             <p>The <a href="http://www.vph-share.eu/content/structured-data-data-publication-suite">general process for publication</a>, although many of them are not mandatory, is as follows:<ul>
@@ -54,16 +54,16 @@
                 <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
                     {% if request.user.is_authenticated %}
-                        <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></p>
-                        <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></p>
+                        <p><a href="/static/Dps.Setup.x64.msi">DPS installer x64</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">DPS installer x86</a></p>
                         <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
                     {% else %}
-                        <p>Data Publications Suite (login required)</p>
+                        <p>Data Publication Suite (login required)</p>
                     {% endif %}
                     {% if request.user.is_authenticated %}
-                        <p><a href="/lobcder">Upload unstructured data</a></p>
+                        <p><a href="/lobcder">FileStore</a></p>
                     {% else %}
-                        <p>Upload unstructured data (login required)</p>
+                        <p>FileStore (login required)</p>
                     {% endif %}
                 </div>
             </div>
