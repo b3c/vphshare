@@ -10,13 +10,13 @@
             function checkCookie(){
 
                 var agreement = $('#agreement');
-
                 if (agreement.is(":visible")){
 
                     if( ! $("#privacy-ok").attr("checked") ) {
                         $("#privacy-question").addClass("alert-error");
                         return;
                     }
+                    $('#submit-button').button('loading');
                     $("#login-form-bt").submit();
 
                 }else {
@@ -28,10 +28,12 @@
                     }
                     ).success(function(msg){
                         if (msg == 'TRUE'){
+                          $('#submit-button').button('loading');
                           $("#login-form-bt").submit();
                         }else{
                             agreement.show();
                             $('#submit-button').text('Confirm');
+                            $('#submit-button').button('reset');
                         }
 
                     });
@@ -120,12 +122,14 @@
             <p class="alert alert-error"><span>{{info}}</span></p>
         {% endif %}
 
-        <p>
+        <p> <div>
+                    Please enter your User Name
+            </div>
             <form id="login-form-bt" action="{% url socialauth_begin "biomedtown" %}" method="post">
                 {% csrf_token %}
                 <div class="input-append">
                     <input id="openid_identifier" class="span2" type="text" name="openid_identifier" value="{{ username }}" />
-                    <button id="submit-button" type="submit" class="btn btn-primary" type="button" onclick="event.preventDefault();checkCookie();">login</button>
+                    <button data-loading-text="Submitting..." id="submit-button" type="submit" class="btn btn-primary" type="button" onclick="event.preventDefault();checkCookie();">submit</button>
                 </div>
                 <div>Are you an Internet Explorer user? <a id="ie-help">click here</a></div>
                 <div id="agreement" class="well-small hide" style="font-size: 90%;">

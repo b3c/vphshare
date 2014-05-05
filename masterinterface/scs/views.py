@@ -52,7 +52,8 @@ def home(request):
 
 def login(request):
     """Login view"""
-
+    if request.user.is_authenticated():
+        return redirect(request.GET.get('next','/'))
     return render_to_response(
         'scs/login.html',
         {'version': version, 'next': request.GET.get('next','/')},

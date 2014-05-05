@@ -10,6 +10,8 @@ def statusMessage(request):
     :return:
     """
     try:
+        if request.path == u'/done/':
+            return {}
         if request.session.get('statusmessage', False):
             message = request.session['statusmessage']
             del request.session['statusmessage']
@@ -17,6 +19,12 @@ def statusMessage(request):
                 'statusmessage': message,
                 }
 
+        if request.session.get('welcome', False):
+            message = request.session['welcome']
+            del request.session['welcome']
+            return {
+                'welcome': message,
+                }
         if request.session.get('errormessage', False):
             message = request.session['errormessage']
             del request.session['errormessage']
