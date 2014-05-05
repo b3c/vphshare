@@ -53,7 +53,10 @@ class ResourceForm(forms.ModelForm):
             try:
                 relatedResources = self.data.getlist('relatedResources')
                 for global_id in relatedResources:
-                    r = Resource.objects.get(global_id=global_id)
+                    try:
+                        r = Resource.objects.get(global_id=global_id)
+                    except Exception, e:                        
+                        continue
                     self.fields['relatedResources'].choices += ((global_id,r.metadata['name']),)
             except Exception, e:
                 if not isinstance(self.data['relatedResources']['relatedResource'], list):
@@ -62,7 +65,10 @@ class ResourceForm(forms.ModelForm):
                     relatedResources = self.data['relatedResources']['relatedResource'][:]
                 self.data['relatedResources'] = []
                 for global_id in relatedResources:
-                    r = Resource.objects.get(global_id=global_id['resourceID'])
+                    try:
+                        r = Resource.objects.get(global_id=global_id['resourceID'])
+                    except Exception, e:
+                        continue                                            
                     self.fields['relatedResources'].choices += ((global_id['resourceID'],r.metadata['name']),)
                     self.data['relatedResources'].append(global_id['resourceID'])
         if self.data.get('semanticAnnotations',None) is not None:
