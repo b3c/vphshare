@@ -432,8 +432,8 @@ def support(request):
             from django.core.mail import EmailMultiAlternatives
             text_content = loader.render_to_string('scs/%s.txt' % 'support_mail', dictionary={'contactForm':contactForm , 'reported': reported})
             html_content = loader.render_to_string('scs/%s.html' % 'support_mail', dictionary={'contactForm':contactForm , 'reported': reported})
-            mail_from='VPH-Share Webmaster <webmaster@vph-share.eu>',
-            mail_to='%s %s <%s>' % ('vph-share', 'support', 'support@vph-share.eu'),
+            mail_from='webmaster@vph-share.eu'
+            mail_to='%s %s <%s>' % ('vph-share', 'support', 'support@vph-share.eu')
             msg = EmailMultiAlternatives('Support request  [VPH-Bug-Report]', text_content, mail_from, [mail_to])
             msg.attach_alternative(html_content, "text/html")
             msg.content_subtype = "html"
