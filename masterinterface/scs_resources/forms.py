@@ -49,6 +49,9 @@ class ResourceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ResourceForm, self).__init__(*args, **kwargs)
+        if self.data.get('type', None) is not None and self.data.get('type', None) == 'AtomicService':
+            self.fields['name'].widget.attrs['readonly'] = True
+            self.fields['description'].widget.attrs['readonly'] = True
         if self.data.get('relatedResources',None) is not None:
             try:
                 relatedResources = self.data.getlist('relatedResources')
