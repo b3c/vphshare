@@ -12,7 +12,7 @@
 {%  block content %}
     <div class="row">
         <div class="span9">
-            {% if reported == 'False' %}
+            {% if not reported  %}
                 <h3>Report a bug</h3>
                 <form class="form-horizontal" enctype="multipart/form-data" method="post" action="/support/">
                 {% csrf_token %}
