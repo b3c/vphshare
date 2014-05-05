@@ -454,7 +454,7 @@ def mark_resource_private(request, global_id):
                 import requests
                 import xmltodict
                 from django.conf import settings
-                permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), verify=False).text)
+                permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), verify=False).text)
                 file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
                 name = 'vph'
                 if settings.DEBUG:
@@ -465,7 +465,7 @@ def mark_resource_private(request, global_id):
                 else:
                     del permissions['permissions'][file_permissions_match[role.name]]
 
-                result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False,  headers = {'content-type': 'application/xml'})
+                result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False,  headers = {'content-type': 'application/xml'})
                 if result.status_code not in [204,201,200]:
                     raise Exception('LOBCDER permision set error')
             remove_local_role(resource,None, role)
@@ -656,7 +656,7 @@ def revoke_role(request):
         import requests
         import xmltodict
         from django.conf import settings
-        permissions = xmltodict.parse(requests.get('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), verify=False).text)
+        permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), verify=False).text)
         file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
 
         if settings.DEBUG:
@@ -668,7 +668,7 @@ def revoke_role(request):
             else:
                 del permissions['permissions'][file_permissions_match[role.name]]
 
-            result = requests.put('https://lobcder.vph.cyfronet.pl/lobcder/rest/item/permissions/%s' % resource.metadata['localID'], auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False, headers = {'content-type': 'application/xml'})
+            result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False, headers = {'content-type': 'application/xml'})
             if result.status_code not in [204,201,200]:
                 raise Exception('LOBCDER permision set error')
 
