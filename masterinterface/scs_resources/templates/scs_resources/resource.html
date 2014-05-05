@@ -103,27 +103,27 @@
                 <div class="resource-details">
                     <dl class="dl-horizontal">
                         <dt>Created:</dt>
-                        <dd>{{ resource.metadata.creationDate|strTodate|date:"DATETIME_FORMAT" }}</dd>
+                        <dd>&nbsp{{ resource.metadata.creationDate|strTodate|date:"DATETIME_FORMAT" }}</dd>
                         <dt>Last update:</dt>
-                        <dd>{{ resource.metadata.updateDate|strTodate|date:"DATETIME_FORMAT" }}</dd>
-                        <dt>Status:</dt><dd>{% if resource|is_active %} published{% else %} not published{% endif %}</dd>
-                        {% if resource.metadata.format %}<dt>Format:</dt><dd>{{ resource.metadata.format }}</dd>{% endif %}
-                        {% if resource.metadata.semanticWebServiceType %}<dt>SWS type:</dt><dd>{{ resource.metadata.semanticWebServiceType }}</dd>{% endif %}
+                        <dd>&nbsp{{ resource.metadata.updateDate|strTodate|date:"DATETIME_FORMAT" }}</dd>
+                        <dt>Status:</dt><dd>&nbsp{% if resource|is_active %} published{% else %} not published{% endif %}</dd>
+                        {% if resource.metadata.format %}<dt>Format:</dt><dd>&nbsp{{ resource.metadata.format }}</dd>{% endif %}
+                        {% if resource.metadata.semanticWebServiceType %}<dt>SWS type:</dt><dd>&nbsp{{ resource.metadata.semanticWebServiceType }}</dd>{% endif %}
                         <br/>
                         {% if resource.metadata.relatedResources %}
                             <dt>Related Resources:</dt>
-                            {% for related in resource.metadata.relatedResources %}<dd><a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a></dd>{% endfor %}
+                            {% for related in resource.metadata.relatedResources %}<dd>&nbsp<a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a></dd>{% endfor %}
                         {% endif %}
                         <dt>Annotations:</dt>
                             {% for annotation  in resource.metadata.semanticAnnotations.semanticConcept %}
-                                <dd><span class="label">{{ annotation.conceptURI }}</span></dd>
+                                <dd>&nbsp<span class="label">{{ annotation.conceptURI }}</span></dd>
                             {% empty %}
-                                <dd>This resource has not semantic annotations.</dd>
+                                <dd>&nbsp This resource has not semantic annotations.</dd>
                             {% endfor %}
                         {% if resource.metadata.linkedTo %}
                             <dt>Additional contents:</dt>
                             {% for link in resource.metadata.linkedTo.link  %}
-                                <dd><a target="_blank" href="{{ link.linkURI }}">{{ link.linkType }}</a></dd>
+                                <dd>&nbsp<a target="_blank" href="{{ link.linkURI }}">{{ link.linkType }}</a></dd>
                             {% endfor %}
                         {% endif  %}
                     </dl>

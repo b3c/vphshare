@@ -39,7 +39,10 @@ def split(string, sep=" "):
 
 def strTodate(date):
     try:
-        return datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+        try:
+            return datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f')
+        except Exception, e:
+            return datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S')
     except Exception, e:
         return ''
 
