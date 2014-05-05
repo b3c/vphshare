@@ -30,7 +30,7 @@
                         {{ resource.metadata.name }}
                     </div>
                     <div class="span5">
-                        Owner: {{ resource.metadata.author }} | Updated: {{ resource.metadata.metadataUpdateDate|strTodate|date:"SHORT_DATE_FORMAT" }}
+                        {% if user.is_authenticated %}Owner: {{ resource.metadata.author }} |{% endif %} Updated: {{ resource.metadata.metadataUpdateDate|strTodate|date:"SHORT_DATE_FORMAT" }}
                     </div>
 
                     <div class="span3">

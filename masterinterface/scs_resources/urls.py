@@ -16,6 +16,7 @@ urlpatterns = patterns(
     url(r'^resources/(?P<global_id>[\w\-]+)/rate/(?P<rate>\d+)/', rate_resource, name='rate_resource'),
     url(r'^resources/(?P<id>[\w\-]+)/$', resource_detailed_view),
     url(r'^browse/(?P<tab>[\w\-]+)/$', resources,  name='resources_tab'),
+    url(r'^browse/$', resources,  name='resources_tab'),
     url(r'^resources/$', resources, name='resources'),
     url(r'^dashboard/$', manage_resources,  name='manage-data'),
     url(r'^dashboard/newshare$', newshare,  name='newshare'),
