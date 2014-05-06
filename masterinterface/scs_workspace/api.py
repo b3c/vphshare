@@ -12,6 +12,12 @@ from masterinterface.scs_workspace.forms import TavernaExecutionForm
 from masterinterface.scs.utils import get_file_data
 from raven.contrib.django.raven_compat.models import client
 from piston.utils import rc
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 
 class workflows_api(BaseHandler):
     """
@@ -30,14 +36,20 @@ class workflows_api(BaseHandler):
             else:
                 return rc.FORBIDDEN
             if request.method == 'POST':
-                optionals = ['tags','semanticAnnotations']
+                optionals = ['tags','semanticAnnotations','localID', 'resourceURL']
+                post  = request.POST.copy()
                 for option in optionals:
-                    if request.POST.get(option, None) is None:
-                        request.POST[option] = ''
-                form = WorkflowForm(request.POST, request.FILES)
+                    if post.get(option, None) is None:
+                        post[option] = ''
+                #post['global_id'] = post['globalID']
+                form = WorkflowForm(post, request.FILES)
                 if form.is_valid():
                     workflow = form.save(owner=user)
                     return workflow.global_id
+                logger.error('API:Update workflow bad request', exc_info=True, extra={
+                    'request': request,
+                    'form': form.errors
+                    })
             return rc.BAD_REQUEST
         except Exception, e:
             client.captureException()
@@ -64,14 +76,23 @@ class workflows_api(BaseHandler):
                 return response
 
             if request.method == 'PUT':
+                put = request.PUT.copy()
                 for key in dbWorkflow.metadata:
-                    if request.PUT.get(key,None) is None:
-                        request.PUT[key] = dbWorkflow.metadata[key]
-                form = WorkflowForm(request.PUT, request.FILES, instance=dbWorkflow)
+                    if request.PUT.get(key,None) is None or  request.PUT.get(key,None) == "":
+                        if key not in ['linkedTo'] and dbWorkflow.metadata[key] == None:
+                            put[key] = ''
+                        else:
+                            put[key] = dbWorkflow.metadata[key]
+                form = WorkflowForm(put, request.FILES, instance=dbWorkflow)
                 if form.is_valid():
                     workflow = form.save(commit=False, owner=dbWorkflow.owner)
                     workflow.save()
-                    return rc.CREATED
+                    return workflow.global_id
+                #logger.error('API:Update workflow bad request', exc_info=True, extra={
+                #    'request': request,
+                #    'form': form.errors,
+                #    'put' : put
+                #    })
             return rc.BAD_REQUEST
         except Exception, e:
             client.captureException()
