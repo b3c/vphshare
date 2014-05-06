@@ -100,6 +100,7 @@ def resource_detailed_view(request, id='1'):
             try:
                 lobcder_item = xmltodict.parse(requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=(request.user.username, request.COOKIES['vph-tkt']), verify=False).text.encode('utf-8'))
                 resource.metadata['lobcderPath'] = lobcder_item['logicalDataWrapped']['path']
+                resource.metadata['format'] = resource.metadata['name'].split('.')[-1]
             except Exception,e:
                 from raven.contrib.django.raven_compat.models import client
                 client.captureException()
