@@ -30,10 +30,8 @@ class ResourceForm(forms.ModelForm):
 
     name = forms.CharField(label="Name *", required=True)
     description = forms.CharField(label="Description *", required=True, widget=forms.Textarea)
-    licence = Select2ChoiceField(choices=(('GPL','GPL'),('LGPL','LGPL'),('EULA','EULA'), ('OLP','OLP'), ('TLP','TLP'), ('VLP','VLP'), ('EDU','EDU'), ('GOV','GOV'), ('BSD','BSD'), ('MIT','MIT')), help_text="Licence type", required=True, label='Licence *', initial="")
-    category = Select2ChoiceField(choices=(('Cardiovascular', 'Cardiovascular'), ('Respiratory','Respiratory'),('Genetics','Genetics'),('Infection and Immunology', 'Infection & Immunology'), ('Musculoskeletal', 'Musculoskeletal'), ('Gastroenerology','Gastroenerology'),('Neurology','Neurology') ,('Oncology','Oncology'), ('Multidisciplinary','Multidisciplinary') ,('Information Technology','Information Technology')),
-        help_text="Category", required=False, label="Category", initial=""
-    )
+    licence = Select2ChoiceField(choices=(('BSD','Berkeley Software Distribution'), ('MIT','MIT license'), ('GPL','General Public License'), ('LGPL','Lesser General Public License'), ('EDU','Academic, educational license'), ('GOV', 'Government license'),('EULA','End-user License Agreement'),('OLP','Microsoft Open License Program'),('TLP','Transactional Licensing Program'),('VLP','Volume License Program')), help_text="Licence type", required=True, label='Licence *', initial="")
+    category = Select2ChoiceField(choices=(('Cardiovascular', 'Cardiovascular'), ('Respiratory','Respiratory'),('Genetics','Genetics'),('Infection and Immunology', 'Infection & Immunology'), ('Musculoskeletal', 'Musculoskeletal'), ('Gastroenerology','Gastroenerology'),('Neurology','Neurology') ,('Oncology','Oncology'), ('Multidisciplinary','Multidisciplinary') ,('Information Technology','Information Technology')), help_text="Category", required=False, label="Category", initial="")
     tags = forms.CharField(widget=Select2CommaTags(), required=False, label="Tags", help_text="Type tags")
     semanticAnnotations = forms.CharField(widget=Select2CommaTags(), required=False, label="Semantic annotations", help_text="Type concept URI")
     resourceURL = forms.URLField(required=False, help_text="Resource URL", label="Resource URL")
