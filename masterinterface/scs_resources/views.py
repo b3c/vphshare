@@ -642,7 +642,7 @@ def revoke_role(request):
 
     try:
         # look for a group with the dataset name
-        group_name = get_resource_global_group_name(resource, role)
+        group_name = get_resource_global_group_name(resource, role.name)
         group = Group.objects.get(name=group_name)
         if type(principal) is User:
             group.user_set.remove(principal)
