@@ -25,22 +25,53 @@
 
 {% endblock %}
 {% block content %}
-<fieldset class="span6">
-  <legend>Your personal data:</legend>
-  <ul>
-    <li><strong>Id:</strong> <span>{{ request.user.id }}</span></li>
-    <li><strong>Username:</strong> <span>{{ request.user.username }}</span></li>
-    <li><strong>Email:</strong> <span>{{ request.user.email|default:"Not provided" }}</span></li>
-    <li><strong>First name:</strong> <span>{{ request.user.first_name|default:"Not provided" }}</span></li>
-    <li><strong>Last name:</strong> <span>{{ request.user.last_name|default:"Not provided" }}</span></li>
-    <li><strong>Country:</strong> <span>{{ request.user.userprofile.country }}</span></li>
-    <li><strong>PostCode:</strong> <span>{{ request.user.userprofile.postcode }}</span></li>
-    <li><strong>Last login time:</strong> <span>{{ request.user.last_login }}</span></li>
-    <li><a class="btn" id="copy-description" href="#copied">Copy your Authentication Ticket to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
-    <li><a class="btn" href="/groups">Groups</a><br/></li>
-  </ul>
-    <span class="invisible"><div id="copy" class="invisible">{{ tkt64 }}</div></span></li>
-</fieldset>
+    {% if request.user == user or user.userprofile.privacy %}
+        <fieldset class="span6">
+            {% if request.user == user %}
+                <legend>Your personal data:</legend>
+            {% else %}
+                <legend>{{ user.username }} profile</legend>
+            {% endif %}
+          <ul>
+            {% if request.user == user %}
+            <li><strong>Id:</strong> <span>{{ user.id }}</span></li>
+            {% endif %}
+            <li><strong>Username:</strong> <span>{{ user.username }}</span></li>
+            <li><strong>Email:</strong> <span>{{ user.email|default:"Not provided" }}</span></li>
+            <li><strong>First name:</strong> <span>{{ user.first_name|default:"Not provided" }}</span></li>
+            <li><strong>Last name:</strong> <span>{{ user.last_name|default:"Not provided" }}</span></li>
+            <li><strong>Country:</strong> <span>{{ user.userprofile.country }}</span></li>
+            <li><strong>PostCode:</strong> <span>{{ user.userprofile.postcode }}</span></li>
+            {% if request.user == user %}
+            <li><strong>Last login time:</strong> <span>{{ user.last_login }}</span></li>
+            <li><strong>Public profile:</strong> <span><input class="privacy" type="checkbox" value="privacy" {% if user.userprofile.privacy %}checked{% endif %} /></span><span class="updating-alert badge badge-warning hide"><i class='icon-spinner icon-spin'></i> Updating...</span> </li>
+            <script type="application/javascript">
+                $(function(){
+                    $('.privacy').click(function(e){
+                        $('.updating-alert').show();
+                        $.ajax({
+                            dataType: "json",
+                            url: '/setprivacy',
+                            method: 'get',
+                            success: function(data){
+                                $('.updating-alert').hide();},
+                            error: function(data){
+                                $('.updating-alert').hide();}
+                        });
+                    });
+                });
+            </script>
+            <li><a class="btn" id="copy-description" href="#copied">Copy your Authentication Ticket to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
+            <li><a class="btn" href="/groups">Groups</a><br/></li>
+            {% endif %}
+          </ul>
+            {% if request.user == user %}
+                <span class="invisible"><div id="copy" class="invisible">{{ tkt64 }}</div></span></li>
+            {% endif %}
+        </fieldset>
+    {% else %}
+        <h3>This user profile is private</h3>
+    {% endif %}
 
 
 

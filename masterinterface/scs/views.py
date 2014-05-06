@@ -13,6 +13,7 @@ from scs import __version__ as version
 from permissions.models import Role
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.contrib.auth.models import User
 
 from masterinterface import wsdl2mi
 from utils import is_staff
@@ -82,18 +83,22 @@ def reset_password(request):
     )
 
 @login_required
-def profile(request):
+def profile(request, user=None):
     """Login complete view, displays user data"""
 
     tkt64 = request.COOKIES.get('vph-tkt','No ticket')
 
+    if user is None:
+        user = request.user
+    else:
+        user = User.objects.get(username=user)
+
     data = {
         'version': version,
         'last_login': request.session.get('social_auth_last_login_backend'),
-        'tkt64': tkt64
+        'tkt64': tkt64,
+        'user': user
     }
-
-
 
     return render_to_response(
         'scs/profile.html',
@@ -317,7 +322,7 @@ def search(request):
             users = User.objects.filter(
                 Q(username__icontains=search_text) | Q(email__icontains=search_text) | Q(first_name__icontains=search_text) | Q(last_name__icontains=search_text)
             )
-            users = [{"description": user.username, "name": "%s %s (%s)" % (user.first_name, user.last_name, user.username), "email": user.email, "type": 'User'} for user in users]
+            users = [{"description": user.username, "name": "%s %s (%s)" % (user.first_name, user.last_name, user.username), "email": user.email, "type": 'User'} for user in users if user.userprofile.privacy is True]
             results += users
             if 'User' not in countType:
                 countType['User'] = len(users)

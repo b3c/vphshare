@@ -35,6 +35,7 @@ class UserProfile(models.Model):
     country = models.CharField(max_length=20, default="")
     fullname = models.CharField(max_length=30, default="")
     language = models.CharField(max_length=10, default="")
+    privacy = models.BooleanField(default=False)
     # roles = models.ManyToManyField(roles)
 
     def to_dict(self):

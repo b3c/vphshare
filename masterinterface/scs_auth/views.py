@@ -54,6 +54,19 @@ def done(request):
 
     return response
 
+@login_required
+def set_privacy(request):
+
+    if request.user.userprofile.privacy:
+        request.user.userprofile.privacy = False
+    else:
+        request.user.userprofile.privacy = True
+    request.user.userprofile.save()
+
+    response = HttpResponse(status=200)
+    response._is_string = True
+    return response
+
 @csrf_exempt
 def bt_agreement_check(request):
 

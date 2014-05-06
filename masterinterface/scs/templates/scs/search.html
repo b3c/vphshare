@@ -72,7 +72,7 @@
                 <div class="popover-list result-item">
                     <div class="popover-content">
                         {% if result.type == 'User' %}
-                            <p><i class="icon-user {{ result.type }}-color"></i><b class="{{ result.type }}-color"> {{ result.name }}</b></p>
+                            <p><i class="icon-user {{ result.type }}-color"></i><b> <a class="{{ result.type }}-color" href="/profile/{{ result.description }}">{{ result.name }}</a></b></p>
                         {% elif result.type == 'Institution' %}
                             <p><i class="icon-group {{ result.type }}-color"></i><a target="_blank" href="/groups/{{ result.id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
                         {% elif result.type == 'AtomicService' %}

@@ -21,6 +21,7 @@ urlpatterns = patterns(
     url(r'^data/upload-data/$', upload_data ,  name='upload-data'),
     url(r'^data/upload-structured-data/$', upload_structured_data,  name='upload-structured-data'),
     url(r'^data/browse/$', browse_data_az, name="browse_data_az"),
+    url(r'^profile/(?P<user>[\w\-]+)', profile,  name='profile'),
     url(r'^profile/$',profile, name='profile'),
     url(r'^login-error/$', login_error , name='login_error'),
     url(r'^services/$', services ,name='services'),
