@@ -43,9 +43,9 @@ def done(request):
         agreement.ip = ip
     agreement.save()
     if request.user.first_name:
-        request.session['welcome'] = "Dear %s, your login attempt has been successful, Welcome to the master interface!" % request.user.first_name
+        request.session['welcome'] = "Dear %s, your login attempt has been successful! Welcome to the Master Interface!" % request.user.first_name
     else:
-        request.session['welcome'] = "Dear friend, your login attempt has been successful, Welcome to the master interface!"
+        request.session['welcome'] = "Dear friend, your login attempt has been successful! Welcome to the Master Interface!"
     response = render_to_response(
         'scs_auth/done.html',
         ctx,
