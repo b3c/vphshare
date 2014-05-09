@@ -28,7 +28,7 @@ def index(request):
 @login_required
 def lobcder(request, path = '/'):
     return render_to_response("cyfronet/slet.html", {'lobcderWebDavUrl': settings.LOBCDER_WEBDAV_URL, 'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
-            'lobcderRestUrl': settings.LOBCDER_REST_URL}, RequestContext(request))
+            'lobcderRestUrl': 'https://lobcder.vph.cyfronet.pl/lobcder/rest'}, RequestContext(request))
 
 @csrf_exempt
 def retriveVtk(request):
