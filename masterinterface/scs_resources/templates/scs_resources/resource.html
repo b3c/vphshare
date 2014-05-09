@@ -225,9 +225,9 @@
                         {% elif resource.metadata.type == "File"%}
                             {% if resource.metadata.lobcderPath %}
                                 {% if resource.metadata.fileType == "Folder" %}
-                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}/" class="btn btn-block btn-large btn-success">Go to folder</a>
+                                    <a  href="{{ BASE_URL }}/filestore#show?{{ resource.metadata.lobcderPath }}/" class="btn btn-block btn-large btn-success">Go to folder</a>
                                 {% else %}
-                                    <a  href="{{ BASE_URL }}/lobcder#show?{{ resource.metadata.lobcderPath }}" class="btn btn-block btn-large btn-success">Go to file</a>
+                                    <a  href="{{ BASE_URL }}/filestore#show?{{ resource.metadata.lobcderPath }}" class="btn btn-block btn-large btn-success">Go to file</a>
                                 {% endif %}
                                 {% if resource.metadata.format == 'vtk' %}
                                     <button id="preview-button" class="btn btn-info btn-block btn-large"  onclick="getDataPath('{{ resource.metadata.lobcderPath  }}','');" data-path="{{ entry.path }}" title="Preview">
