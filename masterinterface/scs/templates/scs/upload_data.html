@@ -22,7 +22,7 @@
         <div class="span9" style="margin-top:15px;">
             <ul class="inline unstyled">
                 <li class="span4 text-center" >
-                    <a href="/lobcder"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo4.png"/></a>
+                    <a href="/filestore"><img style="width: 200px;" class="img-rounded" src="/static/img/data_logo4.png"/></a>
                     <h6><b>FileStore</br>Upload Unstructured Data</b></h6><p>(e.g. images and scans)</p>
                 </li>
                 <li class="span4 text-center" >
@@ -50,7 +50,7 @@
                         <p>Data Publications Suite (login required)</p>
                     {% endif %}
                     {% if request.user.is_authenticated %}
-                        <p><a href="/lobcder">FileStore</a></p>
+                        <p><a href="/filestore">FileStore</a></p>
                     {% else %}
                         <p>FileStore (login required)</p>
                     {% endif %}
