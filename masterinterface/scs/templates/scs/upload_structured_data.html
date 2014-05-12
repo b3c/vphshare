@@ -49,6 +49,11 @@
                     <p><a href="http://www.vph-share.eu/content/users-manual">User's manual</a></p>
                     <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
                     <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
+                                                            {% if request.user.is_authenticated %}
+                        <p><a href="/tutorial">Tutorial</a></p>
+                    {% else %}
+                        <p>Tutorial (login required)</p>
+                    {% endif %}
                 </div>
             </div>
             <div class="popover popover-mod">
