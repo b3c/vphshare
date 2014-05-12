@@ -424,6 +424,7 @@ def page404(request):
 
 
 def page500(request):
+    from masterinterface.scs.forms import ContactUs
     contactForm= ContactUs(request)
     return render_to_response("scs/500.html", {'contactForm':contactForm}, RequestContext(request))
 
