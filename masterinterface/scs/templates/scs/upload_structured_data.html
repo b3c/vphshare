@@ -36,27 +36,33 @@
             </ul></p>
             <br>
             <p>Downloads:</p><ul>
-            <li>Download the <a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></li>
-            <li>Download the <a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></li>
+            <li>Download the <a href="/static/Dps.Setup.x64.msi">Data Publications Suite (64-bit)</a></li>
+            <li>Download the <a href="/static/Dps.Setup.x86.msi">Data Publications Suite (32-bit)</a></li>
+            <li>Download the <a href="/static/VPH-SHARE_DPS_UserManual_full.pdf">Data Publication Suite Manual</a></li>
             <li>Download the <a href="/static/VPH-Share_DPS_Dataset.zip">Example data set</a></li>
             </ul>
         </div>
-         <div class="span2">
+         <div class="span3">
             <div class="popover popover-mod">
                 <h3 class="popover-title">Documents</h3>
                 <div class="popover-content">
                     <p><a href="http://www.vph-share.eu/content/users-manual">User's manual</a></p>
                     <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
                     <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
+                                                            {% if request.user.is_authenticated %}
+                        <p><a href="/tutorial">Tutorial</a></p>
+                    {% else %}
+                        <p>Tutorial (login required)</p>
+                    {% endif %}
                 </div>
             </div>
             <div class="popover popover-mod">
                 <h3 class="popover-title">Applications</h3>
                 <div class="popover-content">
                     {% if request.user.is_authenticated %}
-                        <p><a href="/static/Dps.Setup.x64.msi">DPS installer x64</a></p>
-                        <p><a href="/static/Dps.Setup.x86.msi">DPS installer x86</a></p>
-                        <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
+                        <p><a href="/static/Dps.Setup.x64.msi">DPS installer (64-bit)</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">DPS installer (32-bit)</a></p>
+                        <p><a href="/static/ANTsPatientData.zip">DPS Test Dataset (ANTs)</a></p>
                     {% else %}
                         <p>Data Publication Suite (login required)</p>
                     {% endif %}
