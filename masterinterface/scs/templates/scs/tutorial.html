@@ -1,0 +1,207 @@
+{% extends 'scs/base.html' %}
+
+{%  block title %} About Vph-Share {% endblock %}
+
+
+
+{% block page-title %}
+        <span class="title">About</span>
+        <span class="subtitle">&nbsp</span>
+{% endblock%}
+
+{%  block content %}
+    <style>
+    ol >li {
+        margin-left: 25px;
+    }
+    </style>
+    <div class="row"><div class="span6"><h3>VPH-Share: Fully Available for Use</h3></br></br><h6 style="color: black;">VPH-Share is a 20-Partner FP7 Integrated Project that is constructing an online, cloud-based environment in which users can share software tools, applications and data, and can develop and execute in silico clinical workflows. The VPH-Share infrastructure has been operational for over 12 months, with new features and content being added continuously. Four Flagship Workflows are included as demonstrators and, in recent months a significant number of additional Use Cases have been added to the project, several of which are already active. Notably, a related FP7 VPH project ‘MySpine’ has had its entire pre-processing workflow installed in a VPH-Share virtual machine, enabling the MySpine consortium to process 200 clinical cases without the need for complex local software installation.</h6></div><div class="span6"><img class="img-rounded" src="/static/img/about.jpg"/></div> </div>
+    <div class="row" style="margin-top:15px;">
+        <div class="span10">
+            <div class="accordion" id="accordion2">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                            <h3>Reviewers: A Guided Introduction<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapseOne" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h6 style="color: black;">At the project’s second periodic review in April 2013 the Reviewers proposed that, to obtain an enriched appreciation of the system, they might have access to the infrastructure during the two week period prior to the 3rd Periodic Review. This has been arranged, and VPH-Share accounts have been enabled for each reviewer. VPH-Share, although carefully designed, is none-the-less a complex infrastructure and, as with all such systems, the full benefits emerge after a degree of familiarisation. To help with this learning process we have prepared a set of illustrated guidance slide-sets that show users how to begin using the system and carry out three common activities.</h6>
+                        </br>
+                            <h6 style="color: black;"><b><i>For the Busy Reviewer:</b></i> In all cases you’ll need to see through the Login process. The three activities are then described in separate tutorials, and each requires around 40 minutes to complete. If time doesn’t permit this degree of engagement, it may be that an agreement between Reviewers to split the three tasks amongst you may be a possible solution. If this is palatable, the data-centred activities are probably the least challenging (perhaps 4/10), with the application and workflow development activities being the most challenging (perhaps 7/10). <br>
+If you’re particularly time-challenged, but would still like to try the system, the Data activity includes as its final step a search exercise to identify semantically-tagged data; this will give a flavour of the system without requiring a large investment of time.
+</h6>
+                        </div>
+                    </div>
+                </div>
+ <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse2">
+                            <h3>Guided Activity #0: Login<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse2" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h6 style="color: black;">To avoid the irritation that can arise from initial engagement with a new system, this first Login guide takes the user carefully through the <b>Login</b> process. In full, the process would be…
+<p>&nbsp</p>
+                                <ul><li>Locate the <a href="https://portal.vph-share.eu/">VPH-Share Portal</a>(also easily found through Google)</li>
+<li>Register on the VPH-Share site (already done for Reviewers)</li>
+<li>Obtain an account on the central VPH authentication system Biomed Town (already done)</li>
+<li>When notified of your account activation, revisit the portal and Login</li>
+<li>Subscribe to any relevant group (Reviewers are already in the ‘Reviewers’ group)</li>
+<li>(Note the online help and status information)</li></ul>
+Only step 4 is strictly required for Reviewer access (though steps 5 and 6 are worth a look).
+                                <p>&nbsp</p>
+                                <p>
+                                    <li><a href="https://www.dropbox.com/s/j0piz8h6zryf0ii/VPH-Share-Tutorial-00-Login.pdf">Login tutorial (pdf format, 10MB) </a> </li>
+                                <li><a href="https://www.dropbox.com/s/cigloq81rlpv6be/VPH-Share-Tutorial-00-Login_1v1.pptx">Login tutorial (ppt format, 25MB) </a> </li>
+                                </p>
+</h6>
+                        </br>
+                        </div>
+                    </div>
+                </div>
+                 <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse3">
+                            <h3>Guided Activity #1: Data Handling<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse3" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h6 style="color: black;">
+                                VPH-Share considers data in two distinctly different categories:
+                                <p>&nbsp</p> <p>
+<li>Unstructured data – data in individual files, lacking a known or exposed schema describing its organisation – is stored in a conventional ‘Filestore’, and is tagged with a small number of attributes that apply at the level of the entire data file only.</li>
+<li>Structured data (typically tabulated information) provides the additional opportunity for description and manipulation at a more detailed level of granularity (categories: ‘fields’ or ‘columns’, and records: ‘entries’ or ‘rows’) and is supported by a series of VPH-Share facilities. A special tool, the VPH-Share Data Publication Suite, is available for use both as a cloud-based Application, and as a software component that can be installed locally on a user’s Windows PC (typically behind a hospital firewall), and provides facilities to assist both the data provider and other potential data users by facilitating enhancement of the data prior to upload to the VPH-Share infrastructure.</li>
+<br>The handling of unstructured data in the VPH-Share Filestore is very straightforward, so this <b><i>Data</b></i> guide instead provides an exploration of the handling facilities for structured data:
+<p>&nbsp</p>
+                                <ol>
+<li>The user installs the Data Publication Suite (DPS) locally and obtains an example dataset containing several related files
+<li>Using the DPS, one of the dataset files is opened as a data ‘source’, and a previously-established location within the VPH-Share system is identified as a ‘destination’.
+<li>Particular fields within the source can now be given special attention:
+                                <ul>
+<li>One field can be set as containing an identifier for each entry
+<li>Fields that contain links to other, related, data files (such as images) can be set up to have the relationship recognised by the VPH-Share system
+<li>Fields can be tagged semantically (with reference to known ontologies) such that the content is systematically and formally identifiable and linkable using Resource Description Framework (RDF) tags. This also generates the ‘metadata’ for the data resource – the formalised description of the content that can assist others searching for possible data sources
+<li>Fields can be marked such that their contents are altered prior to upload, or omitted
+<li>In particular, sensitive fields can be marked such that the content is pseudonymised using an industry-standard obfuscation method
+                                    </ul>
+<li>When all conversion parameters have been established, the settings can be saved and the data uploaded
+<li>The resulting dataset can be queried using the standard formalised RDF query language ‘SPARQL’, which operates on the RDF tags to provide a semantics-based interrogation facility.
+<li>The existence of the published data can be made known, and the data itself can be shared with other trusted users. Once the data’s existence is exposed, other VPH-Share users can interrogate the metadata (but not the data itself) to determine its suitability. [This item represents basic VPH-Share usage, and might be attempted by the time-pressed Reviewer].
+    </ol>
+                                                               <p>&nbsp</p> <p>
+                                    <li><a href="https://www.dropbox.com/s/zt2wy5hoik3lhti/VPH-Share-Tutorial-01-Data.pdf">Data Handling tutorial (pdf format, 10MB) </a> </li>
+                                <li><a href="https://www.dropbox.com/s/p9ioxue61lv4jca/VPH-Share-Tutorial-01-Data_1v1.pptx">Data Handling tutorial (ppt format, 140MB) </a> </li>
+                                </p>
+</h6>
+                        </br>
+                        </div>
+                    </div>
+                </div>
+                   <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse4">
+                            <h3>Guided Activity #2: Application Development<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse4" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h6 style="color: black;">
+                               VPH-Share provides for the development and sharing of computational processes that are useful as components of larger workflows (and perhaps also as stand-alone entities). This <b><i>Application</b></i> guide covers the creation of a VPH-Share Application built from a pre-existing service.
+<p>&nbsp</p>
+                                <ol>
+<li>Become familiar with the process of using VPH-Share Applications
+    <ul>
+<li>Find an existing Application already available within VPH-Share, note its characteristics
+<li>Start an instance of the Application
+<li>Identify important information required to make use of this now-running Application
+        </ul>
+<li>Create a new Application from an existing program (which is provided to you); first, install the program and try it out on your local PC.
+<li>Create the VPH-Share Application…
+        <ul>
+<li>Obtain the necessary confidential ‘Secure Shell’ SSH credentials and uploading them
+<li>Choose the basic ‘wrapper’ that will be used to encapsulate the Application
+<li>Define the details of the wrapper, including its ‘endpoint’ (the location where the service will become available)
+                    </ul>
+<li>Make the Application available to other users.
+</ol>
+                                                                                               <p>&nbsp</p> <p>
+                                    <li><a href="https://www.dropbox.com/s/wmdfx41go7jh55g/VPH-Share-Tutorial-02-Applications.pdf">Application Development tutorial (pdf format, 10MB) </a> </li>
+                                <li><a href="https://www.dropbox.com/s/qooguhkmg2duku1/VPH-Share-Tutorial-02-Applications_1v1.pptx">Application Development tutorial (ppt format, 100MB) </a> </li>
+                                </p>
+</h6>
+                        </br>
+                        </div>
+                    </div>
+                </div>
+                                   <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse5">
+                            <h3>Guided Activity #3: Workflow Development<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse5" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <h6 style="color: black;">
+                               The ultimate goal of many VPH-Share users is to employ the Infrastructure to develop complete workflows capable of accepting patient data as inputs and presenting clinically-relevant diagnostic or treatment information as outputs. These workflows are typically assembled from pre-existing Applications that are chained together to interact and provide clinical solutions. This <b><i>Workflow</b></i> guide covers the creation of such a workflow:
+<p>&nbsp</p>
+                                <ol>
+<li>We start with an incomplete workflow that will be finished by the addition of missing facilities
+<li>The incomplete workflow is opened in the online workflow editor ‘Taverna Online’, which gives a diagrammatic view of the existing components and their interconnections
+<li>A new service is added, its parameters are entered, and it is connected into the existing workflow
+<li>The resulting workflow is saved with a new name
+<li>We execute the new workflow, providing details of the required source data
+<li>We inspect various details of the running workflow ‘instance’
+<li>Finally we share the completed and tested workflow with other users
+</ol>
+                                                                                                                              <p>&nbsp</p> <p>
+                                    <li><a href="https://www.dropbox.com/s/esyfevrgo99iovj/VPH-Share-Tutorial-03-Workflows.pdf">Workflow Development tutorial (pdf format, 10MB) </a> </li>
+                                <li><a href="https://www.dropbox.com/s/hzitry3zm3xh56s/VPH-Share-Tutorial-03-Workflows_1v1.pptx">Workflow Development tutorial (ppt format, 95MB) </a> </li>
+                                </p>
+</h6>
+                        </br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span2">
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Applications</h3>
+                <div class="popover-content">
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite (64 bit)</a></p>
+                        <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite (32 bit)</a></p>
+                        <p><a href="/static//static/ANTsPatientData.zip">DPS Test Dataset (ANTs)</a></p>
+                    {% else %}
+                        <p>Data Publications Suite (login required)</p>
+                    {% endif %}
+                    {% if request.user.is_authenticated %}
+                        <p><a href="/filestore">Upload unstructured data</a></p>
+                    {% else %}
+                        <p>Upload unstructured data (login required)</p>
+                    {% endif %}
+                    <p><a href="http://www.taverna.org.uk/download/workbench/">Taverna Workbench</a></p>
+                </div>
+            </div>
+            <div class="popover popover-mod">
+                <h3 class="popover-title">Documents</h3>
+                <div class="popover-content">
+                    <p><a href="http://www.vph-share.eu/content/users-manual">User's manual</a></p>
+                    <p><a href="/help/api/">Developer's APIs</a></p>
+                    <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
+                    <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
+                                                            {% if request.user.is_authenticated %}
+                        <p><a href="/tutorial">Tutorial</a></p>
+                    {% else %}
+                        <p>Tutorial (login required)</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -41,6 +41,7 @@ urlpatterns = patterns(
     url(r'^search/$', search, name="search"),
     url(r'^search_results/$', search_service, name="search_results"),
     url(r'^help/api/$', 'api_help'),
+    url(r'^tutorial/$', login_required(TemplateView.as_view(template_name='scs/tutorial.html'))),
 
 )
 

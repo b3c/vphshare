@@ -53,7 +53,7 @@ We have also created a web presence on the major social network platforms: <a hr
                     {% if request.user.is_authenticated %}
                         <p><a href="/static/Dps.Setup.x64.msi">Data Publications Suite x64</a></p>
                         <p><a href="/static/Dps.Setup.x86.msi">Data Publications Suite x86</a></p>
-                        <p><a href="/static/VPH-Share_DPS_Dataset.zip">DPS Test Dataset</a></p>
+                        <p><a href="/static/ANTsPatientData.zip">DPS Test Dataset</a></p>
                     {% else %}
                         <p>Data Publications Suite (login required)</p>
                     {% endif %}
@@ -72,6 +72,11 @@ We have also created a web presence on the major social network platforms: <a hr
                     <p><a href="/help/api/">Developer's APIs</a></p>
                     <p><a href="/static/VPH-Share_DataProtocol_2v3.pdf">Data Sharing Protocol</a></p>
                     <p><a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a></p>
+                                                            {% if request.user.is_authenticated %}
+                        <p><a href="/tutorial">Tutorial</a></p>
+                    {% else %}
+                        <p>Tutorial (login required)</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

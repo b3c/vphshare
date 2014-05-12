@@ -196,7 +196,7 @@ class create_group(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None:
 
                     name = request.GET.get('group')
 
@@ -277,7 +277,7 @@ class delete_group(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None:
 
                     name = request.GET.get('group')
 
@@ -489,7 +489,7 @@ class group_members(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None and user.is_staff:
+                if user is not None:
 
                     try:
                         group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
@@ -543,7 +543,7 @@ class user_groups(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None and user.is_staff:
+                if user is not None:
 
                     try:
                         target_user = User.objects.get(username=request.GET.get('username'))
@@ -594,7 +594,7 @@ class promote_user(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None:
 
                     group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
                     user_to_promote = User.objects.get(username=request.GET.get('username'))
@@ -659,7 +659,7 @@ class downgrade_user(BaseHandler):
                 client_address = request.META['REMOTE_ADDR']
                 user, tkt64 = authenticate(ticket=request.GET['ticket'], cip=client_address)
 
-                if user is not None or not user.is_staff:
+                if user is not None:
 
                     group = VPHShareSmartGroup.objects.get(name=request.GET.get('group'))
                     user_to_downgrade = User.objects.get(username=request.GET.get('username'))
