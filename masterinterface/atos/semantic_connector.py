@@ -18,7 +18,7 @@ from masterinterface.atos.config import *
 from masterinterface.atos.metadata_connector import filter_resources_by_facet
 from masterinterface.scs_resources.models import Resource
 
-def automatic_search_connector(free_text):
+def automatic_search_connector(free_text, user = None):
     """
         automatic_search_connector: Call the automatic search API
         and extract the result from XML.
