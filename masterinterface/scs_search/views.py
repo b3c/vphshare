@@ -25,7 +25,7 @@ def automatic_search_view( request ):
     """
     breadcrum = [0, 0, 0]
     if request.GET.get('input', None) is not None:
-        results = automatic_search_connector(quote(request.GET['input']))
+        results = automatic_search_connector(quote(request.GET['input']), request.user)
         breadcrum[0] = 1
     else:
         results = ''
@@ -221,7 +221,7 @@ def automatic_search_service( request ):
 
     if request.method == 'POST':
         free_text = request.POST['input']
-        connector = json.dumps(automatic_search_connector(quote(free_text)), sort_keys=False)
+        connector = json.dumps(automatic_search_connector(quote(free_text), request.user), sort_keys=False)
 
         response = HttpResponse(content=connector,
                                 content_type='application/json')
