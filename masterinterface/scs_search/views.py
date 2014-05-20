@@ -207,6 +207,7 @@ def annotation_search_view_results(request):
         endpoint_url = r.search(dataset)
         if 'read/sparql' in endpoint_url.group(1):
             explore = endpoint_url.group(1).replace('read/sparql', 'explore/sql.html')
+            explore = explore.replace('https://','https://admin:%s@'%request.ticket)
         ####### Save History #######
         if request.user.is_authenticated():
             query_obj = Query(name=name, query=groups_query)
