@@ -17,12 +17,13 @@
                 <input id="page-num" type="hidden" value="1">
             </div>
         </form>
-
         <button id="back-to-query" type="button" class="btn btn-small hide">Back to Search</button>
         <!--<button id="query-submit" type="button" class="btn btn-small pull-right hide" >Query</button>-->
     </div>
     <div id="right-nav-search" class="navbar-inner span6 hide" style="min-height: 70px;">
-
+        {% if breadcrum.2 and explore %}
+            <a class="btn btn-small" href="{{ explore }}" target="_blank">Explore Dataset</a>
+        {% endif %}
         <div id="query-group" class="btn-group hide pull-right ">
             <button id="reset-groups" class="btn btn-small hide ">Reset</button>
             <!--<button id="history-button" class="btn  btn-small " data-toggle="dropdown" >

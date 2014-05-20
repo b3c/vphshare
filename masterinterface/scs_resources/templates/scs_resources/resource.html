@@ -207,8 +207,9 @@
                             <a class="btn btn-block btn-large btn-success" id="copy-description" href="#copied">Copy endpoint to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span>
                             <div id="copy" class="copy hide">{{ resource.metadata.semanticWebServiceURL }}</div>
                         {% elif resource.metadata.type == "Dataset" %}
+                               <a target="_blank" href="{{ resource.metadata.explore }}" class="btn btn-block btn-large btn-success">Explore Dataset</a>
                             {% if resource.metadata.sparqlEndpoint  %}
-                            \   <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.sparqlEndpoint }}%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                               <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.sparqlEndpoint }}%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
                             {% else %}
                                 <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.localID }}/sparql%26&datasetLabel={{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
                             {% endif %}

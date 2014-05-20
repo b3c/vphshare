@@ -130,6 +130,7 @@ def annotation_search_view(request):
     user = request.user
     name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
     results = ''
+    explore = ''
     if request.GET.get('groups_query', None) is not None:
 
         groups_query = unquote(request.GET['groups_query'])
@@ -166,6 +167,11 @@ def annotation_search_view(request):
     if request.GET.get('dataset', None) is not None:
         dataset = unquote(request.GET['dataset'])
         datasetLabel = unquote(request.GET['datasetLabel'])
+        import re
+        r = re.compile('sparqlEndpoint=(.*?)&')
+        endpoint_url = r.search(dataset)
+        if 'read/sparql' in endpoint_url.group(1):
+            explore = endpoint_url.group(1).replace('read/sparql', 'explore/sql.html')
         conceptClass = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
         #conceptClass = unquote(request.GET['conceptClass'])
         #conceptClassLabel = unquote(request.GET['conceptLabel'])
@@ -173,7 +179,7 @@ def annotation_search_view(request):
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'results': results, 'dataset': dataset, 'datasetLabel': datasetLabel
-                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'classLabel': conceptLabel, 'conceptClass': conceptClass},
+                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'classLabel': conceptLabel, 'conceptClass': conceptClass, 'explore':explore},
                               RequestContext(request))
 
 def annotation_search_view_results(request):
@@ -184,6 +190,7 @@ def annotation_search_view_results(request):
     datasetLabel = ''
     conceptClass = ''
     conceptLabel = ''
+    explore = ''
     user = request.user
     name = 'query-' + datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
     results = ''
@@ -198,6 +205,8 @@ def annotation_search_view_results(request):
         import re
         r = re.compile('sparqlEndpoint=(.*?)&')
         endpoint_url = r.search(dataset)
+        if 'read/sparql' in endpoint_url.group(1):
+            explore = endpoint_url.group(1).replace('read/sparql', 'explore/sql.html')
         ####### Save History #######
         if request.user.is_authenticated():
             query_obj = Query(name=name, query=groups_query)
@@ -209,7 +218,7 @@ def annotation_search_view_results(request):
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'queryresults': results, 'dataset': dataset, 'datasetLabel': datasetLabel
-                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'load_groups': json.dumps(groups_query) , 'conceptClass':conceptClass},
+                                  , 'class': conceptClass, 'breadcrum': [1, 1, 1], 'load_groups': json.dumps(groups_query) , 'conceptClass':conceptClass, 'explore':explore},
                               RequestContext(request))
 
 

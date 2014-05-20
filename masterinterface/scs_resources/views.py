@@ -54,7 +54,7 @@ def resource_detailed_view(request, id='1'):
             except ObjectDoesNotExist, e:
                 # TODO create a new user or assign resource temporarly to the President :-) now I'm the president #asagli
                 resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
-                update_resource_metadata(id, {'author':'asagli'}, metadata['type'])
+                #update_resource_metadata(id, {'author':'asagli'}, metadata['type'])
                 resource.save(metadata=metadata)
 
             finally:
@@ -77,7 +77,7 @@ def resource_detailed_view(request, id='1'):
         # Count visit hit
         resource.metadata['rating'] = float(resource.metadata['rating'])
         resource.metadata['views'] = resource.update_views_counter()
-        if resource.metadata['relatedResources']:
+        if resource.metadata.get('relatedResources',None) is not None:
             if  not isinstance(resource.metadata['relatedResources']['relatedResource'], list):
                 relatedResources = [resource.metadata['relatedResources']['relatedResource'].copy()]
             else:
@@ -87,14 +87,12 @@ def resource_detailed_view(request, id='1'):
                 r = Resource.objects.get(global_id=global_id['resourceID'])
                 resource.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
 
-        if resource.metadata['linkedTo']:
+        if resource.metadata.get('linkedTo',None) is not None:
             if  not isinstance(resource.metadata['linkedTo']['link'], list):
                 resource.metadata['linkedTo']['link'] = [resource.metadata['linkedTo']['link'].copy()]
-
-        if resource.metadata['semanticAnnotations']:
+        if resource.metadata.get('semanticAnnotations', None) is not None:
             if  not isinstance(resource.metadata['semanticAnnotations']['semanticConcept'], list):
                 resource.metadata['semanticAnnotations']['semanticConcept'] = [resource.metadata['semanticAnnotations']['semanticConcept'].copy()]
-
         if request.user.is_authenticated() and resource.can_read(request.user):
             #get the path information using the lobcder services.
             try:
@@ -106,6 +104,10 @@ def resource_detailed_view(request, id='1'):
                 client.captureException()
                 resource.metadata['lobcderPath'] = None
                 pass
+            if str(resource.metadata['type']) == 'Dataset':
+                if 'read/sparql' in resource.metadata['sparqlEndpoint']:
+                    resource.metadata['explore'] = resource.metadata['sparqlEndpoint'].replace('read/sparql', 'explore/sql.html')
+                    resource.metadata['explore'] = resource.metadata['explore'].replace('https://','https://admin:%s@'%request.ticket)
         # INJECT DEFAULT VALUES
         #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
 
