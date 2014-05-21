@@ -1,5 +1,50 @@
 __author__ = 'asaglimbeni'
 
+def json2csvquery( query_request , column, table_root):
+    baseQuery = """
+    SELECT *
+    WHERE {
+      [ a <%s>;
+        %s
+        ]
+      FILTER ( %s)
+    }
+    """
+
+    column_set = ''
+    for c in column:
+        column_set += '<%s> [ rdf:value ?%s]; ' %(c, column[c])
+
+    #filters = ' ?%s = "%s"^^xsd:string ||' TO  use when the user want word match
+    filters = {
+        '<': ' ?%s = "%s"^^xsd:%s ||',
+        '>': ' ?%s = "%s"^^xsd:%s ||',
+        '=': ' ?%s = "%s"^^xsd:%s ||',
+        'regex': ' regex(?%s, "%s", "i") ||',
+        }
+
+    globalFilter = ""
+    for concepts_group in query_request:
+        exlude = concepts_group.pop(0)
+
+        if exlude == "NOT":
+            globalFilter += "!"
+
+        globalFilter += "( "
+        for concepts_or in concepts_group:
+            concept = concepts_or[0]
+            value = concepts_or[3]
+            operator = concepts_or[4]
+            ctype = concepts_or[5]
+
+            if operator == 'regex':
+                globalFilter += filters[operator] % (column[concept], value)
+            else:
+                globalFilter += filters[operator] % (column[concept], value, ctype)
+        globalFilter = globalFilter[:-2] + " ) && "
+
+    globalFilter = globalFilter[:-3]
+    return baseQuery % (table_root, column_set, globalFilter)
 
 def json2sparql( query_request ):
     baseQuery = """
