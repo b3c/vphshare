@@ -370,6 +370,131 @@ def get_set_of_values(dataset, classConcept, annotationRange):
 
     return False
 
+def schema_search_connector(free_text, dataset, classConcept, classLabel, num_max_hits, page_num, ticket):
+    """
+        annotation_search: Call the annotation_search API
+        and extract the result from XML.
+
+        Arguments:
+            freeText (string): input text
+            num_max_hits (integer): number oh results
+            page_num (integer): page number
+
+        Returns:
+            json_results (obj): object JSON format
+    """
+    PROJECT_ROOT = settings.PROJECT_ROOT
+    results = OrderedDict()
+
+    import re
+    r = re.compile('sparqlEndpoint=(.*?)&')
+    dataset = r.search(dataset).group(1).split('/sparql')[0]
+    if not dataset.count('https'):
+        dataset = dataset.replace('http', 'https')
+    if dataset.count('/read') > 0:
+        dataset = dataset.replace('/read','')
+
+    response = requests.get('%s/dpsschema.xml' % dataset, auth=('admin', ticket), verify=False)
+    response.encoding = 'utf-8'
+    import xmltodict
+    annotationSearch = xmltodict.parse(response.text)
+
+    objectProperties = annotationSearch['DataInstance']['Tables']['Table']['Fields']['Field']
+    results['max_matches'] = num_max_hits
+    results['page_num'] = page_num
+
+    annotations = []
+    annotationList = OrderedDict()
+    num_results_total = 0
+    for annotation in objectProperties:
+        range = '%s/unannotated#%s'%( dataset, annotation['D2rName'])
+        rangeLabel = annotation['Name']
+
+        if free_text is None or annotation['name'].lower().count(free_text.lower()):
+
+
+            #           THE ATOS SERVICE IS TOO SLOW!!
+            #            if parentUri != field.getparent().attrib[ 'annotationUri' ].encode():
+            #                parentUri = field.getparent().attrib[ 'annotationUri' ].encode()
+            #                serviceClassRange = serviceClassRangeBase%(quote(dataset), quote(parentUri))
+            #                classRangeResponse = json.loads(requests.get(serviceClassRange).text.encode())
+            #            termRange = None
+            #            for term in classRangeResponse:
+            #                if term['range']['value'] == attrib[ 'annotationUri' ]:
+            #                    termRange = term['property']['value']
+
+            termRange = '%s/mapping#has_roottable_%s'%( dataset, annotation['D2rName'])
+            try:
+                inputType = {
+                    'boolean': """<select class="operator">
+                             <option style="display:none;" value="=">=</option>
+                             </select>
+                             <select id="annotation-value">
+                             <option value="true">True</option><option value="false">False</option>
+                             </select>""",
+                    'int': """<select class="operator">
+                             <option value="=">=</option><option value=">">></option><option value="<"><</option>
+                             </select>
+                             <input id="annotation-value" type="number" placeholder="Integer value" />""",
+                    'short': """<select class="operator">
+                             <option value="=">=</option><option value=">">></option><option value="<"><</option>
+                             </select>
+                             <input class="annotation-value" type="number" placeholder="Integer value" />""",
+                    'string': """<select class="operator">
+                             <option value="=">= Exact match</option><option value="regex">⊃ Inclusion match</option>
+                             </select>
+                             <input id="annotation-value" type="text" placeholder="String value" />""",
+                    'date': """<select class="operator">
+                             <option  value="=">=</option><option value=">">></option><option value="<"><</option>
+                             </select>
+                             <input id="annotation-value" type="date" placeholder="Date:DD/MM/YY" />"""
+                }
+                inputType['float'] = inputType['int']
+
+                setOfValues = get_set_of_values(dataset, classConcept, range)
+                if setOfValues:
+                    termType = "set"
+                    options = ""
+                    for uri, value in setOfValues:
+                        options += '<option value="%s">%s</option>' % (uri, value)
+
+                    inputType['set'] = """
+                             <select class="operator">
+                             <option style="display:none;" value="=">=</option>
+                             </select>
+                             <select id="annotation-value">
+                             %s
+                             </select>""" % options
+
+                else:
+                    termType = 'string'
+
+                    #termType = \
+                    #    root_types.find(".//concept[@name='%s']" % attrib['annotationUri']).attrib['type'].split('#')[1]
+                    #if termType not in ['string', 'short', 'int', 'float', 'boolean', 'date']:
+                    #    termType = 'string'
+
+            except Exception, e:
+                continue
+
+            annotationList[range] = [termRange, rangeLabel, classLabel, inputType[termType],
+                                              termType]
+            num_results_total += 1
+            if not (len(annotationList) % 20):
+                annotations.append(annotationList)
+                annotationList = OrderedDict()
+
+        if num_results_total >= num_max_hits:
+            break
+    if not len(annotations):
+        annotations.append(annotationList)
+    results['num_pages'] = len(annotations)
+    results['num_results_total'] = num_results_total + (int(page_num) - 1) * 20
+    results[page_num] = annotations[int(page_num) - 1]
+
+    json_results = json.dumps(results, sort_keys=False)
+
+    return json_results
 
 def annotation_search_connector(free_text, dataset, classConcept, classLabel, num_max_hits, page_num):
     """
@@ -626,16 +751,27 @@ def dataset_query_connector(query, endpoint_url, username='', ticket=''):
     print "\nrequest:\n"
     print endpoint_url.group(1) + "?query=" + quote(query)
     try:
-        response = requests.get(endpoint_url.group(1) + "?query=" + quote(query), verify=False, auth=(username, ticket))
+        query_request = endpoint_url.group(1) + "?query=" + quote(query)
+        query_request = query_request.replace('https://', 'https://%s:%s@'%(username, ticket))
+        query_request+= '&x-asio-accept=text/csv'
+        response = requests.get(endpoint_url.group(1) + "?query=" + quote(query), verify=False, auth=(username, ticket), headers={'Accept':'text/csv','Content-Type': 'application/x-www-form-urlencoded'})
         if response.status_code in [401,403]:
             raise AtosPermissionException
-        concept_list = etree.fromstring(
-            response.text.encode().replace('xmlns="http://www.w3.org/2005/sparql-results#"', ''))
+        reader = response.text.split('\n')
+        header = reader[0].split(',')
+        del reader[0]
+        results=[]
+        for row in reader:
+            results.append(row.split(','))
+        if not results[-1]:
+            del results[-1]
+        #concept_list = etree.fromstring(
+        #    response.text.encode().replace('xmlns="http://www.w3.org/2005/sparql-results#"', ''))
 
-        for concept_elem in concept_list.getiterator('uri'):
-            results.append(concept_elem.text)
+        #for concept_elem in concept_list.getiterator('uri'):
+        #    results.append(concept_elem.text)
     except AtosPermissionException, e:
         raise AtosPermissionException, "User don't have permission to query the dataset"
     except Exception, e:
         pass
-    return results
+    return [header, results, query_request]

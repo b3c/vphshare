@@ -1,18 +1,23 @@
 <div id="dataset-results" class="{% if not queryresults %}hide{% endif %}">
     <legend>Available resources</legend>
+    <a class="btn btn-success" href="{{ queryresults.2 }}">Download CSV</a>
     <table id="dataset-table-block" class="tableuserlits table table-hover table-bordered {% if not queryresults %}hide{% endif %}">
         <thead>
         <tr>
-            <th style="text-align: center;" id="resource-count-label">Resources</th>
+            {% for data in queryresults.0 %}
+            <th style="text-align: center;" id="resource-count-label">{{ data }}</th>
+            {% endfor %}
         </tr>
         </thead>
         <tbody id="dataset-table-base">
         <tr class="term hide">
             <td class="dataset-value" style="text-align: center;"></td>
         </tr>
-        {% for data in queryresults %}
+        {% for data in queryresults.1 %}
             <tr class="term">
-                <td class="dataset-value" style="text-align: center;"><a target="_blank" href="{{ data }}">{{ data }}</a></td>
+                {% for column in data %}
+                    <td class="dataset-value" style="text-align: center;">{{ column }}</td>
+                {% endfor %}
             </tr>
         {% endfor %}
         </tbody>

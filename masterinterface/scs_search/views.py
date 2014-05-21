@@ -16,7 +16,7 @@ from django.utils import simplejson
 
 from masterinterface.atos.semantic_connector import *
 from models import Query
-from json2sparql import json2sparql
+from json2sparql import json2sparql, json2csvquery
 
 
 def automatic_search_view( request ):
@@ -214,7 +214,26 @@ def annotation_search_view_results(request):
             query_obj.save()
             query_obj.user.add(user)
 
-        query_sparql = json2sparql(load_groups)
+        if not datasetLabel.count('https'):
+            base_dataset = datasetLabel.replace('http', 'https')
+        if dataset.count('/read') > 0:
+            base_dataset = datasetLabel.replace('/read','')
+
+        response = requests.get('%s/dpsschema.xml' % base_dataset, auth=('admin', request.ticket), verify=False)
+        response.encoding = 'utf-8'
+        import xmltodict
+        annotationSearch = xmltodict.parse(response.text)
+
+        objectProperties = annotationSearch['DataInstance']['Tables']['Table']['Fields']['Field']
+        table_root = '%s/unannotated#%s'%( base_dataset, annotationSearch['DataInstance']['Tables']['Table']['D2rName'])
+        column = {}
+        for annotation in objectProperties:
+            #range = '%s/unannotated#%s'%( base_dataset, annotation['D2rName'])
+            #rangeLabel = annotation['Name']
+            termRange = '%s/mapping#has_roottable_%s'%( base_dataset, annotation['D2rName'])
+            column[termRange] =annotation['D2rName']
+        #query_sparql = json2sparql(load_groups)
+        query_sparql = json2csvquery(load_groups, column, table_root)
         results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', ''))
 
     return render_to_response('scs_search/scs_search.html',
@@ -437,8 +456,8 @@ def annotation_search_service(request):
         classConcept = request.POST['classConcept']
         classLabel = request.POST['classLabel']
 
-        connector = annotation_search_connector(free_text, dataset, classConcept, classLabel, num_max_hits, page_num, )
-
+        #connector = annotation_search_connector(free_text, dataset, classConcept, classLabel, num_max_hits, page_num, )
+        connector = schema_search_connector(free_text, dataset, classConcept, classLabel, num_max_hits, page_num, request.ticket )
         response = HttpResponse(content=connector, content_type='application/json')
 
         return response
