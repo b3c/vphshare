@@ -205,7 +205,7 @@ def filter_resources_by_type(resource_type):
     try:
 #        while exit:
 
-        result = filter_resources_by_facet(resource_type,page=page,numResults=200)
+        result = filter_resources_by_facet(resource_type,page=page,numResults=300)
 #            if result == []:
 #                exit= False
         results += result
