@@ -77,7 +77,7 @@ def resource_detailed_view(request, id='1'):
         # Count visit hit
         resource.metadata['rating'] = float(resource.metadata['rating'])
         resource.metadata['views'] = resource.update_views_counter()
-        if resource.metadata['relatedResources']:
+        if resource.metadata.get('relatedResources',None) is not None:
             if  not isinstance(resource.metadata['relatedResources']['relatedResource'], list):
                 relatedResources = [resource.metadata['relatedResources']['relatedResource'].copy()]
             else:
@@ -87,11 +87,11 @@ def resource_detailed_view(request, id='1'):
                 r = Resource.objects.get(global_id=global_id['resourceID'])
                 resource.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
 
-        if resource.metadata['linkedTo']:
+        if resource.metadata.get('linkedTo',None) is not None:
             if  not isinstance(resource.metadata['linkedTo']['link'], list):
                 resource.metadata['linkedTo']['link'] = [resource.metadata['linkedTo']['link'].copy()]
 
-        if resource.metadata['semanticAnnotations']:
+        if resource.metadata.get('semanticAnnotations', None) is not None:
             if  not isinstance(resource.metadata['semanticAnnotations']['semanticConcept'], list):
                 resource.metadata['semanticAnnotations']['semanticConcept'] = [resource.metadata['semanticAnnotations']['semanticConcept'].copy()]
 
@@ -384,8 +384,10 @@ def get_resources_details(request, global_id):
         try:
             resource = Resource.objects.get(global_id=global_id)
             resource.requests = get_pending_requests_by_resource(resource)
-            resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user, 'ticket':request.ticket})
-
+            if hasattr(request,'ticket'):
+                resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user, 'ticket':request.ticket})
+            else:
+                resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user, 'ticket':''})
             return HttpResponse(status=200,
                             content=json.dumps({'data': resultsRender}, sort_keys=False),
                             content_type='application/json')
