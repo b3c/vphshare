@@ -115,13 +115,14 @@ def user_login():
 
         Return response.
     """
+    import urllib
     if request.method == 'GET':
         username = request.args.get("username")
-        password = request.args.get("password")
+        password = urllib.unquote(request.args.get("password"))
         domain = request.args.get("domain", "")
     elif request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
+        password = urllib.unquote(request.form['password'])
         domain = request.form.get("domain", "")
     else:
         return abort(403)
