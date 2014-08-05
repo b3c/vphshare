@@ -64,7 +64,7 @@ class TavernaExecution(models.Model):
         self.save()
 
     def update(self, ticket):
-        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'is_running']
+        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'output' 'is_running']
         ret = WorkflowManager.getWorkflowInformation(self.id, ticket)
         is_running = False
         try:

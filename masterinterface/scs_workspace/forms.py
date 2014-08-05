@@ -15,7 +15,7 @@ class TavernaExecutionForm(forms.ModelForm):
 
     class Meta:
         model = TavernaExecution
-        exclude = ['owner', 't2flow', 'baclava', 'status', 'taverna_id', 'as_config_id', 'url', 'taverna_atomic_id', 'task_id', 'creation_datetime', 'executionstatus', 'error', 'error_msg', 'endpoint', 'asConfigId', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
+        exclude = ['owner', 't2flow', 'baclava', 'status', 'taverna_id', 'as_config_id', 'url', 'taverna_atomic_id', 'task_id', 'creation_datetime', 'executionstatus', 'error', 'error_msg', 'endpoint', 'asConfigId', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'output']
         widgets = {
             'workflowId': forms.HiddenInput()
         }
