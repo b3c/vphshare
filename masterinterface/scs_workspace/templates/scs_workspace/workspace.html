@@ -192,7 +192,7 @@
 
             WfmngProtocol.prototype.getExecutioninfoCallBack = function(data){
                 var self = this;
-                var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id "," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder", "Running"];
+                var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id "," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder", "Output" , "Running"];
                 this.$details.empty();
                 var error = data[1];
                 var error_msg = data[2];
@@ -249,7 +249,7 @@
                 for (var i=3; i<data.length;i++){
 
                     if (data[i] != ''){
-                        if (i == 10 || i == 11){
+                        if (i == 10 || i == 11 || i == 13){
                             this.$details.append('<p><strong>'+label[i]+'</strong> <textarea readonly rows="10" style="width:90%">'+data[i]+'</textarea></p>');
 
                         }else if(i==12){
