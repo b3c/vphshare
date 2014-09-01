@@ -79,7 +79,7 @@ class TavernaExecution(models.Model):
                     continue
                 setattr(self, key, ret.get(key, ''))
         else:
-            ret = [0, False, '', '', self.url, '', '', '', '', '', '', '', '', '', is_running]
+            ret = [0, False, '', '', self.url, '', '', '', '', '', '', '', '', '', '' ,is_running]
             for i in range(0, len(keys)):
                 if keys[i] == 'is_running':
                     setattr(self, keys[i], ret[i])
