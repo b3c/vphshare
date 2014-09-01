@@ -64,7 +64,7 @@ class TavernaExecution(models.Model):
         self.save()
 
     def update(self, ticket):
-        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'output' 'is_running']
+        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'output', 'is_running']
         ret = WorkflowManager.getWorkflowInformation(self.id, ticket)
         is_running = False
         try:
@@ -79,7 +79,7 @@ class TavernaExecution(models.Model):
                     continue
                 setattr(self, key, ret.get(key, ''))
         else:
-            ret = [0, False, '', '', self.url, '', '', '', '', '', '', '', '', '', is_running]
+            ret = [0, False, '', '', self.url, '', '', '', '', '', '', '', '', '', '' ,is_running]
             for i in range(0, len(keys)):
                 if keys[i] == 'is_running':
                     setattr(self, keys[i], ret[i])
