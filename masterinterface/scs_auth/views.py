@@ -68,6 +68,39 @@ def set_privacy(request):
     return response
 
 @csrf_exempt
+@login_required
+def refreshtkt(request):
+
+    if request.method == 'POST' and request.user.is_authenticated():
+        try:
+            newtkt = request.user.userprofile.get_ticket(int(request.POST.get('expire')))
+            response = HttpResponse(status=200, content=newtkt)
+        except Exception, e:
+            response = HttpResponse(status=400)
+    else:
+        response = HttpResponse(status=403)
+    response._is_string = True
+    return response
+
+@csrf_exempt
+@login_required
+def changeuser(request):
+    """
+    tool avalable only for admin
+    """
+    if request.method == 'POST' and request.user.is_superuser:
+        try:
+            newtkt = User.objects.get(username=request.POST.get('username')).userprofile.get_ticket()
+            response = HttpResponse(status=200, content=newtkt)
+        except Exception, e:
+            response = HttpResponse(status=400)
+    else:
+        response = HttpResponse(status=403)
+    response._is_string = True
+    return response
+
+
+@csrf_exempt
 def bt_agreement_check(request):
 
     if request.method == 'POST' and request.POST.get('username'):
