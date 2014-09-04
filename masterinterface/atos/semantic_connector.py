@@ -755,7 +755,7 @@ def dataset_query_connector(query, endpoint_url, username='', ticket=''):
         query_request+= '&x-asio-accept=text/csv'
         response = requests.post(
             endpoint_url.group(1) ,
-            data = {'query': quote(query)},
+            data = {'query': query},
             verify=False,
             auth=(username, ticket),
             headers={'Accept':'text/csv','Content-Type': 'application/x-www-form-urlencoded'},
