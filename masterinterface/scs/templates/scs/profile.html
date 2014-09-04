@@ -11,14 +11,61 @@
 
     $(document).ready(function(){
 
-        $('a#copy-description').zclip({
+        var zclip = $('a#copy-description').zclip({
             path:'/static/ZeroClipboard.swf',
-            copy:$('div#copy').text(),
+            copy: function(){ return $('div#copy').text();},
             afterCopy:function(){
                 $('#copied-message').removeClass("invisible");
                 $(this).preventDefault();
             }
         });
+
+        $('#expire-option').change(function(){
+            var expire = "";
+            var updating = $('.updating-alert').clone();
+            updating.insertAfter(this);
+            updating.show();
+            expire = $( "#expire-option option:selected" ).val();
+            $.ajax({
+                dataType: "text",
+                url: '/refreshtkt/',
+                type: "POST",
+                data: {'expire':expire},
+                success: function(data){
+                    updating.hide();
+                    updating.remove();
+                    $('div#copy').text(data);
+                    },
+                error: function(data){
+                    updating.hide();
+                    updating.remove();
+                }
+            });
+        });
+
+        $('#change-user').change(function(){
+            var newuser = "";
+            var updating = $('.updating-alert').clone();
+            updating.insertAfter(this);
+            updating.show();
+            newuser = $( "#change-user option:selected" ).val();
+            $.ajax({
+                dataType: "text",
+                url: '/changeuser/',
+                type: "POST",
+                data: {'username':newuser},
+                success: function(data){
+                    updating.hide();
+                    updating.remove();
+                    $('#change-link').attr('href',"/?ticket="+data);
+                    },
+                error: function(data){
+                    updating.hide();
+                    updating.remove();
+                }
+            });
+        });
+
 
     });
     </script>
@@ -26,7 +73,7 @@
 {% endblock %}
 {% block content %}
     {% if request.user == user or user.userprofile.privacy %}
-        <fieldset class="span6">
+        <fieldset class="span7">
             {% if request.user == user %}
                 <legend>Your personal data:</legend>
             {% else %}
@@ -61,8 +108,25 @@
                     });
                 });
             </script>
-            <li><a class="btn" id="copy-description" href="#copied">Copy your Authentication Ticket to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
+            <li><a class="btn" id="copy-description" href="#copied">Copy your Authentication Ticket to clipboard</a> expire in
+            <select id="expire-option" style="margin-bottom: 0px;">
+                <option value="0" selected>12 h</option>
+                <option value="1">1 day</option>
+                <option value="7">7 days</option>
+                <option value="30">30 days</option>
+            </select>
+            <br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
             <li><a class="btn" href="/groups">Groups</a><br/></li>
+                {% if request.user.is_superuser %}
+                    <hr/>
+                    <h1>Be careful, only for test!</h1>
+                     <select id="change-user" style="margin-bottom: 0px;">
+                        {% for u in users %}
+                            <option value="{{ u }}" {% if u == request.user.username %}selected{% endif %}>{{ u }}</option>
+                        {% endfor %}
+                    </select>
+                    <a id="change-link" href="#" target="_blank">Click to change user</a>
+                {% endif %}
             {% endif %}
           </ul>
             {% if request.user == user %}
