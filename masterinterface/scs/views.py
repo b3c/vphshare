@@ -97,7 +97,8 @@ def profile(request, user=None):
         'version': version,
         'last_login': request.session.get('social_auth_last_login_backend'),
         'tkt64': tkt64,
-        'user': user
+        'user': user,
+        'users':  [u.username for u in User.objects.all()]
     }
 
     return render_to_response(

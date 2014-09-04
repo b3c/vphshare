@@ -25,5 +25,7 @@ urlpatterns = patterns(
     url(r'^users_create_role/$', users_create_role , name='users_create_role'),
     url(r'^users_remove_role/$', users_remove_role , name='users_remove_role'),
     url(r'^setprivacy/$', set_privacy , name='set_privacy'),
+    url(r'^refreshtkt/$', refreshtkt , name='refreshtkt'),
+    url(r'^changeuser/$', changeuser , name='changeuser'),
 
 )
