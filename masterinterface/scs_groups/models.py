@@ -54,6 +54,27 @@ class VPHShareSmartGroup(Group):
 
         return False
 
+    def get_parents(self):
+        """
+        Return the tree list of the parents
+        """
+        parents_list = []
+        try:
+            parent = self.parent
+            while parent is not None:
+                parent = VPHShareSmartGroup.objects.get(name=parent.name)
+                if parent.active:
+                    parents_list.append(parent.name)
+                #follow the tree
+                parent = parent.parent
+        except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
+            return []
+        return parents_list
+
+
+
 
 class Institution(VPHShareSmartGroup):
 

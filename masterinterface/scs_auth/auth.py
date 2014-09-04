@@ -56,6 +56,10 @@ def getUserTokens(user):
             vphgroup = VPHShareSmartGroup.objects.get(name=group.name)
             if vphgroup.active:
                 tokens.append(group.name)
+            #add also the parents
+            for parent in vphgroup.get_parents():
+                if parent not in tokens:
+                    tokens.append(parent)
         except ObjectDoesNotExist:
             # simple group, just add it to the list
             tokens.append(group.name)
@@ -70,6 +74,11 @@ def getUserTokens(user):
     # add default role for all the users
     if not tokens.count("VPH"):
         tokens.append("VPH")
+        tokens.append("vph")
+
+    #add user as default role
+    if not tokens.count(user):
+        tokens.append(user.username)
 
     return tokens
 
@@ -95,7 +104,7 @@ def userProfileUpdate(details, user, *args, **kwargs):
         user.save()
 
 
-def socialtktGen(details, *args, **kwargs):
+def socialtktGen(details, user, *args, **kwargs):
     """
     New pipeline for social_auth.
     Generation of ticket from given user details.
@@ -104,44 +113,7 @@ def socialtktGen(details, *args, **kwargs):
 
     if email:
 
-        user_key = ['nickname', 'fullname', 'email', 'language', 'country', 'postcode']
-        user_value = []
-
-        for i in range(0, len(user_key)):
-            user_value.append(details[user_key[i]])
-
-        user = kwargs.get('user')
-        tokens = getUserTokens(user)
-
-        validuntil = settings.TICKET_TIMEOUT + int(time.time())
-
-        ticketObj = settings.TICKET
-        try:
-            new_tkt = ticketObj.createTkt(
-                details['nickname'],
-                tokens=tokens,
-                user_data=user_value,
-                #user_data=[],
-                #cip = kwargs['request'].META['REMOTE_ADDR'],
-                validuntil=validuntil,
-                encoding='utf-8'
-            )
-        except  Exception, e:
-            print e
-            #new_tkt = createTicket(
-        #    details['nickname'],
-        #    settings.SECRET_KEY,
-        #   tokens=tokens,
-        #    ip = kwargs['request'].META['REMOTE_ADDR'],
-        #    user_data=user_value,
-        #    validuntil=validuntil,
-        #    mod_auth_pubtkt=settings.MOD_AUTH_PUBTKT,
-        #    signType=settings.MOD_AUTH_PUBTKT_SIGNTYPE
-        #)
-
-        tkt64 = binascii.b2a_base64(new_tkt).rstrip()
-
-        return {'ticket': tkt64}
+        return {'ticket': user.userprofile.get_ticket()}
 
 
 def calculate_sign(privkey, data):
