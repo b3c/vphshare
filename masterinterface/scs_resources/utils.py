@@ -245,18 +245,21 @@ def grant_permission(name, resource, role, ticket=None):
         import xmltodict
         from django.conf import settings
         permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', ticket), verify=False).text)
-        file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
+        file_permissions_match = {'Reader':['read'],'Editor':['write'], 'Manager':['write','read'], 'Owner':['owner']}
         if principal is None:
             # set the role to all users, vph is the default group for all users in vph-share
             name = 'vph'
-        if settings.DEBUG:
-            name = name+"_dev"
-        if permissions['permissions'].get(file_permissions_match[role.name], None) is None:
-            permissions['permissions'][file_permissions_match[role.name]] = [name]
-        elif isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
-            permissions['permissions'][file_permissions_match[role.name]] += [name]
         else:
-            permissions['permissions'][file_permissions_match[role.name]] = [permissions['permissions'][file_permissions_match[role.name]], name]
+            name = principal
+        if settings.DEBUG:
+                name = name+"_dev"
+        for permission_match in file_permissions_match[role.name]:
+            if permissions['permissions'].get(permission_match, None) is None:
+                permissions['permissions'][permission_match] = [name]
+            elif isinstance(permissions['permissions'][permission_match], list) and name not in permissions['permissions'][permission_match]:
+                permissions['permissions'][permission_match] += [name]
+            elif permissions['permissions'][permission_match] != name:
+                permissions['permissions'][permission_match] = [permissions['permissions'][permission_match], name]
 
         result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=('admin', ticket), verify=False, data=xmltodict.unparse(permissions),  headers = {'content-type': 'application/xml'})
         if result.status_code not in [204,201,200]:
