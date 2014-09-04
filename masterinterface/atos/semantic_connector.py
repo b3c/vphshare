@@ -752,9 +752,14 @@ def dataset_query_connector(query, endpoint_url, username='', ticket=''):
     print endpoint_url.group(1) + "?query=" + quote(query)
     try:
         query_request = endpoint_url.group(1) + "?query=" + quote(query)
-        query_request = query_request.replace('https://', 'https://%s:%s@'%(username, ticket))
         query_request+= '&x-asio-accept=text/csv'
-        response = requests.get(endpoint_url.group(1) + "?query=" + quote(query), verify=False, auth=(username, ticket), headers={'Accept':'text/csv','Content-Type': 'application/x-www-form-urlencoded'})
+        response = requests.post(
+            endpoint_url.group(1) ,
+            data = {'query': quote(query)},
+            verify=False,
+            auth=(username, ticket),
+            headers={'Accept':'text/csv','Content-Type': 'application/x-www-form-urlencoded'},
+            )
         if response.status_code in [401,403]:
             raise AtosPermissionException
         reader = response.text.split('\n')
