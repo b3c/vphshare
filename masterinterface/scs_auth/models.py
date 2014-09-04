@@ -14,7 +14,10 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from permissions.models import Role
 from permissions.utils import get_roles
-
+from django.conf import settings
+from scs_auth.auth import getUserTokens
+import time
+import binascii
 
 class roles(models.Model):
     id = models.AutoField(primary_key=True)
@@ -60,6 +63,39 @@ class UserProfile(models.Model):
         if not user_dict['role'].count("VPH"):
             user_dict['role'].append("VPH")
         return user_dict
+
+    def get_ticket(self, expire_time = None):
+        """
+            return the ticket of the user
+        """
+
+        user_value = [ self.user.username, self.fullname, self.user.email, self.language, self.country, self.postcode]
+
+        user = self.user
+        tokens = getUserTokens(user)
+
+        if expire_time is None:
+            validuntil = settings.TICKET_TIMEOUT + int(time.time())
+        else:
+            validuntil = expire_time * 86400 + int(time.time())
+
+        ticketObj = settings.TICKET
+        try:
+            new_tkt = ticketObj.createTkt(
+                user.username,
+                tokens=tokens,
+                user_data=user_value,
+                #user_data=[],
+                #cip = kwargs['request'].META['REMOTE_ADDR'],
+                validuntil=validuntil,
+                encoding='utf-8'
+            )
+        except  Exception, e:
+            print e
+
+        tkt64 = binascii.b2a_base64(new_tkt).rstrip()
+
+        return tkt64
 
 
 class UserAgreement(models.Model):
