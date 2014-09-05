@@ -207,11 +207,11 @@
                             <a class="btn btn-block btn-large btn-success" id="copy-description" href="#copied">Copy endpoint to clipboard</a><br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span>
                             <div id="copy" class="copy hide">{{ resource.metadata.semanticWebServiceURL }}</div>
                         {% elif resource.metadata.type == "Dataset" %}
-                               <a target="_blank" href="{{ resource.metadata.explore }}" class="btn btn-block btn-large btn-success">Explore Dataset</a>
+                               <a target="_blank" href="{{ resource.metadata.explore }}" class="btn btn-block btn-large btn-success {% if not resource.metadata.explore %}disabled{% endif %}">{% if resource.metadata.explore %}Explore Dataset{% else %}Explore not available{% endif %}</a>
                             {% if resource.metadata.sparqlEndpoint  %}
                                <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.sparqlEndpoint|urlencode:"" }}%26&datasetLabel={{ resource.metadata.localID|urlencode:"" }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
                             {% else %}
-                                <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.localID|urlencode:"" }}/sparql%26&datasetLabel={{ resource.metadata.localID|urlencode:"" }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
+                               <a  href="/semantic-search/annotation/?dataset=sparqlEndpoint%3D{{ resource.metadata.localID|urlencode:"" }}/sparql%26&datasetLabel={{ resource.metadata.localID|urlencode:"" }}" class="btn btn-block btn-large btn-success">Query the dataset</a>
                             {% endif %}
                         {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
                             <a  href="{{ BASE_URL }}/tools/#startInstance?{{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
@@ -238,6 +238,10 @@
                                         <i  class="icon-spinner icon-spin hide"></i> Loading...
                                     </button>
                                 {% endif %}
+                            {% else %}
+                                <button  class="btn btn-error btn-block btn-large disabled" >
+                                    The resource is not mapped in lobcder
+                                </button>
                             {% endif %}
                         {% endif %}
 

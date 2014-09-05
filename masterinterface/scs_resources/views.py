@@ -29,7 +29,7 @@ from masterinterface.atos.metadata_connector import *
 from utils import *
 from masterinterface import settings
 from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
-
+from django.core.exceptions import SuspiciousOperation
 
 def resource_detailed_view(request, id='1'):
     """
@@ -37,31 +37,24 @@ def resource_detailed_view(request, id='1'):
     """
     try:
         try:
-            resource = Resource.objects.get(global_id=id)
+            resource = Resource.objects.get(global_id=id, metadata=False)
         except ObjectDoesNotExist, e:
-            # create into local database the resource
             metadata = get_resource_metadata(id)
-            # look for resource owner, if he exists locally
             try:
-                resource_owner = User.objects.get(username=metadata['author'])
-                # TODO create a particular type of resource rather than a Resource
-                if str(metadata['type']).lower() == "workflow":
-                    resource = Workflow(global_id=id, owner=resource_owner)
-                else:
-                    resource = Resource(global_id=id, owner=resource_owner)
-                resource.save(metadata=metadata)
-
+                author = User.objects.get(username=metadata['author'])
             except ObjectDoesNotExist, e:
-                # TODO create a new user or assign resource temporarly to the President :-) now I'm the president #asagli
-                resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
+                #resource assigned to noone are ignored.
+                raise  SuspiciousOperation
+                #resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
                 #update_resource_metadata(id, {'author':'asagli'}, metadata['type'])
-                resource.save(metadata=metadata)
-
-            finally:
-                resource.metadata = metadata
-                # TODO set resource workflow
-                # set_workflow(resource, ResourceWorkflow)
-
+                #resource.save(metadata=metadata)
+            if metadata['type'] == "Workflow":
+                resource, created = Workflow.objects.get_or_create(global_id=id, metadata=metadata, owner=author)
+                resource.save()
+                resource = resource.resource_ptr
+            else:
+                resource, created = Resource.objects.get_or_create(global_id=id, metadata=metadata, owner=author)
+                resource.save()
         except MultipleObjectsReturned:
 
             # seems like the President has stolen something :-)
@@ -72,8 +65,9 @@ def resource_detailed_view(request, id='1'):
                     r.delete()
 
             resource = Resource.objects.get(global_id=id)
-            resource.metadata = metadata
 
+        #assign metadata
+        resource.metadata = metadata
         # Count visit hit
         resource.metadata['rating'] = float(resource.metadata['rating'])
         #resource.metadata['views'] = resource.update_views_counter()
@@ -106,9 +100,10 @@ def resource_detailed_view(request, id='1'):
                 resource.metadata['lobcderPath'] = None
                 pass
             if str(resource.metadata['type']) == 'Dataset':
-                if 'read/sparql' in resource.metadata['sparqlEndpoint']:
-                    resource.metadata['explore'] = resource.metadata['sparqlEndpoint'].replace('read/sparql', 'explore/sql.html')
-                    resource.metadata['explore'] = resource.metadata['explore'].replace('https://','https://admin:%s@'%request.ticket)
+                endpoint = resource.metadata.get('sparqlEndpoint',resource.metadata['localID'])
+                if 'read/sparql' in endpoint:
+                    resource.metadata['explore'] = endpoint.replace('read/sparql', 'explore/sql.html')
+                    resource.metadata['explore'] = endpoint.replace('https://','https://admin:%s@'%request.ticket)
         # INJECT DEFAULT VALUES
         #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
 
@@ -138,6 +133,8 @@ def resource_detailed_view(request, id='1'):
              'requests': []},
             RequestContext(request)
         )
+    except SuspiciousOperation:
+        raise SuspiciousOperation
     except Exception, e:
         from raven.contrib.django.raven_compat.models import client
         client.captureException()
@@ -275,6 +272,8 @@ def get_resources_list(request, resource_type, page=1):
                 if resource_meta['type'] == "Workflow":
                     resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
                 else:
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
                 # look if there are group with the resource name and grant them the local role
                 if resource.metadata['type'] == 'Dataset':
