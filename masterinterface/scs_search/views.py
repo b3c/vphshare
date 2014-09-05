@@ -172,6 +172,7 @@ def annotation_search_view(request):
         endpoint_url = r.search(dataset)
         if 'read/sparql' in endpoint_url.group(1):
             explore = endpoint_url.group(1).replace('read/sparql', 'explore/sql.html')
+            explore = explore.replace('https://','https://admin:%s@'%request.ticket)
         conceptClass = class_search_connector(None, datasetLabel, num_max_hits='200', page_num='1').get('1',[])
         #conceptClass = unquote(request.GET['conceptClass'])
         #conceptClassLabel = unquote(request.GET['conceptLabel'])

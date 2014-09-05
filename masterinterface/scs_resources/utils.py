@@ -250,7 +250,7 @@ def grant_permission(name, resource, role, ticket=None):
             # set the role to all users, vph is the default group for all users in vph-share
             name = 'vph'
         else:
-            name = principal
+            name = getattr(principal,'username',getattr(principal,'name',None))
         if settings.DEBUG:
                 name = name+"_dev"
         for permission_match in file_permissions_match[role.name]:
