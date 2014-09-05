@@ -207,13 +207,13 @@ class get_resources_list(BaseHandler):
                                 resource.save()
 
                             if resource.can_I(role,user):
-                                user_resources.append(resource)
+                                user_resources.append({"local_id": resource.metadata['localID'], "global_id": resource.global_id})
 
 
                         except ObjectDoesNotExist, e:
                             # not in local db, no roles
                             continue
-                    return [{"local_id": r.metadata['localID'], "global_id": r.global_id} for r in user_resources]
+                    return user_resources
                 else:
                     user_resources = []
                     roles = Roles[Roles.index(Role.objects.get(name=role).name):]
@@ -223,9 +223,9 @@ class get_resources_list(BaseHandler):
                     )
                     for role_relation in role_relations:
                             if isinstance(role_relation.content, Resource) and role_relation.content not in user_resources:
-                                user_resources.append(role_relation.content)
+                                user_resources.append(role_relation.content.global_id)
 
-                    return [r.global_id for r in user_resources]
+                    return user_resources
             else:
                 response = HttpResponse(status=403)
                 response._is_string = True
