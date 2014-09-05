@@ -247,17 +247,22 @@ LOGGING = {
         'django.db.backends': {
             'level': 'ERROR',
             'handlers': ['sentry'],
-            'propagate': False,
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['sentry'],
+            'level': 'ERROR',
+            'propagate': True,
         },
         'raven': {
             'level': 'DEBUG',
             'handlers': ['sentry'],
-            'propagate': False,
+            'propagate': True,
         },
         'sentry.errors': {
             'level': 'DEBUG',
             'handlers': ['sentry'],
-            'propagate': False,
+            'propagate': True,
         },
     },
 }
