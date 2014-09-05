@@ -41,9 +41,9 @@ class masterInterfaceMiddleware(object):
                     return
 
             #FROM GET ATTRIBUTE
-            #if validate ticket is ok, open new session and set ticket cookie.
+            #if validate ticket is ok, open new session and set ticket cookie only for super user , not avlid under api.
 
-            if request.GET.get('ticket') and not request.path.count('validatetkt'):
+            if request.GET.get('ticket') and not request.path.count('api') and request.user.is_superuser:
                 try:
                     ticket = binascii.a2b_base64(request.GET['ticket'])
                 except :
