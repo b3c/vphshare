@@ -76,7 +76,7 @@ def resource_detailed_view(request, id='1'):
 
         # Count visit hit
         resource.metadata['rating'] = float(resource.metadata['rating'])
-        resource.metadata['views'] = resource.update_views_counter()
+        #resource.metadata['views'] = resource.update_views_counter()
         if resource.metadata.get('relatedResources',None) is not None:
             if  not isinstance(resource.metadata['relatedResources']['relatedResource'], list):
                 relatedResources = [resource.metadata['relatedResources']['relatedResource'].copy()]
