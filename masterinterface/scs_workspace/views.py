@@ -65,7 +65,7 @@ def startExecution(request):
     try:
         if request.method == 'POST' and request.POST.get('eid', None):
             taverna_execution = TavernaExecution.objects.get(pk=request.POST['eid'], ticket=request.COOKIES.get('vph-tkt') , owner=request.user)
-            taverna_execution.start(request.COOKIES.get('vph-tkt'))
+            taverna_execution.start(request.user.userprofile.get_ticket('7'))
             return HttpResponse(content=json.dumps(True))
     except Exception, e:
         from raven.contrib.django.raven_compat.models import client
