@@ -238,7 +238,7 @@ class WfMngApiHandler(BaseHandler):
                 taverna_execution.save()
 
                 if taverna_execution.t2flow!= "" and taverna_execution.baclava!= "":
-                    taverna_execution.start(user.userprofile.get_ticket('7'))
+                    taverna_execution.start(user.userprofile.get_ticket(7))
                     #return eid
                     return taverna_execution.id
                 return rc.BAD_REQUEST
