@@ -24,6 +24,34 @@ def get_securitypolicies(ticket):
     return []
 
 
+def get_user(ticket, id):
+    """
+        return the user by id
+    """
+
+    r = requests.get(
+        "%s/users/%s" % (settings.CLOUDFACACE_URL, id),
+        headers={'MI-TICKET': ticket},
+        verify=settings.CLOUDFACACE_SSL
+    )
+    if r.status_code == 200:
+        return eval(r.text)['user']
+    return []
+
+def get_users(ticket,):
+    """
+        return a list of the available users
+    """
+
+    r = requests.get(
+        "%s/users" % settings.CLOUDFACACE_URL,
+        headers={'MI-TICKET': ticket},
+        verify=settings.CLOUDFACACE_SSL
+    )
+    if r.status_code == 200:
+        return eval(r.content.replace('null', '""'))['users']
+    return []
+
 def get_securitypolicy_by_id(ticket, policy_id):
     """
         return the security policy file content
@@ -53,6 +81,8 @@ def update_securitypolicy(ticket, policy_id, policy_name, policy_file):
         verify=settings.CLOUDFACACE_SSL
     )
 
+    if r.status_code in [200, 201, 204]:
+        return eval(r.text)['security_policy']
     return r.status_code in SUCCESSFUL_CODES
 
 
@@ -69,7 +99,8 @@ def create_securitypolicy(ticket, policy_name, policy_file):
         data = body,
         verify=settings.CLOUDFACACE_SSL
     )
-
+    if r.status_code in [200, 201, 204]:
+        return eval(r.text)['security_policy']
     return r.status_code in SUCCESSFUL_CODES
 
 

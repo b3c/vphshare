@@ -1,0 +1,306 @@
+{% extends 'scs_security/base.html' %}
+{% load scs_extras %}
+
+{% block extrahead %}
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
+{%  block title %}
+    {% if edit %}
+         VPH-Share - edit security policy
+    {% elif view %}
+        VPH-Share - {{ policy.name }}
+    {% else %}
+        VPH-Share - new security policy
+    {% endif %}
+{% endblock %}
+
+{% block page-title %}
+    <span class="title">Security policy</span>
+    <span class="subtitle"></span>
+{% endblock%}
+
+{%  block content %}
+        {% if form %}
+            <div class="span10">
+            {% if edit %}
+                <h3>Edit {{ policy.name }}.</h3>
+            {% else %}
+                {% if view %}
+                    <h3>Policy: {{ policy.name }}</h3>
+                    {% if request.user in policy.owners %}
+                        <a class="btn btn-primary" href="/security/policy/{{ policy.remote_id }}/edit">Edit policy</a>
+                    {% endif %}
+                {% else %}
+                    <h3>Create new policy.</h3>
+                {% endif %}
+            {% endif %}
+        {{ form.media }}
+        <script>
+            $(function(){
+               $("[name='advance_user']").click(function(){
+                   var self = $(this);
+                   if (confirm("You will lose the informations in this form changing the mode, are you sure?")){
+                       if ($(this).is(':checked')){
+                           $('#policy_advanced_form').show();
+                           $('#policy_form').hide();
+                      }else{
+                           $('#policy_advanced_form').hide();
+                           $('#policy_form').show();
+                       }
+                   }
+                   $(this).prop('checked', !$(this).is(':checked'));
+               });
+                {% if view %}
+                    $('#policy_advanced_form').find('input, textarea, button, select').attr('disabled','disabled');
+                    $('#policy_form').find('input, textarea, button, select').attr('disabled','disabled');
+                    $('[name="remove"]').hide();
+                {% endif %}
+
+            });
+        </script>
+        <form id="policy_advanced_form" class="form-horizontal {% if expert == 'false' %}hide{% endif %}" enctype="multipart/form-data" method="post" action="">
+            {% csrf_token %}
+            {% if not view %}
+                {% for field in advancedform.visible_fields %}
+                    {% if field.name == 'name' %}
+                    <div class="well well-small">
+                    <ul class="nav nav-pills">
+                      <li class="resource-tab active">
+                            <a>Expert mode</a>
+                      </li>
+                    </ul>
+                    {% endif %}
+                    <div class="control-group{% if field.errors %}{% endif %}">
+                        <label class="control-label" for="{{ field.id }}">
+                            {{ field.label }}{% if field.field.required %}*{% endif %}
+                        </label>
+                        <div class="controls">
+                                {{ field }}
+                            {% if field.errors and not view %}
+                                <span class="badge badge-important" title="{{ field.errors|first }}">!</span><span class="help-inline"> {{ field.errors|first }}</span>
+                            {% else %}
+                                <span class="help-inline">{{ field.help_text }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="well well-small">
+                <ul class="nav nav-pills">
+                  <li class="resource-tab active">
+                        <a>File content</a>
+                  </li>
+                </ul>
+                <legend>File content</legend>
+                <span class="help-block">Upload a new file to update the policy</span>
+                <pre >{{ policy.policyfile }}</pre>
+            </div>
+            {% if not view %}
+            <div class="control-group">
+                <div class="control-label"><i>* Required fields.</i></div>
+            </div>
+                {% if edit %}
+                     <input type="submit" class="btn btn-primary" value="Update policy" />
+                {% else %}
+                     <input type="submit" class="btn btn-primary" value="Create policy" />
+                {% endif %}
+            {% endif %}
+        </form>
+
+        <form id="policy_form" class="form-horizontal {% if expert == 'true' %}hide{% endif %}" enctype="multipart/form-data" method="post" action="">
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
+                {% if field.name == 'name' %}
+                <div class="well well-small">
+                <ul class="nav nav-pills">
+                  <li class="resource-tab active">
+                        <a>User Conditions</a>
+                  </li>
+                </ul>
+                {% endif %}
+                {% if field.name == 'expiry' %}
+                </div><div class="well well-small">
+                <ul class="nav nav-pills">
+                  <li class="resource-tab active">
+                        <a>System conditions</a>
+                  </li>
+                </ul>
+                {% endif %}
+                {% if field.name == 'url_contain' %}
+                </div><div class="well well-small">
+                <ul class="nav nav-pills">
+                  <li class="resource-tab active">
+                        <a>Action options</a>
+                  </li>
+                </ul>
+                {% endif %}
+                {% if field.name == 'post_fields' %}
+                </div><div class="well well-small">
+                <ul class="nav nav-pills">
+                  <li class="resource-tab active">
+                        <a>Resource options</a>
+                  </li>
+                </ul>
+                {% endif %}
+                {% if not forloop.first or not view%}
+                    <div class="control-group{% if field.errors %}{% endif %}">
+                        <label class="control-label" for="{{ field.id }}">
+                            {{ field.label }}{% if field.field.required %}*{% endif %}
+                        </label>
+                        <div class="controls">
+                            {% if not field.name == 'user_attributes' and not field.name == 'post_fields' %}
+                                {{ field }}
+                            {% endif %}
+                            {% if field.name == 'user_attributes' %}
+                                <div class="btn btn-primary" id="addAttribute">Add User attributes</div>
+                            {% endif %}
+                            {% if field.name == 'post_fields' %}
+                                <div class="btn btn-primary" id="addPostField">Add User attributes</div>
+                            {% endif %}
+                            {% if field.errors and not view %}
+                                <span class="badge badge-important" title="{{ field.errors|first }}">!</span><span class="help-inline"> {{ field.errors|first }}</span>
+                            {% else %}
+                                <span class="help-inline">{{ field.help_text }}</span>
+                            {% endif %}
+                        </div>
+                        {% if  field.name == 'user_attributes' %}
+                                <hr>
+                                <div class="user-attribute row-fluid {% if not form.data.UserAttribute %}hide{% endif %}">
+                                    <div class="row-fluid">
+                                    <div class="span2 text-center">Attribute</div>
+                                    <div class="span2 text-center"> Condition </div>
+                                    <div class="span3 text-center"> Value</div>
+                                    <div class="span2 text-center"> &nbsp </div>
+                                    </div>
+                                    {% for UserAttribute in form.data.UserAttribute %}
+                                        {{ UserAttribute }}
+                                    {% endfor %}
+                                </div>
+                                <script type="application/javascript">
+                                $(function(){
+
+                                    $(".date").removeClass('controls');
+
+                                    $('.btn-danger').each(function(){
+                                        var object = $(this);
+                                        object.click(function(){
+                                            object.parent().slideUp({complete:function(){
+                                                object.parent().remove();
+                                                if ($('.user-attribute-name').length == 0)
+                                                    $('.user-attribute').slideUp();
+                                            }});
+
+                                        });
+                                    });
+                                    $('#addAttribute').click(function(){
+                                        $('.user-attribute').slideDown();
+                                        $.ajax('/security/policy/form/new_attribute/', {
+                                            data: {key:0},
+                                            type: 'POST',
+                                            success: function(data) {
+                                                var link = $(data);
+                                                link.children('.btn-danger').click(function(){
+                                                    link.slideUp({complete:function(){
+                                                        link.remove();
+                                                        if ($('.user-attribute-name').length == 0)
+                                                            $('.user-attribute').slideUp();
+                                                    }});
+
+                                                });
+                                                link.hide();
+                                                link.appendTo('.user-attribute').slideDown();
+                                            },
+                                            error: function(data) { return; }
+                                        });
+                                    });
+                                });
+                            </script>
+                        {% endif %}
+                        {% if  field.name == 'post_fields' %}
+                            <hr>
+                            <div class="post-field row-fluid {% if not form.data.PostFields %}hide{% endif %}">
+                                <div class="row-fluid">
+                                <div class="span3 text-center"> Field Name</div>
+                                <div class="span2 text-center"> Condition </div>
+                                <div class="span3 text-center"> Value</div>
+                                <div class="span2 text-center"> &nbsp </div>
+                                </div>
+                                {% for PostField in form.data.PostFields %}
+                                    {{ PostField }}
+                                {% endfor %}
+                            </div>
+                            <script type="application/javascript">
+                                $(function(){
+
+                                    $(".date").removeClass('controls');
+
+                                    $('.btn-danger').each(function(){
+                                        var object = $(this);
+                                        object.click(function(){
+                                            object.parent().slideUp({complete:function(){
+                                                object.parent().remove();
+                                                if ($('.post-field-name').length == 0)
+                                                    $('.post-field').slideUp();
+                                            }});
+
+                                        });
+                                    });
+                                    $('#addPostField').click(function(){
+                                        $('.post-field').slideDown();
+                                        $.ajax('/security/policy/form/new_post_field/', {
+                                            data: {key:0},
+                                            type: 'POST',
+                                            success: function(data) {
+                                                var link = $(data);
+                                                link.children('.btn-danger').click(function(){
+                                                    link.slideUp({complete:function(){
+                                                        link.remove();
+                                                        if ($('.post-field-name').length == 0)
+                                                            $('.post-field').slideUp();
+                                                    }});
+
+                                                });
+                                                link.hide();
+                                                link.appendTo('.post-field').slideDown();
+                                            },
+                                            error: function(data) { return; }
+                                        });
+                                    });
+                                });
+                            </script>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+            <div class="well well-small">
+                <ul class="nav nav-pills">
+                  <li class="resource-tab active">
+                        <a>File content</a>
+                  </li>
+                </ul>
+                <span class="help-block">Upload a new file to update the policy</span>
+                <pre style="" >{{ policy.policyfile }}</pre>
+            </div>
+            {% if not view %}
+                <div class="control-group">
+                    <div class="control-label"><i>* Required fields.</i></div>
+                </div>
+                {% if edit %}
+                     <input type="submit" class="btn btn-primary" value="Update policy" />
+                {% else %}
+                     <input type="submit" class="btn btn-primary" value="Create policy" />
+                {% endif %}
+            {% endif %}
+
+
+        </form>
+        </div>
+    {% endif %}
+
+{% endblock %}

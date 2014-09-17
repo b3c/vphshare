@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os
+	http://docs.oasis-open.org/xacml/access_control-xacml-2.0-policy-schema-os.xsd"
+	PolicyId="{{ name }}"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+	<Target>
+	</Target>
+	<Rule RuleId="SingleRule" Effect="Permit">
+		<Target>
+			<Subjects>
+			<Subject>
+                {% if role %}
+                <SubjectMatch FieldId="role" MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{ role }}</AttributeValue>
+                    <SubjectAttributeDesignator AttributeId="role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                </SubjectMatch>
+                {% endif %}
+                {% for user_attribute in user_attributes %}
+                <SubjectMatch FieldId="udata" MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{ user_attribute.1 }}</AttributeValue>
+                    <SubjectAttributeDesignator AttributeId="{{ user_attribute.0 }}" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                </SubjectMatch>
+                {% endfor %}
+			</Subject>
+			</Subjects>
+            {% if post_options or url_contain %}
+			<Resources>
+			<Resource>
+                {% if url_contain %}
+                    <ResourceMatch FieldId="urlcontain" MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{ url_contain }}</AttributeValue>
+                        <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-location" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                    </ResourceMatch>
+                {% endif %}
+                {% for post_option in post_options %}
+                    <ResourceMatch FieldId="post" MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{ post_option.1 }}</AttributeValue>
+                        <ResourceAttributeDesignator AttributeId="POST_{{ post_option.0 }}" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                    </ResourceMatch>
+                {% endfor %}
+			</Resource>
+			</Resources>
+            {% endif %}
+            <Actions>
+			<Action>
+			<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+				<ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+			</ActionMatch>
+			</Action>
+			</Actions>
+		</Target>
+		<Condition>
+            <Apply FieldId="expiry" FunctionId="urn:oasis:names:tc:xacml:1.0:function:date-less-than-or-equal">
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:date-one-and-only">
+                    <EnvironmentAttributeDesignator
+                        MustBePresent="false" AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-date"
+                        DataType="http://www.w3.org/2001/XMLSchema#date" />
+                </Apply>
+                {% if date_expiration %}
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#date">{{ date_expiration }}</AttributeValue>
+                {% else %}
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#date">2100-01-01</AttributeValue>
+                {% endif %}
+            </Apply>
+            {% if time_range %}
+                <Apply FieldId="timerange" FunctionId="urn:oasis:names:tc:xacml:2.0:function:time-in-range">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:time-one-and-only">
+                        <EnvironmentAttributeDesignator
+                            DataType="http://www.w3.org/2001/XMLSchema#time" AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-time" />
+                    </Apply>
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#time">{{ time_range.0 }}</AttributeValue>
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#time">{{ time_range.1 }}</AttributeValue>
+                </Apply>
+            {% endif %}
+		</Condition>
+	</Rule>
+</Policy>
