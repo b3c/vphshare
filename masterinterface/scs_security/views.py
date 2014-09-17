@@ -193,7 +193,7 @@ def delete_policy(request, remote_id=None):
         return redirect('policy')
     raise PermissionDenied
 
-@is_staff()
+@login_required()
 def configuration(request, remote_id=None):
     """
         get/set the security proxy configuration
