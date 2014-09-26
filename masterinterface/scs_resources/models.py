@@ -6,10 +6,15 @@ from workflows.utils import do_transition, set_workflow_for_model
 from permissions.utils import add_local_role
 from django.contrib.contenttypes.models import ContentType
 from permissions.models import PrincipalRoleRelation, Role
+from django.db.models import ObjectDoesNotExist
 from django.db.models import Q
 from masterinterface.scs_groups.models import VPHShareSmartGroup
 from django.db.models import Avg
 from django.core.cache import cache
+from django.conf import settings
+from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name
+import requests
+import xmltodict
 
 Roles = ['Reader', 'Editor', 'Manager', 'Owner']
 
@@ -51,6 +56,17 @@ class ResourceManager(models.Manager):
                     resource.metadata = cache.get(resource.global_id)
         return resources
 
+    def filter(self, rows=100, page=0, *args, **kwargs):
+        q = " AND ".join("%s:'%s'" % (key,kwargs[key]) for key in kwargs.keys())
+        resources = []
+        results = settings.MD_SEARCH_ENGINE.search(q, start=rows*page, rows=rows)
+        for result in results:
+            if User.objects.exists(username=result['owner']):
+                #the results retunr by the search engine is a list with length one.
+                result['type'] = result['type'][0]
+                resources.append(self.get_or_create(result["globalID"], metadata=result , owner=result['owner']))
+        #resources = super(ResourceManager, self).filter(*args, **kwargs)
+        return resources, results.hits
 
 class Resource(models.Model):
 
@@ -75,6 +91,74 @@ class Resource(models.Model):
 
     def __unicode__(self):
         return "%s" % self.global_id
+
+    def load_permission(self):
+        #method provide the load permission for specific types of resource : File and Dataset
+        # if is a Dataset method:
+        if 'Dataset' in self.metadata['type']:
+            for role in get_resource_local_roles():
+                group_name = get_resource_global_group_name(self, role.name)
+                try:
+                    group, created = VPHShareSmartGroup.objects.get_or_create(name=group_name)
+                    if created:
+                        group.managers.add(self.owner)
+                        group.user_set.add(self.owner)
+                    add_local_role(self, group, role)
+                except ObjectDoesNotExist, e:
+                    pass
+        # if is a File method:
+        if 'File' in self.metadata['type']:
+            for permission in self.metadata['lobcderPermission']['read']:
+                if isinstance(list,permission):
+                    for user in
+
+    def load_additional_metadata(self, ticket):
+        #some information are built straing from teh exisitng metadata
+        try:
+            #1: File type need to query the lobcder to retrive the permissions schema, path and type(file or Folder)
+            if 'File' in self.metadata['type']:
+                    lobcder_item = requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                                                auth=('user', ticket),
+                                                verify=False,
+                                                headers={'Content-Type':'application/json','Accept':'application/json'}).json
+                    self.metadata['lobcderPath'] = lobcder_item['path']
+                    self.metadata['lobcderPermission'] = lobcder_item['permissions']
+                    self.metadata['lobcderPermission'].setdefault('read',[])
+                    self.metadata['lobcderPermission'].setdefault('write',[])
+                    self.metadata['lobcderPermission'].setdefault('owner',[])
+                    self.metadata['fileType'] = lobcder_item['logicalData']['type'].split('.')[-1]
+            #1: Dataset new version have the new sql/sparql endpoint to explore
+            if 'Dataset' in self.metadata['type']:
+                endpoint = self.metadata.get('sparqlEndpoint',self.metadata['localID'])
+                if 'read/sparql' in endpoint:
+                    self.metadata['explore'] = endpoint.replace('read/sparql', 'explore/sql.html')
+                    self.metadata['explore'] = endpoint.replace('https://','https://admin:%s@'%ticket)
+        except Exception,e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
+            return False
+
+    def load_full_metadata(self):
+        # the resource returned by the search engine load the base schema type
+        # special fields as realted resource  linked to semantic annotation are loader separatly from the raw
+        self.metadata = xmltodict.parse(self.metadata['mrRaw'][0].encode('utf-8'))
+        self.metadata['rating'] = float(self.metadata['rating'])
+        if self.metadata.get('relatedResources',None) is not None:
+            if  not isinstance(self.metadata['relatedResources']['relatedResource'], list):
+                relatedResources = [self.metadata['relatedResources']['relatedResource'].copy()]
+            else:
+                relatedResources = self.metadata['relatedResources']['relatedResource'][:]
+            self.metadata['relatedResources'] = []
+            for global_id in relatedResources:
+                r = Resource.objects.get(global_id=global_id['resourceID'])
+                self.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
+
+        if self.metadata.get('linkedTo',None) is not None:
+            if  not isinstance(self.metadata['linkedTo']['link'], list):
+                self.metadata['linkedTo']['link'] = [self.metadata['linkedTo']['link'].copy()]
+        if self.metadata.get('semanticAnnotations', None) is not None:
+            if  not isinstance(self.metadata['semanticAnnotations']['semanticConcept'], list):
+                self.metadata['semanticAnnotations']['semanticConcept'] = [self.metadata['semanticAnnotations']['semanticConcept'].copy()]
 
     def update_views_counter(self):
         metadata = get_resource_metadata(self.global_id)
