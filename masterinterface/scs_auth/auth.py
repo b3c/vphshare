@@ -43,42 +43,21 @@ def getUserTokens(user):
     for role in get_roles(user):
         tokens.append(role.name)
 
-    review_resources = []
-
-    # TODO REMOVE HACK!
-    for resource in review_resources:
-        for role in get_roles(user, resource):
-            tokens.append(role.name)
-
     for group in user.groups.all():
-        try:
+
+        if hasattr(group,'vphsharesmartgroup'):
             # check if there is a corresponding vphshare group and if it is active
-            vphgroup = VPHShareSmartGroup.objects.get(name=group.name)
+            vphgroup = group.vphsharesmartgroup
             if vphgroup.active:
                 tokens.append(group.name)
-            #add also the parents
-            for parent in vphgroup.get_parents():
-                if parent not in tokens:
-                    tokens.append(parent)
-        except ObjectDoesNotExist:
+                #add also the parents
+                tokens = set(tokens + vphgroup.get_parents_list_name())
+        else:
             # simple group, just add it to the list
             tokens.append(group.name)
 
-        #### IS NOT A FINAL IMPLEMENTATION ONLY FOR DEVELOPER
-        #if details['nickname']=='mi_testuser':
-        #    tokens=[]
-        #else:
-        #    tokens=['developer']
-        #######
-
     # add default role for all the users
-    if not tokens.count("VPH"):
-        tokens.append("VPH")
-        tokens.append("vph")
-
-    #add user as default role
-    if not tokens.count(user):
-        tokens.append(user.username)
+    tokens = set(tokens + ['VPH', 'vph', user.username ])
 
     return tokens
 

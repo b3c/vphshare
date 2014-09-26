@@ -24,12 +24,24 @@ class VPHShareSmartGroup(Group):
     def __unicode__(self):
         return self.name
 
+    def get_ancestors(self):
+        ancestors = []
+        if self.parent:
+            parent = self.parent.vphsharesmartgroup
+            while parent is not None:
+                if parent.active:
+                    ancestors.append(parent)
+                parent = parent.parent.vphsharesmartgroup
+
+        return ancestors
+
     def remove_users(self, users=[]):
+        # if users is given remove the listo of user from the group membership
         if len(users):
             for user in users:
                 self.user_set.remove(user)
         else:
-            # TODO optimize this cycle with a sql statement
+            # defaul behaivor remove all users from the group. To use when the group is deactivated.
             for user in self.user_set.all():
                 self.user_set.remove(user)
 
@@ -54,19 +66,18 @@ class VPHShareSmartGroup(Group):
 
         return False
 
-    def get_parents(self):
+    def get_parents_list_name(self):
         """
         Return the tree list of the parents
         """
         parents_list = []
         try:
-            parent = self.parent
+            parent = self.parent.vphsharesmartgroup
             while parent is not None:
-                parent = VPHShareSmartGroup.objects.get(name=parent.name)
                 if parent.active:
                     parents_list.append(parent.name)
                 #follow the tree
-                parent = parent.parent
+                parent = parent.parent.vphsharesmartgroup
         except Exception, e:
             from raven.contrib.django.raven_compat.models import client
             client.captureException()
