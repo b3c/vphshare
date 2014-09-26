@@ -37,7 +37,7 @@ def resource_detailed_view(request, id='1'):
     """
     try:
         try:
-            resource = Resource.objects.get(global_id=id, metadata=False)
+            resource = Resource.objects.get(global_id=id)
         except ObjectDoesNotExist, e:
             metadata = get_resource_metadata(id)
             try:
@@ -66,8 +66,8 @@ def resource_detailed_view(request, id='1'):
 
             resource = Resource.objects.get(global_id=id)
 
-        #assign metadata
-        resource.metadata = metadata
+            #assign metadata
+            resource.metadata = metadata
         # Count visit hit
         resource.metadata['rating'] = float(resource.metadata['rating'])
         #resource.metadata['views'] = resource.update_views_counter()
@@ -91,21 +91,19 @@ def resource_detailed_view(request, id='1'):
         if request.user.is_authenticated() and resource.can_read(request.user):
             #get the path information using the lobcder services.
             try:
-                lobcder_item = xmltodict.parse(requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=(request.user.username, request.COOKIES['vph-tkt']), verify=False).text.encode('utf-8'))
+                lobcder_item = xmltodict.parse(requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=(request.user.username, request.ticket), verify=False).text.encode('utf-8'))
                 resource.metadata['lobcderPath'] = lobcder_item['logicalDataWrapped']['path']
-                resource.metadata['format'] = resource.metadata['name'].split('.')[-1]
+                resource.metadata['fileType'] = lobcder_item['logicalDataWrapped']['logicalData']['type'].split('.')[-1]
             except Exception,e:
                 from raven.contrib.django.raven_compat.models import client
                 client.captureException()
                 resource.metadata['lobcderPath'] = None
-                pass
+                raise Http404
             if str(resource.metadata['type']) == 'Dataset':
                 endpoint = resource.metadata.get('sparqlEndpoint',resource.metadata['localID'])
                 if 'read/sparql' in endpoint:
                     resource.metadata['explore'] = endpoint.replace('read/sparql', 'explore/sql.html')
                     resource.metadata['explore'] = endpoint.replace('https://','https://admin:%s@'%request.ticket)
-        # INJECT DEFAULT VALUES
-        #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
 
         # check if the resource has been already requested by user
         if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
@@ -370,7 +368,7 @@ def get_resources_list_by_author(request, resource_type, page=1):
                             add_local_role(resource, group, role)
                         except ObjectDoesNotExist, e:
                             pass
-                resource.requests = get_pending_requests_by_resource(resource)
+                resource.requests = resource.get_pending_requests_by_resource()
 
             resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources,"types":types, "type":resource_type, 'user':request.user, 'page':page})
 
@@ -385,7 +383,7 @@ def get_resources_details(request, global_id):
     if request.method == 'GET':
         try:
             resource = Resource.objects.get(global_id=global_id)
-            resource.requests = get_pending_requests_by_resource(resource)
+            resource.requests = resource.get_pending_requests_by_resource()
             if hasattr(request,'ticket'):
                 resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user, 'ticket':request.ticket})
             else:
@@ -402,8 +400,8 @@ def get_resources_share(request, global_id):
         try:
             resource = Resource.objects.get(global_id=global_id)
             resource.roleslist = get_resource_local_roles(resource)
-            resource.requests = get_pending_requests_by_resource(resource)
-            resource.sharreduser = get_user_group_permissions_map(resource)
+            resource.requests = resource.get_pending_requests_by_resource()
+            resource.sharreduser = resource.get_user_group_permissions_map()
             resource.user_group_finder = UsersGroupsForm(id="user_group_"+resource.global_id,
                                                          excludedList=resource.sharreduser + [request.user] )
             from django.core.context_processors import csrf
@@ -639,45 +637,7 @@ def revoke_role(request):
     role = Role.objects.get(name=request.GET.get('role'))
     resource = Resource.objects.get(global_id=request.GET.get('global_id'))
 
-    try:
-        principal = User.objects.get(username=name)
-    except ObjectDoesNotExist, e:
-        principal = Group.objects.get(name=name)
-
-    try:
-        # look for a group with the dataset name
-        group_name = get_resource_global_group_name(resource, role.name)
-        group = Group.objects.get(name=group_name)
-        if type(principal) is User:
-            group.user_set.remove(principal)
-        group.save()
-
-    except ObjectDoesNotExist, e:
-        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!! and update the security proxy?
-        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-        # remove_role(principal, global_role)
-        pass
-    if resource.metadata['type'] == 'File':
-        import requests
-        import xmltodict
-        from django.conf import settings
-        permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), verify=False).text)
-        file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
-
-        if settings.DEBUG:
-            name = name+"_dev"
-        if permissions['permissions'].get(file_permissions_match[role.name], None) is not None:
-            if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
-                index = permissions['permissions'][file_permissions_match[role.name]].index(name)
-                del permissions['permissions'][file_permissions_match[role.name]][index]
-            else:
-                del permissions['permissions'][file_permissions_match[role.name]]
-
-            result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False, headers = {'content-type': 'application/xml'})
-            if result.status_code not in [204,201,200]:
-                raise Exception('LOBCDER permision set error')
-
-    remove_local_role(resource, principal, role)
+    revoke_permision(name,resource,role,request.ticket)
 
     response_body = json.dumps({"status": "OK", "message": "Role revoked correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')
@@ -713,34 +673,7 @@ def workflowsView(request):
 
     workflows = []
 
-    try:
-        dbWorkflows = Workflow.objects.all()
-        for workflow in dbWorkflows:
-            workflows.append(workflow)
-
-    except Exception, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-
     return render_to_response("scs_resources/workflows.html", {'workflows': workflows}, RequestContext(request))
-
-
-def search_workflow(request):
-
-    workflows = []
-
-    try:
-        metadata_workflows = filter_resources_by_facet('Workflow')
-        #dbWorkflows = Workflow.objects.all(metadata=True)
-        for workflow in metadata_workflows:
-            workflows.append(Workflow.objects.get(global_id = workflow['globalID']))
-
-    except Exception, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-
-
-    return render_to_response("scs/search_workflows.html", {'workflows': workflows}, RequestContext(request))
 
 @login_required
 def edit_resource(request, id=False):

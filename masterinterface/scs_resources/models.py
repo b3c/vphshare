@@ -1,19 +1,24 @@
 from django.db import models
-from django.contrib import admin
 from django.contrib.auth.models import User
 from masterinterface.atos.metadata_connector import update_resource_metadata, get_resource_metadata, delete_resource_metadata
 from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
 from workflows.utils import do_transition, set_workflow_for_model
-from permissions.utils import add_local_role, add_role
+from permissions.utils import add_local_role
 from django.contrib.contenttypes.models import ContentType
 from permissions.models import PrincipalRoleRelation, Role
 from django.db.models import Q
 from masterinterface.scs_groups.models import VPHShareSmartGroup
-from django.http import QueryDict
 from django.db.models import Avg
 from django.core.cache import cache
 
 Roles = ['Reader', 'Editor', 'Manager', 'Owner']
+
+def is_request_pending(r):
+    from workflows.utils import get_state
+    from masterinterface.scs_resources.config import request_pending
+    state = get_state(r)
+    if state.name == request_pending.name:
+        return True
 
 class ResourceManager(models.Manager):
 
@@ -84,6 +89,85 @@ class Resource(models.Model):
         if delete_metadata:
             delete_resource_metadata(self.global_id)
         return super(Resource, self).delete(using)
+
+    def get_pending_requests_by_resource(self):
+        requests = ResourceRequest.objects.filter(resource=self)
+        pending_requests = []
+        for r in requests:
+            if is_request_pending(r):
+                pending_requests.append(r)
+        return pending_requests
+
+    def get_user_group_permissions_map(self):
+        permissions_map = []
+
+        ctype = ContentType.objects.get_for_model(self)
+        # look for user with those roles
+        role_relations = PrincipalRoleRelation.objects.filter(role__name__in=['Reader', 'Editor', 'Manager'], content_id=self.id, content_type=ctype)
+        for r in role_relations:
+            if r.user is not None and r.content_id == self.id:
+                if r.user in permissions_map:
+                    index = permissions_map.index(r.user)
+                    if r.role.name not in permissions_map[index].roles:
+                        permissions_map[index].roles.append(r.role.name)
+                else:
+                    if getattr(r.user, 'roles', None) is not None:
+                        if r.role.name not in r.user.roles:
+                            r.user.roles.append(r.role.name)
+                    else:
+                        r.user.roles = []
+                        r.user.roles.append(r.role.name)
+                    permissions_map.append(r.user)
+            if r.group is not None and r.content_id == self.id:
+
+                if self.metadata['type'] == 'Dataset':
+                    ##Only for dataset mantain the Woddy approch.
+                    try:
+                        vph_smart_group = VPHShareSmartGroup.objects.get(name=r.group.name)
+                        for user in vph_smart_group.user_set.all():
+                            if user in permissions_map:
+                                index = permissions_map.index(user)
+                                if r.role.name not in permissions_map[index].roles:
+                                    permissions_map[index].roles.append(r.role.name)
+                            else:
+                                if getattr(user, 'roles', None) is not None:
+                                    if r.role.name not in user.roles:
+                                        user.roles.append(r.role.name)
+                                else:
+                                    user.roles = []
+                                    user.roles.append(r.role.name)
+                                permissions_map.append(user)
+                    except Exception:
+                        if r.group in permissions_map:
+                            index = permissions_map.index(r.group)
+                            if r.role.name not in permissions_map[index].roles:
+                                permissions_map[index].roles.append(r.role.name)
+                        else:
+                            if getattr(r.group, 'roles', None) is not None:
+                                if r.role.name not in r.group.roles:
+                                    r.group.roles.append(r.role.name)
+                            else:
+                                r.group.roles = []
+                                r.group.roles.append(r.role.name)
+                            permissions_map.append(r.group)
+                        pass
+                    ##END - Only for dataset mantain the Woddy approch.
+                else:
+                    if r.group in permissions_map:
+                        index = permissions_map.index(r.group)
+                        if r.role.name not in permissions_map[index].roles:
+                            permissions_map[index].roles.append(r.role.name)
+                    else:
+                        if getattr(r.group, 'roles', None) is not None:
+                            if r.role.name not in r.group.roles:
+                                r.group.roles.append(r.role.name)
+                        else:
+                            r.group.roles = []
+                            r.group.roles.append(r.role.name)
+                        permissions_map.append(r.group)
+
+        return permissions_map
+
 
     def can_I(self,role, user):
         roles = Roles[Roles.index(Role.objects.get(name=role).name):]
@@ -199,7 +283,6 @@ class Resource(models.Model):
         cache.delete(self.global_id)
         return True
 
-
 class ResourceRequest(models.Model):
 
     resource = models.ForeignKey(Resource)
@@ -217,13 +300,15 @@ class ResourceRequest(models.Model):
             # TODO REMOVE HACK!
             #add_role("%s_READER" % self.resource.global_id)
 
-
 class Workflow(Resource):
 
     t2flow = models.FileField(verbose_name="Taverna workflow *", upload_to='./taverna_workflows/', help_text="Taverna workflow file, *.t2flow")
     xml = models.FileField(verbose_name="Input definition *", upload_to='./workflows_input/', help_text="Input definition file, *.xml")
 
     objects = ResourceManager()
+
+    def get_user_group_permissions_map(self):
+        return self.resource_ptr.get_user_group_permissions_map()
 
     def can_I(self,role, user):
         return self.resource_ptr.can_I(role, user)

@@ -38,7 +38,6 @@ urlpatterns = patterns(
     url(r'^revokerole/$', revoke_role),
     url(r'^createrole/$', create_role),
     url(r'^workflows/$', workflowsView, name='workflows'),
-    url(r'^workflows/search-workflow/$', search_workflow ,  name='search-workflow'),
     url(r'^workflows/new/$', edit_resource, name='create_workflow'),
     url(r'^workflows/edit/(?P<id>\d+)/$', edit_resource, name='edit_workflow'),
 
