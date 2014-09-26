@@ -209,26 +209,6 @@ def upload_data(request):
                               RequestContext(request))
 
 
-def manage_data(request):
-    from masterinterface.scs_resources.models import Workflow
-
-    workflows = []
-
-    try:
-        dbWorkflows = Workflow.objects.all()
-        for workflow in dbWorkflows:
-            workflow.permissions_map = get_permissions_map(workflow.global_id)
-            workflows.append(workflow)
-
-    except Exception, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-
-    return render_to_response("scs/manage_data.html",
-                              {'workflows': workflows,
-                               'tkt64': request.COOKIES.get('vph-tkt')},
-                              RequestContext(request))
-
 @csrf_exempt
 def search_service(request):
 
