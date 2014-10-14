@@ -8,7 +8,6 @@ from permissions.models import Role, PrincipalRoleRelation
 from permissions.utils import has_local_role, has_permission, add_local_role, remove_local_role
 from workflows.utils import get_state
 from masterinterface.scs_resources.config import request_pending
-from masterinterface.scs_resources.models import ResourceRequest
 
 def get_resource_local_roles(resource=None):
 
@@ -23,20 +22,9 @@ def is_request_pending(r):
     if state.name == request_pending.name:
         return True
 
-
-def get_pending_requests_by_user(user):
-    requests = ResourceRequest.objects.filter(resource__owner=user)
-    pending_requests = []
-    for r in requests:
-        if is_request_pending(r):
-            pending_requests.append(r)
-    return pending_requests
-
 def get_readable_resources(user):
-    role_relations = PrincipalRoleRelation.objects.filter(
-        Q(user=user) | Q(group__in=user.groups.all()) | Q(user=None, group=None),
-        role__name__in=['Reader', 'Editor', 'Manager']
-    ).exclude( content_id=None, content_type=None)
+    readable_resource_ids = set(PrincipalRoleRelation.objects.filter(Q(user=user) | Q(group__in=user.groups.all()) | Q(user=None, group=None), role__name__in=['Reader', 'Editor', 'Manager','Owner']    ).exclude( content_id=None, content_type=None).values_list('content_id',flat=True))
+    return readable_resource_ids
     managed_resources = []
     for r in role_relations:
         if r.content is not None and r.content not in managed_resources:
@@ -131,7 +119,6 @@ def grant_permission(name, resource, role, ticket=None):
                 permissions['permissions'][permission_match] += [name]
             elif permissions['permissions'][permission_match] != name:
                 permissions['permissions'][permission_match] = [permissions['permissions'][permission_match], name]
-
         result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=('admin', ticket), verify=False, data=xmltodict.unparse(permissions),  headers = {'content-type': 'application/xml'})
         if result.status_code not in [204,201,200]:
             raise Exception('LOBCDER permision set error')
@@ -161,26 +148,32 @@ def revoke_permision(name, resource, role, ticket=None):
         # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
         # remove_role(principal, global_role)
         pass
+
+    remove_local_role(resource, principal, role)
+
     if resource.metadata['type'] == 'File':
         import requests
         import xmltodict
         from django.conf import settings
+        permission_map = resource.get_user_group_permissions_map()
         permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', ticket), verify=False).text)
-        file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
-
+        file_permissions_match = {'Reader':['read'],'Editor':['write'], 'Manager':['write','read'], 'Owner':['owner']}
         if settings.DEBUG:
             name = name+"_dev"
-        if permissions['permissions'].get(file_permissions_match[role.name], None) is not None:
-            if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
-                index = permissions['permissions'][file_permissions_match[role.name]].index(name)
-                del permissions['permissions'][file_permissions_match[role.name]][index]
-            else:
-                del permissions['permissions'][file_permissions_match[role.name]]
+        for permission_match in file_permissions_match[role.name]:
+            if permissions['permissions'].get(permission_match, None) is not None:
+                if isinstance(permissions['permissions'][permission_match], list):
+                    index = permissions['permissions'][permission_match].index(name)
+                    if 'Manager' not in permission_map[name]:
+                        del permissions['permissions'][permission_match][index]
+                else:
+                    if 'Manager' not in permission_map[name]:
+                        del permissions['permissions'][permission_match]
 
-            result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', ticket), data=xmltodict.unparse(permissions), verify=False, headers = {'content-type': 'application/xml'})
-            if result.status_code not in [204,201,200]:
-                raise Exception('LOBCDER permision set error')
+                result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', ticket), data=xmltodict.unparse(permissions), verify=False, headers = {'content-type': 'application/xml'})
+                if result.status_code not in [204,201,200]:
+                    raise Exception('LOBCDER permision set error')
 
-    remove_local_role(resource, principal, role)
+
 
     return True

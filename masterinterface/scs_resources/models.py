@@ -5,6 +5,7 @@ from config import request_accept_transition, resource_reader, ResourceWorkflow,
 from workflows.utils import do_transition, set_workflow_for_model
 from permissions.utils import add_local_role
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group
 from permissions.models import PrincipalRoleRelation, Role
 from django.db.models import ObjectDoesNotExist
 from django.db.models import Q
@@ -12,18 +13,19 @@ from masterinterface.scs_groups.models import VPHShareSmartGroup
 from django.db.models import Avg
 from django.core.cache import cache
 from django.conf import settings
-from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name
+from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name, grant_permission, is_request_pending
 import requests
 import xmltodict
 
 Roles = ['Reader', 'Editor', 'Manager', 'Owner']
 
-def is_request_pending(r):
-    from workflows.utils import get_state
-    from masterinterface.scs_resources.config import request_pending
-    state = get_state(r)
-    if state.name == request_pending.name:
-        return True
+def get_pending_requests_by_user(user):
+    requests = ResourceRequest.objects.filter(resource__owner=user)
+    pending_requests = []
+    for r in requests:
+        if is_request_pending(r):
+            pending_requests.append(r)
+    return pending_requests
 
 class ResourceManager(models.Manager):
 
@@ -56,17 +58,31 @@ class ResourceManager(models.Manager):
                     resource.metadata = cache.get(resource.global_id)
         return resources
 
-    def filter(self, rows=100, page=0, *args, **kwargs):
-        q = " AND ".join("%s:'%s'" % (key,kwargs[key]) for key in kwargs.keys())
+    def solr_filter(self, rows=100, page=0, q=None, *args, **kwargs):
+        #to check with Ivan if we can use the solr endpoint
+        if q is None:
+            q = " AND ".join('%s:"%s"' % (key,kwargs[key]) for key in kwargs.keys() if  not isinstance(kwargs[key], list))
+            #query with inlusive list
+            q2 = " AND ".join('%s:[%s]' % (key," ".join(str(value) for value in kwargs[key])) for key in kwargs.keys() if  isinstance(kwargs[key], list))
+            if len(q2):
+                q += " AND %s" % q2
         resources = []
         results = settings.MD_SEARCH_ENGINE.search(q, start=rows*page, rows=rows)
         for result in results:
-            if User.objects.exists(username=result['owner']):
+            user = User.objects.filter(username=result['author'])
+            if user.exists():
                 #the results retunr by the search engine is a list with length one.
                 result['type'] = result['type'][0]
-                resources.append(self.get_or_create(result["globalID"], metadata=result , owner=result['owner']))
+                r, created = self.get_or_create(result["globalID"], metadata=result , owner=user[0])[0]
+                if created:
+                    r.save()
+                resources.append(r)
         #resources = super(ResourceManager, self).filter(*args, **kwargs)
         return resources, results.hits
+
+
+    def filter(self, *args, **kwargs):
+        return super(ResourceManager, self).filter(*args, **kwargs)
 
 class Resource(models.Model):
 
@@ -106,27 +122,29 @@ class Resource(models.Model):
                     add_local_role(self, group, role)
                 except ObjectDoesNotExist, e:
                     pass
-        # if is a File method:
-        if 'File' in self.metadata['type']:
-            for permission in self.metadata['lobcderPermission']['read']:
-                if isinstance(list,permission):
-                    for user in
 
     def load_additional_metadata(self, ticket):
         #some information are built straing from teh exisitng metadata
         try:
             #1: File type need to query the lobcder to retrive the permissions schema, path and type(file or Folder)
             if 'File' in self.metadata['type']:
-                    lobcder_item = requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                    lobcder_item = requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, self.metadata['localID']),
                                                 auth=('user', ticket),
                                                 verify=False,
-                                                headers={'Content-Type':'application/json','Accept':'application/json'}).json
+                                                headers={'Content-Type':'application/json','Accept':'application/json'}).json()
                     self.metadata['lobcderPath'] = lobcder_item['path']
                     self.metadata['lobcderPermission'] = lobcder_item['permissions']
                     self.metadata['lobcderPermission'].setdefault('read',[])
                     self.metadata['lobcderPermission'].setdefault('write',[])
                     self.metadata['lobcderPermission'].setdefault('owner',[])
                     self.metadata['fileType'] = lobcder_item['logicalData']['type'].split('.')[-1]
+                    if self.metadata['fileType']:
+                        self.metadata['format'] = self.metadata['name'].split('.')[-1]
+                    else:
+                        self.metadata['format'] = 'folder'
+                    for permission, set in self.metadata['lobcderPermission'].items():
+                        if not isinstance( set, list ):
+                            self.metadata['lobcderPermission'][permission] = [ set ]
             #1: Dataset new version have the new sql/sparql endpoint to explore
             if 'Dataset' in self.metadata['type']:
                 endpoint = self.metadata.get('sparqlEndpoint',self.metadata['localID'])
@@ -141,7 +159,10 @@ class Resource(models.Model):
     def load_full_metadata(self):
         # the resource returned by the search engine load the base schema type
         # special fields as realted resource  linked to semantic annotation are loader separatly from the raw
-        self.metadata = xmltodict.parse(self.metadata['mrRaw'][0].encode('utf-8'))
+        if 'mrRaw' in self.metadata.keys():
+            #metadata has loaded from solr so some fields are missing the basic schema.
+            #TOUSE only if the metadata are loaded by solr
+            self.metadata = xmltodict.parse(self.metadata['mrRaw'][0].encode('utf-8'))
         self.metadata['rating'] = float(self.metadata['rating'])
         if self.metadata.get('relatedResources',None) is not None:
             if  not isinstance(self.metadata['relatedResources']['relatedResource'], list):
@@ -205,7 +226,7 @@ class Resource(models.Model):
             if r.group is not None and r.content_id == self.id:
 
                 if self.metadata['type'] == 'Dataset':
-                    ##Only for dataset mantain the Woddy approch.
+                    ##Only for dataset maintain the Woody approach.
                     try:
                         vph_smart_group = VPHShareSmartGroup.objects.get(name=r.group.name)
                         for user in vph_smart_group.user_set.all():
@@ -249,7 +270,22 @@ class Resource(models.Model):
                             r.group.roles = []
                             r.group.roles.append(r.role.name)
                         permissions_map.append(r.group)
-
+        #For Files and folder load the permission map directly from the lobcder.
+        if self.metadata['type'] == 'File' and self.metadata.get('lobcderPermission', None) is not None:
+            #get the user and groups available in my system to avoid conflict with lobcder custom users/groups not mappend in the MI.
+            users_and_groups = set(self.metadata['lobcderPermission']['read']+self.metadata['lobcderPermission']['write']) - set(['vph'])
+            from itertools import chain
+            users_and_groups = chain(User.objects.filter(username__in=users_and_groups).values_list('username', flat=True) + Group.objects.filter(name__in=users_and_groups).values_list('name', flat=True))
+            for user_group in users_and_groups:
+                name = getattr(user_group,'username',getattr(user_group,'name',None))
+                #if the user/group is Manager read and write are not loaded as Reader or
+                #Editor permission except they already loaded before.
+                if 'Manager' not in permissions_map[name]:
+                    #if the user is not Manager I load the permission as is.
+                    if name in self.metadata['lobcderPermission']['read'] and 'Reader' not in permissions_map[name]:
+                        permissions_map[name].append('Reader')
+                    if name in self.metadata['lobcderPermission']['write'] and 'Editor' not in permissions_map[name]:
+                        permissions_map[name].append('Editor')
         return permissions_map
 
 
@@ -260,6 +296,25 @@ class Resource(models.Model):
             role__name__in=roles,
             content_id=self.id
         )
+
+        lobcder_permission = False
+        if hasattr(self,'metadata') and  self.metadata.get('lobcderPermission', None):
+            name = user.username
+            if settings.DEBUG:
+                name = role+"_dev"
+            if role == "Reader":
+                lobcder_permission = name in self.metadata['lobcderPermission']['read'] \
+                    or user.groups.filter(name__in=self.metadata['lobcderPermission']['read']).exists()
+            if role == "Editor":
+                lobcder_permission = name in self.metadata['lobcderPermission']['write'] \
+                    or user.groups.filter(name__in=self.metadata['lobcderPermission']['write']).exists()
+            if role == "Manager":
+                lobcder_permission = (name in self.metadata['lobcderPermission']['read'] or user.groups.filter(name__in=self.metadata['lobcderPermission']['read']).exists()) \
+                    and (name in self.metadata['lobcderPermission']['write'] or user.groups.filter(name__in=self.metadata['lobcderPermission']['write']).exists())
+            if role == "Owner":
+                lobcder_permission = name in self.metadata['lobcderPermission']['owner'] \
+                    or user.groups.filter(name__in=self.metadata['lobcderPermission']['owner']).exists()
+
         if role == 'Reader':
             read_all_relations = PrincipalRoleRelation.objects.filter(
             user=None, group=None,
@@ -267,10 +322,10 @@ class Resource(models.Model):
             content_id=self.id
             )
 
-            if role_relations.count() == 0 and read_all_relations.count() == 0:            
+            if role_relations.count() == 0 and read_all_relations.count() == 0 and not lobcder_permission:
                 return False
         else:
-            if role_relations.count() == 0:
+            if role_relations.count() == 0 and not lobcder_permission:
                 return False
         return True
 
@@ -288,21 +343,23 @@ class Resource(models.Model):
                 content_id=self.id
             )
 
-            if role_relations.count() == 0 and read_all_relations.count() == 0:
+            lobcder_permission = False
+            if hasattr(self,'metadata') and  self.metadata.get('lobcderPermission', None):
+                role = user.username
+                if settings.DEBUG:
+                    role = role+"_dev"
+                lobcder_permission = role in self.metadata['lobcderPermission']['read'] \
+                                     or user.groups.filter(name__in=self.metadata['lobcderPermission']['read']).exists() \
+                                     or role in self.metadata['lobcderPermission']['owner'] \
+                                     or user.groups.filter(name__in=self.metadata['lobcderPermission']['owner']).exists()
+
+            if role_relations.count() == 0 and read_all_relations.count() == 0 and not lobcder_permission and not self.is_public():
                 return False
 
             return True
         else:
-            read_all_relations = PrincipalRoleRelation.objects.filter(
-                user=None, group=None,
-                role__name__in=['Reader'],
-                content_id=self.id
-            )
-
-            if read_all_relations.count() == 0:
-                return False
-
-            return True
+            #for anonymous check if it is public.(is it a rigth behaivor)
+            return False
 
 
     def can_edit(self, user):
@@ -313,7 +370,18 @@ class Resource(models.Model):
                 content_id=self.id
             )
 
-            if role_relations.count() == 0:
+            lobcder_permission = False
+            if hasattr(self,'metadata') and self.metadata.get('lobcderPermission', None):
+                role = user.username
+                if settings.DEBUG:
+                    role = role+"_dev"
+                lobcder_permission = role in self.metadata['lobcderPermission']['write'] \
+                                     or user.groups.filter(name__in=self.metadata['lobcderPermission']['write']).exists() \
+                                     or role in self.metadata['lobcderPermission']['owner'] \
+                                     or user.groups.filter(name__in=self.metadata['lobcderPermission']['owner']).exists()
+
+
+            if role_relations.count() == 0 and not lobcder_permission:
                 return False
             return True
         return False
@@ -326,7 +394,19 @@ class Resource(models.Model):
                 content_id=self.id
             )
 
-            if role_relations.count() == 0:
+            lobcder_permission = False
+            if hasattr(self,'metadata') and self.metadata.get('lobcderPermission', None):
+                role = user.username
+                if settings.DEBUG:
+                    role = role+"_dev"
+                lobcder_permission = ((role in self.metadata['lobcderPermission']['read'] \
+                                     or user.groups.filter(name__in=self.metadata['lobcderPermission']['read']).exists()) \
+                                     and ((role in self.metadata['lobcderPermission']['write'] \
+                                     or user.groups.filter(name__in=self.metadata['lobcderPermission']['write']).exists()))) \
+                                     or role in self.metadata['lobcderPermission']['owner'] \
+                                     or user.groups.filter(name__in=self.metadata['lobcderPermission']['owner']).exists()
+
+            if role_relations.count() == 0 and not lobcder_permission:
                 return False
             return True
         return False
@@ -337,8 +417,14 @@ class Resource(models.Model):
             role__name__in=['Reader'],
             content_id=self.id
         )
+        lobcder_permission = False
+        if hasattr(self,'metadata') and self.metadata.get('lobcderPermission', None):
+            role = 'vph'
+            if settings.DEBUG:
+                role = role+"_dev"
+            lobcder_permission = role in self.metadata['lobcderPermission']['read']
 
-        if read_all_relations.count() == 0:
+        if read_all_relations.count() == 0 and not lobcder_permission:
             return False
         return True
 
@@ -350,7 +436,14 @@ class Resource(models.Model):
                 content_id=self.id
             )
 
-            if role_relations.count() == 0:
+            lobcder_permission = False
+            if hasattr(self,'metadata') and  self.metadata.get('lobcderPermission', None):
+                role = user.username
+                if settings.DEBUG:
+                    role = role+"_dev"
+                lobcder_permission = role in self.metadata['lobcderPermission']['owner']
+
+            if role_relations.count() == 0 and not lobcder_permission:
                 return False
             return True
         return False

@@ -38,10 +38,10 @@ def getUserTokens(user):
     Return the user tokens
     """
 
-    tokens = []
+    tokens = set()
 
     for role in get_roles(user):
-        tokens.append(role.name)
+        tokens.add(role.name)
 
     for group in user.groups.all():
 
@@ -49,15 +49,15 @@ def getUserTokens(user):
             # check if there is a corresponding vphshare group and if it is active
             vphgroup = group.vphsharesmartgroup
             if vphgroup.active:
-                tokens.append(group.name)
+                tokens.add(group.name)
                 #add also the parents
-                tokens = set(tokens + vphgroup.get_parents_list_name())
+                tokens.update(vphgroup.get_parents_list_name())
         else:
             # simple group, just add it to the list
-            tokens.append(group.name)
+            tokens.add(group.name)
 
     # add default role for all the users
-    tokens = set(tokens + ['VPH', 'vph', user.username ])
+    tokens.update(['VPH', 'vph', user.username ])
 
     return tokens
 

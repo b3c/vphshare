@@ -19,7 +19,7 @@ from masterinterface import wsdl2mi
 from utils import is_staff
 from masterinterface import settings
 from masterinterface.atos.metadata_connector import *
-from masterinterface.scs_resources.utils import get_pending_requests_by_user
+from masterinterface.scs_resources.models import get_pending_requests_by_user
 from masterinterface.scs_groups.views import is_pending_institution, is_pending_action
 
 def home(request):

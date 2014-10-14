@@ -80,11 +80,13 @@ def get_resource_metadata(global_id):
     """
     try:
         response = requests.get(RESOURCE_METADATA_API % global_id)
-        results = settings.MD_SEARCH_ENGINE.search('globalID:"%s"'%global_id)
-        if results.hits != 1:
+
+        if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
-        metadata = results.docs[0]
-        return metadata
+
+        metadata = xmltodict.parse(response.text.encode('utf-8'))
+        result = metadata['resource_metadata']
+        return result[result.keys()[0]]
 
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
