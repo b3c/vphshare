@@ -80,6 +80,7 @@ def resource_detailed_view(request, id='1'):
         resource.load_full_metadata()
 
         if request.user.is_authenticated():
+            resource.requests = resource.get_pending_requests_by_resource()
             #get the path information using the lobcder services.
             if resource.metadata['type'] == 'File':
                 #load additional metadata and permission from LOBCDER services
@@ -384,6 +385,15 @@ def get_resources_share(request, global_id):
     if request.method == 'GET':
         try:
             resource = Resource.objects.get(global_id=global_id)
+            #load the metadata to traslate in a more readable format.
+            resource.load_full_metadata()
+            #get the path information using the lobcder services.
+            if resource.metadata['type'] == 'File':
+                #load additional metadata and permission from LOBCDER services
+                resource.load_additional_metadata(request.ticket)
+            if resource.metadata['type'] == 'Dataset':
+                resource.load_permission()
+
             resource.roleslist = get_resource_local_roles(resource)
             resource.requests = resource.get_pending_requests_by_resource()
             resource.sharreduser = resource.get_user_group_permissions_map()
@@ -438,25 +448,7 @@ def mark_resource_private(request, global_id):
         try:
             resource = Resource.objects.get(global_id=global_id)
             role = Role.objects.get(name='Reader')
-            if resource.metadata['type'] == 'File':
-                import requests
-                import xmltodict
-                from django.conf import settings
-                permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), verify=False).text)
-                file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
-                name = 'vph'
-                if settings.DEBUG:
-                    name = name+"_dev"
-                if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
-                    index = permissions['permissions'][file_permissions_match[role.name]].index(name)
-                    del permissions['permissions'][file_permissions_match[role.name]][index]
-                else:
-                    del permissions['permissions'][file_permissions_match[role.name]]
-
-                result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False,  headers = {'content-type': 'application/xml'})
-                if result.status_code not in [204,201,200]:
-                    raise Exception('LOBCDER permision set error')
-            remove_local_role(resource,None, role)
+            revoke_permision(None,resource,role,request.ticket)
             return HttpResponse(status=200)
         except Exception, e:
             return HttpResponse(status=500)

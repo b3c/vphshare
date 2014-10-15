@@ -235,11 +235,9 @@ class Resource(models.Model):
                                 if r.role.name not in permissions_map[index].roles:
                                     permissions_map[index].roles.append(r.role.name)
                             else:
-                                if getattr(user, 'roles', None) is not None:
-                                    if r.role.name not in user.roles:
-                                        user.roles.append(r.role.name)
-                                else:
+                                if getattr(user, 'roles', None) is None:
                                     user.roles = []
+                                if r.role.name not in user.roles:
                                     user.roles.append(r.role.name)
                                 permissions_map.append(user)
                     except Exception:
@@ -275,17 +273,29 @@ class Resource(models.Model):
             #get the user and groups available in my system to avoid conflict with lobcder custom users/groups not mappend in the MI.
             users_and_groups = set(self.metadata['lobcderPermission']['read']+self.metadata['lobcderPermission']['write']) - set(['vph'])
             from itertools import chain
-            users_and_groups = chain(User.objects.filter(username__in=users_and_groups).values_list('username', flat=True) + Group.objects.filter(name__in=users_and_groups).values_list('name', flat=True))
+            users_and_groups = chain(list(User.objects.filter(username__in=users_and_groups)) + list(Group.objects.filter(name__in=users_and_groups)))
             for user_group in users_and_groups:
-                name = getattr(user_group,'username',getattr(user_group,'name',None))
                 #if the user/group is Manager read and write are not loaded as Reader or
                 #Editor permission except they already loaded before.
-                if 'Manager' not in permissions_map[name]:
-                    #if the user is not Manager I load the permission as is.
-                    if name in self.metadata['lobcderPermission']['read'] and 'Reader' not in permissions_map[name]:
-                        permissions_map[name].append('Reader')
-                    if name in self.metadata['lobcderPermission']['write'] and 'Editor' not in permissions_map[name]:
-                        permissions_map[name].append('Editor')
+                if user_group in permissions_map:
+                    index = permissions_map.index(user_group)
+                    if 'Manager' not in permissions_map[index].roles:
+                        #if the user is not Manager I load the permission as is.
+                        name = getattr(user_group,'username',getattr(user_group,'name',None))
+                        if name in self.metadata['lobcderPermission']['read'] and 'Reader' not in permissions_map[index].roles:
+                            permissions_map[index].roles.append('Reader')
+                        if name in self.metadata['lobcderPermission']['write'] and 'Editor' not in permissions_map[index].roles:
+                            permissions_map[index].roles.append('Editor')
+                else:
+                    if getattr(user_group, 'roles', None) is None:
+                        user_group.roles = []
+                    name = getattr(user_group,'username',getattr(user_group,'name',None))
+                    if name in self.metadata['lobcderPermission']['read'] and 'Reader' not in user_group.roles:
+                        user_group.roles.append('Reader')
+                    if name in self.metadata['lobcderPermission']['write'] and 'Editor' not in user_group.roles:
+                        user_group.roles.append('Editor')
+                    permissions_map.append(user_group)
+
         return permissions_map
 
 

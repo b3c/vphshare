@@ -2,6 +2,8 @@
 
 {% load scs_extras %}
 
+{%  block title %} {{ resource.metadata.name }} {% endblock %}
+
 {% block extrahead %}
     <link rel="stylesheet" href="/static/font-awesome.min.css">
     <!--[if IE 7]>
