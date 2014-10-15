@@ -603,6 +603,33 @@ def grant_role(request):
     response = HttpResponse(content=response_body, content_type='application/json')
     return response
 
+@login_required
+def grant_recursive_role(request):
+    """
+        grant role to user or group recursively only for folders
+    """
+
+    resource = Resource.objects.get(global_id=request.GET.get('global_id'))
+    resource.load_additional_metadata(request.ticket)
+    if resource.metadata['fileType'] == 'folder':
+        data = requests.get('%s/item/permissions/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                                                    auth=('user', request.ticket),
+                                                    verify=False,
+                                                    headers={'Content-Type':'application/json','Accept':'application/json'}).text
+        result =  requests.put('%s/item/permissions/recursive/%s' % (settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                                                    auth=('user', request.ticket),
+                                                    verify=False,
+                                                    headers={'Content-Type':'application/json','Accept':'application/json'},
+                                                    data=data)
+        if result.status_code not in [204,201,200]:
+                raise Exception('LOBCDER permision set error')
+    else:
+        raise SuspiciousOperation
+
+    response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
+    response = HttpResponse(content=response_body, content_type='application/json')
+    return response
+
 
 def revoke_role(request):
     """
