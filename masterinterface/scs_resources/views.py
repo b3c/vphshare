@@ -85,8 +85,7 @@ def resource_detailed_view(request, id='1'):
             if resource.metadata['type'] == 'File':
                 #load additional metadata and permission from LOBCDER services
                 resource.load_additional_metadata(request.ticket)
-            if resource.metadata['type'] == 'Dataset':
-                resource.load_permission()
+            resource.load_permission()
 
         # check if the resource has been already requested by user
         if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
@@ -264,13 +263,10 @@ def get_resources_list(request, resource_type, page=1):
                 managed_resources.append(resource)
                 if created:
                     resource.save()
-                #load permission for dataset
-                if 'Dataset' in types and resource.metadata['type'] == 'Dataset':
-                    resource.load_permission()
-
                 if 'File' in types and resource.metadata['type'] == 'File':
                     #load additional metadata and permission from LOBCDER services
                     resource.load_additional_metadata(request.ticket)
+                resource.load_permission()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
 
@@ -326,13 +322,11 @@ def get_resources_list_by_author(request, resource_type, page=1):
                 managed_resources.append(resource)
                 if created:
                     resource.save()
-                #load permission for dataset
-                if 'Dataset' in types and resource.metadata['type'] == 'Dataset':
-                    resource.load_permission()
 
                 if 'File' in types and resource.metadata['type'] == 'File':
                     #load additional metadata and permission from LOBCDER services
                     resource.load_additional_metadata(request.ticket)
+                resource.load_permission()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
 
@@ -345,13 +339,11 @@ def get_resources_list_by_author(request, resource_type, page=1):
                         resource = Resource.objects.get(metadata=True, global_id=resource_gid)
                     except AtosServiceException:
                         continue
-                    #load permission for dataset
-                    if 'Dataset' in types and resource.metadata['type'] == 'Dataset':
-                        resource.load_permission()
 
                     if 'File' in types and resource.metadata['type'] == 'File':
                         #load additional metadata and permission from LOBCDER services
                         resource.load_additional_metadata(request.ticket)
+                    resource.load_permission()
                     #load requests pending for this resource
                     resource.requests = resource.get_pending_requests_by_resource()
                     managed_resources.append(resource)
@@ -391,8 +383,7 @@ def get_resources_share(request, global_id):
             if resource.metadata['type'] == 'File':
                 #load additional metadata and permission from LOBCDER services
                 resource.load_additional_metadata(request.ticket)
-            if resource.metadata['type'] == 'Dataset':
-                resource.load_permission()
+            resource.load_permission()
 
             resource.roleslist = get_resource_local_roles(resource)
             resource.requests = resource.get_pending_requests_by_resource()
@@ -623,6 +614,35 @@ def grant_recursive_role(request):
                                                     data=data)
         if result.status_code not in [204,201,200]:
                 raise Exception('LOBCDER permision set error')
+        resoources_guid_applied = result.json()
+        permissions_map = resource.get_user_group_permissions_map()
+        # if the recurive operation changed other Files or Folder permission I need to reset mine permission map
+        #and reload to maintain coherence
+        if 'guid' in resoources_guid_applied.keys():
+            #load all the paermissions maps where the new map has applied.
+            if isinstance(resoources_guid_applied['guid'], list):
+                for guid in resoources_guid_applied['guid']:
+                    try:
+                        r = Resource.objects.get(global_id=guid)
+                    except ObjectDoesNotExist:
+                        continue
+                    r.reset_permissions()
+                    for user_group in permissions_map:
+                        for role_name in user_group.roles:
+                            role = Role.objects.get(name=role_name)
+                            name = getattr(user_group,'username',getattr(user_group,'name',None))
+                            grant_permission(name,r,role)
+            else:
+                try:
+                    r = Resource.objects.get(global_id=resoources_guid_applied['guid'])
+                    r.reset_permissions()
+                    for user_group in permissions_map:
+                        for role_name in user_group.roles:
+                            role = Role.objects.get(name=role_name)
+                            name = getattr(user_group,'username',getattr(user_group,'name',None))
+                            grant_permission(name,r,role)
+                except ObjectDoesNotExist:
+                    pass
     else:
         raise SuspiciousOperation
 

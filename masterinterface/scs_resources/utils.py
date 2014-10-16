@@ -6,7 +6,6 @@ from django.contrib.auth.models import User, Group
 from django.template import loader
 from django.core.mail import EmailMultiAlternatives
 from permissions.models import Role, PrincipalRoleRelation
-from permissions.utils import has_local_role, has_permission, add_local_role
 from workflows.utils import get_state
 from masterinterface.scs_resources.config import request_pending
 
@@ -44,6 +43,42 @@ def remove_local_role(obj, principal, role):
         ppr.delete()
 
     return True
+
+def add_local_role(obj, principal, role):
+    """Adds a local role to a principal.
+
+    **Parameters:**
+
+    obj
+        The object for which the principal gets the role.
+
+    principal
+        The principal (user or group) which gets the role.
+
+    role
+        The role which is assigned.
+    """
+    ctype = ContentType.objects.get_for_model(obj)
+    if isinstance(principal, User):
+        try:
+            ppr = PrincipalRoleRelation.objects.get(user=principal, role=role, content_id=obj.id, content_type=ctype)
+        except PrincipalRoleRelation.DoesNotExist:
+            PrincipalRoleRelation.objects.create(user=principal, role=role, content=obj)
+            return True
+    elif principal is None:
+        try:
+            ppr = PrincipalRoleRelation.objects.get(user=principal, group=principal, role=role, content_id=obj.id, content_type=ctype)
+        except PrincipalRoleRelation.DoesNotExist:
+            PrincipalRoleRelation.objects.create(user=principal, group=None, role=role, content=obj)
+            return True
+    else:
+        try:
+            ppr = PrincipalRoleRelation.objects.get(group=principal, role=role, content_id=obj.id, content_type=ctype)
+        except PrincipalRoleRelation.DoesNotExist:
+            PrincipalRoleRelation.objects.create(group=principal, role=role, content=obj)
+            return True
+
+    return False
 
 def get_resource_local_roles(resource=None):
 
@@ -109,7 +144,7 @@ def grant_permission(name, resource, role, ticket=None):
         principal = None
 
     #set the role for files in lobcder repository
-    if resource.metadata['type'] == 'File':
+    if resource.metadata['type'] == 'File' and ticket:
         import requests
         import xmltodict
         from django.conf import settings
@@ -164,7 +199,7 @@ def revoke_permision(name, resource, role, ticket=None):
 
     remove_local_role(resource, principal, role)
 
-    if resource.metadata['type'] == 'File':
+    if resource.metadata['type'] == 'File' and ticket:
         import requests
         import xmltodict
         from django.conf import settings
