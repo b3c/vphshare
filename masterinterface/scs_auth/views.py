@@ -1,9 +1,12 @@
 """
 Scs_auth views contain all frontend views about authentication process.
 """
+import urllib2
+import os
+from M2Crypto import DSA
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout, login
-from auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
@@ -12,16 +15,13 @@ from django.utils.datastructures import SortedDict
 from django.core.validators import URLValidator
 from django.core.exceptions import ObjectDoesNotExist
 from scs_auth import __version__ as version
-from django.conf import settings
+from piston.handler import BaseHandler
+from permissions.utils import add_role, remove_role
+
+from auth import authenticate
 from masterinterface.scs.utils import is_staff
 from masterinterface.scs_auth.auth import calculate_sign
-import urllib2
-import time
-from piston.handler import BaseHandler
-import os
-from M2Crypto import DSA
-from permissions.models import Role
-from permissions.utils import get_roles, add_role, remove_role
+from masterinterface.cyfronet import easywebdav
 from models import *
 
 
@@ -46,6 +46,21 @@ def done(request):
         request.session['welcome'] = "Dear %s, your login attempt has been successful! Welcome to the Master Interface!" % request.user.first_name
     else:
         request.session['welcome'] = "Dear friend, your login attempt has been successful! Welcome to the Master Interface!"
+
+    #Create home folder for the user
+    webdav = easywebdav.connect(settings.LOBCDER_HOST, username='user',
+                                password=request.ticket, protocol='http'
+                                )
+    foldertocreate = settings.LOBCDER_ROOT + "/home/%s" % request.user.username
+    try:
+        #if the fodler doesn't exisit , it is created.
+        if not webdav.exists(foldertocreate):
+            webdav.mkdir(foldertocreate)
+    except Exception as e:
+            # This is done to skip an erratic behaviour of the webdav, that is triggering an exception
+            # even after the directory is successfully created
+            if webdav.exists(foldertocreate) == False:
+                raise e
     response = render_to_response(
         'scs_auth/done.html',
         ctx,
