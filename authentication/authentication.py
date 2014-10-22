@@ -29,7 +29,7 @@ import base64
 import os
 import json
 import requests
-
+from datetime import timedelta
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 MOD_AUTH_PRIVKEY = os.path.join(PROJECT_ROOT, 'keys/privkey_DSA.pem')
@@ -67,7 +67,8 @@ app.config.update(
     DEBUG=True,
     SECRET_KEY='09b63a0aa787db09b73c675b1e04224a',
     TIME_OUT=12 * 60 * 60,  # 12h
-    MASTERINTERFACE_VALIDATE_TKT_SERVICE="https://portal.vph-share.eu/validatetkt/?ticket=%s"
+    MASTERINTERFACE_VALIDATE_TKT_SERVICE="https://portal.vph-share.eu/validatetkt/?ticket=%s",
+    PERMANENT_SESSION_LIFETIME = timedelta(seconds=TIMEOUT)
 )
 
 #TICKET = Ticket(app.config['SECRET_KEY'])
@@ -293,6 +294,8 @@ def login():
                 response.set_cookie('bt-tkt', ticket_b64, domain=target_domain)
 
                 return response
+            else:
+                logout_user()
         except Exception, e:
             pass
 
@@ -358,7 +361,7 @@ def logout():
     """
     logout_user()
     flash("Logged out.")
-    return redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
 def validate_to_biomedtown(username, password):
