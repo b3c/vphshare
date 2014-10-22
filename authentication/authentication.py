@@ -103,7 +103,7 @@ def index():
         
         Return rendering to index page.
     """
-    return render_template('index.html', error=None)
+    return redirect(url_for("login"))
 
 
 @app.route("/user_login", methods=["GET", "POST"])
