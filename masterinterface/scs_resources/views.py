@@ -260,15 +260,22 @@ def get_resources_list(request, resource_type, page=1):
                     if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
                         continue
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
-                managed_resources.append(resource)
                 if created:
                     resource.save()
+
+                if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                    continue
+
                 if 'File' in types and resource.metadata['type'] == 'File':
                     #load additional metadata and permission from LOBCDER services
-                    resource.load_additional_metadata(request.ticket)
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
                 resource.load_permission()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources.append(resource)
 
             resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
 
@@ -296,7 +303,7 @@ def get_resources_list_by_author(request, resource_type, page=1):
             managed_resources = []
             #get the list of owned resource from the metadata repository
             if resource_type == "data":
-                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page) + filter_resources_by_facet('File','author',request.user.username, page=page)
+                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page)
                 types= ['Dataset']
             if resource_type == "file":
                 resources = filter_resources_by_facet('File','author',request.user.username, page=page)
@@ -319,16 +326,18 @@ def get_resources_list_by_author(request, resource_type, page=1):
                     if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
                         continue
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
-                managed_resources.append(resource)
                 if created:
                     resource.save()
 
                 if 'File' in types and resource.metadata['type'] == 'File':
                     #load additional metadata and permission from LOBCDER services
-                    resource.load_additional_metadata(request.ticket)
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
                 resource.load_permission()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources.append(resource)
 
             if page == 1:
                 #If is the first page I also get hte list of the resources at least readable but not owned.
@@ -337,12 +346,20 @@ def get_resources_list_by_author(request, resource_type, page=1):
                 for resource_gid in readable_resources:
                     try:
                         resource = Resource.objects.get(metadata=True, global_id=resource_gid)
+                        if resource.metadata['type'] == "File" and resource.metadata['localID'] == "0":
+                            #skip files with localid = 0
+                            continue
+                        if resource.metadata['type'] not in types:
+                            #skip the resoruce that are not the same type requested
+                            continue
                     except AtosServiceException:
                         continue
 
                     if 'File' in types and resource.metadata['type'] == 'File':
                         #load additional metadata and permission from LOBCDER services
-                        resource.load_additional_metadata(request.ticket)
+                        if not resource.load_additional_metadata(request.ticket):
+                            #if something go wrong with the lobcder loader I skip it
+                            continue
                     resource.load_permission()
                     #load requests pending for this resource
                     resource.requests = resource.get_pending_requests_by_resource()
@@ -607,7 +624,7 @@ def grant_recursive_role(request):
                                                     auth=('user', request.ticket),
                                                     verify=False,
                                                     headers={'Content-Type':'application/json','Accept':'application/json'}).text
-        result =  requests.put('%s/item/permissions/recursive/%s' % (settings.LOBCDER_REST_URL, resource.metadata['localID']),
+        result =  requests.put('%s/item/permissions/recursive/%s?getall=True' % (settings.LOBCDER_REST_URL, resource.metadata['localID']),
                                                     auth=('user', request.ticket),
                                                     verify=False,
                                                     headers={'Content-Type':'application/json','Accept':'application/json'},

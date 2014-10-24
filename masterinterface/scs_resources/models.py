@@ -173,6 +173,7 @@ class Resource(models.Model):
                 if 'read/sparql' in endpoint:
                     self.metadata['explore'] = endpoint.replace('read/sparql', 'explore/sql.html')
                     self.metadata['explore'] = endpoint.replace('https://','https://admin:%s@'%ticket)
+            return True
         except Exception,e:
             from raven.contrib.django.raven_compat.models import client
             client.captureException()
