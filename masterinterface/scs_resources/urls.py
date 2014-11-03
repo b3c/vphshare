@@ -35,6 +35,7 @@ urlpatterns = patterns(
     url(r'^dashboard/list/(?P<resource_type>[\w\-]+)', get_resources_list_by_author,  name='resoruces_by_author'),
     url(r'^dashboard/(?P<tab>[\w\-]+)', manage_resources,  name='resoruces_by_author'),
     url(r'^grantrole/$', grant_role),
+    url(r'^grantrolerecursive/$', grant_recursive_role),
     url(r'^revokerole/$', revoke_role),
     url(r'^createrole/$', create_role),
     url(r'^workflows/$', workflowsView, name='workflows'),

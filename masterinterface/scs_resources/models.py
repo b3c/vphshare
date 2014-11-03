@@ -110,6 +110,28 @@ class Resource(models.Model):
 
     def load_permission(self):
         #method provide the load permission for specific types of resource : File and Dataset
+        #load the permissions from the lobcder permissions map
+        if 'File' in self.metadata['type']:
+            permissions_match = {'read': 'Reader', 'write': 'Editor'}
+            permissions_map = self.get_user_group_permissions_map()
+            for permission in self.metadata['lobcderPermission']:
+                if permission in permissions_match.keys():
+                    role = Role.objects.get(name=permissions_match[permission])
+                    for user_group in self.metadata['lobcderPermission'][permission]:
+                        if user_group == 'vph':
+                            #Mark as public the resrouce.
+                            grant_permission(None, self, role)
+                            continue
+                        # check if the user/group in the lobcder permission list exisit in MI db.
+                        if User.objects.filter(username=user_group).exists():
+                            name = User.objects.get(username=user_group)
+                        elif Group.objects.filter(name=user_group).exists():
+                            name = Group.objects.get(name=user_group)
+                        else:
+                            name = None
+                        # if user/group exsists and is not already seted the Manager permission I can grant the corresponding permission
+                        if name and name in permissions_map and 'Manager' not in permissions_map[permissions_map.index(name)].roles:
+                            grant_permission(user_group, self, role)
         # if is a Dataset method:
         if 'Dataset' in self.metadata['type']:
             for role in get_resource_local_roles():
@@ -151,6 +173,7 @@ class Resource(models.Model):
                 if 'read/sparql' in endpoint:
                     self.metadata['explore'] = endpoint.replace('read/sparql', 'explore/sql.html')
                     self.metadata['explore'] = endpoint.replace('https://','https://admin:%s@'%ticket)
+            return True
         except Exception,e:
             from raven.contrib.django.raven_compat.models import client
             client.captureException()
@@ -180,6 +203,9 @@ class Resource(models.Model):
         if self.metadata.get('semanticAnnotations', None) is not None:
             if  not isinstance(self.metadata['semanticAnnotations']['semanticConcept'], list):
                 self.metadata['semanticAnnotations']['semanticConcept'] = [self.metadata['semanticAnnotations']['semanticConcept'].copy()]
+
+    def reset_permissions(self):
+        return PrincipalRoleRelation.objects.filter(role__name__in=['Reader', 'Editor', 'Manager'], content_id = self.id).delete()
 
     def update_views_counter(self):
         metadata = get_resource_metadata(self.global_id)

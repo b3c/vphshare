@@ -72,12 +72,18 @@ class VPHShareSmartGroup(Group):
         """
         parents_list = []
         try:
-            parent = self.parent.vphsharesmartgroup
+            if self.parent:
+                parent = self.parent.vphsharesmartgroup
+            else:
+                parent = self.parent
             while parent is not None:
                 if parent.active:
                     parents_list.append(parent.name)
                 #follow the tree
-                parent = parent.parent.vphsharesmartgroup
+                if parent.parent:
+                    parent = parent.parent.vphsharesmartgroup
+                else:
+                    parent = parent.parent
         except Exception, e:
             from raven.contrib.django.raven_compat.models import client
             client.captureException()

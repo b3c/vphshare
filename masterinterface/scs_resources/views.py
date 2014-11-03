@@ -85,8 +85,7 @@ def resource_detailed_view(request, id='1'):
             if resource.metadata['type'] == 'File':
                 #load additional metadata and permission from LOBCDER services
                 resource.load_additional_metadata(request.ticket)
-            if resource.metadata['type'] == 'Dataset':
-                resource.load_permission()
+            resource.load_permission()
 
         # check if the resource has been already requested by user
         if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
@@ -261,18 +260,22 @@ def get_resources_list(request, resource_type, page=1):
                     if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
                         continue
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
-                managed_resources.append(resource)
                 if created:
                     resource.save()
-                #load permission for dataset
-                if 'Dataset' in types and resource.metadata['type'] == 'Dataset':
-                    resource.load_permission()
+
+                if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                    continue
 
                 if 'File' in types and resource.metadata['type'] == 'File':
                     #load additional metadata and permission from LOBCDER services
-                    resource.load_additional_metadata(request.ticket)
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources.append(resource)
 
             resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
 
@@ -300,7 +303,7 @@ def get_resources_list_by_author(request, resource_type, page=1):
             managed_resources = []
             #get the list of owned resource from the metadata repository
             if resource_type == "data":
-                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page) + filter_resources_by_facet('File','author',request.user.username, page=page)
+                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page)
                 types= ['Dataset']
             if resource_type == "file":
                 resources = filter_resources_by_facet('File','author',request.user.username, page=page)
@@ -323,18 +326,18 @@ def get_resources_list_by_author(request, resource_type, page=1):
                     if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
                         continue
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
-                managed_resources.append(resource)
                 if created:
                     resource.save()
-                #load permission for dataset
-                if 'Dataset' in types and resource.metadata['type'] == 'Dataset':
-                    resource.load_permission()
 
                 if 'File' in types and resource.metadata['type'] == 'File':
                     #load additional metadata and permission from LOBCDER services
-                    resource.load_additional_metadata(request.ticket)
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources.append(resource)
 
             if page == 1:
                 #If is the first page I also get hte list of the resources at least readable but not owned.
@@ -343,15 +346,21 @@ def get_resources_list_by_author(request, resource_type, page=1):
                 for resource_gid in readable_resources:
                     try:
                         resource = Resource.objects.get(metadata=True, global_id=resource_gid)
+                        if resource.metadata['type'] == "File" and resource.metadata['localID'] == "0":
+                            #skip files with localid = 0
+                            continue
+                        if resource.metadata['type'] not in types:
+                            #skip the resoruce that are not the same type requested
+                            continue
                     except AtosServiceException:
                         continue
-                    #load permission for dataset
-                    if 'Dataset' in types and resource.metadata['type'] == 'Dataset':
-                        resource.load_permission()
 
                     if 'File' in types and resource.metadata['type'] == 'File':
                         #load additional metadata and permission from LOBCDER services
-                        resource.load_additional_metadata(request.ticket)
+                        if not resource.load_additional_metadata(request.ticket):
+                            #if something go wrong with the lobcder loader I skip it
+                            continue
+                    resource.load_permission()
                     #load requests pending for this resource
                     resource.requests = resource.get_pending_requests_by_resource()
                     managed_resources.append(resource)
@@ -391,8 +400,7 @@ def get_resources_share(request, global_id):
             if resource.metadata['type'] == 'File':
                 #load additional metadata and permission from LOBCDER services
                 resource.load_additional_metadata(request.ticket)
-            if resource.metadata['type'] == 'Dataset':
-                resource.load_permission()
+            resource.load_permission()
 
             resource.roleslist = get_resource_local_roles(resource)
             resource.requests = resource.get_pending_requests_by_resource()
@@ -598,6 +606,62 @@ def grant_role(request):
         pass
     except Exception, e:
         pass
+
+    response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
+    response = HttpResponse(content=response_body, content_type='application/json')
+    return response
+
+@login_required
+def grant_recursive_role(request):
+    """
+        grant role to user or group recursively only for folders
+    """
+
+    resource = Resource.objects.get(global_id=request.GET.get('global_id'))
+    resource.load_additional_metadata(request.ticket)
+    if resource.metadata['fileType'] == 'folder':
+        data = requests.get('%s/item/permissions/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                                                    auth=('user', request.ticket),
+                                                    verify=False,
+                                                    headers={'Content-Type':'application/json','Accept':'application/json'}).text
+        result =  requests.put('%s/item/permissions/recursive/%s?getall=True' % (settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                                                    auth=('user', request.ticket),
+                                                    verify=False,
+                                                    headers={'Content-Type':'application/json','Accept':'application/json'},
+                                                    data=data)
+        if result.status_code not in [204,201,200]:
+                raise Exception('LOBCDER permision set error')
+        resoources_guid_applied = result.json()
+        permissions_map = resource.get_user_group_permissions_map()
+        # if the recurive operation changed other Files or Folder permission I need to reset mine permission map
+        #and reload to maintain coherence
+        if 'guid' in resoources_guid_applied.keys():
+            #load all the paermissions maps where the new map has applied.
+            if isinstance(resoources_guid_applied['guid'], list):
+                for guid in resoources_guid_applied['guid']:
+                    try:
+                        r = Resource.objects.get(global_id=guid)
+                    except ObjectDoesNotExist:
+                        continue
+                    r.reset_permissions()
+                    for user_group in permissions_map:
+                        for role_name in user_group.roles:
+                            role = Role.objects.get(name=role_name)
+                            name = getattr(user_group,'username',getattr(user_group,'name',None))
+                            grant_permission(name,r,role)
+            else:
+                try:
+                    r = Resource.objects.get(global_id=resoources_guid_applied['guid'])
+                    r.reset_permissions()
+                    for user_group in permissions_map:
+                        for role_name in user_group.roles:
+                            role = Role.objects.get(name=role_name)
+                            name = getattr(user_group,'username',getattr(user_group,'name',None))
+                            grant_permission(name,r,role)
+                except ObjectDoesNotExist:
+                    pass
+    else:
+        raise SuspiciousOperation
 
     response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')
