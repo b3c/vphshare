@@ -103,7 +103,7 @@
         (function() {
             var global = this;
             var $ = global.$;
-            var markpublic = global.markpublic = function(btn){
+            global.markpublic = function(btn){
                 var self = this;
                 btn.button('loading');
                 $.ajax('{{ BASE_URL }}/dashboard/markpublic/{{ resource.global_id }}/', {
@@ -115,14 +115,14 @@
                         btn.click(function(e){
                             e.preventDefault();
                             markprivate(btn);
-                        })
+                        });
                         return true;
                     },
                     error: function() { btn.button('reset'); return true; }
                 });
             };
 
-            var markprivate = global.markprivate = function(btn){
+            global.markprivate = function(btn){
                 var self = this;
                 btn.button('loading');
                 $.ajax('{{ BASE_URL }}/dashboard/markprivate/{{ resource.global_id }}/', {
@@ -134,7 +134,7 @@
                         btn.click(function(e){
                             e.preventDefault();
                             markpublic(btn);
-                        })
+                        });
                         return true;
                     },
                     error: function() {  btn.button('reset'); return true; }
@@ -160,6 +160,40 @@
     {% endif %}
 <hr>
 {% if resource.sharreduser %}
+    {% if resource.metadata.fileType == "folder" %}
+        <button id="recursive-button"  class="btn btn-info" data-loading-text="Sending, please wait until the request is finished..."  style="color:#ffffff;" >Recursive</button> <span>Apply the permissions to the subfolder and files recursively.</span>
+        <script type="application/javascript">
+        (function() {
+            var global = this;
+            var $ = global.$;
+            global.recursive = function(btn){
+                var self = this;
+                btn.button('loading');
+                $.ajax('{{ BASE_URL }}/grantrolerecursive/', {
+                    type: 'get',
+                    data: {global_id:'{{ resource.global_id }}'},
+                    success: function() {
+                        btn.button('reset');
+                        btn.html('Recursive');
+                        btn.unbind('click');
+                        btn.click(function(e){
+                            e.preventDefault();
+                            recursive(btn);
+                        });
+                        return true;
+                    },
+                    error: function() { btn.button('reset'); return true; }
+                });
+            };
+
+            $('#recursive-button').click(function(e){
+                e.preventDefault();
+                recursive($(this));
+            });
+
+        }).call(this);
+    </script>
+    {% endif %}
     <table class=" table table-striped table-hover" style="table-layout: fixed;">
         <thead>
         <tr>

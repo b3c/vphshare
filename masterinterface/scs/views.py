@@ -19,7 +19,7 @@ from masterinterface import wsdl2mi
 from utils import is_staff
 from masterinterface import settings
 from masterinterface.atos.metadata_connector import *
-from masterinterface.scs_resources.utils import get_pending_requests_by_user
+from masterinterface.scs_resources.models import get_pending_requests_by_user
 from masterinterface.scs_groups.views import is_pending_institution, is_pending_action
 
 def home(request):
@@ -208,26 +208,6 @@ def upload_data(request):
         {},
                               RequestContext(request))
 
-
-def manage_data(request):
-    from masterinterface.scs_resources.models import Workflow
-
-    workflows = []
-
-    try:
-        dbWorkflows = Workflow.objects.all()
-        for workflow in dbWorkflows:
-            workflow.permissions_map = get_permissions_map(workflow.global_id)
-            workflows.append(workflow)
-
-    except Exception, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-
-    return render_to_response("scs/manage_data.html",
-                              {'workflows': workflows,
-                               'tkt64': request.COOKIES.get('vph-tkt')},
-                              RequestContext(request))
 
 @csrf_exempt
 def search_service(request):

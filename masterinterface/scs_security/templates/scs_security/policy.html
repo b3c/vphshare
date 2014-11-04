@@ -1,15 +1,5 @@
 {% extends 'scs_security/base.html' %}
 
 {% block content %}
-
-
-    {% if policy_obj  %}
-        <h3>Security Policy: {{ policy_obj.name }}</h3>
-    {% else %}
-        {% include 'scs_security/policieslist.html' %}
-        <h3>Create new security Policy</h3>
-    {% endif %}
-
-    {% include 'scs_security/policyform.html' %}
-
+    {% include 'scs_security/policieslist.html' %}
 {% endblock %}

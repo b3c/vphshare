@@ -387,8 +387,7 @@
 	"output": "",
     "error_msg": "",
     "exitcode": ""
-}
-                                            </pre>
+}</pre>
                                         </div>
                                         <div class="alert alert-error">
                                             <p><strong>Status code 401</strong> Ticket not valid</p>
@@ -422,7 +421,683 @@
                         </div>
                     </div>
                 </div>
-                <!-- ends here --> 
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse7">
+                            <h3>Data Management services: SOAP Datanode Administration<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse7" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <p>These services are intended for use by the Data Publication Suite, we do not suggest you use them from 3rd party applications. Also the only currently APIs are documented here. The WSDL definition contains reference to older methods which now throw NotImplemented exceptions and will be removed completely in the next version of the datanode interface. </p4>
+                            <h4>https://{ServerName}/admin/datanode.asmx</h4>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td><p>Add ?wsdl to the end for the definition. The service is secured by the VPH-Share security proxy so a valid ticket containing the users roles must be submitted in the password field of the request credentials to be able to access the service.
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/admin/datanode.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>CreateDataset</td>
+                                </tr>
+                               <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>name</dt><dd>string</dd></dt><dt>owner</dt><dd>string</dd></dt><dd>It creates a new data set container on the server with name of the dataset and the username of the dataset owner. The dataset name should be unique across the network but this is not validated at this time so it is up to the caller to do this. In future version this will happen but for now it is up to the client to ensure this as the DPS does. There is also no validation on the username so if it is not valid then some functions may not be available.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            Guid of the newly created dataset as a string</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/admin/datanode.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>DeleteDataset</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>name</dt><dd>string</dd></dt><dd>Dataset name.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>True</strong>
+                                            if successfull. It deletes the dataset with the name supplied.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>False</strong>
+                                            For more information on an unsuccessful command the server logs will need to be consulted.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/admin/datanode.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GetDatasetNames</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            It gets a list of all datasets on the server as a string array.
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/admin/datanode.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>SetDatasetOwner</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>datasetName</dt><dd>string</dd><dt>owner</dt><dd>string</dd></dt>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            It sets the owner of a dataset, again no validation is applied at this time so it is up to the caller to ensure the information is consistent.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                 <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse8">
+                            <h3>Data Management services: SOAP Dataset Administration<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse8" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <p>These services are intended for use by the Data Publication Suite, we do not suggest you use them from 3rd party applications. Also the only currently APIs are documented here. The WSDL definition contains reference to older methods which now throw NotImplemented exceptions and will be removed completely in the next version of the datanode interface. </p4>
+                            <h4>https://{ServerName}/{DatasetName}/admin/dataset.asmx</h4>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td><p>Add ?wsdl to the end for the definition. The service is secured by the VPH-Share security proxy so a valid ticket containing the users roles must be submitted in the password field of the request credentials to be able to access the service.
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/{DatasetName}/admin/dataset.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>SetData</td>
+                                </tr>
+                               <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>dataDoc</dt><dd>DataInstance</dd><dd>This is the core method used by the DPS to publish data into the server. The DataInstance class is quite complex and is completely defined by the WSDL document provided by the service endpoint. A description of the serialised version of this class is provided below in case you wish to create your own document and make a manual SOAP transaction.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            </pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/{DatasetName}/admin/dataset.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GetStatus</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <strong>DatasetStatus</strong>
+                                             is an enumerated list.<pre>{Creating, Created, Publishing, Published, Deleting, Error}</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/{DatasetName}/admin/dataset.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>ResetStatus</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success"> <strong>True</strong>
+                                            It resets the status of the dataset back to “Created” </pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>False</strong></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/{DatasetName}/admin/dataset.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GetGuid</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            It returns the internal Guid of the dataset, not to be confused with the global Guid generated by the meta-data services.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse9">
+                            <h3>Data Management services: REST Query and Update services<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse9" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                                <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td><p>REST interactions are via two languages, SQL or SPARQL. Each has its own end point and each has a read path with SQL also having a “full control” path.
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/{DatasetName}/read/sparql</code><br>
+                                        <code>https://{ServerName}/{DatasetName}/read/sql</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>SPARQL REST Service</td>
+                                </tr>
+                               <tr>
+                                    <td><strong>Request</strong></td>
+                                    <td>
+                                     <pre>POST /{DatasetName}/read /sparql HTTP/1.1
+Host: xxx.xxx.xxx.xxx
+Accept: text/csv
+Accept-Language: en
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+query=SELECT+DISTINCT+%3Fs+%3Fp+%3Fo+WHERE+%7B+%3Fs+%3Fp+%3Fo+%7D+LIMIT+10
+                                    </pre>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Response</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                           <pre>HTTP/1.1. 200 OK<br>Date: Mon, 10 Feb 2014 12:29:40 GMT<br>Content-Type: applocation/xml;charset=UTF-8<br>Keep-Alive: timeout=5, max=100<br>Connection: Keep-Alive<br>Transfer-Encoding: chunked<br>s,p,o<br>drug_mixture/1,http://www.w3.org/2000/01/rdf-schema#label,drug_mixture #1</pre>
+                                        </div>
+                                        <p>An identical pattern is used for the sql endpoint. The requests can either be POST with the query in the body of the message or a GET with the query in the URL itself as shown in the example below.
+                                        An example of an actual full GET request string is below:</p>
+                                        <div class="alert alert-success">
+                                        <pre>https://vphsharedata2.sheffield.ac.uk/dn2test/read/sparql?default-graph-uri=&query=PREFIX vph: <https://vphsharedata2.sheffield.ac.uk/dn2test/unannotated#>
+PREFIX vph_map:  <https://vphsharedata2.sheffield.ac.uk/dn2test/mapping#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT  ((?F_roottable_waist) AS ?roottable_waist) ((?F_roottable_FixedIM) AS ?roottable_FixedIM) ((?F_roottable_country) AS ?roottable_country)
+{
+?T_roottable vph_map:has_roottable_waist ?FD_roottable_waist.
+?FD_roottable_waist rdf:value ?F_roottable_waist.
+
+?T_roottable vph_map:has_roottable_FixedIM ?FD_roottable_FixedIM.
+?FD_roottable_FixedIM rdf:value ?F_roottable_FixedIM.
+
+?T_roottable vph_map:has_roottable_country ?FD_roottable_country.
+?FD_roottable_country rdf:value ?F_roottable_country.
+}
+                                            </pre>
+                                        </div>
+                                        <p>The above call contains a lot of PREFIX information for ontology terms etc but this is a valid SPARQL query and shows the form that should be used.</p>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://{ServerName}/{DatasetName}/full/sql</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>SQL UPDATE Request</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Request</strong></td>
+                                    <td>
+                                     <pre>POST /{DatasetName}/full/sql
+HTTP/1.1
+Host: xxx.xxx.xxx.xxx
+Content-Type: application/sql-update
+Accept: application/xml
+Accept-Language: en
+Accept-Endcoding: gzip, deflate
+INSERT INTO `drug` VALUES (666666, 1, "TestDrug", "lorem ipsum", "do tests");
+                                    </pre>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Response</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            <pre>HTTP/1.1. 200<br>OK Date: Mon, 10 Feb 2014 12:29:40 GMT<br>Content-Type: applocation/xml;charset=UTF-8<br>Keep-Alive: timeout=5, max=100<br>Connection: Keep-Alive<br>Transfer-Encoding: chunked<br>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;<br>&lt;update xmlns="http://isc.univie.ac.at/2013/asio" &gt;<br>&lt;command&gt;INSERT INTO `drug` VALUES (666666, 1, &quot;TestDrug&quot;, &quot;lorem ipsum&quot;, &quot;do tests&quot;);&lt;/command&gt;<br>&lt;count&gt;1&lt;/count&gt;<br>&lt;/update&gt;
+</pre>
+
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                        Possible values of the "Accept" header in a request for content negotiation are:<br><br>
+
+SQL : <br>
+  application/xml<br>
+  text/csv (only applicable to SELECT statements)<br>
+  text/plain (only applicable to update operations)<br>
+<br>
+SPARQL :<br>
+  application/xml (works for all query types)<br>
+  application/json (works for all query types)<br>
+  application/sparql-results+xml (alias for application/xml for SELECT or ASK)<br>
+  application/sparql-results+json (alias for application/json for SELECT or ASK)<br>
+  text/csv (only applicable to SELECT or ASK)<br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Schema information</strong></td>
+                                    <td>There are 3 ways to get the schema for the dataset depending on your preferred technology and methodology.<br> <code>https://{ServerName}/{DatasetName}/schema.xml</code><br>Contains an OWL document describing the tables and fields in a semantic web complaint way.<br><code>https://{ServerName}/{DatasetName}/dpsschema.xml</code><br>Contains the DataInstance documents (described below) which describe in a simple XML format the fields and relationships for the schema, also it includes and annotations.<br><code>https://{ServerName}/{DatasetName}/read/sql/schema
+</code><br>Returns an OGSA-DAI logical representation of the schema, see documentation on OGSA-DAI for more information if required.
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse10">
+                            <h3>DataInstance document for publication<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse10" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                                <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Data schema definition</strong></td>
+                                    <td><p>This section is self-explanatory from the example given and is made up of <b>Tables</b> with <b>Fields</b> below them. Each item has a <b>Name</b> and a <b>D2rName</b> the difference being that the <b>D2rName</b> is the database friendly name of the <b>Name</b> field. Since the database engine used is MySQL you should consult their documentation on legal names for fields and tables.
+Each <b>Field</b> has along with its 2 names a <b>size</b> and <b>type</b>, the <b>type</b> can be any of the following and size where meaningful is an integer value:<br>
+byte, short, int, long, float, double, boolean, base64Binary, string, enum, dateTime, date, time
+<br>
+<br>It is also important to note the underlying mechanism for inserting that data is the <a href="http://dev.mysql.com/doc/refman/5.0/en/load-data.html">“LOAD DATA INFILE”</a> command so both the data and the typing must be consistent with this operation or the dataset will be put into and error state.
+Each <b>Field</b> or <b>Table</b> may contain a reference to an ontological concept or <b>Annotation</b>. An annotation requires a <b>name</b> for display purposes and a URL <b>Term</b> for its definition.
+The following elements are required and are checked for consistency on upload so should reflect accurately the values returned when the dataset was created.<br><br>
+<pre>
+&lt;Name &gt;woodtest&lt;/Name&gt;<br>&lt;Guid &gt;642aa8cc-40e0-42e3-a360-693897ba179e&lt;/Guid&gt;<br>&lt;PublishAddress &gt;vphsharedatatest.sheffield.ac.uk&lt;/PublishAddress&gt;<br>
+</pre>
+The <b>Relationships</b> section defines the relationships between tables in the data source. These are not mandatory but if multi-table data sets are published and no relationships are defined they will not be “linkable” by the query tools provided. A relationship consists of the definition for the source and destination fields and needs the <b>SourceName</b>, <b>TableName</b> and <b>FieldName</b> on each side of the relationship. It also requires a <b>RelationshipType</b> which is either <b>OneToOne</b>, <b>OneToMany</b> or <b>ManyToMany</b>. NOTE: The names are those from the <b>Name</b> field and not the <b>D2rName</b>.
+The final segment is the <b>Data</b> itself. This is the serialisation of each data table using the Microsoft Dot.NET standard.
+
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Example DataInstance Document</strong></td>
+                                    <td>
+                                     <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;<br>&lt;DataInstance xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;<br>&lt;Tables xmlns="http://vph-share.eu/dms/" &gt;<br>&lt;Table&gt;<br>&lt;Name&gt;patientdemographics#csv&lt;/Name&gt;<br>&lt;D2rName&gt;patientdemographics_csv&lt;/D2rName&gt;<br>&lt;Fields&gt;<br>&lt;Field&gt;<br>&lt;Name&gt;name&lt;/Name&gt;<br>&lt;D2rName&gt;name&lt;/D2rName&gt;<br>&lt;Size&gt;10&lt;/Size&gt;<br>&lt;Type&gt;string&lt;/Type&gt;<br>&lt;Annotations&gt;<br>&lt;Annotation&gt;<br>&lt;DisplayText&gt;Name&lt;/DisplayText&gt;<br>&lt;Term&gt;http://purl.bioontology.org/ontology/HL7/C1554107&lt;/Term&gt;<br>&lt;/Annotation&gt;<br>&lt;/Annotations&gt;<br>&lt;/Field&gt;<br>&lt;Field&gt;<br>&lt;Name&gt;address&lt;/Name&gt;<br>&lt;D2rName&gt;address&lt;/D2rName&gt;<br>&lt;Size&gt;15&lt;/Size&gt;<br>&lt;Type&gt;string&lt;/Type&gt;<br>&lt;Annotations&gt;<br>&lt;Annotation&gt;<br>&lt;DisplayText&gt;Address&lt;/DisplayText&gt;<br>&lt;Term&gt;http://purl.bioontology.org/ontology/HL7/C1578436&lt;/Term&gt;<br>&lt;/Annotation&gt;<br>&lt;/Annotations&gt;<br>&lt;/Field&gt;<br>&lt;Field&gt;<br>&lt;Name&gt;patientid&lt;/Name&gt;<br>&lt;D2rName&gt;patientid&lt;/D2rName&gt;<br>&lt;Size&gt;16&lt;/Size&gt;<br>&lt;Type&gt;string&lt;/Type&gt;<br>&lt;/Field&gt;<br>&lt;/Fields&gt;<br>&lt;Subject&gt;patientid&lt;/Subject&gt;<br>&lt;/Table&gt;<br>&lt;Table&gt;<br>&lt;Name&gt;patientimages#csv&lt;/Name&gt;<br>&lt;D2rName&gt;patientimages_csv&lt;/D2rName&gt;<br>&lt;Fields&gt;<br>&lt;Field&gt;<br>&lt;Name&gt;zimage&lt;/Name&gt;<br>&lt;D2rName&gt;zimage&lt;/D2rName&gt;<br>&lt;Size&gt;83&lt;/Size&gt;<br>&lt;Type&gt;string&lt;/Type&gt;<br>&lt;Annotations&gt;<br>&lt;Annotation&gt;<br>&lt;DisplayText&gt;File&lt;/DisplayText&gt;<br>&lt;Term&gt;http://purl.bioontology.org/ontology/HL7/C1555017&lt;/Term&gt;<br>&lt;/Annotation&gt;<br>&lt;/Annotations&gt;<br>&lt;/Field&gt;<br>&lt;Field&gt;<br>&lt;Name&gt;pk&lt;/Name&gt;<br>&lt;D2rName&gt;pk&lt;/D2rName&gt;<br>&lt;Size&gt;1&lt;/Size&gt;<br>&lt;Type&gt;int&lt;/Type&gt;<br>&lt;/Field&gt;<br>&lt;Field&gt;<br>&lt;Name&gt;patientid&lt;/Name&gt;<br>&lt;D2rName&gt;patientid&lt;/D2rName&gt;<br>&lt;Size&gt;16&lt;/Size&gt;<br>&lt;Type&gt;string&lt;/Type&gt;<br>&lt;Annotations&gt;<br>&lt;Annotation&gt;<br>&lt;DisplayText&gt;Identifier&lt;/DisplayText&gt;<br>&lt;Term&gt;http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Identifier&lt;/Term&gt;<br>&lt;/Annotation&gt;<br>&lt;/Annotations&gt;<br>&lt;/Field&gt;<br>&lt;/Fields&gt;<br>&lt;/Table&gt;<br>&lt;/Tables&gt;<br>&lt;Name xmlns="http://vph-share.eu/dms/"&gt;woodtest&lt;/Name&gt;<br>&lt;Guid xmlns="http://vph-share.eu/dms/"&gt;642aa8cc-40e0-42e3-a360-693897ba179e&lt;/Guid&gt;<br>&lt;PublishAddress xmlns="http://vph-share.eu/dms/"&gt;vphsharedatatest.sheffield.ac.uk&lt;/PublishAddress&gt;<br>&lt;Prefixes xmlns="http://vph-share.eu/dms/"&gt;<br>&lt;OntologyPrefix&gt;<br>&lt;Name&gt;HL7&lt;/Name&gt;<br>&lt;Abbreviation&gt;hl&lt;/Abbreviation&gt;<br>&lt;BaseUri&gt;http://purl.bioontology.org/ontology/HL7/&lt;/BaseUri&gt;<br>&lt;/OntologyPrefix&gt;<br>&lt;OntologyPrefix&gt;<br>&lt;Name&gt;NCI Thesaurus&lt;/Name&gt;<br>&lt;Abbreviation&gt;ncit&lt;/Abbreviation&gt;<br>&lt;BaseUri&gt;http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#&lt;/BaseUri&gt;<br>&lt;/OntologyPrefix&gt;<br>&lt;/Prefixes&gt;<br>&lt;Relationships xmlns="http://vph-share.eu/dms/"&gt;<br>&lt;Relationship PrimarySourceName=&quot;DPSTestData&quot; PrimaryTableName=&quot;patientdemographics#csv&quot; PrimaryFieldName=&quot;patientid&quot; SecondarySourceName=&quot;DPSTestData&quot; SecondaryTableName=&quot;patientimages#csv&quot; SecondaryFieldName=&quot;patientid&quot; Type=&quot;OneToMany&quot;/&gt;<br>&lt;/Relationships&gt;<br>&lt;Data xmlns="http://vph-share.eu/dms/"&gt;<br>&lt;xs:schema id=&quot;NewDataSet&quot; xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"&gt;<br>&lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;<br>&lt;xs:complexType&gt;<br>&lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>&lt;xs:element name=&quot;patientdemographics_x0023_csv&quot;&gt;<br>&lt;xs:complexType&gt;<br>&lt;xs:sequence&gt;<br>&lt;xs:element name=&quot;name&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;<br>&lt;xs:element name=&quot;address&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;<br>&lt;xs:element name=&quot;patientid&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;<br>&lt;/xs:sequence&gt;<br>&lt;/xs:complexType&gt;<br>&lt;/xs:element&gt;<br>&lt;xs:element name=&quot;patientimages_x0023_csv&quot;&gt;<br>&lt;xs:complexType&gt;<br>&lt;xs:sequence&gt;<br>&lt;xs:element name=&quot;zimage&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;<br>&lt;xs:element name=&quot;pk&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;<br>&lt;xs:element name=&quot;patientid&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;<br>&lt;/xs:sequence&gt;<br>&lt;/xs:complexType&gt;<br>&lt;/xs:element&gt;<br>&lt;/xs:choice&gt;<br>&lt;/xs:complexType&gt;<br>&lt;/xs:element&gt;<br>&lt;/xs:schema&gt;<br>&lt;diffgr:diffgram xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot; xmlns:diffgr=&quot;urn:schemas-microsoft-com:xml-diffgram-v1&quot;&gt;<br>&lt;NewDataSet xmlns=""&gt;<br>&lt;patientdemographics_x0023_csv diffgr:id=&quot;patientdemographics#csv1&quot; msdata:rowOrder=&quot;0&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;name&gt;A. Patient&lt;/name&gt;<br>&lt;address&gt;sdfkjhsdfkjhdsf&lt;/address&gt;<br>&lt;patientid&gt;3DMo95GAmMrvYoSb&lt;/patientid&gt;<br>&lt;/patientdemographics_x0023_csv&gt;<br>&lt;patientdemographics_x0023_csv diffgr:id=&quot;patientdemographics#csv2&quot; msdata:rowOrder=&quot;1&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;name&gt;J. Bloggs&lt;/name&gt;<br>&lt;address&gt;mnbxcmnbxcv&lt;/address&gt;<br>&lt;patientid&gt;PH7DtMp9O53bj1li&lt;/patientid&gt;<br>&lt;/patientdemographics_x0023_csv&gt;<br>&lt;patientdemographics_x0023_csv diffgr:id=&quot;patientdemographics#csv3&quot; msdata:rowOrder=&quot;2&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;name&gt;J. Bloggs&lt;/name&gt;<br>&lt;address&gt;mnbxcmnbxcv&lt;/address&gt;<br>&lt;patientid&gt;3DMo95GAmMrvYoSb&lt;/patientid&gt;<br>&lt;/patientdemographics_x0023_csv&gt;<br>&lt;patientdemographics_x0023_csv diffgr:id=&quot;patientdemographics#csv4&quot; msdata:rowOrder=&quot;3&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;name&gt;J. Bloggs&lt;/name&gt;<br>&lt;address&gt;mnbxcmnbxcv&lt;/address&gt;<br>&lt;patientid&gt;PH7DtMp9O53bj1li&lt;/patientid&gt;<br>&lt;/patientdemographics_x0023_csv&gt;<br>&lt;patientdemographics_x0023_csv diffgr:id=&quot;patientdemographics#csv5&quot; msdata:rowOrder=&quot;4&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;name&gt;J. Bloggs&lt;/name&gt;<br>&lt;address&gt;mnbxcmnbxcv&lt;/address&gt;<br>&lt;patientid&gt;Unq5RPXNIzoNjeo6&lt;/patientid&gt;<br>&lt;/patientdemographics_x0023_csv&gt;<br>&lt;patientdemographics_x0023_csv diffgr:id=&quot;patientdemographics#csv6&quot; msdata:rowOrder=&quot;5&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;name&gt;J. Bloggs&lt;/name&gt;<br>&lt;address&gt;mnbxcmnbxcv&lt;/address&gt;<br>&lt;patientid&gt;3DMo95GAmMrvYoSb&lt;/patientid&gt;<br>&lt;/patientdemographics_x0023_csv&gt;<br>&lt;patientimages_x0023_csv diffgr:id=&quot;patientimages#csv1&quot; msdata:rowOrder=&quot;0&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;zimage&gt;c:\temp\WoodReviewDemo\images\1.2.840.113619.2.5.1762583153.215519.978957063.81.dcm&lt;/zimage&gt;<br>&lt;pk&gt;1&lt;/pk&gt;<br>&lt;patientid&gt;3DMo95GAmMrvYoSb&lt;/patientid&gt;<br>&lt;/patientimages_x0023_csv&gt;<br>&lt;patientimages_x0023_csv diffgr:id=&quot;patientimages#csv2&quot; msdata:rowOrder=&quot;1&quot; diffgr:hasChanges=&quot;inserted&quot;&gt;<br>&lt;zimage&gt;c:\temp\WoodReviewDemo\images\1.2.840.113619.2.5.1762583153.215519.978957063.80.dcm&lt;/zimage&gt;<br>&lt;pk&gt;2&lt;/pk&gt;<br>&lt;patientid&gt;PH7DtMp9O53bj1li&lt;/patientid&gt;<br>&lt;/patientimages_x0023_csv&gt;<br>&lt;/NewDataSet&gt;<br>&lt;/diffgr:diffgram&gt;<br>&lt;/Data&gt;<br>&lt;/DataInstance&gt;
+                                    </pre>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse11">
+                            <h3>Data Management services: Federated query index services<i style="zoom: 1.5;" class="icon-chevron-down pull-right"></i></h3>
+                        </a>
+                    </div>
+                    <div id="collapse11" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <p>This service is used to track the locations of every subject in the network. And field in a dataset which is annotated with the HL7 term for “Subject ID” is aggregated into this database and is available for query. The primary purpose of this this database is to efficiently sanity check distributed queries so it is possible to ask for the intersection of subjects in N datasets and if the there are no overlapping subjects then the query would return empty. This efficient check for null return queries is very valuable.
+In addition it is simple to find linked datasets for data discovery and also search at the individual subject level and get a list of all data sets which contain an individual. There requirements are captured in the list of methods available below.
+Unless explicitly stated all queries are available for logged in users by virtue of their membership of the “vph” group.
+</p4>
+                            <h4>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</h4>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td><p>Add ?wsdl to the end for the definition. The service is secured by the VPH-Share security proxy so a valid ticket containing the user roles must be submitted in the password field of the request credentials to be able to access the service.
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>IndexSubjects</td>
+                                </tr>
+                               <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>datasetGUID</dt><dd>string</dd><dd>This is the global metadata ID, not the internal dataset ID. If the metadata record for this dataset can not be found the request will be rejected.</span></dd>
+                                            <dt><dt>SubjectIDs</dt><dd>string</dd><dd>A string array containing the Base64Encoded values of the subject IDs in the dataset.</span></dd>
+                                            <dt><dt>ticket</dt><dd>string</dd><dd>This is the users authenticated ticket. This will be used to decide if the user has right to administer the dataset in question and if they are not members of the {DatasetName}_dataset_admin group the request will be rejected.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            Index all subjects in the list against the specified data set.
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>IndexSubjectsByString</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>datasetGUID</dt><dd>string</dd><dd>This is the global metadata ID, not the internal dataset ID. If the metadata record for this dataset can not be found the request will be rejected.</span></dd>
+                                            <dt><dt>SubjectIDs</dt><dd>string</dd><dd>A string array containing the Base64Encoded values of the subject IDs in the dataset.</span></dd>
+                                            <dt><dt>ticket</dt><dd>string</dd><dd>This is the users authenticated ticket. This will be used to decide if the user has right to administer the dataset in question and if they are not members of the {DatasetName}_dataset_admin group the request will be rejected.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                            Index all subjects in the list against the specified data set.
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>DataIntersectSummary</td>
+                                </tr>
+                                 <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>datasetGUID</dt><dd>string</dd><dd>This is the global metadata ID, not the internal dataset ID. If the metadata record for this dataset can not be found the request will be rejected.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success"> For the given global metadata GUID an array of strings is returned each one representing the relationship between the datasets. Each string has the form:<br>
+25892e17-80f6-415f-9c65-7395632f0223|173   <br>
+The first part being the global metadata GUID of a dataset and the second being the number of subjects they share.
+ </pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>SubjectLocations</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>SubjectIDs</dt><dd>string</dd><dd>A string array containing the Base64Encoded values of the subject IDs in the dataset.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                           Takes the given SubjectID  (not Base64Encoded) and returns a list of global metadata GUID’s relating to the datasets where this subject is mentioned.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>SubjectListLocations</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>SubjectIDs</dt><dd>string</dd><dd>A string array containing the Base64Encoded values of the subject IDs in the dataset.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                           Takes the given list of SubjectID’s  (not Base64Encoded) and returns  a list of global metadata GUID’s relating to the datasets where any subject is mentioned.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                                               <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>DeleteDataset</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>datasetGUID</dt><dd>string</dd><dd>This is the global metadata ID, not the internal dataset ID. If the metadata record for this dataset can not be found the request will be rejected.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                          <strong>True</strong> Deletes the dataset record for the given global metadata GUID. Permissions are verified via membership of the {DatasetName}_dataset_admin group.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>False</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GetSharedSubjects</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>datasetGUIDList</dt><dd>list</dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                          This will return the list of subjects that appear in all the datasets provided in the input list. This may take some time as the intersections are calculated in real time as opposed to the <b>DataIntersectSummary()</b> method which has pre-computed the links for individual datasets. If you just want to know the number of shared subjects between two datasets just pick one and ask for its intersects and see if the other one is in the result as it will be much quicker.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                                                                                                               <tr>
+                                    <td><strong>Url structure</strong></td>
+                                    <td><code>https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Method</strong></td>
+                                    <td>GetAllSubjects</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parameters</strong></td>
+                                    <td>
+                                        <dl>
+                                            <dt><dt>datasetGUID</dt><dd>string</dd><dd>This is the global metadata ID, not the internal dataset ID. If the metadata record for this dataset can not be found the request will be rejected.</span></dd>
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Returns</strong></td>
+                                    <td>
+                                        <div class="alert alert-success">
+                                          Returns the list of subjects in a given dataset, results are not Base64Encoded.</pre>
+                                        </div>
+                                        <div class="alert alert-error">
+                                            <p><strong>Error</strong>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- ends here -->
             </div>
        </div>
     </div>

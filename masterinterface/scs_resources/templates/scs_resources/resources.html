@@ -20,7 +20,12 @@
     <ul class="nav nav-pills">
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/data/" class="resource-tab active">
           <a>
-            Data
+            Dataset
+          </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/file/" class="resource-tab active">
+          <a>
+            Files/Folders
           </a>
       </li>
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/application/" class="resource-tab">
@@ -39,12 +44,14 @@
         </a>
       </li>
       <script>$(function(){
-          {% if tab == 'application' %}
+          {% if tab == 'file' %}
               $('.resource-tab')[1].click();
-          {% elif tab == 'workflow' %}
+          {% elif tab == 'application' %}
               $('.resource-tab')[2].click();
-          {% elif tab == 'sws' %}
+          {% elif tab == 'workflow' %}
               $('.resource-tab')[3].click();
+          {% elif tab == 'sws' %}
+              $('.resource-tab')[4].click();
           {% else %}
               $('.resource-tab')[0].click();
           {% endif %}

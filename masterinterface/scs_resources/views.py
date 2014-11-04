@@ -29,7 +29,7 @@ from masterinterface.atos.metadata_connector import *
 from utils import *
 from masterinterface import settings
 from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
-
+from django.core.exceptions import SuspiciousOperation
 
 def resource_detailed_view(request, id='1'):
     """
@@ -39,29 +39,26 @@ def resource_detailed_view(request, id='1'):
         try:
             resource = Resource.objects.get(global_id=id)
         except ObjectDoesNotExist, e:
-            # create into local database the resource
             metadata = get_resource_metadata(id)
-            # look for resource owner, if he exists locally
             try:
-                resource_owner = User.objects.get(username=metadata['author'])
-                # TODO create a particular type of resource rather than a Resource
-                if str(metadata['type']).lower() == "workflow":
-                    resource = Workflow(global_id=id, owner=resource_owner)
-                else:
-                    resource = Resource(global_id=id, owner=resource_owner)
-                resource.save(metadata=metadata)
-
+                author = User.objects.get(username=metadata['author'])
             except ObjectDoesNotExist, e:
-                # TODO create a new user or assign resource temporarly to the President :-) now I'm the president #asagli
-                resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
+                #resource assigned to noone are ignored.
+                raise  SuspiciousOperation
+                #resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
                 #update_resource_metadata(id, {'author':'asagli'}, metadata['type'])
-                resource.save(metadata=metadata)
-
-            finally:
-                resource.metadata = metadata
-                # TODO set resource workflow
-                # set_workflow(resource, ResourceWorkflow)
-
+                #resource.save(metadata=metadata)
+            if metadata['type'] == "Workflow":
+                resource, created = Workflow.objects.get_or_create(global_id=id, metadata=metadata, owner=author)
+                resource.save()
+                resource = resource.resource_ptr
+            else:
+                #some metadata File type are corrupted
+                if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                    request.session['errormessage'] = "The File or folder you are loking for is corrupted.Err:No localID"
+                    raise Exception
+                resource, created = Resource.objects.get_or_create(global_id=id, metadata=metadata, owner=author)
+                resource.save()
         except MultipleObjectsReturned:
 
             # seems like the President has stolen something :-)
@@ -72,45 +69,23 @@ def resource_detailed_view(request, id='1'):
                     r.delete()
 
             resource = Resource.objects.get(global_id=id)
+
+            #assign metadata
             resource.metadata = metadata
+        if resource.metadata['type'] == "File" and resource.metadata['localID'] == "0":
+            request.session['errormessage'] = "The File or folder you are loking for is corrupted.Err:No localID"
+            raise Exception
 
-        # Count visit hit
-        resource.metadata['rating'] = float(resource.metadata['rating'])
-        #resource.metadata['views'] = resource.update_views_counter()
-        if resource.metadata.get('relatedResources',None) is not None:
-            if  not isinstance(resource.metadata['relatedResources']['relatedResource'], list):
-                relatedResources = [resource.metadata['relatedResources']['relatedResource'].copy()]
-            else:
-                relatedResources = resource.metadata['relatedResources']['relatedResource'][:]
-            resource.metadata['relatedResources'] = []
-            for global_id in relatedResources:
-                r = Resource.objects.get(global_id=global_id['resourceID'])
-                resource.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
+        #load the metadata to traslate in a more readable format.
+        resource.load_full_metadata()
 
-        if resource.metadata.get('linkedTo',None) is not None:
-            if  not isinstance(resource.metadata['linkedTo']['link'], list):
-                resource.metadata['linkedTo']['link'] = [resource.metadata['linkedTo']['link'].copy()]
-        if resource.metadata.get('semanticAnnotations', None) is not None:
-            if  not isinstance(resource.metadata['semanticAnnotations']['semanticConcept'], list):
-                resource.metadata['semanticAnnotations']['semanticConcept'] = [resource.metadata['semanticAnnotations']['semanticConcept'].copy()]
-
-        if request.user.is_authenticated() and resource.can_read(request.user):
+        if request.user.is_authenticated():
+            resource.requests = resource.get_pending_requests_by_resource()
             #get the path information using the lobcder services.
-            try:
-                lobcder_item = xmltodict.parse(requests.get('%s/item/query/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']), auth=(request.user.username, request.COOKIES['vph-tkt']), verify=False).text.encode('utf-8'))
-                resource.metadata['lobcderPath'] = lobcder_item['logicalDataWrapped']['path']
-                resource.metadata['format'] = resource.metadata['name'].split('.')[-1]
-            except Exception,e:
-                from raven.contrib.django.raven_compat.models import client
-                client.captureException()
-                resource.metadata['lobcderPath'] = None
-                pass
-            if str(resource.metadata['type']) == 'Dataset':
-                if 'read/sparql' in resource.metadata['sparqlEndpoint']:
-                    resource.metadata['explore'] = resource.metadata['sparqlEndpoint'].replace('read/sparql', 'explore/sql.html')
-                    resource.metadata['explore'] = resource.metadata['explore'].replace('https://','https://admin:%s@'%request.ticket)
-        # INJECT DEFAULT VALUES
-        #resource.citations = [{'citation': "STH2013 VPH-Share Dataset CVBRU 2011", "link": get_random_citation_link()}]
+            if resource.metadata['type'] == 'File':
+                #load additional metadata and permission from LOBCDER services
+                resource.load_additional_metadata(request.ticket)
+            resource.load_permission()
 
         # check if the resource has been already requested by user
         if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
@@ -138,6 +113,8 @@ def resource_detailed_view(request, id='1'):
              'requests': []},
             RequestContext(request)
         )
+    except SuspiciousOperation:
+        raise SuspiciousOperation
     except Exception, e:
         from raven.contrib.django.raven_compat.models import client
         client.captureException()
@@ -253,9 +230,14 @@ def resources(request,tab=''):
 def get_resources_list(request, resource_type, page=1):
     if request.method == 'GET':
         try:
+            managed_resources = []
+            #get the list of owned resource from the metadata repository
             if resource_type == "data":
-                resources = filter_resources_by_facet('Dataset', page=page) + filter_resources_by_facet('File', page=page)
-                types= ['Dataset', 'File']
+                resources = filter_resources_by_facet('Dataset', page=page)
+                types= ['Dataset']
+            if resource_type == "file":
+                resources =  filter_resources_by_facet('File', page=page)
+                types= ['File']
             if resource_type == "application":
                 resources = filter_resources_by_facet('AtomicService', page=page)
                 types= ['AtomicService']
@@ -265,7 +247,6 @@ def get_resources_list(request, resource_type, page=1):
             if resource_type == "sws":
                 resources = filter_resources_by_facet('SemanticWebService', page=page)
                 types= ['SemanticWebService']
-            managed_resources = []
 
             for resource_meta in resources:
                 try:
@@ -275,25 +256,26 @@ def get_resources_list(request, resource_type, page=1):
                 if resource_meta['type'] == "Workflow":
                     resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
                 else:
+                    #some metadata File type are corrupted
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
-                # look if there are group with the resource name and grant them the local role
-                if resource.metadata['type'] == 'Dataset':
-                    for role in get_resource_local_roles():
-                        group_name = get_resource_global_group_name(resource, role.name)
-                        try:
-                            group, created = VPHShareSmartGroup.objects.get_or_create(name=group_name)
-                            if created:
-                                group.managers.add(user)
-                                group.user_set.add(user)
-                            if resource.can_I(role.name,request.user):
-                                group.user_set.add(request.user)
-                            add_local_role(resource, group, role)
-                        except ObjectDoesNotExist, e:
-                            pass
-                managed_resources.append(resource)
-
                 if created:
                     resource.save()
+
+                if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                    continue
+
+                if 'File' in types and resource.metadata['type'] == 'File':
+                    #load additional metadata and permission from LOBCDER services
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
+                #load requests pending for this resource
+                resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources.append(resource)
 
             resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
 
@@ -318,9 +300,14 @@ def manage_resources(request,tab=''):
 def get_resources_list_by_author(request, resource_type, page=1):
     if request.method == 'GET':
         try:
+            managed_resources = []
+            #get the list of owned resource from the metadata repository
             if resource_type == "data":
-                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page) + filter_resources_by_facet('File','author',request.user.username, page=page)
-                types= ['Dataset', 'File']
+                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page)
+                types= ['Dataset']
+            if resource_type == "file":
+                resources = filter_resources_by_facet('File','author',request.user.username, page=page)
+                types= ['File']
             if resource_type == "application":
                 resources = filter_resources_by_facet('AtomicService','author',request.user.username, page=page)
                 types= ['AtomicService']
@@ -330,48 +317,53 @@ def get_resources_list_by_author(request, resource_type, page=1):
             if resource_type == "sws":
                 resources = filter_resources_by_facet('SemanticWebService','author',request.user.username, page=page)
                 types= ['SemanticWebService']
-            managed_resources = []
 
             for resource_meta in resources:
                 if resource_meta['type'] == "Workflow":
                     resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
                 else:
+                    #some metadata File type are corrupted
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
                     resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
-                managed_resources.append(resource)
-
                 if created:
                     resource.save()
-            if page == 1:
-                managed_resources += get_readable_resources(request.user)
-            ##TO OPTIMIZE get_readable_resource non ha filtro per tipo da inserire una volta modificato il modello
-            ## now fixed in teh template
-            for resource in managed_resources:
 
-                if getattr(resource, 'metadata', None) is None:
-                    try:
-                        resource.metadata = get_resource_metadata(resource.global_id)
-                    except AtosServiceException, e:
+                if 'File' in types and resource.metadata['type'] == 'File':
+                    #load additional metadata and permission from LOBCDER services
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
                         continue
-                try:
-                    user = User.objects.get(username=resource.metadata['author'])
-                except Exception, e:
-                    continue
+                resource.load_permission()
+                #load requests pending for this resource
+                resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources.append(resource)
 
-                # look if there are group with the resource name and grant them the local role
-                if resource.metadata['type'] == 'Dataset':
-                    for role in get_resource_local_roles():
-                        group_name = get_resource_global_group_name(resource, role.name)
-                        try:
-                            group, created = VPHShareSmartGroup.objects.get_or_create(name=group_name)
-                            if created:
-                                group.managers.add(user)
-                                group.user_set.add(user)
-                            if resource.can_I(role.name,request.user):
-                                group.user_set.add(request.user)
-                            add_local_role(resource, group, role)
-                        except ObjectDoesNotExist, e:
-                            pass
-                resource.requests = get_pending_requests_by_resource(resource)
+            if page == 1:
+                #If is the first page I also get hte list of the resources at least readable but not owned.
+                # the list of the resources are not filtered by type they will be filtered in the template.
+                readable_resources = list(Resource.objects.filter(id__in=get_readable_resources(request.user)).exclude(owner=request.user).values_list('global_id',flat=True))
+                for resource_gid in readable_resources:
+                    try:
+                        resource = Resource.objects.get(metadata=True, global_id=resource_gid)
+                        if resource.metadata['type'] == "File" and resource.metadata['localID'] == "0":
+                            #skip files with localid = 0
+                            continue
+                        if resource.metadata['type'] not in types:
+                            #skip the resoruce that are not the same type requested
+                            continue
+                    except AtosServiceException:
+                        continue
+
+                    if 'File' in types and resource.metadata['type'] == 'File':
+                        #load additional metadata and permission from LOBCDER services
+                        if not resource.load_additional_metadata(request.ticket):
+                            #if something go wrong with the lobcder loader I skip it
+                            continue
+                    resource.load_permission()
+                    #load requests pending for this resource
+                    resource.requests = resource.get_pending_requests_by_resource()
+                    managed_resources.append(resource)
 
             resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources,"types":types, "type":resource_type, 'user':request.user, 'page':page})
 
@@ -386,7 +378,7 @@ def get_resources_details(request, global_id):
     if request.method == 'GET':
         try:
             resource = Resource.objects.get(global_id=global_id)
-            resource.requests = get_pending_requests_by_resource(resource)
+            resource.requests = resource.get_pending_requests_by_resource()
             if hasattr(request,'ticket'):
                 resultsRender = render_to_string("scs_resources/resource_details.html", {"resource": resource, 'user':request.user, 'ticket':request.ticket})
             else:
@@ -402,9 +394,17 @@ def get_resources_share(request, global_id):
     if request.method == 'GET':
         try:
             resource = Resource.objects.get(global_id=global_id)
+            #load the metadata to traslate in a more readable format.
+            resource.load_full_metadata()
+            #get the path information using the lobcder services.
+            if resource.metadata['type'] == 'File':
+                #load additional metadata and permission from LOBCDER services
+                resource.load_additional_metadata(request.ticket)
+            resource.load_permission()
+
             resource.roleslist = get_resource_local_roles(resource)
-            resource.requests = get_pending_requests_by_resource(resource)
-            resource.sharreduser = get_user_group_permissions_map(resource)
+            resource.requests = resource.get_pending_requests_by_resource()
+            resource.sharreduser = resource.get_user_group_permissions_map()
             resource.user_group_finder = UsersGroupsForm(id="user_group_"+resource.global_id,
                                                          excludedList=resource.sharreduser + [request.user] )
             from django.core.context_processors import csrf
@@ -456,25 +456,7 @@ def mark_resource_private(request, global_id):
         try:
             resource = Resource.objects.get(global_id=global_id)
             role = Role.objects.get(name='Reader')
-            if resource.metadata['type'] == 'File':
-                import requests
-                import xmltodict
-                from django.conf import settings
-                permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), verify=False).text)
-                file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
-                name = 'vph'
-                if settings.DEBUG:
-                    name = name+"_dev"
-                if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
-                    index = permissions['permissions'][file_permissions_match[role.name]].index(name)
-                    del permissions['permissions'][file_permissions_match[role.name]][index]
-                else:
-                    del permissions['permissions'][file_permissions_match[role.name]]
-
-                result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False,  headers = {'content-type': 'application/xml'})
-                if result.status_code not in [204,201,200]:
-                    raise Exception('LOBCDER permision set error')
-            remove_local_role(resource,None, role)
+            revoke_permision(None,resource,role,request.ticket)
             return HttpResponse(status=200)
         except Exception, e:
             return HttpResponse(status=500)
@@ -629,6 +611,62 @@ def grant_role(request):
     response = HttpResponse(content=response_body, content_type='application/json')
     return response
 
+@login_required
+def grant_recursive_role(request):
+    """
+        grant role to user or group recursively only for folders
+    """
+
+    resource = Resource.objects.get(global_id=request.GET.get('global_id'))
+    resource.load_additional_metadata(request.ticket)
+    if resource.metadata['fileType'] == 'folder':
+        data = requests.get('%s/item/permissions/%s' %(settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                                                    auth=('user', request.ticket),
+                                                    verify=False,
+                                                    headers={'Content-Type':'application/json','Accept':'application/json'}).text
+        result =  requests.put('%s/item/permissions/recursive/%s?getall=True' % (settings.LOBCDER_REST_URL, resource.metadata['localID']),
+                                                    auth=('user', request.ticket),
+                                                    verify=False,
+                                                    headers={'Content-Type':'application/json','Accept':'application/json'},
+                                                    data=data)
+        if result.status_code not in [204,201,200]:
+                raise Exception('LOBCDER permision set error')
+        resoources_guid_applied = result.json()
+        permissions_map = resource.get_user_group_permissions_map()
+        # if the recurive operation changed other Files or Folder permission I need to reset mine permission map
+        #and reload to maintain coherence
+        if 'guid' in resoources_guid_applied.keys():
+            #load all the paermissions maps where the new map has applied.
+            if isinstance(resoources_guid_applied['guid'], list):
+                for guid in resoources_guid_applied['guid']:
+                    try:
+                        r = Resource.objects.get(global_id=guid)
+                    except ObjectDoesNotExist:
+                        continue
+                    r.reset_permissions()
+                    for user_group in permissions_map:
+                        for role_name in user_group.roles:
+                            role = Role.objects.get(name=role_name)
+                            name = getattr(user_group,'username',getattr(user_group,'name',None))
+                            grant_permission(name,r,role)
+            else:
+                try:
+                    r = Resource.objects.get(global_id=resoources_guid_applied['guid'])
+                    r.reset_permissions()
+                    for user_group in permissions_map:
+                        for role_name in user_group.roles:
+                            role = Role.objects.get(name=role_name)
+                            name = getattr(user_group,'username',getattr(user_group,'name',None))
+                            grant_permission(name,r,role)
+                except ObjectDoesNotExist:
+                    pass
+    else:
+        raise SuspiciousOperation
+
+    response_body = json.dumps({"status": "OK", "message": "Role granted correctly", "alertclass": "alert-success"})
+    response = HttpResponse(content=response_body, content_type='application/json')
+    return response
+
 
 def revoke_role(request):
     """
@@ -640,45 +678,7 @@ def revoke_role(request):
     role = Role.objects.get(name=request.GET.get('role'))
     resource = Resource.objects.get(global_id=request.GET.get('global_id'))
 
-    try:
-        principal = User.objects.get(username=name)
-    except ObjectDoesNotExist, e:
-        principal = Group.objects.get(name=name)
-
-    try:
-        # look for a group with the dataset name
-        group_name = get_resource_global_group_name(resource, role.name)
-        group = Group.objects.get(name=group_name)
-        if type(principal) is User:
-            group.user_set.remove(principal)
-        group.save()
-
-    except ObjectDoesNotExist, e:
-        # TODO REMOVE GLOBAL ROLE ACCORDING TO RESOURCE NAME!!! and update the security proxy?
-        # global_role, created = Role.objects.get_or_create(name="%s_%s" % (resource.globa_id, role.name))
-        # remove_role(principal, global_role)
-        pass
-    if resource.metadata['type'] == 'File':
-        import requests
-        import xmltodict
-        from django.conf import settings
-        permissions = xmltodict.parse(requests.get('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), verify=False).text)
-        file_permissions_match = {'Reader':'read','Editor':'write', 'Manager':'owner', 'Ownser':'owner'}
-
-        if settings.DEBUG:
-            name = name+"_dev"
-        if permissions['permissions'].get(file_permissions_match[role.name], None) is not None:
-            if isinstance(permissions['permissions'][file_permissions_match[role.name]], list):
-                index = permissions['permissions'][file_permissions_match[role.name]].index(name)
-                del permissions['permissions'][file_permissions_match[role.name]][index]
-            else:
-                del permissions['permissions'][file_permissions_match[role.name]]
-
-            result = requests.put('%s/item/permissions/%s' % (settings.LOBCDER_REST_URL,resource.metadata['localID']), auth=('admin', request.ticket), data=xmltodict.unparse(permissions), verify=False, headers = {'content-type': 'application/xml'})
-            if result.status_code not in [204,201,200]:
-                raise Exception('LOBCDER permision set error')
-
-    remove_local_role(resource, principal, role)
+    revoke_permision(name,resource,role,request.ticket)
 
     response_body = json.dumps({"status": "OK", "message": "Role revoked correctly", "alertclass": "alert-success"})
     response = HttpResponse(content=response_body, content_type='application/json')
@@ -714,34 +714,7 @@ def workflowsView(request):
 
     workflows = []
 
-    try:
-        dbWorkflows = Workflow.objects.all()
-        for workflow in dbWorkflows:
-            workflows.append(workflow)
-
-    except Exception, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-
     return render_to_response("scs_resources/workflows.html", {'workflows': workflows}, RequestContext(request))
-
-
-def search_workflow(request):
-
-    workflows = []
-
-    try:
-        metadata_workflows = filter_resources_by_facet('Workflow')
-        #dbWorkflows = Workflow.objects.all(metadata=True)
-        for workflow in metadata_workflows:
-            workflows.append(Workflow.objects.get(global_id = workflow['globalID']))
-
-    except Exception, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-
-
-    return render_to_response("scs/search_workflows.html", {'workflows': workflows}, RequestContext(request))
 
 @login_required
 def edit_resource(request, id=False):

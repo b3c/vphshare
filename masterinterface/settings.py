@@ -2,6 +2,7 @@
 
 import os
 from mod_auth import SignedTicket, Ticket
+import pysolr
 
 DEBUG = False
 
@@ -247,17 +248,22 @@ LOGGING = {
         'django.db.backends': {
             'level': 'ERROR',
             'handlers': ['sentry'],
-            'propagate': False,
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['sentry'],
+            'level': 'ERROR',
+            'propagate': True,
         },
         'raven': {
             'level': 'DEBUG',
             'handlers': ['sentry'],
-            'propagate': False,
+            'propagate': True,
         },
         'sentry.errors': {
             'level': 'DEBUG',
             'handlers': ['sentry'],
-            'propagate': False,
+            'propagate': True,
         },
     },
 }
@@ -335,6 +341,9 @@ CACHES = {
 RAVEN_CONFIG = {
     'dsn': 'http://2d9a99aec6be407cb4fff11ec2fdf236:86c4c065a476469b9dbf57744e21254a@sentry.vph-share.eu/2',
 }
+
+# SOLR search engine for metadata (faster way to have access to the metadata:
+MD_SEARCH_ENGINE = pysolr.Solr('http://vphshare.atosresearch.eu/solr/vph_big_prod/', timeout=100)
 ##################
 # LOCAL SETTINGS #
 ##################

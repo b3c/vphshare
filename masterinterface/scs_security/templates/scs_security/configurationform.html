@@ -1,5 +1,14 @@
+<script>
+    $(function(){
+        {% if view %}
+            $('#configuration_form').find('input, textarea, button, select').attr('disabled','disabled');
+            $('[type="submit"]').hide();
+        {% endif %}
+
+    });
+</script>
 <fieldset>
-    <form action="/security/configuration/" method="post" enctype="multipart/form-data">
+    <form id="configuration_form" action="" method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
         {% if configuration_obj %}
@@ -11,9 +20,10 @@
             <input type="text" name="name" id="name" />
             <input type="hidden" name="newconfiguration" value="newconfiguration" />
         {% endif %}
-
-        <legend>Basic Administration</legend>
-        <span class="help-block">Update the Security Proxy configuration by editing its properties.</span>
+        {% if not view %}
+            <legend>Basic Administration</legend>
+            <span class="help-block">Update the Security Proxy configuration by editing its properties.</span>
+        {% endif %}
 
         <label for="listeningport">Listening Port</label>
         <input type="text" id="listeningport" name="listening_port" value="{{ properties.listening_port }}" />
@@ -28,20 +38,21 @@
         <input type="text" id="role" name="granted_roles" value="{{ properties.granted_roles }}"/>
 
         <input type="submit" name="sumbitwithprops" class="btn btn-primary pull-right" value="update" />
+        {% if not view %}
+            <legend>File content</legend>
+            <span class="help-block">Update the security proxy configuration by editing the file content directly</span>
 
-        <legend>File content</legend>
-        <span class="help-block">Update the security proxy configuration by editing the file content directly</span>
+            <label for="filecontent">Security Proxy configuration file content (click to edit)</label>
+                    <pre onclick="$('#filecontent').show();$(this).hide();">{{ configuration_file }}</pre>
+            <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ configuration_file }}</textarea>
+            <input type="submit" name="sumbitwithcontent" class="btn btn-primary pull-right" value="update" />
 
-        <label for="filecontent">Security Proxy configuration file content (click to edit)</label>
-                <pre onclick="$('#filecontent').show();$(this).hide();">{{ configuration_file }}</pre>
-        <textarea id="filecontent" name="filecontent" rows="20" style="width:100%;display: none">{{ configuration_file }}</textarea>
-        <input type="submit" name="sumbitwithcontent" class="btn btn-primary pull-right" value="update" />
-
-        <legend>File upload</legend>
-        <span class="help-block">Update the security proxy configuration by uploading a file from your filesystem.</span>
-        <input type="file" name="fileupload" />
-        <br />
-        <input type="submit" name="sumbitwithfile" class="btn btn-primary pull-right" value="update" />
+            <legend>File upload</legend>
+            <span class="help-block">Update the security proxy configuration by uploading a file from your filesystem.</span>
+            <input type="file" name="fileupload" />
+            <br />
+            <input type="submit" name="sumbitwithfile" class="btn btn-primary pull-right" value="update" />
+        {% endif %}
 
     </form>
 </fieldset>

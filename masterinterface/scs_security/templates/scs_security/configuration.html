@@ -2,12 +2,17 @@
 
 {% block content %}
 
-    {% include 'scs_security/configurationslist.html' %}
-
     {% if configuration_obj  %}
-        <h3>Security Proxy Configuration: {{ configuration_obj.name }}</h3>
+        {% if edit %}
+            <h3>Edit proxy Configuration: {{ configuration_obj.name }}</h3>
+        {% else %}
+            <h3>Proxy Configuration: {{ configuration_obj.name }}</h3>
+            {% if request.user.username in configuration_obj.owners %}
+                <a class="btn btn-primary" href="/security/configuration/{{ configuration_obj.id }}/edit">Edit security configuration</a>
+            {% endif %}
+        {% endif %}
     {% else %}
-        <h3>Create new Security Proxy Configuration</h3>
+            <h3>Create new Security Proxy Configuration</h3>
     {% endif %}
 
     {% include 'scs_security/configurationform.html' %}

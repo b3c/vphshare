@@ -1,9 +1,20 @@
 {% extends 'scs_security/base.html' %}
 
 {% block content %}
+    <div class="tabbable">
+      <ul class="nav nav-tabs">
+        <li class="{% if 'policy' not in request.path %}active{% endif %}"><a href="#tab1" data-toggle="tab">Proxy Configurations</a></li>
+        <li class="{% if 'policy' in request.path %}active{% endif %}"><a href="#tab2" data-toggle="tab">Policies</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane {% if 'policy' not in request.path %}active{% endif %}" id="tab1">
+          {% include 'scs_security/configurationslist.html' %}
+        </div>
+        <div class="tab-pane {% if 'policy' in request.path %}active{% endif %}" id="tab2">
+            {% include 'scs_security/policieslist.html' %}
+        </div>
+      </div>
+    </div>
 
-    {% include 'scs_security/configurationslist.html' %}
-
-    {% include 'scs_security/policieslist.html' %}
 
 {% endblock %}
