@@ -82,9 +82,9 @@ def resource_detailed_view(request, id='1'):
         if request.user.is_authenticated():
             resource.requests = resource.get_pending_requests_by_resource()
             #get the path information using the lobcder services.
-            if resource.metadata['type'] == 'File':
-                #load additional metadata and permission from LOBCDER services
-                resource.load_additional_metadata(request.ticket)
+            #if resource.metadata['type'] == 'File':
+            #load additional metadata and permission from LOBCDER services
+            resource.load_additional_metadata(request.ticket)
             resource.load_permission()
 
         # check if the resource has been already requested by user
