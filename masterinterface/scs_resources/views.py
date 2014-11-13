@@ -54,8 +54,8 @@ def resource_detailed_view(request, id='1'):
                 resource = resource.resource_ptr
             else:
                 #some metadata File type are corrupted
-                if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
-                    request.session['errormessage'] = "The File or folder you are loking for is corrupted.Err:No localID"
+                if metadata['type'] == "File" and metadata['localID'] == "0":
+                    request.session['errormessage'] = "The File or folder you are looking for is corrupted.Err:No localID"
                     raise Exception
                 resource, created = Resource.objects.get_or_create(global_id=id, metadata=metadata, owner=author)
                 resource.save()
@@ -82,9 +82,9 @@ def resource_detailed_view(request, id='1'):
         if request.user.is_authenticated():
             resource.requests = resource.get_pending_requests_by_resource()
             #get the path information using the lobcder services.
-            if resource.metadata['type'] == 'File':
-                #load additional metadata and permission from LOBCDER services
-                resource.load_additional_metadata(request.ticket)
+            #if resource.metadata['type'] == 'File':
+            #load additional metadata and permission from LOBCDER services
+            resource.load_additional_metadata(request.ticket)
             resource.load_permission()
 
         # check if the resource has been already requested by user
