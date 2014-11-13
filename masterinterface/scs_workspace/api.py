@@ -219,6 +219,7 @@ class WfMngApiHandler(BaseHandler):
                 if global_id and Workflow.objects.filter(global_id=global_id).count() == 0:
                     return rc.NOT_FOUND
 
+                input = request.POST.get('input', None)
                 workflow = Workflow.objects.get(global_id=global_id)
                 form = TavernaExecutionForm()
                 taverna_execution = form.save(commit=False)
@@ -226,7 +227,10 @@ class WfMngApiHandler(BaseHandler):
                 title = workflow.metadata['name'] + " execution " + str(n)
                 taverna_execution.title = title
                 taverna_execution.t2flow = get_file_data(workflow.t2flow)
-                taverna_execution.baclava = get_file_data(workflow.xml)
+                if input!=None:
+                   taverna_execution.baclava = base64.b64decode(input)
+                else:
+                   taverna_execution.baclava = get_file_data(workflow.xml)
                 taverna_execution.owner = user
 
                 taverna_execution.status = 'Ready to run'
