@@ -172,6 +172,7 @@ INSTALLED_APPS = (
     'django_select2',
     'masterinterface.scs_workspace',    
     'masterinterface.paraviewweb',
+    'masterinterface.datasets',
     'kombu.transport.django',
     'djcelery',
     'raven.contrib.django.raven_compat'

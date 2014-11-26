@@ -1,0 +1,89 @@
+{% extends 'datasets/base.html' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/css/dataset.css" type="text/css" media="screen" />
+ {% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/static/js/dataset.js"></script>
+{% endblock %}
+
+{% block extrahead %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="span4">
+            <div class="accordion" id="accordion2">
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                    Table1
+                  </a>
+                </div>
+                <div id="collapseOne" class="accordion-body collapse in">
+                  <div class="accordion-inner">
+                    list of columns
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                    Table2
+                  </a>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                    list of columns
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+        <div class="span7">
+            <ul class="nav nav-tabs" id="myTab">
+              <li class="active"><a href="#select">Select</a></li>
+              <li><a href="#where">Where</a></li>
+            </ul>
+
+            <div class="tab-content">
+              <div class="tab-pane active" id="select">
+                  <div class="select">
+
+                  </div>
+                  <div class="select new-condition">
+
+                  </div>
+              </div>
+              <div class="tab-pane" id="where">
+                    <div class="condition">
+                        <div class="inside-condition">&nbsp</div>
+                        <div class="inside-condition">&nbsp<div class="connector or"></div></div>
+                        <div class="inside-condition">&nbsp<div class="connector or"></div></div>
+                    </div>
+                    <div class="condition">
+                        <div class="rect-inside">&nbsp</div>
+                        <div class="rect-inside">&nbsp<div class="connector or"></div></div>
+                        <div class="connector and"></div>
+                    </div>
+                    <div class="condition">
+                        <div class="connector and"></div>
+                    </div>
+                    <div class="condition new-condition">
+                        <div class="connector new-connector"></div>
+                    </div>
+              </div>
+              <div class="tab-pane" id="join"></div>
+            </div>
+            <script>$('#myTab a').click(function (e) {
+  e.preventDefault();
+  $(this).tab('show');
+})</script>
+
+        </div>
+    </div>
+
+{% endblock %}
