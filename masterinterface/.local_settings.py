@@ -1,5 +1,6 @@
 DEBUG = True
 
+#Development db
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -17,16 +18,11 @@ WORKFLOW_MANANAGER_URL = 'http://devwfmng.vph-share.eu/api'
 #PARAVIEW SETTINGS
 PARAVIEWWEB_PORT = 5500
 
-# Imposta il tuo DSN
-RAVEN_CONFIG = {
-    'dsn': 'http://f8d7b671cbf543818e2d8ac961ee8fba:7705a91a1cd14d44a086644a14134d7a@sentry.vph-share.eu/3',
+#To use when you are working in your local db
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
 }
-
-# Aggiungi raven alla lista delle INSTALLED APPS
-INSTALLED_APPS = INSTALLED_APPS + (
-    # ...
-    'raven.contrib.django.raven_compat',
-)
-
 
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-extended-test'
