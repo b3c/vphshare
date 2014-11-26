@@ -214,7 +214,7 @@ def configuration(request, remote_id=None):
 
         configuration_id = remote_id
         if configuration_id:
-            configuration_obj = cloudfacade.get_securityproxy_configurations_by_id(request.COOKIES.get('vph-tkt'), configuration_id)
+            configuration_obj = cloudfacade.get_securityproxy_configurations_by_id(request.ticket, configuration_id)
             owners = []
             for user_id in configuration_obj['owners']:
                 owners.append(cloudfacade.get_user(request.ticket, user_id)['login'])
@@ -265,7 +265,7 @@ def configuration(request, remote_id=None):
                     data['errormessage'] = "Error while creating security configuration"
             else:
                 configuration_id = request.POST['id']
-                configuration_obj = cloudfacade.get_securityproxy_configurations_by_id(request.COOKIES.get('vph-tkt'), configuration_id)
+                configuration_obj = cloudfacade.get_securityproxy_configurations_by_id(request.ticket, configuration_id)
                 if cloudfacade.update_securityproxy_configuration(request.ticket, configuration_obj['id'], configuration_obj['name'], configuration_file):
                     data['statusmessage'] = "Security Proxy configuration correctly updated."
                     return  redirect('security_configuration')
@@ -274,7 +274,7 @@ def configuration(request, remote_id=None):
         else:
             data['errormessage'] = "The configuration file uploaded seems not to be valid"
 
-    data['configurations'] = cloudfacade.get_securityproxy_configurations(request.COOKIES.get('vph-tkt'))
+    data['configurations'] = cloudfacade.get_securityproxy_configurations(request.ticket)
     data['edit'] = edit
     data['view'] = view
     return render_to_response(
@@ -295,7 +295,7 @@ def delete_configuration(request, remote_id=None):
     if request.method == 'GET' and remote_id is not None:
         configuration_id = remote_id
 
-        if cloudfacade.delete_securityproxy_configuration(request.COOKIES.get('vph-tkt'), configuration_id):
+        if cloudfacade.delete_securityproxy_configuration(request.ticket, configuration_id):
             data['statusmessage'] = "Security Proxy configuration correctly deleted"
 
         else:
