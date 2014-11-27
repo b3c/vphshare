@@ -1,37 +1,124 @@
 {% extends 'datasets/base.html' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/static/css/dataset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/dataset.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css"  type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/dataTables.bootstrap.min.css" type="text/css" media="screen" />
+
  {% endblock %}
 
 {% block javascripts %}
     <script type="text/javascript" src="/static/js/dataset.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/js/jqBootstrapValidation.min.js"></script>
 {% endblock %}
 
 {% block extrahead %}
-
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
 {% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="well well-small well-white">
+    <h1><i class="fa fa-database"></i> Dataset pino pino</h1>
+    <div class="row-fluid">
         <div class="span4">
             <div class="accordion" id="accordion2">
               <div class="accordion-group">
                 <div class="accordion-heading">
                   <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-                    Table1
+                    <i class="fa fa-table"></i> Table1
                   </a>
                 </div>
                 <div id="collapseOne" class="accordion-body collapse in">
-                  <div class="accordion-inner">
-                    list of columns
-                  </div>
+                    <div id="demo" class="accordion-inner">
+                        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>
+                    </div>
+                    <script>
+                        var dataSet = [
+                                ['asdads','Internet Explorer 4.0','Win 95+','4','X'],
+                                ['Trident','Internet Explorer 5.0','Win 95+','5','C'],
+                                ['Trident','Internet Explorer 5.5','Win 95+','5.5','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
+                                ['Trident','Internet Explorer 6','Win 98+','6','A']
+                        ];
+
+                        $(function() {
+                            $('#example').dataTable( {
+
+                                "dom": "<'row-fluid'<'span12'f>r>" + "<'row-fluid'<'span12'p>>" + "<'row-fluid'<'span12't>>" ,
+                                "data": dataSet,
+                                "columns": [
+                                    { "title": "" }
+                                ],
+                                "paging":         true,
+                                "ordering": false,
+                                "info":     false,
+                                "search": true,
+                                "scrollX": true,
+                                "columnDefs": [
+                                    {
+                                        // The `data` parameter refers to the data for the cell (defined by the
+                                        // `data` option, which defaults to the column being worked with, in
+                                        // this case `data: 0`.
+                                        render: function ( data, type, row ) {
+                                            return '<div id="drag" ><i class="fa fa-columns"></i> ' +data + '</div>';
+                                        },
+                                        "targets": 0
+                                    },
+                                    { "visible": false,  "targets": [ 1 ] }
+                                ],
+                                language: {
+                                    search:         "<i class='icon-search'></i>",
+                                    paginate: {
+                                        previous:   "«",
+                                        next:       "»"
+                                    }
+                                }
+                            } );
+                        } );
+                        $(function() {
+                            $("#drag").draggable({
+                                  revert: "invalid",
+                                  revertDuration: 200,
+                                  zIndex: 2500,
+                                  cursor: "move",
+                                  helper: "clone",
+                                  appendTo: "body",
+                                  cursorAt: { top: 17, left: 15 },
+                                  start: function(event, ui) {
+                                  },
+                                  drag: function(event, ui) {
+                                  }
+                            });
+
+                            $(".drop").droppable({
+                                  activeClass: "new-condition-active",
+                                  hoverClass: "condition-hover",
+                                  drop: function( event, ui ) {
+                                  }
+                            });
+                        });
+                    </script>
                 </div>
               </div>
               <div class="accordion-group">
                 <div class="accordion-heading">
                   <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                    Table2
+                    <i class="fa fa-table"></i> Table2
                   </a>
                 </div>
                 <div id="collapseTwo" class="accordion-body collapse">
@@ -41,49 +128,117 @@
                 </div>
               </div>
             </div>
-
         </div>
         <div class="span7">
             <ul class="nav nav-tabs" id="myTab">
-              <li class="active"><a href="#select">Select</a></li>
+              <li class="active"><a href="#select-columns">Select</a></li>
               <li><a href="#where">Where</a></li>
             </ul>
 
             <div class="tab-content">
-              <div class="tab-pane active" id="select">
-                  <div class="select">
-
+              <div class="tab-pane active" id="select-columns">
+                  <div class="alert alert-info">
+                      Select the columns which you want to have in your results.
                   </div>
-                  <div class="select new-condition">
+                  <div class="select">
+                      <button type="button" class="close" data-dismiss="alert">&times;</button>
+                  </div>
+                  <div class="select new-select drop">
 
                   </div>
               </div>
               <div class="tab-pane" id="where">
-                    <div class="condition">
-                        <div class="inside-condition">&nbsp</div>
-                        <div class="inside-condition">&nbsp<div class="connector or"></div></div>
-                        <div class="inside-condition">&nbsp<div class="connector or"></div></div>
+                    <div class="condition drop">
+                        <div class="inside-condition">
+                            <div class="condition-form">
+                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
+                            <select class="inline operator">
+                              <option>=</option>
+                              <option>not =</option>
+                              <option>=></option>
+                              <option><=</option>
+                              <option> < </option>
+                              <option> > </option>
+                              <option>is empty</option>
+                              <option>is not empty</option>
+                            </select>
+                            <input type="number" required class="inline"  placeholder="insert a number"/>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                        </div>
+                        <div class="inside-condition">
+                            <div class="condition-form">
+                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
+                            <select class="inline operator">
+                              <option>=</option>
+                              <option>not =</option>
+                              <option>=></option>
+                              <option><=</option>
+                              <option> < </option>
+                              <option> > </option>
+                              <option>is empty</option>
+                              <option>is not empty</option>
+                            </select>
+                            <input type="text" required class="inline"  placeholder="insert a text value"/>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                            <div class="connector or"></div>
+                        </div>
+                        <div class="inside-condition">
+                            <div class="condition-form">
+                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
+                            <select class="inline operator">
+                              <option>=</option>
+                              <option>not =</option>
+                              <option>=></option>
+                              <option><=</option>
+                              <option> < </option>
+                              <option> > </option>
+                              <option>is empty</option>
+                              <option>is not empty</option>
+                            </select>
+                            <input type="time" required class="inline"  placeholder="insert a date"/>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                            <div class="connector or"></div>
+                        </div>
                     </div>
-                    <div class="condition">
-                        <div class="rect-inside">&nbsp</div>
-                        <div class="rect-inside">&nbsp<div class="connector or"></div></div>
+                    <div class="condition drop">
+                        <div class="condition-form">
+                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
+                            <select class="inline operator">
+                              <option>=</option>
+                              <option>not =</option>
+                              <option>=></option>
+                              <option><=</option>
+                              <option> < </option>
+                              <option> > </option>
+                              <option>is empty</option>
+                              <option>is not empty</option>
+                            </select>
+                            <input type="number" required class="inline"  placeholder="insert a number"/>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        </div>
+                        <div class="connector and">
+                    </div>
+                    </div>
+                    <div class="condition drop">
                         <div class="connector and"></div>
                     </div>
-                    <div class="condition">
-                        <div class="connector and"></div>
-                    </div>
-                    <div class="condition new-condition">
+                    <div class="condition new-condition drop">
                         <div class="connector new-connector"></div>
                     </div>
               </div>
               <div class="tab-pane" id="join"></div>
             </div>
-            <script>$('#myTab a').click(function (e) {
-  e.preventDefault();
-  $(this).tab('show');
-})</script>
-
+                <script>
+                    $('#myTab a').click(function (e) {
+                        e.preventDefault();
+                        $(this).tab('show');
+                    })
+                </script>
         </div>
+    </div>
     </div>
 
 {% endblock %}
