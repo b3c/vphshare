@@ -6,7 +6,7 @@
   -moz-border-radius: 10px;
   border-radius: 10px;
   border: 2px solid #4C99F1;
-  padding: 10px;
+  padding: 22px 10px 4px 10px;
   margin: 5px;
   counter-increment: condition; }
 
@@ -20,8 +20,16 @@
   -moz-border-radius: 10px;
   border-radius: 10px; }
 
-.new-condition {
-  border: 2px dashed #4C99F1; }
+.new-condition, .new-select {
+  border: 2px dashed #4C99F1;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s linear; }
+
+.new-condition-active {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.2s linear; }
 
 .connector {
   width: 50px;
@@ -53,17 +61,17 @@
   top: 16px;
   position: relative; }
 
-.condition:hover, .select:hover {
+.condition-hover {
   box-shadow: 0 0 20px -5px #4C99F1;
   background-color: #DAEBFF;
   transition: background-color 300ms ease; }
 
-.condition:hover .connector, .select:hover .connector {
+.condition-hover > .connector {
   box-shadow: 0 0 20px -5px #4C99F1;
   background-color: #DAEBFF;
   transition: background-color 300ms ease; }
 
-.condition:after, .new-condition:after, .select:after {
+.condition:after, .new-condition:after, .new-select:after, .select:after {
   content: "Condition #" counter(condition);
   position: absolute;
   top: -1px;
@@ -78,7 +86,44 @@
   -moz-border-radius: 4px 0 4px 0;
   border-radius: 10px 0px 10px 0px; }
 
-.new-condition:after {
+.new-condition:after, .new-select:after {
   content: "new condition"; }
+
+.select:after {
+  content: "Column #" counter(condition); }
+
+.new-select:after {
+  content: "Select new column"; }
+
+/* UI statements */
+.ui-draggable-dragging {
+  border: 2px solid #4c99f1;
+  z-index: 999999;
+  position: absolute !important;
+  overflow: visible;
+  background: rgba(209, 228, 255, 0.61);
+  border-radius: 20px;
+  opacity: 0.8;
+  margin: 0px;
+  padding: 10px 15px 10px 15px;
+  text-align: center; }
+
+/*Condition form statements*/
+.condition-form {
+  margin: 10px; }
+
+.condition-form > .inline {
+  display: inline;
+  margin: 0; }
+
+.condition-form > input {
+  max-width: 135px; }
+
+.condition-form > .close {
+  float: inherit; }
+
+.condition-form > .operator {
+  width: inherit;
+  border-radius: 50px; }
 
 /*# sourceMappingURL=dataset.css.map */
