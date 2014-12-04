@@ -12,10 +12,10 @@
 
 .inside-condition {
   position: relative;
-  width: 400px;
+  width: 450px;
   height: 50px;
   margin: 10px 5px 5px 5px;
-  border: 2px solid #4C99F1;
+  border: 2px solid #64cdff;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px; }
@@ -116,7 +116,7 @@
   display: inline;
   margin: 0; }
 
-.condition-form > input {
+.condition-form input {
   max-width: 135px; }
 
 .condition-form > .close {
@@ -125,5 +125,17 @@
 .condition-form > .operator {
   width: inherit;
   border-radius: 50px; }
+
+table.dataTable tbody th, table.dataTable tbody td {
+  padding: 0px !important; }
+
+.column {
+  padding: 8px 10px; }
+
+/* Bootstrap rewrite */
+.input-append, .input-prepend {
+  margin-bottom: 0px !important; }
+
+/* End */
 
 /*# sourceMappingURL=dataset.css.map */

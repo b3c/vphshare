@@ -98,6 +98,23 @@ def urlizetrunctarget(value, limit, autoescape=None):
     return mark_safe(urlize_impl(value, trim_url_limit=int(limit), nofollow=True, autoescape=autoescape)).\
         replace('<a href=', '<a target="_blank" href=')
 
+@register.filter
+def datetimewidget_tag(widget_name, widget_value=""):
+    from datetimewidget.widgets import DateTimeWidget
+    widget = DateTimeWidget(options={'clearBtn':False})
+    return widget.media.render() + widget.render(widget_name, widget_value)
+
+@register.filter
+def datewidget_tag(widget_name, widget_value=""):
+    from datetimewidget.widgets import DateWidget
+    widget = DateWidget(options={'clearBtn':False})
+    return widget.media.render() + widget.render(widget_name, widget_value)
+
+@register.filter
+def timewidget_tag(widget_name, widget_value=""):
+    from datetimewidget.widgets import TimeWidget
+    widget = TimeWidget(options={'clearBtn':False})
+    return widget.media.render() + widget.render(widget_name, widget_value)
 
 # register filters
 register.filter('breadcrumbs', breadcrumbs)

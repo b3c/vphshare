@@ -1,5 +1,5 @@
 {% extends 'datasets/base.html' %}
-
+{% load scs_extras %}
 {% block stylesheets %}
     <link rel="stylesheet" href="/static/css/dataset.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css"  type="text/css" media="screen" />
@@ -12,6 +12,7 @@
     <script src="/static/js/jquery.dataTables.min.js"></script>
     <script src="/static/js/dataTables.bootstrap.min.js"></script>
     <script src="/static/js/jqBootstrapValidation.min.js"></script>
+    <script src="/static/js/ICanHaz.min.js"></script>
 {% endblock %}
 
 {% block extrahead %}
@@ -23,110 +24,119 @@
 {% endblock %}
 
 {% block content %}
+    <script id="numeric_options" type="text/html">
+      <option value="=">=</option>
+      <option value="NOT=">not =</option>
+      <option value=">=">=></option>
+      <option value="<="><=</option>
+      <option value="<"> < </option>
+      <option value=">"> > </option>
+      <option value="=--EMPTY">is empty</option>
+      <option value="NOT=--EMPTY">is not empty</option>
+    </script>
+
+     <script id="string_options" type="text/html">
+        <option value="=">=</option>
+        <option value="NOT=">not =</option>
+        <option value="STARTS WITH">starts with</option>
+        <option value="ENDS WITH">ends with</option>
+        <option VALUE="CONTAINS">contains</option>
+        <option value="DOES NOT START WITH">doesn't start with</option>
+        <option value="DOES NOT END WITH">doesn't end with</option>
+        <option value="DOES NOT CONTAIN">doesn't contain</option>
+        <option VALUE="=--EMPTY">is empty</option>
+        <option value="NOT=--EMPTY">is not empty</option>
+    </script>
+
+    <script id="condition" type="text/html">
+        <div class="{% templatetag openvariable %} #condition-type {% templatetag closevariable %}condition {% templatetag openvariable %} #drop {% templatetag closevariable %}">
+            <div class="condition-form">
+                <div class="inline left-node"> {% templatetag openvariable %} #left-node {% templatetag closevariable %}</div>
+                <select class="inline operator">{% templatetag openvariable %} #operations {% templatetag closevariable %}</select>
+                {% templatetag openvariable %} #input {% templatetag closevariable %}
+                <input type="number" required class="inline"  placeholder="insert a number"/>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+            <div class="connector and"></div>
+        </div>
+    </script>
+
     <div class="well well-small well-white">
-    <h1><i class="fa fa-database"></i> Dataset pino pino</h1>
-    <div class="row-fluid">
+    <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }}</h1>
+    <div id="query-builder" class="row-fluid">
         <div class="span4">
-            <div class="accordion" id="accordion2">
-              <div class="accordion-group">
-                <div class="accordion-heading">
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-                    <i class="fa fa-table"></i> Table1
-                  </a>
-                </div>
-                <div id="collapseOne" class="accordion-body collapse in">
-                    <div id="demo" class="accordion-inner">
-                        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>
+            <div class="accordion" id="accordion1">
+                {% for tablename, columns in dataset.metadata.schema.items %}
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#{{ tablename }}">
+                            <i class="fa fa-table"></i> {{ tablename|title }}
+                          </a>
+                        </div>
+                        <div id="{{ tablename }}" class="accordion-body collapse {% if forloop.counter0 == 0 %} in {% endif %}">
+                            <div class="accordion-inner">
+                                <table cellpadding="0" cellspacing="0" border="0" class="display dataset-table" >
+                                    <tbody>
+                                    {% for column in columns %}
+                                        <tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <script>
+
+                                $(function() {
+                                    $(".column").each(function(type,value) {
+                                        $(value).draggable({
+                                            revert: "invalid",
+                                            revertDuration: 200,
+                                            zIndex: 2500,
+                                            cursor: "move",
+                                            helper: "clone",
+                                            appendTo: "body",
+                                            cursorAt: { top: 17, left: 15 },
+                                            start: function (event, ui) {
+                                            },
+                                            drag: function (event, ui) {
+                                            }
+                                        })
+                                    });
+
+                                    $(".drop").droppable({
+                                          activeClass: "new-condition-active",
+                                          hoverClass: "condition-hover",
+                                          drop: function( event, ui ) {
+                                          }
+                                    });
+                                });
+                                $(function() {
+                                    $('#{{ tablename }} .dataset-table').each(function () {
+                                        $(this).dataTable({
+
+                                            "dom": "<'row-fluid'<'span12'f>r>" + "<'row-fluid'<'span12'p>>" + "<'row-fluid'<'span12't>>",
+                                            /*"data": dataSet,*/
+                                            "columns": [
+                                                { "title": "" }
+                                            ],
+                                            "paging": true,
+                                            "ordering": false,
+                                            "info": false,
+                                            "search": true,
+                                            "scrollX": true,
+                                            language: {
+                                                search: "<i class='icon-search'></i>",
+                                                paginate: {
+                                                    previous: "«",
+                                                    next: "»"
+                                                }
+                                            }
+                                        });
+                                    })
+                                });
+                            </script>
+                        </div>
                     </div>
-                    <script>
-                        var dataSet = [
-                                ['asdads','Internet Explorer 4.0','Win 95+','4','X'],
-                                ['Trident','Internet Explorer 5.0','Win 95+','5','C'],
-                                ['Trident','Internet Explorer 5.5','Win 95+','5.5','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A'],
-                                ['Trident','Internet Explorer 6','Win 98+','6','A']
-                        ];
-
-                        $(function() {
-                            $('#example').dataTable( {
-
-                                "dom": "<'row-fluid'<'span12'f>r>" + "<'row-fluid'<'span12'p>>" + "<'row-fluid'<'span12't>>" ,
-                                "data": dataSet,
-                                "columns": [
-                                    { "title": "" }
-                                ],
-                                "paging":         true,
-                                "ordering": false,
-                                "info":     false,
-                                "search": true,
-                                "scrollX": true,
-                                "columnDefs": [
-                                    {
-                                        // The `data` parameter refers to the data for the cell (defined by the
-                                        // `data` option, which defaults to the column being worked with, in
-                                        // this case `data: 0`.
-                                        render: function ( data, type, row ) {
-                                            return '<div id="drag" ><i class="fa fa-columns"></i> ' +data + '</div>';
-                                        },
-                                        "targets": 0
-                                    },
-                                    { "visible": false,  "targets": [ 1 ] }
-                                ],
-                                language: {
-                                    search:         "<i class='icon-search'></i>",
-                                    paginate: {
-                                        previous:   "«",
-                                        next:       "»"
-                                    }
-                                }
-                            } );
-                        } );
-                        $(function() {
-                            $("#drag").draggable({
-                                  revert: "invalid",
-                                  revertDuration: 200,
-                                  zIndex: 2500,
-                                  cursor: "move",
-                                  helper: "clone",
-                                  appendTo: "body",
-                                  cursorAt: { top: 17, left: 15 },
-                                  start: function(event, ui) {
-                                  },
-                                  drag: function(event, ui) {
-                                  }
-                            });
-
-                            $(".drop").droppable({
-                                  activeClass: "new-condition-active",
-                                  hoverClass: "condition-hover",
-                                  drop: function( event, ui ) {
-                                  }
-                            });
-                        });
-                    </script>
-                </div>
-              </div>
-              <div class="accordion-group">
-                <div class="accordion-heading">
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                    <i class="fa fa-table"></i> Table2
-                  </a>
-                </div>
-                <div id="collapseTwo" class="accordion-body collapse">
-                  <div class="accordion-inner">
-                    list of columns
-                  </div>
-                </div>
-              </div>
+                {% endfor %}
             </div>
         </div>
         <div class="span7">
@@ -138,7 +148,7 @@
             <div class="tab-content">
               <div class="tab-pane active" id="select-columns">
                   <div class="alert alert-info">
-                      Select the columns which you want to have in your results.
+                      Select the columns which you want to have in your result table.
                   </div>
                   <div class="select">
                       <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -153,16 +163,16 @@
                             <div class="condition-form">
                             <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
                             <select class="inline operator">
-                              <option>=</option>
-                              <option>not =</option>
-                              <option>=></option>
-                              <option><=</option>
-                              <option> < </option>
-                              <option> > </option>
-                              <option>is empty</option>
-                              <option>is not empty</option>
+                              <option value="=">=</option>
+                              <option value="NOT=">not =</option>
+                              <option value=">=">=></option>
+                              <option value="<="><=</option>
+                              <option value="<"> < </option>
+                              <option value=">"> > </option>
+                              <option value="=--EMPTY">is empty</option>
+                              <option value="NOT=--EMPTY">is not empty</option>
                             </select>
-                            <input type="number" required class="inline"  placeholder="insert a number"/>
+                            <input type="number" step="any" required class="inline"  placeholder="insert a number"/>
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
                             </div>
                         </div>
@@ -170,14 +180,16 @@
                             <div class="condition-form">
                             <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
                             <select class="inline operator">
-                              <option>=</option>
-                              <option>not =</option>
-                              <option>=></option>
-                              <option><=</option>
-                              <option> < </option>
-                              <option> > </option>
-                              <option>is empty</option>
-                              <option>is not empty</option>
+                                <option value="=">=</option>
+                                <option value="NOT=">not =</option>
+                                <option value="STARTS WITH">starts with</option>
+                                <option value="ENDS WITH">ends with</option>
+                                <option VALUE="CONTAINS">contains</option>
+                                <option value="DOES NOT START WITH">doesn't start with</option>
+                                <option value="DOES NOT END WITH">doesn't end with</option>
+                                <option value="DOES NOT CONTAIN">doesn't contain</option>
+                                <option VALUE="=--EMPTY">is empty</option>
+                                <option value="NOT=--EMPTY">is not empty</option>
                             </select>
                             <input type="text" required class="inline"  placeholder="insert a text value"/>
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -197,7 +209,7 @@
                               <option>is empty</option>
                               <option>is not empty</option>
                             </select>
-                            <input type="time" required class="inline"  placeholder="insert a date"/>
+                            {{ "pino"|datetimewidget_tag }}
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
                             </div>
                             <div class="connector or"></div>
