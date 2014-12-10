@@ -304,7 +304,9 @@ LOBCDER_ROOT = '/lobcder/dav'
 
 LOBCDER_WEBDAV_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/dav'
 LOBCDER_WEBDAV_HREF = '/lobcder/dav'
-LOBCDER_REST_URL = 'http://lobcder.vph.cyfronet.pl/lobcder/rest'
+LOBCDER_REST_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/rest'
+LOBCDER_FOLDER_DOWNLOAD_PATH = '/compress/getzip'
+
 
 #PARAVIEW settings
 LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
