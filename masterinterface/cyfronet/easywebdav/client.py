@@ -76,7 +76,7 @@ class Client(object):
             self.session.auth = (username, password)
     def _send(self, method, path, expected_code, **kwargs):
         url = self._get_url(path)
-        response = self.session.request(method, url, allow_redirects=False, **kwargs)
+        response = self.session.request(method, url, allow_redirects=False, verify=False, **kwargs)
         if isinstance(expected_code, Number) and response.status_code != expected_code \
             or not isinstance(expected_code, Number) and response.status_code not in expected_code:
             raise OperationFailed(method, path, expected_code, response.status_code)
@@ -159,7 +159,7 @@ class Client(object):
         expectedCodes = (201, 204)
         fromUrl = self._get_url(fromPath)
         toUrl = self._get_url(toPath)
-        response = self.session.request('COPY', fromUrl, headers = {'Destination': toUrl, 'Overwrite': 'T' if overwrite else 'F'})
+        response = self.session.request('COPY', fromUrl, verify=False, headers = {'Destination': toUrl, 'Overwrite': 'T' if overwrite else 'F'})
         if response.status_code not in expectedCodes:
             raise OperationFailed('COPY', fromUrl + ' -> ' + toUrl, expectedCodes, response.status_code)
     def getType(self, path):
