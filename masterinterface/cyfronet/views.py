@@ -27,8 +27,12 @@ def index(request):
 
 @login_required
 def lobcder(request, path = '/'):
-    return render_to_response("cyfronet/slet.html", {'lobcderWebDavUrl': settings.LOBCDER_WEBDAV_URL, 'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
-            'lobcderRestUrl': 'https://lobcder.vph.cyfronet.pl/lobcder/rest'}, RequestContext(request))
+    return render_to_response("cyfronet/slet.html", {
+    			'lobcderWebDavUrl': settings.LOBCDER_WEBDAV_URL,
+    			'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
+            	'lobcderRestUrl': settings.LOBCDER_REST_URL,
+            	'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH
+            }, RequestContext(request))
 
 @csrf_exempt
 def retriveVtk(request):

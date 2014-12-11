@@ -700,7 +700,7 @@ def create_role(request):
         return response
 
     policy_file = create_policy_file(['read'], [role_name])
-    if cloudfacade.create_securitypolicy(request.user.username, request.COOKIES.get('vph-tkt'), role_name, policy_file):
+    if cloudfacade.create_securitypolicy(request.user.username, request.ticket, role_name, policy_file):
         response_body = json.dumps({"status": "OK", "message": "Role created correctly", "alertclass": "alert-success", "rolename": role_name})
         response = HttpResponse(content=response_body, content_type='application/json')
         return response

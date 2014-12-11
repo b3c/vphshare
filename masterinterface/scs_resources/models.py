@@ -14,10 +14,18 @@ from django.db.models import Avg
 from django.core.cache import cache
 from django.conf import settings
 from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name, grant_permission, is_request_pending
+from collections import OrderedDict
 import requests
 import xmltodict
 
 Roles = ['Reader', 'Editor', 'Manager', 'Owner']
+
+def get_list_if_not_list(item):
+    #optimize the recursive operations on xmltodict objects.
+    if not isinstance(item, list):
+        return [item]
+    return item
+
 
 def get_pending_requests_by_user(user):
     requests = ResourceRequest.objects.filter(resource__owner=user)
@@ -173,6 +181,21 @@ class Resource(models.Model):
                 if 'read/sparql' in endpoint:
                     self.metadata['explore'] = endpoint.replace('read/sparql', 'explore/sql.html')
                     self.metadata['explore'] = self.metadata['explore'].replace('https://','https://admin:%s@'%ticket)
+                    self.metadata['endpoint'] = endpoint.replace('read/sparql', '')
+                    #get DPS schema
+                    dpsschema = requests.get('%s/dpsschema.xml' % self.metadata['endpoint'],
+                                             auth=('admin', ticket),
+                                             verify=False,
+                                             headers={'Content-Type':'application/xml','Accept':'application/xml'}).text
+
+                    schema = xmltodict.parse(dpsschema)
+                    resulted_schema = OrderedDict()
+                    #load the orginal schema to extract an subschema easiest to use in the ui.
+                    for table in get_list_if_not_list(schema['DataInstance']['Tables']['Table']):
+                        resulted_schema[table['D2rName']] = []
+                        for column in get_list_if_not_list(table['Fields']['Field']):
+                            resulted_schema[table['D2rName']].append([column['D2rName'], column['Type']])
+                    self.metadata['schema'] = resulted_schema
             return True
         except Exception,e:
             from raven.contrib.django.raven_compat.models import client

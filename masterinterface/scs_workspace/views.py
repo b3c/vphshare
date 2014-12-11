@@ -15,7 +15,7 @@ import json
 @login_required
 def workspace(request):
 
-    executions = TavernaExecution.objects.filter(owner=request.user, ticket=request.COOKIES.get('vph-tkt')).order_by('-creation_datetime')
+    executions = TavernaExecution.objects.filter(owner=request.user, ticket=request.ticket).order_by('-creation_datetime')
 
     return render_to_response(
         'scs_workspace/workspace.html',
@@ -48,7 +48,7 @@ def create(request):
         return redirect('workspace')
     if request.method == 'GET' and request.GET.get('workflow_id',None):
         workflow = Workflow.objects.get(pk=request.GET['workflow_id'])
-        n = TavernaExecution.objects.filter(title__contains=workflow.metadata['name'], ticket=request.COOKIES.get('vph-tkt')).count() + 1
+        n = TavernaExecution.objects.filter(title__contains=workflow.metadata['name'], ticket=request.ticket).count() + 1
         form = TavernaExecutionForm()
         form.fields['workflowId'].initial = workflow.global_id
         form.fields['title'].initial = workflow.metadata['name'] + " execution " + str(n)
@@ -64,7 +64,7 @@ def create(request):
 def startExecution(request):
     try:
         if request.method == 'POST' and request.POST.get('eid', None):
-            taverna_execution = TavernaExecution.objects.get(pk=request.POST['eid'], ticket=request.COOKIES.get('vph-tkt') , owner=request.user)
+            taverna_execution = TavernaExecution.objects.get(pk=request.POST['eid'], ticket=request.ticket , owner=request.user)
             taverna_execution.start(request.user.userprofile.get_ticket(7))
             return HttpResponse(content=json.dumps(True))
     except Exception, e:
@@ -77,8 +77,8 @@ def startExecution(request):
 @csrf_exempt
 def deleteExecution(request):
     if request.method == 'POST' and request.POST.get('eid', None):
-        taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'), ticket=request.COOKIES.get('vph-tkt'))
-        if taverna_execution.delete(ticket = request.COOKIES.get('vph-tkt')):
+        taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'), ticket=request.ticket)
+        if taverna_execution.delete(ticket = request.ticket):
             return HttpResponse(content=json.dumps({'results': 'true'}))
     return HttpResponse(status=403)
 
@@ -86,7 +86,7 @@ def deleteExecution(request):
 @csrf_exempt
 def getExecutionInfo(request):
     if request.method == 'POST' and request.POST.get('eid', None):
-        taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'), ticket=request.COOKIES.get('vph-tkt'))
+        taverna_execution = TavernaExecution.objects.get(pk=request.POST.get('eid'), ticket=request.ticket)
         keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'output', 'is_running']
         results = []
         for key in keys:

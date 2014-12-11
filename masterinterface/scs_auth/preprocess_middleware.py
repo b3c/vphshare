@@ -14,10 +14,10 @@ class masterInterfaceMiddleware(object):
         try:
             #FROM COOKIE
             #Check user's cookie  if validate ticket is ok, update ticket timestamp else session expire.
-            if  request.COOKIES.get('vph-tkt'):
+            if request.session.get('vph-tkt'):
                 try:
                     client_address = request.META['REMOTE_ADDR']
-                    user, tkt64 = authenticate(ticket=request.COOKIES['vph-tkt'], cip=client_address)
+                    user, tkt64 = authenticate(ticket=request.session['vph-tkt'], cip=client_address)
                 except:
                     logout(request)
                     request.META['VPH_TKT_COOKIE'] = True
@@ -65,11 +65,11 @@ class masterInterfaceMiddleware(object):
         if request.META.get("VPH_TKT_COOKIE") is None:
             return response
 
-        if not request.user.is_authenticated():
-            response.delete_cookie('vph-tkt')
+        if not request.user.is_authenticated() and request.session.get('vph-tkt'):
+            del request.session['vph-tkt']
             return response
 
-        response.set_cookie('vph-tkt', request.META['VPH_TKT_COOKIE'])
+        request.session['vph-tkt'] = request.META['VPH_TKT_COOKIE']
 
         return response
 

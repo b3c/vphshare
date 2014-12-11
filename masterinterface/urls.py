@@ -48,6 +48,7 @@ urlpatterns = patterns('',
     url(r'', include('masterinterface.scs_search.urls')),
     url(r'', include('masterinterface.scs_resources.urls')),
     url(r'', include('masterinterface.scs_workspace.urls')),
+    url(r'', include('masterinterface.datasets.urls')),
     url(r'', include('masterinterface.cyfronet.urls')),
 
     url(r'^select2/', include('django_select2.urls')),

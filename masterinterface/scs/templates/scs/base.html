@@ -17,18 +17,20 @@
     {% endblock %}
 
     <link href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet"/>
+    <link href="/static/ui-lightness/jquery.ui.1.9.2.ie.css" rel="stylesheet"/>
     <script src="/static/jquery-1.8.3.min.js"></script>
     <script src="/static/jquery-ui-1.9.2.custom.min.js"></script>
     <script src="/static/jquery.tools.min.js"></script>
     <script src="/static/scs.js"></script>
-    <script src="//cdn.ravenjs.com/1.1.11/jquery,native/raven.min.js"></script>
+
+    <!--<script src="//cdn.ravenjs.com/1.1.11/jquery,native/raven.min.js"></script>-->
     <!-- START bootstrap  -->
 
     <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css" type="text/css" media="screen" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.min.css" type="text/css" media="screen" />
     <script src="/static/bootstrap.min.js" type="text/javascript"></script>
-    <script>Raven.config('{% sentry_public_dsn %}').install()</script>
+    <!--<script>Raven.config('{% sentry_public_dsn %}').install()</script>-->
     <!-- END bootstrap  -->
 
     <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
