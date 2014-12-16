@@ -43,7 +43,7 @@ def retriveVtk(request):
             path = '/'
         try:
             webdav = easywebdav.connect(settings.LOBCDER_HOST, username='user',
-                                        password=request.COOKIES.get('vph-tkt', 'No ticket'), protocol='http'
+                                        password=request.ticket, protocol='http'
                                         )
             fileName = path.split('/')[-1]
             fileToDownload = os.path.join(settings.LOBCDER_DOWNLOAD_DIR, fileName)

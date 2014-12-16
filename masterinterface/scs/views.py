@@ -86,7 +86,7 @@ def reset_password(request):
 def profile(request, user=None):
     """Login complete view, displays user data"""
 
-    tkt64 = request.COOKIES.get('vph-tkt','No ticket')
+    tkt64 = request.ticket
 
     if user is None:
         user = request.user
