@@ -271,7 +271,7 @@ class WfMngApiHandler(BaseHandler):
                 return rc.FORBIDDEN
             if wfrun_id:
                 taverna_execution = TavernaExecution.objects.get(pk=wfrun_id, ticket=ticket)
-                keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'is_running']
+                keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder', 'is_running', 'output']
                 results = {}
                 for key in keys:
                     results[key] = getattr(taverna_execution, key)
