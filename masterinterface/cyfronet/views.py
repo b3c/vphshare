@@ -76,4 +76,6 @@ def retriveVtk(request):
 
 @login_required
 def tools(request):
-    return render_to_response('cyfronet/clew.html', {'cloudFacadeUrl': settings.CLOUDFACACE_URL}, RequestContext(request))
+    return render_to_response('cyfronet/clew.html', {
+    			'cloudFacadeUrl': settings.CLOUDFACACE_URL,
+    			'vphTicket': request.ticket}, RequestContext(request))
