@@ -147,7 +147,7 @@ def annotation_search_view(request):
         query_obj.save()
         query_obj.user.add(user)
         query_sparql = json2sparql(load_groups)
-        results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', ''))
+        results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.ticket)
     elif request.GET.get('id', None) is not None:
 
         query_obj = Query.objects.get(id=request.GET['id'])
@@ -235,7 +235,7 @@ def annotation_search_view_results(request):
             column[termRange] =annotation['D2rName']
         #query_sparql = json2sparql(load_groups)
         query_sparql = json2csvquery(load_groups, column, table_root)
-        results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', ''))
+        results =dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.ticket)
 
     return render_to_response('scs_search/scs_search.html',
                               {'search': 'complex', 'queryresults': results, 'dataset': dataset, 'datasetLabel': datasetLabel
@@ -488,7 +488,7 @@ def dataset_query_service( request ):
         endpoint_url = r.search(endpoint)
         from masterinterface.atos.exceptions import AtosPermissionException
         try:
-            connector = json.dumps(dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.COOKIES.get('vph-tkt', '')), sort_keys=False)
+            connector = json.dumps(dataset_query_connector(query_sparql, endpoint_url, request.user.username, request.ticket), sort_keys=False)
         except AtosPermissionException, e:
             response = HttpResponse(status=401)
             response._is_string = False
