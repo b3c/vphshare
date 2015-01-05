@@ -187,7 +187,7 @@ class Resource(models.Model):
             #TOUSE only if the metadata are loaded by solr
             self.metadata = xmltodict.parse(self.metadata['mrRaw'][0].encode('utf-8'))
         self.metadata['rating'] = float(self.metadata['rating'])
-        if self.metadata.get('relatedResources',None) is not None:
+        if self.metadata.get('relatedResources',None) is not None and self.metadata.get('relatedResource',None) is not None:
             if  not isinstance(self.metadata['relatedResources']['relatedResource'], list):
                 relatedResources = [self.metadata['relatedResources']['relatedResource'].copy()]
             else:
@@ -200,7 +200,7 @@ class Resource(models.Model):
         if self.metadata.get('linkedTo',None) is not None:
             if  not isinstance(self.metadata['linkedTo']['link'], list):
                 self.metadata['linkedTo']['link'] = [self.metadata['linkedTo']['link'].copy()]
-        if self.metadata.get('semanticAnnotations', None) is not None:
+        if self.metadata.get('semanticAnnotations', None) is not None and self.metadata.get('semanticConcept', None) is not None:
             if  not isinstance(self.metadata['semanticAnnotations']['semanticConcept'], list):
                 self.metadata['semanticAnnotations']['semanticConcept'] = [self.metadata['semanticAnnotations']['semanticConcept'].copy()]
 
