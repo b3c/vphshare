@@ -1,6 +1,6 @@
 .condition, .select {
   position: relative;
-  width: 500px;
+  width: 580px;
   min-height: 60px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -12,7 +12,7 @@
 
 .inside-condition {
   position: relative;
-  width: 450px;
+  width: 550px;
   height: 50px;
   margin: 10px 5px 5px 5px;
   border: 2px solid #64cdff;
@@ -42,7 +42,30 @@
   -webkit-border-radius: 54px;
   -moz-border-radius: 54px;
   border-radius: 54px;
-  background-color: #DAEBFF; }
+  background-color: #DAEBFF;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none; }
+
+.connector:hover {
+  background-color: #4C99F1; }
+
+.condition:first-of-type > .connector, .select:first-of-type > .connector {
+  display: none;
+  visibility: hidden; }
+
+.condition:first-of-type > .connector:hover, .select:first-of-type > .connector:hover {
+  display: none;
+  visibility: hidden; }
+
+.inside-condition:first-of-type > .connector {
+  display: none;
+  visibility: hidden; }
+
+.inside-condition:first-of-type > .connector:hover {
+  display: none;
+  visibility: hidden; }
 
 .new-connector {
   border: 2px dashed #4C99F1;
@@ -89,6 +112,9 @@
 .new-condition:after, .new-select:after {
   content: "new condition"; }
 
+.select {
+  padding: 11px 10px 0px 10px; }
+
 .select:after {
   content: "Column #" counter(condition); }
 
@@ -119,9 +145,6 @@
 .condition-form input {
   max-width: 135px; }
 
-.condition-form > .close {
-  float: inherit; }
-
 .condition-form > .operator {
   width: inherit;
   border-radius: 50px; }
@@ -136,6 +159,33 @@ table.dataTable tbody th, table.dataTable tbody td {
 .input-append, .input-prepend {
   margin-bottom: 0px !important; }
 
+.condition > button.close, .select > button.close {
+  padding-top: 0px !important;
+  padding-right: 0px !important; }
+
+.inside-condition > button.close {
+  padding-top: 16px !important;
+  padding-right: 37px !important; }
+
+/* End */
+/* Animation */
+.hideMe {
+  -moz-animation: cssAnimation 0s ease-in 5s forwards;
+  /* Firefox */
+  -webkit-animation: cssAnimation 0s ease-in 5s forwards;
+  /* Safari and Chrome */
+  -o-animation: cssAnimation 0s ease-in 5s forwards;
+  /* Opera */
+  animation: cssAnimation 0s ease-in 5s forwards;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards; }
+
+@keyframes cssAnimation {
+  to {
+    visibility: hidden; } }
+@-webkit-keyframes cssAnimation {
+  to {
+    visibility: hidden; } }
 /* End */
 
 /*# sourceMappingURL=dataset.css.map */

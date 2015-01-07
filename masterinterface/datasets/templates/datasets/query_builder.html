@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/static/css/dataset.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css"  type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/css/dataTables.bootstrap.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/datetimepicker.css" type="text/css" media="all" rel="stylesheet">
 
  {% endblock %}
 
@@ -13,6 +14,7 @@
     <script src="/static/js/dataTables.bootstrap.min.js"></script>
     <script src="/static/js/jqBootstrapValidation.min.js"></script>
     <script src="/static/js/ICanHaz.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js"></script>
 {% endblock %}
 
 {% block extrahead %}
@@ -21,10 +23,46 @@
     <!--[if IE 7]>
     <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
     <![endif]-->
+    <script>
+      $(function () {
+
+          QueryBuilder.autoDiscover();
+
+          $('.dataset-table').each(function () {
+            $(this).dataTable({
+
+                "dom": "<'row-fluid'<'span12'f>r>" + "<'row-fluid'<'span12'p>>" + "<'row-fluid'<'span12't>>",
+                /*"data": dataSet,*/
+                "columns": [
+                    { "title": "" }
+                ],
+                "paging": true,
+                "ordering": false,
+                "info": false,
+                "search": true,
+                "scrollX": true,
+                language: {
+                    search: "<i class='icon-search'></i>",
+                    paginate: {
+                        previous: "«",
+                        next: "»"
+                    }
+                }
+            });
+          });
+
+          $('#myTab a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+          });
+      }
+      );
+    </script>
 {% endblock %}
 
 {% block content %}
     <script id="numeric_options" type="text/html">
+    <select class="inline operator">
       <option value="=">=</option>
       <option value="NOT=">not =</option>
       <option value=">=">=></option>
@@ -33,36 +71,73 @@
       <option value=">"> > </option>
       <option value="=--EMPTY">is empty</option>
       <option value="NOT=--EMPTY">is not empty</option>
+    </select>
     </script>
 
      <script id="string_options" type="text/html">
-        <option value="=">=</option>
-        <option value="NOT=">not =</option>
-        <option value="STARTS WITH">starts with</option>
-        <option value="ENDS WITH">ends with</option>
-        <option VALUE="CONTAINS">contains</option>
-        <option value="DOES NOT START WITH">doesn't start with</option>
-        <option value="DOES NOT END WITH">doesn't end with</option>
-        <option value="DOES NOT CONTAIN">doesn't contain</option>
-        <option VALUE="=--EMPTY">is empty</option>
-        <option value="NOT=--EMPTY">is not empty</option>
+     <select class="inline operator"><option value="=">=</option><option value="NOT=">not =</option><option value="STARTS WITH">starts with</option><option value="ENDS WITH">ends with</option><option VALUE="CONTAINS">contains</option><option value="DOES NOT START WITH">doesn't start with</option><option value="DOES NOT END WITH">doesn't end with</option><option value="DOES NOT CONTAIN">doesn't contain</option><option VALUE="=--EMPTY">is empty</option><option value="NOT=--EMPTY">is not empty</option></select>
+    </script>
+
+    <script id="inside_condition" type="text/html">
+        <div class="inside-condition">
+            <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove operation" data-placement="right"  data-trigger="hover focus click" data-container="body">&times;</button>
+            <div class="condition-form">
+                <div class="inline left-node"> {% templatetag openbrace %}{% templatetag openvariable %} left_node {% templatetag closevariable %}{% templatetag closebrace %}</div>
+                {% templatetag openbrace %}{% templatetag openvariable %} operations {% templatetag closevariable %}{% templatetag closebrace %}
+                {% templatetag openbrace %}{% templatetag openvariable %} input {% templatetag closevariable %}{% templatetag closebrace %}
+            </div>
+            <div class="connector or"></div>
+        </div>
     </script>
 
     <script id="condition" type="text/html">
-        <div class="{% templatetag openvariable %} #condition-type {% templatetag closevariable %}condition {% templatetag openvariable %} #drop {% templatetag closevariable %}">
-            <div class="condition-form">
-                <div class="inline left-node"> {% templatetag openvariable %} #left-node {% templatetag closevariable %}</div>
-                <select class="inline operator">{% templatetag openvariable %} #operations {% templatetag closevariable %}</select>
-                {% templatetag openvariable %} #input {% templatetag closevariable %}
-                <input type="number" required class="inline"  placeholder="insert a number"/>
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-            </div>
+        <div class="condition drop">
+            <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove condition" data-placement="right" data-trigger="hover focus click" data-container="body">&times;</button>
             <div class="connector and"></div>
         </div>
     </script>
 
+    <script id="select" type="text/html">
+      <div class="select {% templatetag openvariable %} id {% templatetag closevariable %} ">
+          <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
+          <div class="condition-form">
+                <div class="inline input"><i class="fa fa-columns"></i> {% templatetag openvariable %} name {% templatetag closevariable %}</div>
+                <select class="inline operator" disabled><option value="rename"> rename as (optional) </option></select>
+                <input type="text" step="any"  class="inline"  placeholder="insert the new name"/>
+          </div>
+      </div>
+    </script>
+
+    <script id="text_value" type="text/html">
+        <input type="text" required class="inline"  placeholder="insert a text value" name="{% templatetag openvariable %} name {% templatetag closevariable %}" data-validation-required-message="Is requeired!"/>
+    </script>
+    <script id="integer_value" type="text/html">
+        <input type="number" required class="inline"  placeholder="insert a number" name="{% templatetag openvariable %} name {% templatetag closevariable %}" data-validation-required-message="Is requeired!"/>
+    </script>
+
+    <script id="float_value" type="text/html">
+        <input type="number" step="any" required class="inline"  placeholder="insert a number" name="{% templatetag openvariable %} name {% templatetag closevariable %}" data-validation-required-message="Is requeired!"/>
+    </script>
+
+    <script id="datetime_value" type="text/html">
+        <div class="controls input-append date">
+           <input readonly="" type="text" required name="{% templatetag openvariable %} name {% templatetag closevariable %}" data-validation-required-message="Is requeired!"/>
+           <span class="add-on"><i class="icon-th"></i></span>
+       </div>
+    </script>
+
     <div class="well well-small well-white">
-    <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }}</h1>
+    <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }}
+    <div  class="btn-group " style="float: right">
+      <button id="query_button" class="btn btn-info">Get the results</button>
+      <button class="btn dropdown-toggle btn-info" data-toggle="dropdown">
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a>Save the query</a></li>
+      </ul>
+    </div>
+    </h1>
     <div id="query-builder" class="row-fluid">
         <div class="span4">
             <div class="accordion" id="accordion1">
@@ -83,63 +158,12 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <script>
-
-                                $(function() {
-                                    $(".column").each(function(type,value) {
-                                        $(value).draggable({
-                                            revert: "invalid",
-                                            revertDuration: 200,
-                                            zIndex: 2500,
-                                            cursor: "move",
-                                            helper: "clone",
-                                            appendTo: "body",
-                                            cursorAt: { top: 17, left: 15 },
-                                            start: function (event, ui) {
-                                            },
-                                            drag: function (event, ui) {
-                                            }
-                                        })
-                                    });
-
-                                    $(".drop").droppable({
-                                          activeClass: "new-condition-active",
-                                          hoverClass: "condition-hover",
-                                          drop: function( event, ui ) {
-                                          }
-                                    });
-                                });
-                                $(function() {
-                                    $('#{{ tablename }} .dataset-table').each(function () {
-                                        $(this).dataTable({
-
-                                            "dom": "<'row-fluid'<'span12'f>r>" + "<'row-fluid'<'span12'p>>" + "<'row-fluid'<'span12't>>",
-                                            /*"data": dataSet,*/
-                                            "columns": [
-                                                { "title": "" }
-                                            ],
-                                            "paging": true,
-                                            "ordering": false,
-                                            "info": false,
-                                            "search": true,
-                                            "scrollX": true,
-                                            language: {
-                                                search: "<i class='icon-search'></i>",
-                                                paginate: {
-                                                    previous: "«",
-                                                    next: "»"
-                                                }
-                                            }
-                                        });
-                                    })
-                                });
-                            </script>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="span7">
+        <div class="span8">
             <ul class="nav nav-tabs" id="myTab">
               <li class="active"><a href="#select-columns">Select</a></li>
               <li><a href="#where">Where</a></li>
@@ -148,107 +172,26 @@
             <div class="tab-content">
               <div class="tab-pane active" id="select-columns">
                   <div class="alert alert-info">
-                      Select the columns which you want to have in your result table.
-                  </div>
-                  <div class="select">
                       <button type="button" class="close" data-dismiss="alert">&times;</button>
+                      Select the columns which you want to have in your result table.
+                      <hr>
+                      If you leave empty, all the columns will be selected.
                   </div>
+                  <div id="select-message-error" class="alert alert-error hide hideMe"></div>
                   <div class="select new-select drop">
 
                   </div>
               </div>
               <div class="tab-pane" id="where">
-                    <div class="condition drop">
-                        <div class="inside-condition">
-                            <div class="condition-form">
-                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
-                            <select class="inline operator">
-                              <option value="=">=</option>
-                              <option value="NOT=">not =</option>
-                              <option value=">=">=></option>
-                              <option value="<="><=</option>
-                              <option value="<"> < </option>
-                              <option value=">"> > </option>
-                              <option value="=--EMPTY">is empty</option>
-                              <option value="NOT=--EMPTY">is not empty</option>
-                            </select>
-                            <input type="number" step="any" required class="inline"  placeholder="insert a number"/>
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            </div>
-                        </div>
-                        <div class="inside-condition">
-                            <div class="condition-form">
-                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
-                            <select class="inline operator">
-                                <option value="=">=</option>
-                                <option value="NOT=">not =</option>
-                                <option value="STARTS WITH">starts with</option>
-                                <option value="ENDS WITH">ends with</option>
-                                <option VALUE="CONTAINS">contains</option>
-                                <option value="DOES NOT START WITH">doesn't start with</option>
-                                <option value="DOES NOT END WITH">doesn't end with</option>
-                                <option value="DOES NOT CONTAIN">doesn't contain</option>
-                                <option VALUE="=--EMPTY">is empty</option>
-                                <option value="NOT=--EMPTY">is not empty</option>
-                            </select>
-                            <input type="text" required class="inline"  placeholder="insert a text value"/>
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            </div>
-                            <div class="connector or"></div>
-                        </div>
-                        <div class="inside-condition">
-                            <div class="condition-form">
-                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
-                            <select class="inline operator">
-                              <option>=</option>
-                              <option>not =</option>
-                              <option>=></option>
-                              <option><=</option>
-                              <option> < </option>
-                              <option> > </option>
-                              <option>is empty</option>
-                              <option>is not empty</option>
-                            </select>
-                            {{ "pino"|datetimewidget_tag }}
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            </div>
-                            <div class="connector or"></div>
-                        </div>
-                    </div>
-                    <div class="condition drop">
-                        <div class="condition-form">
-                            <div class="inline input"><i class="fa fa-columns"></i> asdads</div>
-                            <select class="inline operator">
-                              <option>=</option>
-                              <option>not =</option>
-                              <option>=></option>
-                              <option><=</option>
-                              <option> < </option>
-                              <option> > </option>
-                              <option>is empty</option>
-                              <option>is not empty</option>
-                            </select>
-                            <input type="number" required class="inline"  placeholder="insert a number"/>
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                        <div class="connector and">
-                    </div>
-                    </div>
-                    <div class="condition drop">
-                        <div class="connector and"></div>
-                    </div>
+                    <p class="alert alert-info">
+                       Move the columns here to filter your results.
+                    </p>
+                  <p id="where-message-error" class="alert alert-error hide hideMe"></p>
                     <div class="condition new-condition drop">
                         <div class="connector new-connector"></div>
                     </div>
               </div>
-              <div class="tab-pane" id="join"></div>
             </div>
-                <script>
-                    $('#myTab a').click(function (e) {
-                        e.preventDefault();
-                        $(this).tab('show');
-                    })
-                </script>
         </div>
     </div>
     </div>
