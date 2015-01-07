@@ -15,7 +15,7 @@
         this.$query = [];
         this.$root = root;
         $('#query_button').click(function(){
-           self.validation();
+           self.submit_query();
         });
         root.find("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
 
@@ -38,50 +38,6 @@
                 drag: function (event, ui) {
                 }
             })
-        });
-
-        root.children('where').find(".drop").each(function(type, value){
-            var dropArea = $(value);
-
-            if( dropArea.children('.inside-condition').length > 0 ){
-                //it is a group of conditions
-                //{"group":[Cond_Obj, Cond_Obj2 ...], "connector":[]}
-                var connector = "";
-                if (dropArea.children('.connector').length > 0)
-                    connector = $(dropArea.children('.connector')[0]).hasClass('and') ? 'and' : 'or';
-
-                var condition = {"group":[] , "connector":connector};
-
-                dropArea.children('.condition-form').each(function(){
-                    var insideCondition = $(this);
-                    condition['group'].push({
-                        "name": insideCondition.children('.input:first-child').data("name"),
-                        "type": insideCondition.children('.input:first-child').data("type"),
-                        "operator" : insideCondition.children('.operator:first-child').val(),
-                        "value": insideCondition.children('input:first-child').val(),
-                        "connector": insideCondition.children('.connector').length > 0 ? $(insideCondition.children('.connector')[0]).hasClass('and') ? "and" : "or" : ""
-                    });
-                });
-                self.$dropArea['where'].push(condition)
-            }else if(dropArea.children('.condition-form').length > 0){
-                // there is a single condition and one connector
-                //{"condition": Cond_Obj, "connector":[]}
-                var connector = "";
-                if (dropArea.children('.connector').length > 0)
-                    connector = $(dropArea.children('.connector')[0]).hasClass('and') ? 'and' : 'or';
-
-                var condition = dropArea.children('.condition-form:first-child');
-
-                self.$dropArea['where'].push({
-                    "condition": {
-                        "name": condition.children('.input:first-child').data("name"),
-                        "type": condition.children('.input:first-child').data("type"),
-                        "operator": condition.children('.operator:first-child').val(),
-                        "value": condition.children('input:first-child').val()
-                    },
-                    "connector" : connector
-                });
-            }
         });
 
         root.find('.condition:not(.new-condition)').droppable({
@@ -164,7 +120,7 @@
                 $(this).next().hide();
                 $(this).next().val('none');
             }else{
-                $(this).next().val('');
+                if ($(this).next()=='none') $(this).next().val('');
                 $(this).next().show();
             }
         });
@@ -255,6 +211,54 @@
                 $('input[name='+key+']').focus();
                 return false;
             }
+        }
+        return true;
+    };
+
+    QueryBuilder.prototype.submit_query= function () {
+        var self = this;
+        self.$dropArea = {"select":[], "where":[]};
+        if (self.validation()){
+
+            self.$root.find('#where > .condition:not(.new-condition)').each(function(type, value){
+                var dropArea = $(value);
+
+                if( dropArea.find('.inside-condition').length > 0 ){
+                    //it is a group of conditions
+                    //{"group":[Cond_Obj, Cond_Obj2 ...], "connector":[]}
+                    var connector = "";
+                    if (dropArea.children('.connector:visible').length > 0)
+                        connector = $(dropArea.children('.connector:visible')[0]).hasClass('and') ? 'and' : 'or';
+
+                    var condition = {"group":[] , "connector":connector};
+
+                    dropArea.find('.inside-condition').each(function(){
+                        var insideCondition = $(this);
+                        condition['group'].push({
+                            "name": insideCondition.data("name"),
+                            "type": insideCondition.data("type"),
+                            "operator" : insideCondition.find('.operator:first').val(),
+                            "value": insideCondition.find('input:first').val(),
+                            "connector": insideCondition.children('.connector:visible').length > 0 ? $(insideCondition.children('.connector:visible')[0]).hasClass('and') ? "and" : "or" : ""
+                        });
+                    });
+                    self.$dropArea['where'].push(condition)
+                }
+            });
+
+            self.$root.find('#select-columns > .select:not(.new-select)').each(function(type, value){
+                var select = $(value);
+                var selectCondition;
+                if( select.find('.condition-form').length > 0 ){
+                    selectCondition = {
+                            "name": select.data("name"),
+                            "type": select.data("type"),
+                            "displayAs": select.find('input:first').val()
+                    };
+                    self.$dropArea['select'].push(selectCondition)
+                }
+
+            });
         }
     };
 
