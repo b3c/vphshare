@@ -44,7 +44,7 @@ function resultsCallback(results) {
                     datasetItem.find('.dataset-description').text('Match : ' + numMatch);
                     //conceptItem.find( '.link-to-data' ).attr( 'onclick', "datasetSearchReady( '"+rdfLink+"', '"+datasetLabel+"' );" );
                     if (permision) {
-                        datasetItem.find('.link-to-data').attr('href', "/semantic-search/annotation/?dataset=" + encodeURIComponent(rdfLink) + "&datasetLabel=" + encodeURIComponent(datasetLabel));
+                        datasetItem.find('.link-to-data').attr('href', "/query_builder/"+globalID+"/");
                     } else {
                         datasetItem.find('.link-to-data').attr('href', "/resources/" + globalID);
                         datasetItem.find('.link-to-data').text('Get access!');
