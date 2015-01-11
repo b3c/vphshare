@@ -28,29 +28,6 @@
 
           QueryBuilder.autoDiscover();
 
-          $('.dataset-table').each(function () {
-            $(this).dataTable({
-
-                "dom": "<'row-fluid'<'span12'f>r>" + "<'row-fluid'<'span12'p>>" + "<'row-fluid'<'span12't>>",
-                /*"data": dataSet,*/
-                "columns": [
-                    { "title": "" }
-                ],
-                "paging": true,
-                "ordering": false,
-                "info": false,
-                "search": true,
-                "scrollX": true,
-                language: {
-                    search: "<i class='icon-search'></i>",
-                    paginate: {
-                        previous: "«",
-                        next: "»"
-                    }
-                }
-            });
-          });
-
           $('#myTab a').click(function (e) {
                 e.preventDefault();
                 $(this).tab('show');
@@ -127,18 +104,75 @@
     </script>
 
     <div class="well well-small well-white">
-    <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }}
-    <div  class="btn-group " style="float: right">
-      <button id="query_button" class="btn btn-info">Get the results</button>
-      <button class="btn dropdown-toggle btn-info" data-toggle="dropdown">
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a>Save the query</a></li>
-      </ul>
-    </div>
+    <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }} {% if query_to_load %} - {{ query_to_load.name }}{% endif %}
     </h1>
-    <div id="query-builder" class="row-fluid">
+    <div id="query-results" class="row-fluid hide" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
+        <div class="span12">
+            <table cellpadding="0" cellspacing="0" border="0" class="display cell-border" id="dataset-results-table">
+
+            </table>
+        </div>
+    </div>
+    <hr id="hr-query-results" class="hide"/>
+    <h1>
+        <div  class="btn-group " style="float: right">
+          <button id="query_button" class="btn btn-info" data-loading-text="Loading the results..." >Get the results</button>
+          <button class="btn dropdown-toggle btn-info" data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            {% if query_to_load %}<li><a href="#save-query-modal"  role="button"   data-toggle="modal">Save</a></li>{% endif %}
+            <li><a href="#saveas-query-modal"  role="button"   data-toggle="modal">Save as new query</a></li>
+            {% if query_list %}<li class="divider"></li> {% endif %}
+            {% for query in query_list %}
+                <li class="query-list" data-queryid="{{ query.id }}" data-name="{{ query.name }}" ><a style="display: inline-block;" href="/query_builder/{{ dataset.global_id }}/?q={{ query.id }}">{{ query.name }}</a> <button type="button" class="close delete-query" data-dismiss="alert" data-toggle="tooltip" title="Remove query" data-placement="right"  data-trigger="hover focus click" data-container="body" style="padding-right: 10px;display: inline-block;">&times;</button></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% if query_to_load %}
+        <div id="save-query-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Save query</h3>
+          </div>
+          <div class="modal-body">
+              <form class="form-horizontal" onsubmit="return false;">
+                  <div class="control-group">
+                    <label class="control-label" for="save-query-input" style="font-size: 15px;">Query name</label>
+                    <div class="controls">
+                      <input type="text" class="inline" id="save-query-input" style="vertical-align: top;" value="{{ query_to_load.name }}"/>
+                    </div>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button id="save-query" class="btn btn-primary" data-loading-text="Saving..." >Save changes</button>
+          </div>
+        </div>
+        {% endif %}
+        <div id="saveas-query-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Save as new query</h3>
+          </div>
+          <div class="modal-body">
+              <form class="form-horizontal" onsubmit="return false;">
+                  <div class="control-group">
+                    <label class="control-label" for="saveas-query-input" style="font-size: 15px;">Query name</label>
+                    <div class="controls">
+                      <input type="text" class="inline" id="saveas-query-input" style="vertical-align: top;"/>
+                    </div>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button id="saveas-query" class="btn btn-primary"  data-loading-text="Saving..." >Create query</button>
+          </div>
+        </div>
+    </h1>
+    <div id="query-builder" class="row-fluid" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
         <div class="span4">
             <div class="accordion" id="accordion1">
                 {% for tablename, columns in dataset.metadata.schema.items %}
@@ -153,7 +187,7 @@
                                 <table cellpadding="0" cellspacing="0" border="0" class="display dataset-table" >
                                     <tbody>
                                     {% for column in columns %}
-                                        <tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
+                                        <tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}" data-tablename="{{ tablename }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
                                     {% endfor %}
                                     </tbody>
                                 </table>
@@ -178,6 +212,16 @@
                       If you leave empty, all the columns will be selected.
                   </div>
                   <div id="select-message-error" class="alert alert-error hide hideMe"></div>
+                  {% for select in query_to_load.query.select %}
+                      <div class="select" data-tablename="{{ select.tablename }}" data-name="{{ select.name }}" data-type="{{ select.type }}">
+                          <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
+                          <div class="condition-form">
+                                <div class="inline input"><i class="fa fa-columns"></i> {{ select.name }}</div>
+                                <select class="inline operator" disabled><option value="rename"> rename as (optional) </option></select>
+                                <input type="text" step="any"  class="inline"  placeholder="insert the new name" value="{{ select.displayAs }}"/>
+                          </div>
+                      </div>
+                  {% endfor %}
                   <div class="select new-select drop">
 
                   </div>
@@ -187,6 +231,48 @@
                        Move the columns here to filter your results.
                     </p>
                   <p id="where-message-error" class="alert alert-error hide hideMe"></p>
+                  {% for condition in query_to_load.query.where %}
+                      <div class="condition drop">
+                        <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove condition" data-placement="right" data-trigger="hover focus click" data-container="body">&times;</button>
+                          {% for operation in condition.group %}
+                              <div class="inside-condition" data-name="{{  operation.name }}" data-type="{{ operation.type }}" data-id="{{ operation.id }}" data-tablename="{{ operation.tablename }}" data-valuetype="{{ operation.valueType }}">
+                                <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove operation" data-placement="right"  data-trigger="hover focus click" data-container="body">&times;</button>
+                                <div class="condition-form">
+                                    <div class="inline left-node"> <i class="fa fa-columns"></i> {{ operation.name }}</div>
+                                    {% if operation.valueType  in "date datetime time numeric"%}
+                                        <select class="inline operator"><option value="=" {% if operation.operator == "=" %}selected{% endif %}>=</option><option value="NOT=" {% if operation.operator == "NOT=" %}selected{% endif %}>not =</option><option value=">=" {% if operation.operator == ">=" %}selected{% endif %}>=></option><option value="<=" {% if operation.operator == "<=" %}selected{% endif %}><=</option><option value="<" {% if operation.operator == "<" %}selected{% endif %}> < </option><option value=">" {% if operation.operator == ">" %}selected{% endif %}> > </option><option value="=--EMPTY" {% if operation.operator == "=--EMPTY" %}selected{% endif %}>is empty</option><option value="NOT=--EMPTY" {% if operation.operator == "NOT=--EMPTY" %}selected{% endif %}>is not empty</option></select>
+                                    {% else %}
+                                        <select class="inline operator"><option value="=" {% if operation.operator == "=" %}selected{% endif %}>=</option><option value="NOT=" {% if operation.operator == "NOT=" %}selected{% endif %}>not =</option><option value="STARTS WITH" {% if operation.operator == "STARTS WITH" %}selected{% endif %}>starts with</option><option value="ENDS WITH" {% if operation.operator == "ENDS WITH" %}selected{% endif %}>ends with</option><option VALUE="CONTAINS" {% if operation.operator == "CONTAINS" %}selected{% endif %}>contains</option><option value="DOES NOT START WITH" {% if operation.operator == "DOES NOT START WITH" %}selected{% endif %}>doesn't start with</option><option value="DOES NOT END WITH" {% if operation.operator == "DOES NOT END WITH" %}selected{% endif %}>doesn't end with</option><option value="DOES NOT CONTAIN" {% if operation.operator == "DOES NOT CONTAIN" %}selected{% endif %}>doesn't contain</option><option VALUE="=--EMPTY" {% if operation.operator == "=--EMPTY" %}selected{% endif %}>is empty</option><option value="NOT=--EMPTY" {% if operation.operator == "NOT=--EMPTY" %}selected{% endif %}>is not empty</option></select>
+                                    {% endif %}
+                                    {% if operation.type  == "date"%}
+                                        <div class="controls input-append date input-date {%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %} hide {% endif %}">
+                                           <input readonly="" type="text" required name="{{ operation.name }}" data-validation-required-message="Is requeired!" value="{% if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %}1{% else %}{{operation.value}}{% endif %}"/>
+                                           <span class="add-on"><i class="icon-th"></i></span>
+                                        </div>
+                                    {% elif operation.type  == "dateTime" %}
+                                        <div class="controls input-append date input-datetime {%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %} hide {% endif %}">
+                                           <input readonly="" type="text" required name="{{ operation.name }}" data-validation-required-message="Is requeired!" value="{%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %}1{% else %}{{operation.value}}{% endif %}"/>
+                                           <span class="add-on"><i class="icon-th"></i></span>
+                                        </div>
+                                    {% elif operation.type  == "time" %}
+                                        <div class="controls input-append date input-time {% if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %} hide {% endif %}">
+                                           <input readonly="" type="text" required name="{{ operation.name }}" data-validation-required-message="Is requeired!" value="{%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %}1{% else %}{{operation.value}}{% endif %}"/>
+                                           <span class="add-on"><i class="icon-th"></i></span>
+                                        </div>
+                                    {% elif operation.type  in "smallint int bigint" %}
+                                        <input type="number" required class="inline " style="{%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %} display: none; {% endif %}"  placeholder="insert a number" name="{{ operation.name }}" data-validation-required-message="Is requeired!" value="{%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %}1{% else %}{{operation.value }}{% endif %}"/>
+                                    {% elif operation.type  in "double float"%}
+                                        <input type="number" step="any" required class="inline" style="{% if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %} display: none; {% endif %}"   placeholder="insert a number" name="{{ operation.name }}" data-validation-required-message="Is requeired!" value="{%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY"%}1{% else %}{{operation.value }}{% endif %}"/>
+                                    {% elif operation.type  == "string" %}
+                                        <input type="text" required class="inline" style="{%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY"%} display: none; {% endif %}"   placeholder="insert a text value" name="{{ operation.name }}" data-validation-required-message="Is requeired!" value="{%  if operation.operator == "NOT=--EMPTY" or operation.operator == "=--EMPTY" %}1{% else %}{{operation.value }}{% endif %}"/>
+                                    {% endif %}
+                                </div>
+                                <div class="connector {{ operation.connector }}"></div>
+                            </div>
+                          {% endfor %}
+                        <div class="connector {{ condition.connector }}"></div>
+                    </div>
+                  {% endfor %}
                     <div class="condition new-condition drop">
                         <div class="connector new-connector"></div>
                     </div>

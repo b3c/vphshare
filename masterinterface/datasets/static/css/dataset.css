@@ -150,7 +150,7 @@
   border-radius: 50px; }
 
 table.dataTable tbody th, table.dataTable tbody td {
-  padding: 0px !important; }
+  padding: 0px 10px !important; }
 
 .column {
   padding: 8px 10px; }
