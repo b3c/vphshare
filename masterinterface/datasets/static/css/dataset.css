@@ -155,6 +155,9 @@ table.dataTable tbody th, table.dataTable tbody td {
 .column {
   padding: 8px 10px; }
 
+.DTTT {
+  float: right; }
+
 /* Bootstrap rewrite */
 .input-append, .input-prepend {
   margin-bottom: 0px !important; }

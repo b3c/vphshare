@@ -51,10 +51,8 @@ class DatasetQuery(models.Model):
                       verify=False
         ).text
         if "<QueryResult />" in results:
-            return fake_csv
             return ""
         else:
-            return fake_csv
             return results[results.find("<QueryResult>")+len("<QueryResult>"):results.find("</QueryResult>")]
 
     def get_header(self, ticket):

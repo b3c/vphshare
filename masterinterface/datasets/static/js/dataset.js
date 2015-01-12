@@ -394,6 +394,10 @@
                 "info": true,
                 "search": true,
                 "scrollX": true,
+                "dom": 'T<"clear">lfrtip',
+                "tableTools": {
+                    "sSwfPath": "/static/swf/copy_csv_xls_pdf.swf"
+                },
                 language: {
                     search: "<i class='icon-search'></i>",
                     paginate: {

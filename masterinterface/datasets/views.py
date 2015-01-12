@@ -35,7 +35,7 @@ def query_builder(request, global_id):
         dataset.load_additional_metadata(request.ticket)
         return render_to_response(
             'datasets/query_builder.html',
-            {'dataset': dataset , "query_to_load": query_to_load, "query_list":request.user.datasetquery_set.all()},
+            {'dataset': dataset , "query_to_load": query_to_load, "query_list":request.user.datasetquery_set.filter(global_id=global_id)},
             RequestContext(request)
         )
     return page403(request)
