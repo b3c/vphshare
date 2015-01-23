@@ -1,6 +1,6 @@
 {% extends 'scs/base.html' %}
 {% load scs_extras %}
-{%  block title %} Browse resources in VPH-DARE {% endblock %}
+{%  block title %} Dashboard {% endblock %}
 
 {% block extrahead %}
     <link rel="stylesheet" href="/static/font-awesome.min.css">
@@ -16,31 +16,30 @@
 
 {%  block content %}
 <div>
-      <!-- <h1 style="text-align: center">Browse resources in VPH-DARE</h1> !-->
     <ul class="nav nav-pills">
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/data/" class="resource-tab active">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/data/" class="resource-tab active">
           <a>
-            Datasets
+            My Datasets
           </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/file/" class="resource-tab active">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/file/" class="resource-tab active">
           <a>
-            Files/Folders
+            My Files/Folders
           </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/application/" class="resource-tab">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/application/" class="resource-tab">
             <a>
-                Applications
+                My Applications
             </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/workflow/" class="resource-tab">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/workflow/" class="resource-tab">
         <a>
-            Workflows
+            My Workflows
         </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/sws/" class="resource-tab">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/sws/" class="resource-tab">
         <a>
-            Semantic Web services
+            My Semantic Web services
         </a>
       </li>
       <script>$(function(){
@@ -202,15 +201,18 @@
                 });
             });
 
-            shareModal.find('#accept-request').submit(function(e){
+            shareModal.find('#accept-request').find('input[type=submit]').click(function(e){
                 e.preventDefault();
-                var form = $(this);
+                var self = $(this);
+                form = self.closest('form');
+                var formData = form.serializeArray();
+                formData.push({ name: self.attr('name'), value: self.val() });
                 $.ajax( {
                   type: "POST",
                   url: form.attr( 'action' ),
-                  data: form.serialize(),
+                  data: formData,
                   success: function( response ) {
-                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                        self.parents('.accordion-body').find('#details-tab >li')[1].click();
                   }
                 } );
             });
@@ -240,6 +242,7 @@
                   }
                 } );
             });
+
 
             shareModal.find('.pendig-users > tr').each(function(index, element){
 

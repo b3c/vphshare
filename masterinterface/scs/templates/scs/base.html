@@ -6,7 +6,7 @@
 
     <title>
         {%  block title %}
-            Welcome to VPH-Share Master Interface
+            Welcome to VPH-DARE@IT Master Interface
         {% endblock %}
     </title>
 
@@ -122,6 +122,22 @@
 
                     </div>
 
+
+                   {% block breadcrumbs %}
+                    {% if not request.path|breadcrumbs|length_is:"0" %}
+                    <div id="breadcrumbs-wrapper">
+                        <ul id="breadcrumbs" class="breadcrumb">
+                            <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
+                            {%  for crumb in request.path|breadcrumbs %}
+                                <li {% if forloop.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>{% if not forloop.last %}<span class="divider">|</span>{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% endblock %}
+
+
+
                     {% block nav %}
 
                     <div class="navbar ">
@@ -135,6 +151,7 @@
                             <div class="container nav-collapse collapse">
                                 <ul class="nav" style="margin: 0px;display: table;width: 100%}">
                                 <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
+                                    <li {% if 'discovery' == request.path|basepath %}class="active" {% endif %}><a href="/discoveries">DISCOVERY</a></li>
                                     <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
                                     <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools">APPLICATIONS</a></li>
                                     <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
@@ -145,18 +162,9 @@
 
                     </div>
                     {% endblock %}
-                    {% block breadcrumbs %}
-                    {% if not request.path|breadcrumbs|length_is:"0" %}
-                    <div id="breadcrumbs-wrapper">
-                        <ul id="breadcrumbs" class="breadcrumb">
-                            <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
-                            {%  for crumb in request.path|breadcrumbs %}
-                                <li {% if forloop.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>{% if not forloop.last %}<span class="divider">|</span>{% endif %}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    {% endblock %}
+ 
+
+ 
             {% endblock %}
         {% endif %}
         {% for n in notifications %}
@@ -215,7 +223,8 @@
                 <span class="divider">|
                 <a href="/support">Report a bug</a>
                 <span class="divider">|</span>
-                <span>&copy;Copyright 2014 VPH-Share All rights reserved</span>
+                <span>&copy;Copyright 2015 
+                <span class="divider">|</span ><a href="https://portal.vph-share.eu/" target="_blank">Powered by</a></span>&nbsp;&nbsp;<a href="https://portal.vph-share.eu/" target="_blank"><img src="/static/vph-dare/logo_sm1.png"/></a>
             </p>
         </footer>
         {% endblock %}
@@ -232,4 +241,3 @@
 {% block endbodyextra %}{% endblock %}
 </body>
 </html>
-

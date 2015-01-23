@@ -933,3 +933,259 @@ def smart_get_resources(request):
     from django_select2.views import Select2View
     res = Select2View()
     return res.render_to_response(res._results_to_context(('nil', False, response)))
+
+#1000 ---------------------------------------------------------------------------------------->
+def discovery(request,tab=''): 
+    return render_to_response(
+        "scs_resources/discovery.html", 
+        {
+         'tab':tab
+        },
+        RequestContext(request)
+    )
+
+
+def get_discovery_list(request, resource_type, page=1):
+    if request.method == 'GET':
+        try:
+            managed_resources5 = []
+            #get the list of owned resource from the metadata repository
+            if resource_type == "data":
+                resources = filter_resources_by_facet('Dataset', page=page)
+                types= ['Dataset']
+            if resource_type == "file":
+                resources =  filter_resources_by_facet('File', page=page)
+                types= ['File']
+            if resource_type == "application":
+                resources = filter_resources_by_facet('AtomicService', page=page)
+                types= ['AtomicService']
+            if resource_type == "workflow":
+                resources = filter_resources_by_facet('Workflow', page=page)
+                types= ['Workflow']		
+            if resource_type == "sws":
+                resources = filter_resources_by_facet('SemanticWebService', page=page)
+                types= ['SemanticWebService']
+
+            for resource_meta in resources:
+                try:
+                    user = User.objects.get(username=resource_meta['author'])
+                except Exception, e:
+                    continue
+                if resource_meta['type'] == "Workflow":
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                else:
+                    #some metadata File type are corrupted
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                if created:
+                    resource.save()
+
+                if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                    continue
+
+                if 'File' in types and resource.metadata['type'] == 'File':
+                    #load additional metadata and permission from LOBCDER services
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
+                #load requests pending for this resource
+                resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources5.append(resource)
+
+            resultsRender = render_to_string("scs_resources/discovery_list.html", {"resources": managed_resources5, "types":types, "type":resource_type, 'user':request.user, 'page':page})
+
+            return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500)
+
+
+
+
+
+
+#1000 ---------------------------------------------------------------------------------------->
+
+def discoveries(request,tab=''): 
+    return render_to_response(
+        "scs_resources/discoveries.html", 
+        {
+         'tab':tab
+        },
+        RequestContext(request)
+    )
+
+
+def get_discoveries_list(request, resource_type, page=1):
+    if request.method == 'GET':
+	
+        try:
+            managed_resources = []
+            #get the list of owned resource from the metadata repository
+            if resource_type == "application":
+                resources = filter_resources_by_facet('AtomicService', page=page)
+                types= ['AtomicService']
+
+            for resource_meta in resources:
+                try:
+                    user = User.objects.get(username=resource_meta['author'])
+                except Exception, e:
+                    continue
+                if resource_meta['type'] == "Workflow":
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                else:
+                    #some metadata File type are corrupted
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                if created:
+                    resource.save()
+
+                ##if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                ##    continue
+
+                if 'File' in types and resource.metadata['type'] == 'File':
+                    #load additional metadata and permission from LOBCDER services
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
+                #load requests pending for this resource
+                resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources.append(resource)
+
+
+
+
+
+
+            managed_resources2 = []
+            resources2 = filter_resources_by_facet('Workflow', page=page)
+            types= ['Workflow']
+
+            for resource_meta in resources2:
+                try:
+                    user = User.objects.get(username=resource_meta['author'])
+                except Exception, e:
+                    continue
+                if resource_meta['type'] == "Workflow":
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                else:
+                    #some metadata File type are corrupted
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                if created:
+                    resource.save()
+
+                ##if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                ##    continue
+
+                if 'File' in types and resource.metadata['type'] == 'File':
+                    #load additional metadata and permission from LOBCDER services
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
+                #load requests pending for this resource
+                resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources2.append(resource)
+
+
+
+
+
+
+            managed_resources3 = []
+            resources3 = filter_resources_by_facet('File', page=page)
+            types= ['File']
+
+            for resource_meta in resources3:
+                try:
+                    user = User.objects.get(username=resource_meta['author'])
+                except Exception, e:
+                    continue
+                if resource_meta['type'] == "Workflow":
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                else:
+                    #some metadata File type are corrupted
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                if created:
+                    resource.save()
+
+                ##if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                ##    continue
+
+                if 'File' in types and resource.metadata['type'] == 'File':
+                    #load additional metadata and permission from LOBCDER services
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
+                #load requests pending for this resource
+                resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources3.append(resource)
+
+
+
+
+
+
+            managed_resources4 = []
+            resources4 = filter_resources_by_facet('Dataset', page=page)
+            types= ['Dataset']
+
+            for resource_meta in resources4:
+                try:
+                    user = User.objects.get(username=resource_meta['author'])
+                except Exception, e:
+                    continue
+                if resource_meta['type'] == "Workflow":
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                else:
+                    #some metadata File type are corrupted
+                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
+                        continue
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                if created:
+                    resource.save()
+
+                ##if resource.metadata['type'] not in types:
+                    #skip the resoruce that are not the same type requested
+                ##    continue
+
+                if 'File' in types and resource.metadata['type'] == 'File':
+                    #load additional metadata and permission from LOBCDER services
+                    if not resource.load_additional_metadata(request.ticket):
+                        #if something go wrong with the lobcder loader I skip it
+                        continue
+                resource.load_permission()
+                #load requests pending for this resource
+                resource.requests = resource.get_pending_requests_by_resource()
+                managed_resources4.append(resource)
+
+
+
+
+
+
+            resultsRender = render_to_string("scs_resources/discoveries_list.html", {"resources": managed_resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})+render_to_string("scs_resources/discoveries_list.html", {"resources": managed_resources4, "types":"Dataset", "type":"data", 'user':request.user, 'page':page})+render_to_string("scs_resources/discoveries_list.html", {"resources": managed_resources3, "types":"File", "type":"file", 'user':request.user, 'page':page})+render_to_string("scs_resources/discoveries_list.html", {"resources": managed_resources2, "types":"Workflow", "type":"workflow", 'user':request.user, 'page':page})
+
+            return HttpResponse(status=200,
+                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500)
+
+
+#1000 <----------------------------------------------------------------------------------------
+

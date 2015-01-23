@@ -15,7 +15,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
     border: 0 none;
     outline: 0 none;
     font-size: 100%;
-    vertical-align: baseline;
+    vertical-align:middle; /* 1000 */
     background: transparent;
 }
 body {

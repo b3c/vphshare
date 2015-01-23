@@ -28,6 +28,7 @@ body {
     height: 100%;
     /*font-family: 'Inder',sans-serif;*/
     min-height: 768px;
+	background: #e4e8eb;
 
 }
 
@@ -98,8 +99,9 @@ header #headline{
 }
 
 #breadcrumbs-wrapper{
-    height: 25px;
+    height: 14px; /* mltn */
     margin: 0px auto 10px auto;
+	padding: 0px !important;
 }
 
 .breadcrumb li a {
@@ -137,7 +139,7 @@ header #login a img{
 
 #logo-left{
     float: left;
-    background-image: url("/static/logo-web.png");
+    background-image: url("/static/vph-dare/logo-web.png"); /* mltn */
     width: 443px;
     height: 90px;
 }
@@ -151,13 +153,14 @@ header #login a img{
 
 #page-title-wrapper{
 
-    background: url('/static/square.png') repeat top right, -ms-linear-gradient(left, #c5deea 0%,#8abbd7 31%,#066dab 100%); /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c5deea', endColorstr='#066dab',GradientType=1 ); /* IE6-9 */
-    background: url('/static/square.png') repeat top right, -moz-linear-gradient(right, #c5deea,#066dab); /* Mozilla */
-    background: url('/static/square.png') repeat top right, -webkit-gradient(linear, 0 0, 0 100%, from(#c5deea), to(#066dab)); /* Webkit */
-    background: url('/static/square.png') repeat top right, -webkit-linear-gradient(top, #c5deea, #066dab); /* Webkit */
-    background: url('/static/square.png') repeat top right, linear-gradient(to right, #c5deea 0%,#8abbd7 31%,#066dab 100%); /* W3C */
+    background: url('/static/vph-dare/square.png') repeat top right, -ms-linear-gradient(left, #fff 0%,#f7f8f9 31%,#119ed1 100%); /* IE10+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff', endColorstr='#119ed1',GradientType=1 ); /* IE6-9 */
+    background: url('/static/vph-dare/square.png') repeat top right, -moz-linear-gradient(right, #fff,#119ed1); /* Mozilla */
+    background: url('/static/vph-dare/square.png') repeat top right, -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#119ed1)); /* Webkit */
+    background: url('/static/vph-dare/square.png') repeat top right, -webkit-linear-gradient(top, #fff, #119ed1); /* Webkit */
+    background: url('/static/vph-dare/square.png') repeat top right, linear-gradient(to right, #fff 0%,#f7f8f9 31%,#119ed1 100%); /* W3C */
     height: 90px;
+	border-radius: 10px; /* mltn */ 
 }
 #page-title{
     background: transparent;
@@ -216,7 +219,11 @@ header #login a img{
 }
 
 .navbar {
-    margin-bottom: 2px;
+    margin-bottom: 3px; /* mltn */
+	margin-top: 3px; /* mltn */
+	width:70% !important; /* mltn */
+    margin-left: auto; /* mltn */
+    margin-right: auto; /* mltn */
 }
 
 .navbar .nav > li {
@@ -228,6 +235,7 @@ header #login a img{
 .navbar .nav li a {
     font-weight: bold;
     text-align: center;
+	border: 1px solid #F0EBEB; /* mltn */
 }
 
 .navbar .nav li:first-child a {
@@ -1228,9 +1236,9 @@ a.search-data-link:hover{
     }
     #logo-left{
         float: left;
-        background-image: url("/static/logo.png");
-        width: 75px;
-        height: 81px;
+        background-image: url("/static/vph-dare/logo.png");
+        width: 85px; /* mltn */
+        height: 85px; /* mltn */
     }
     .rigth-list {
         position: relative;

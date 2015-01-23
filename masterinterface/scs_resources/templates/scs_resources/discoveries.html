@@ -1,0 +1,299 @@
+{% extends 'scs/base.html' %}
+{% load scs_extras %}
+{%  block title %} Browse resources in VPH-DARE@IT {% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+    <style>
+    .select2-container.select2-container-multi {
+        width: 200px !important;
+    }
+    </style>
+{% endblock %}
+
+{%  block content %}
+<div>
+      <!-- <h1 style="text-align: center">Browse resources in VPH-DARE</h1> !-->
+    <ul class="nav nav-pills">
+            <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/discoveries/list/application/" class="resource-tab active" style="background-color:#F4F1F1; border-radius: 5px; margin:2px;">
+          <a>
+            <b>All</b>
+          </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/discovery/list/data/" class="resource-tab active" style="background-color:#F4F1F1; border-radius: 5px;  margin:2px;">
+          <a>
+            <b>Datasets</b>
+          </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/discovery/list/file/" class="resource-tab active" style="background-color:#F4F1F1; border-radius: 5px;  margin:2px;">
+          <a>
+            <b>Files/Folders</b>
+          </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/discovery/list/application/" class="resource-tab" style="background-color:#F4F1F1; border-radius: 5px;  margin:2px;">
+            <a>
+                <b>Applications</b>
+            </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/discovery/list/workflow/" class="resource-tab" style="background-color:#F4F1F1; border-radius: 5px;  margin:2px;">
+        <a>
+            <b>Workflows</b>
+        </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/sws/" class="resource-tab" style="background-color:#F4F1F1; border-radius: 5px;  margin:2px;">
+        <a>
+            <b>Semantic Web services</b>
+        </a>
+      </li>
+      <script>$(function(){
+          {% if tab == 'file' %}
+              $('.resource-tab')[1].click();
+          {% elif tab == 'application' %}
+              $('.resource-tab')[2].click();
+          {% elif tab == 'workflow' %}
+              $('.resource-tab')[3].click();
+          {% elif tab == 'sws' %}
+              $('.resource-tab')[4].click();
+          {% else %}
+              $('.resource-tab')[0].click();
+          {% endif %}
+        }
+      );</script>
+    </ul>
+    <div id="dashboard-container" style="position: relative;min-height: 50px;width: 100%;">
+
+    </div>
+
+</div>
+<script type="text/javascript">
+
+    (function() {
+        var global = this;
+        var $ = global.$;
+        var console = global.console || {log:function() {}};
+        var atomicRequest = global.atomicRequest = false;
+
+        var LoadDashboard = global.LoadDashboard = function(element, options) {
+            this.inizialize($(element));
+        };
+
+        LoadDashboard.prototype.inizialize = function(loadDashboard){
+            var self = this;
+            this.$target = $(loadDashboard.data('target'));
+            this.$getURL = loadDashboard.data('get');
+            this.$loadDashboard = loadDashboard;
+            this.$loading = '<div class="loading">Loading&#8230;</div>';
+            self.$atomic = false;
+            self.$page = 1;
+            atomicRequest = false;
+            loadDashboard.bind('click', function(){
+                        if (atomicRequest != false)
+                            atomicRequest.abort();
+                            atomicRequest = false;
+
+                        if (atomicRequest === false) {
+                            if($(this).hasClass('resource-tab')){
+                                $('.resource-tab').removeClass('active');
+                                $(this).addClass('active');
+                            }
+                            atomicRequest = true;
+                            self.get();
+                        }
+                        return true;
+                    }
+            );
+            if (loadDashboard.hasClass('resource-tab')){
+                $(window).scroll(function() {
+                    if($(window).scrollTop() + $(window).height() >= $('.resource:last').position().top+300 && self.$atomic == false && loadDashboard.hasClass('active') ) {
+                        self.$atomic = true;
+                        self.$page += 1;
+                        self.next();
+                    }
+                });
+            }
+        };
+
+        LoadDashboard.prototype.alert = function(message,style){
+            style = "alert-"+style;
+            var alert = this.$target.parent().find('.alert');
+            alert.find('#modal-message').text(message);
+            alert.addClass(style);
+            alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                $(this).removeClass(style).find('#modal-message').text('');
+            });
+        };
+
+        LoadDashboard.prototype.loading = function(){
+            var self = this;
+            $('.loading').remove();
+            this.$target.append(this.$loading);
+        };
+
+        LoadDashboard.prototype.getCallBack = function(data,self){
+            $('.loading').remove();
+            this.$target.append(data['data']);
+            if (data['data'].trim() != "")
+                this.$atomic = false;
+            atomicRequest = false;
+        };
+
+        LoadDashboard.prototype.next = function(){
+            var self = this;
+            self.loading();
+            atomicRequest=$.ajax(self.$getURL+self.$page, {
+                type: 'GET',
+                success: function(data) { self.getCallBack(data,self); },
+                error: function(data) { $('.loading').remove();
+            atomicRequest = false;self.$atomic = false;self.alert('Metadata Service return an error.Try later.','error'); }
+            });
+        };
+
+        LoadDashboard.prototype.get = function(){
+            var self = this;
+            this.$target.empty();
+            self.loading();
+            atomicRequest=$.ajax(self.$getURL, {
+                type: 'GET',
+                success: function(data) { self.getCallBack(data,self); },
+                error: function(data) { $('.loading').remove();
+            atomicRequest = false;self.alert('Metadata Service return an error.Try later.','error'); }
+            });
+        };
+
+
+        LoadDashboard.autoDiscover = function() {
+            $('.resource-tab').each(function(index, element) {
+                new LoadDashboard(element);
+            });
+
+        };
+        LoadDashboard.autoDiscover();
+    }).call(this);
+
+    (function() {
+        var global = this;
+        var $ = global.$;
+        var console = global.console || {log:function() {}};
+
+
+        var ShareTab = global.ShareTab = function(element, options) {
+            this.inizialize($(element));
+        };
+
+        ShareTab.prototype.inizialize = function(shareModal){
+            var self = this;
+            this.$globalId = shareModal.data('globalid');
+            this.$localid = shareModal.data('localid');
+            this.$csrfmiddlewaretoken = shareModal.find("input[name=csrfmiddlewaretoken]").val();
+            this.$shareModal = shareModal;
+            this.permissionMap = [];
+
+            shareModal.find('.permissions-map > tr ').each(function(index,element){
+                var updating_alert = $(element).find('.updating-alert');
+
+                $(element).find('.roles').click(function(e){
+                    updating_alert.show();
+                    var rolename =  $(this).data('rolename');
+                    var name =  $(this).data('name');
+                    if (this.checked){
+                        self.grant( name,rolename,0, element)
+                    }else{
+                        self.grant( name,rolename,1, element)
+                    }
+
+                });
+            });
+
+            shareModal.find('#accept-request').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax( {
+                  type: "POST",
+                  url: form.attr( 'action' ),
+                  data: form.serialize(),
+                  success: function( response ) {
+                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                  }
+                } );
+            });
+
+            shareModal.find('#newshare').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax( {
+                  type: "POST",
+                  url: form.attr( 'action' ),
+                  data: form.serialize(),
+                  success: function( response ) {
+                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                  }
+                } );
+            });
+
+            shareModal.find('.reject-request').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax( {
+                  type: "POST",
+                  url: form.attr( 'action' ),
+                  data: form.serialize(),
+                  success: function( response ) {
+                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                  }
+                } );
+            });
+
+            shareModal.find('.pendig-users > tr').each(function(index, element){
+
+                $(element).find('.accept').click(function(e){
+                    $(this).hide();
+                    $(element).find('.accept-roles').show();
+                });
+
+            });
+
+            this.$alert = shareModal.find('.alert');
+        };
+
+        ShareTab.prototype.alert = function(message,style){
+            style = "alert-"+style;
+
+            this.$alert.find('#modal-message').text(message);
+            this.$alert.addClass(style);
+            this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                $(this).removeClass(style).find('#modal-message').text('');
+            });
+        };
+
+
+        ShareTab.prototype.grant = function(setTo, roleToset, method, element){
+            var self = this;
+            var urls = ['/grantrole', '/revokerole'];
+            var url = urls[method];
+            $.ajax({
+                dataType: "json",
+                url: url,
+                method: 'get',
+                data: {name: setTo, role: roleToset, csrfmiddlewaretoken: self.$csrfmiddlewaretoken, global_id: self.$globalId},
+                success: function(data){
+                    $(element).find('.updating-alert').hide(); $(element).find('.updating-ok').show().delay(10000).hide();},
+                error: function(data){
+                    $(element).find('.updating-alert').hide(); $(element).find('.updating-error').show().delay(10000).hide();}
+            });
+        };
+
+
+        ShareTab.autoDiscover = function() {
+            $('.share-pannel').each(function(index, element) {
+                new ShareTab(element);
+            });
+
+        };
+        ShareTab.autoDiscover();
+    }).call(this);
+</script>
+
+{% endblock %}

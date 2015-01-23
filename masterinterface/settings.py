@@ -14,7 +14,8 @@ ADMINS = (
 )
 
 AUTH_SERVICES = "http://auth.biomedtown.org/api"
-BASE_URL = "https://portal.vph-share.eu"
+###BASE_URL = "https://portal.vph-share.eu"
+BASE_URL = "http://mi.vph-dare.eu"
 
 MANAGERS = ADMINS
 
