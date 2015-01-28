@@ -31,7 +31,7 @@
                                     <p class="dataset-description">Match : {{ data.0 }}</p></div>
                                 {% if data.3 %}
                                     <div class="span1"><a class="link-to-data btn btn-primary"
-                                                          href="/semantic-search/annotation/?dataset={{ data.1|urlencode }}&datasetLabel={{ dataset_name|urlencode }}">Query
+                                                          href="/query_builder/{{ data.2}}/">Query
                                         dataset</a></div>
                                 {% else %}
                                     <div class="span1"><a class="link-to-data btn btn-warning"

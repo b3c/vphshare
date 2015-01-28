@@ -14,7 +14,11 @@ from django.db.models import Avg
 from django.core.cache import cache
 from django.conf import settings
 from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name, grant_permission, is_request_pending
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    # python 2.6 or earlier, use backport
+    from ordereddict import OrderedDict
 import requests
 import xmltodict
 
@@ -196,6 +200,10 @@ class Resource(models.Model):
                         for column in get_list_if_not_list(table['Fields']['Field']):
                             resulted_schema[table['D2rName']].append([column['D2rName'], column['Type']])
                     self.metadata['schema'] = resulted_schema
+                    from urlparse import urlparse
+                    parsed_endpoint = urlparse(self.metadata['localID'])
+                    self.metadata['publishaddress'] = parsed_endpoint.netloc
+                    self.metadata['dbname'] = parsed_endpoint.path[1:]
             return True
         except Exception,e:
             from raven.contrib.django.raven_compat.models import client
@@ -210,7 +218,7 @@ class Resource(models.Model):
             #TOUSE only if the metadata are loaded by solr
             self.metadata = xmltodict.parse(self.metadata['mrRaw'][0].encode('utf-8'))
         self.metadata['rating'] = float(self.metadata['rating'])
-        if self.metadata.get('relatedResources',None) is not None:
+        if self.metadata.get('relatedResources',None) is not None and self.metadata.get('relatedResource',None) is not None:
             if  not isinstance(self.metadata['relatedResources']['relatedResource'], list):
                 relatedResources = [self.metadata['relatedResources']['relatedResource'].copy()]
             else:
@@ -223,7 +231,7 @@ class Resource(models.Model):
         if self.metadata.get('linkedTo',None) is not None:
             if  not isinstance(self.metadata['linkedTo']['link'], list):
                 self.metadata['linkedTo']['link'] = [self.metadata['linkedTo']['link'].copy()]
-        if self.metadata.get('semanticAnnotations', None) is not None:
+        if self.metadata.get('semanticAnnotations', None) is not None and self.metadata.get('semanticConcept', None) is not None:
             if  not isinstance(self.metadata['semanticAnnotations']['semanticConcept'], list):
                 self.metadata['semanticAnnotations']['semanticConcept'] = [self.metadata['semanticAnnotations']['semanticConcept'].copy()]
 

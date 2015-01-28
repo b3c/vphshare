@@ -31,7 +31,8 @@ def lobcder(request, path = '/'):
     			'lobcderWebDavUrl': settings.LOBCDER_WEBDAV_URL,
     			'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
             	'lobcderRestUrl': settings.LOBCDER_REST_URL,
-            	'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH
+            	'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH,
+            	'vphTicket': request.ticket
             }, RequestContext(request))
 
 @csrf_exempt
@@ -43,7 +44,7 @@ def retriveVtk(request):
             path = '/'
         try:
             webdav = easywebdav.connect(settings.LOBCDER_HOST, username='user',
-                                        password=request.ticket, protocol='http'
+                                        password=request.ticket, protocol='https'
                                         )
             fileName = path.split('/')[-1]
             fileToDownload = os.path.join(settings.LOBCDER_DOWNLOAD_DIR, fileName)
@@ -76,4 +77,6 @@ def retriveVtk(request):
 
 @login_required
 def tools(request):
-    return render_to_response('cyfronet/clew.html', {'cloudFacadeUrl': settings.CLOUDFACACE_URL}, RequestContext(request))
+    return render_to_response('cyfronet/clew.html', {
+    			'cloudFacadeUrl': settings.CLOUDFACACE_URL,
+    			'vphTicket': request.ticket}, RequestContext(request))
