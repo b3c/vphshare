@@ -40,7 +40,7 @@ def statusMessage(request):
 def get_notifications(request):
     try:
         notifications = []
-        if request.user.is_authenticated():
+        if request.user.is_authenticated() and request.user.username is not 'mi_testuser':
             for n in Notification.objects.filter(recipient=request.user, hidden=False).order_by('-pk'):
                 notifications.append({'pk': n.pk, 'subject': n.subject, 'content': n.message})
 
