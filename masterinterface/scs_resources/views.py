@@ -259,9 +259,10 @@ def get_resources_list(request, resource_type, page=1):
                 resources['data'].append(resource)
 
             resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
-
+            del(resources['resource_metadata'])
+            del(resources['data'])
             return HttpResponse(status=200,
-                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content=json.dumps({'data': resultsRender, 'info':resources}, sort_keys=False),
                             content_type='application/json')
         except Exception, e:
             return HttpResponse(status=500)
