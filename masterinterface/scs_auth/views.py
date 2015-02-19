@@ -49,7 +49,7 @@ def done(request):
 
     #Create home folder for the user
     webdav = easywebdav.connect(settings.LOBCDER_HOST, username='user',
-                                password=request.ticket, protocol='http'
+                                password=request.ticket, protocol='https'
                                 )
     foldertocreate = settings.LOBCDER_ROOT + "/home/%s" % request.user.username
     try:
