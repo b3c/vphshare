@@ -25,13 +25,17 @@
                   {% elif operation.connector == "or" %}
                   <qlogicop operator="OR"/>
                   {% endif %}
-                  <qrelop operator="{{ operation.operator }}">
+                  <qrelop operator="{% if operation.operator == 'isnull' %}={% elif operation.operator == 'isnotnull' %}NOT={% else %}{{ operation.operator }}{% endif %}">
                       <leftnode>
                           <field fieldname="{{ operation.name }}" publishaddress="{{ dataset.metadata.publishaddress }}" dbname="{{ dataset.metadata.dbname }}" tablename="{{ operation.tablename }}" type="{{ operation.type }}"/>
                       </leftnode>
-                      <rightnode>
-                      <qvalue type="{{ operation.valueType }}">{{ operation.value }}</qvalue>
-                      </rightnode>
+                      {% if operation.operator == 'isnull' or operation.operator == 'isnotnull' %}
+                          <rightnode isnull="true" />
+                      {% else %}
+                          <rightnode>
+                          <qvalue type="{{ operation.valueType }}">{{ operation.value }}</qvalue>
+                          </rightnode>
+                      {% endif %}
                   </qrelop>
               {% endfor %}
               {% if not conditions.group|length_is:1 %}

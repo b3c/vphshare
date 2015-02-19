@@ -6,13 +6,14 @@ from django.core.exceptions import SuspiciousOperation
 from django.template import RequestContext
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 import json
 
 from masterinterface.scs_resources.models import Resource
 from masterinterface.scs.views import page403
 from masterinterface.datasets.models import DatasetQuery
 
-
+@login_required
 def query_builder(request, global_id):
     """Home view """
 
@@ -46,6 +47,7 @@ def query_builder(request, global_id):
         )
     return page403(request)
 
+@login_required
 def get_dataset_schema(request):
     if request.method == 'GET' and 'global_id' in request.GET:
         global_id = request.GET['global_id']
@@ -56,7 +58,7 @@ def get_dataset_schema(request):
     return HttpResponse(status=200,
                         content=json.dumps(dataset.metadata['schema'], sort_keys=False),
                         content_type='application/json')
-
+@login_required
 @csrf_exempt
 def get_results(request):
     if request.user.is_authenticated() and request.method == 'POST' and 'globalID' in request.POST:
@@ -80,6 +82,7 @@ def get_results(request):
     else:
         return page403(request)
 
+@login_required
 @csrf_exempt
 def save_the_query(request):
     if request.user.is_authenticated() and request.method == 'POST' and 'globalID' in request.POST:
@@ -100,6 +103,7 @@ def save_the_query(request):
     else:
         return page403(request)
 
+@login_required
 @csrf_exempt
 def edit_the_query(request):
     if request.user.is_authenticated() and request.method == 'POST' and 'globalID' in request.POST:
@@ -125,6 +129,7 @@ def edit_the_query(request):
     else:
         return page403(request)
 
+@login_required
 @csrf_exempt
 def delete_the_query(request):
     if request.user.is_authenticated() and request.method == 'POST' and 'globalID' in request.POST:

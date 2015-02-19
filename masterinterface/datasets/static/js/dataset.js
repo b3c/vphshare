@@ -135,7 +135,7 @@
         }
         root.find('select').change(function(){
             var value=$( this ).val();
-            if ($.inArray(value, ['=--EMPTY', 'NOT=--EMPTY'])>-1){
+            if ($.inArray(value, ['isnull', 'isnotnull'])>-1){
                 $(this).next().hide();
                 $(this).next().val('1');
             }else{
@@ -197,7 +197,7 @@
         });
         operation.find('select').change(function(){
             var value=$( this ).val();
-            if ($.inArray(value, ['=--EMPTY', 'NOT=--EMPTY'])>-1){
+            if ($.inArray(value, ['isnull', 'isnotnull'])>-1){
                 $(this).next().hide();
                 $(this).next().val('1');
             }else{
