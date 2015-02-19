@@ -113,9 +113,9 @@ class ResourceManager(models.Manager):
             for resource in resources_metadata['resource_metadata']:
                 r = self.get(metadata=False, global_id=resource.value['globalID'])
                 roles = role_relations.filter(content_id=r.id).values_list('role__name', flat=True)
-                r.is_manager = "Manager" in roles
-                r.is_editor = "Editor" in roles
-                r.is_reader = "Reader" in roles
+                r.is_manager = "Manager" in roles or "Owner" in roles
+                r.is_editor = "Editor" in roles or "Manager" in roles or "Owner" in roles
+                r.is_reader = "Reader" in roles or "Editor" in roles or "Manager" in roles or "Owner" in roles
                 r.metadata = resource.value
                 resources.append(r)
         resources_metadata['data'] = resources
@@ -435,9 +435,9 @@ class Resource(models.Model):
             self.is_reader = False
 
         roles = role_relations.values_list('role__name', flat=True)
-        self.is_manager = "Manager" in roles
-        self.is_editor = "Editor" in roles
-        self.is_reader = "Reader" in roles
+        self.is_manager = "Manager" in roles or "Owner" in roles
+        self.is_editor = "Editor" in roles or "Manager" in roles or "Owner" in roles
+        self.is_reader = "Reader" in roles or "Editor" in roles or "Manager" in roles or "Owner" in roles
 
     def can_I(self,role, user):
         roles = Roles[Roles.index(Role.objects.get(name=role).name):]
