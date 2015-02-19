@@ -1,35 +1,26 @@
-
-# Create your views here.
-
 import json
 
 from django.http import HttpResponse, Http404
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.contrib.auth.models import User, Group
-from django.db.models import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 from django.core.urlresolvers import reverse
-from permissions.models import PrincipalRoleRelation, Role
-from permissions.utils import add_local_role, remove_local_role
-from workflows.utils import get_state, set_workflow, set_state, do_transition
-from django.shortcuts import redirect
+from workflows.utils import set_workflow, set_state, do_transition
+from django.shortcuts import redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
+from django.template.context import RequestContext
 from django.core.cache import cache
+from django.core.exceptions import SuspiciousOperation
 
 from masterinterface.scs_security.politicizer import create_policy_file
 from masterinterface.cyfronet import cloudfacade
-from masterinterface.atos.metadata_connector import get_resource_metadata, AtosServiceException
 from .models import Resource, Workflow, ResourceRequest
-from config import ResourceRequestWorkflow, request_pending, request_accept_transition, request_refuse_transition
+from config import ResourceRequestWorkflow, request_accept_transition, request_refuse_transition
 from forms import WorkflowForm, UsersGroupsForm, ResourceForm, SWSForm, DatasetForm
-from masterinterface.atos.metadata_connector import *
+from masterinterface.atos.metadata_connector_json import *
 from utils import *
 from masterinterface import settings
 from masterinterface.scs_resources.widgets import AdditionalFile, AdditionalLink
-from django.core.exceptions import SuspiciousOperation
 
 def resource_detailed_view(request, id='1'):
     """
@@ -45,11 +36,8 @@ def resource_detailed_view(request, id='1'):
             except ObjectDoesNotExist, e:
                 #resource assigned to noone are ignored.
                 raise  SuspiciousOperation
-                #resource = Resource(global_id=id, owner=User.objects.get(username='asagli'))
-                #update_resource_metadata(id, {'author':'asagli'}, metadata['type'])
-                #resource.save(metadata=metadata)
             if metadata['type'] == "Workflow":
-                resource, created = Workflow.objects.get_or_create(global_id=id, metadata=metadata, owner=author)
+                resource, created = Workflow.objects.get_or_create(global_id=id, metadata=metadata, owner=author, type=metadata['type'])
                 resource.save()
                 resource = resource.resource_ptr
             else:
@@ -57,7 +45,7 @@ def resource_detailed_view(request, id='1'):
                 if metadata['type'] == "File" and metadata['localID'] == "0":
                     request.session['errormessage'] = "The File or folder you are looking for is corrupted.Err:No localID"
                     raise Exception
-                resource, created = Resource.objects.get_or_create(global_id=id, metadata=metadata, owner=author)
+                resource, created = Resource.objects.get_or_create(global_id=id, metadata=metadata, owner=author, type=metadata['type'])
                 resource.save()
         except MultipleObjectsReturned:
 
@@ -80,15 +68,10 @@ def resource_detailed_view(request, id='1'):
         resource.load_full_metadata()
 
         if request.user.is_authenticated():
+            resource.attach_permissions(user=request.user)
             resource.requests = resource.get_pending_requests_by_resource()
-            #get the path information using the lobcder services.
-            #if resource.metadata['type'] == 'File':
-            #load additional metadata and permission from LOBCDER services
             resource.load_additional_metadata(request.ticket)
             resource.load_permission()
-
-        # check if the resource has been already requested by user
-        if not request.user.is_anonymous(): # and not has_permission(resource, request.user, 'can_read_resource'):
             try:
                 resource_request = ResourceRequest.objects.get(resource=resource, requestor=request.user)
                 resource_request_state = get_state(resource_request)
@@ -98,21 +81,14 @@ def resource_detailed_view(request, id='1'):
             except ObjectDoesNotExist, e:
                 resource.already_requested = False
 
-        try:
-            workflow = Workflow.objects.get(global_id=id)
-            if str(workflow.metadata['name']).lower().count('aneurist'):
-                resource.related = ['<a href="http://www.onlinehpc.net/" target="_blank">Taverna Online tool</a>','<a href="http://www.vph-share.eu/content/running-aneuristworkflow-short-workflow" target="_blank">Taverna workbench Tutorial</a>']
-        except ObjectDoesNotExist, e:
-            workflow = None
-
         return render_to_response(
             'scs_resources/resource.html',
             {'resource': resource,
-             'workflow': workflow,
              'cloudFacadeUrl': settings.CLOUDFACACE_URL,
              'requests': []},
             RequestContext(request)
         )
+
     except SuspiciousOperation:
         raise SuspiciousOperation
     except Exception, e:
@@ -230,7 +206,7 @@ def resources(request,tab=''):
 def get_resources_list(request, resource_type, page=1):
     if request.method == 'GET':
         try:
-            managed_resources = []
+            resources = EMPTY_LIST
             #get the list of owned resource from the metadata repository
             if resource_type == "data":
                 resources = filter_resources_by_facet('Dataset', page=page)
@@ -247,19 +223,20 @@ def get_resources_list(request, resource_type, page=1):
             if resource_type == "sws":
                 resources = filter_resources_by_facet('SemanticWebService', page=page)
                 types= ['SemanticWebService']
-
-            for resource_meta in resources:
+            resources['data'] = []
+            for resource_meta in resources['resource_metadata']:
+                resource_meta = resource_meta.value
                 try:
                     user = User.objects.get(username=resource_meta['author'])
                 except Exception, e:
                     continue
                 if resource_meta['type'] == "Workflow":
-                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user, type=resource_meta['type'])
                 else:
                     #some metadata File type are corrupted
                     if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
                         continue
-                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user)
+                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user, type=resource_meta['type'])
                 if created:
                     resource.save()
 
@@ -273,11 +250,15 @@ def get_resources_list(request, resource_type, page=1):
                         #if something go wrong with the lobcder loader I skip it
                         continue
                 resource.load_permission()
+                if request.user.is_authenticated():
+                    resource.attach_permissions(user=request.user)
+                else:
+                    resource.attach_permissions()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
-                managed_resources.append(resource)
+                resources['data'].append(resource)
 
-            resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
+            resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
 
             return HttpResponse(status=200,
                             content=json.dumps({'data': resultsRender}, sort_keys=False),
@@ -300,35 +281,26 @@ def manage_resources(request,tab=''):
 def get_resources_list_by_author(request, resource_type, page=1):
     if request.method == 'GET':
         try:
-            managed_resources = []
             #get the list of owned resource from the metadata repository
             if resource_type == "data":
-                resources = filter_resources_by_facet('Dataset', 'author', request.user.username, page=page)
+                resources = Resource.objects.filter_by_roles('Reader', User.objects.get(username='asagli'), types='Dataset', public=False, page=page)
                 types= ['Dataset']
             if resource_type == "file":
-                resources = filter_resources_by_facet('File','author',request.user.username, page=page)
+                resources = Resource.objects.filter_by_roles('Reader',User.objects.get(username='asagli'), types='File', public=False, page=page)
                 types= ['File']
             if resource_type == "application":
-                resources = filter_resources_by_facet('AtomicService','author',request.user.username, page=page)
+                resources = Resource.objects.filter_by_roles('Reader',User.objects.get(username='asagli'), types='AtomicService', public=False, page=page)
                 types= ['AtomicService']
             if resource_type == "workflow":
-                resources = filter_resources_by_facet('Workflow','author',request.user.username, page=page)
+                resources = Workflow.objects.filter_by_roles('Reader',User.objects.get(username='asagli'), types='Workflow', public=False, page=page)
                 types= ['Workflow']
             if resource_type == "sws":
-                resources = filter_resources_by_facet('SemanticWebService','author',request.user.username, page=page)
+                resources = Resource.objects.filter_by_roles('Reader',User.objects.get(username='asagli'), types='SemanticWebService', public=False, page=page)
                 types= ['SemanticWebService']
 
-            for resource_meta in resources:
-                if resource_meta['type'] == "Workflow":
-                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
-                else:
-                    #some metadata File type are corrupted
-                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
-                        continue
-                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=request.user)
-                if created:
-                    resource.save()
-
+            for resource in resources['data']:
+                if resource.metadata['type'] == "File" and resource.metadata['localID'] == "0":
+                    continue
                 if 'File' in types and resource.metadata['type'] == 'File':
                     #load additional metadata and permission from LOBCDER services
                     if not resource.load_additional_metadata(request.ticket):
@@ -337,38 +309,12 @@ def get_resources_list_by_author(request, resource_type, page=1):
                 resource.load_permission()
                 #load requests pending for this resource
                 resource.requests = resource.get_pending_requests_by_resource()
-                managed_resources.append(resource)
 
-            if page == 1:
-                #If is the first page I also get hte list of the resources at least readable but not owned.
-                # the list of the resources are not filtered by type they will be filtered in the template.
-                readable_resources = list(Resource.objects.filter(id__in=get_readable_resources(request.user)).exclude(owner=request.user).values_list('global_id',flat=True))
-                for resource_gid in readable_resources:
-                    try:
-                        resource = Resource.objects.get(metadata=True, global_id=resource_gid)
-                        if resource.metadata['type'] == "File" and resource.metadata['localID'] == "0":
-                            #skip files with localid = 0
-                            continue
-                        if resource.metadata['type'] not in types:
-                            #skip the resoruce that are not the same type requested
-                            continue
-                    except AtosServiceException:
-                        continue
-
-                    if 'File' in types and resource.metadata['type'] == 'File':
-                        #load additional metadata and permission from LOBCDER services
-                        if not resource.load_additional_metadata(request.ticket):
-                            #if something go wrong with the lobcder loader I skip it
-                            continue
-                    resource.load_permission()
-                    #load requests pending for this resource
-                    resource.requests = resource.get_pending_requests_by_resource()
-                    managed_resources.append(resource)
-
-            resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": managed_resources,"types":types, "type":resource_type, 'user':request.user, 'page':page})
-
+            resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": resources,"types":types, "type":resource_type, 'user':request.user, 'page':page, 'request':request})
+            del(resources['resource_metadata'])
+            del(resources['data'])
             return HttpResponse(status=200,
-                            content=json.dumps({'data': resultsRender}, sort_keys=False),
+                            content=json.dumps({'data': resultsRender, 'info':resources}, sort_keys=False),
                             content_type='application/json')
         except Exception, e:
             return HttpResponse(status=500)
@@ -394,8 +340,6 @@ def get_resources_share(request, global_id):
     if request.method == 'GET':
         try:
             resource = Resource.objects.get(global_id=global_id)
-            #load the metadata to traslate in a more readable format.
-            resource.load_full_metadata()
             #get the path information using the lobcder services.
             if resource.metadata['type'] == 'File':
                 #load additional metadata and permission from LOBCDER services
@@ -902,7 +846,8 @@ def smart_get_AS(request):
     if request.GET.get('term',None):
         results = filter_resources_by_facet('AtomicService', 'name', request.GET.get('term',None))
         response = []
-        for result in results:
+        for result in results['resource_metadata']:
+            result = result.value
             response.append((result['globalID'], result['name']))
     else:
         response = []
@@ -914,7 +859,8 @@ def smart_get_SWS(request):
     if request.GET.get('term',None):
         results = filter_resources_by_facet('SemanticWebService', 'name', request.GET.get('term',None))
         response = []
-        for result in results:
+        for result in results['resource_metadata']:
+            result = result.value
             response.append((result['globalID'], result['name']))
     else:
         response = []
@@ -926,7 +872,8 @@ def smart_get_resources(request):
     if request.GET.get('term',None):
         results = filter_resources_by_facet('GenericMetadata', 'name', request.GET.get('term',None))
         response = []
-        for result in results:
+        for result in results['resource_metadata']:
+            result = result.value
             response.append((result['globalID'], result['name']))
     else:
         response = []

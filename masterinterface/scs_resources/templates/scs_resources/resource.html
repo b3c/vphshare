@@ -430,14 +430,14 @@
                             {% for related in resource.metadata.relatedResources %}<dd>&nbsp<a target="_blank" href="{{ BASE_URL }}/resources/{{ related.0 }}">{{ related.1|safe }}</a></dd>{% endfor %}
                         {% endif %}
                         <dt>Annotations:</dt>
-                            {% for annotation  in resource.metadata.semanticAnnotations.semanticConcept %}
+                            {% for annotation  in resource.metadata.semanticAnnotations %}
                                 <dd>&nbsp<span class="label">{{ annotation.conceptURI }}</span></dd>
                             {% empty %}
                                 <dd>&nbsp This resource has not semantic annotations.</dd>
                             {% endfor %}
                         {% if resource.metadata.linkedTo %}
                             <dt>Additional contents:</dt>
-                            {% for link in resource.metadata.linkedTo.link  %}
+                            {% for link in resource.metadata.linkedTo  %}
                                 <dd>&nbsp<a target="_blank" href="{{ link.linkURI }}">{{ link.linkType }}</a></dd>
                             {% endfor %}
                         {% endif  %}
@@ -494,10 +494,10 @@
                     {% endif %}
                     {% if request.user.is_authenticated %}
                     {% if request.user|can_read:resource%}
-                        {% if workflow and workflow.t2flow %}
+                        {% if resource.workflow and resource.workflow.t2flow %}
                             <form action="/workspace/create" enctype="multipart/form-data" method="get">
                             {% csrf_token %}
-                            <input type="hidden" name="workflow_id" value="{{ workflow.id }}"/>
+                            <input type="hidden" name="workflow_id" value="{{ resource.workflow.id }}"/>
                             <input type="submit" target="_blank"  class="btn btn-block btn-large btn-success" value="Configure to execute"/><br/>
                             </form>
                         {% endif %}
@@ -526,11 +526,11 @@
                         {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
                             <a  href="{{ BASE_URL }}/tools/#startInstance?{{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
                         {% elif resource.metadata.type == "Workflow" %}
-                            {% if workflow.t2flow %}
-                                <a target="_blank" href="{{  workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
+                            {% if resource.workflow.t2flow %}
+                                <a target="_blank" href="{{  resource.workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>
                                 <a  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank" class="btn btn-block btn-large btn-success"><i class="icon-external-link"></i>Edit in Taverna Online</a>
-                                {% if workflow.xml %}
-                                    <a target="_blank" href="{{  workflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
+                                {% if resource.workflow.xml %}
+                                    <a target="_blank" href="{{  resource.orkflow.xml.url }}" class="btn btn-block btn-large btn-success">Download input file</a>
                                 {% endif %}
                             {% endif %}
                         {% elif resource.metadata.type == "File"%}

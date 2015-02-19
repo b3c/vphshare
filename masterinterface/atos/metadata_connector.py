@@ -30,9 +30,9 @@ def decompose_payload(sub_metadata):
 
 def from_dict_to_payload(metadata,type):
     typetag= type[0].lower()+ type[1:]
-    typefield = "<type>%s</type>" % type
+    #typefield = "<type>%s</type>" % type
     #"".join(["<%s>%s</%s>" % (key, item, key) for key, item in metadata.items()]
-    return "<resource_metadata><%s>%s%s</%s></resource_metadata>" % (typetag, typefield, decompose_payload(metadata), typetag)
+    return "<resource_metadata><%s>%s</%s></resource_metadata>" % (typetag, decompose_payload(metadata), typetag)
 
 
 def get_all_resources_metadata():

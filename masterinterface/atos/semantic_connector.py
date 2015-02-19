@@ -15,7 +15,7 @@ from django.conf import settings
 from exceptions import AtosPermissionException
 
 from masterinterface.atos.config import *
-from masterinterface.atos.metadata_connector import filter_resources_by_facet
+from masterinterface.atos.metadata_connector_json import filter_resources_by_facet
 from masterinterface.scs_resources.models import Resource
 
 def automatic_search_connector(free_text, user = None):
@@ -46,10 +46,10 @@ def automatic_search_connector(free_text, user = None):
             MetadataDataset = filter_resources_by_facet('Dataset','localID',dataset_label)
             permision = False
             globalID = ''
-            if MetadataDataset:
-                r = Resource.objects.get(global_id=MetadataDataset[0]['globalID'])
+            if MetadataDataset['resource_metadata']:
+                r = Resource.objects.get(global_id=MetadataDataset['resource_metadata'][0].value['globalID'])
                 permision = r.can_read(user)
-                globalID = MetadataDataset[0]['globalID']
+                globalID = MetadataDataset['resource_metadata'][0].value['globalID']
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
             dataset_dict[dataset_label] = [num_metch, rdf_data, globalID, permision]
@@ -224,8 +224,8 @@ def complex_query_connector(load_groups, user):
             MetadataDataset = filter_resources_by_facet('Dataset','localID',dataset_label)
             permision = False
             globalID = ''
-            if MetadataDataset:
-                r = Resource.objects.get(global_id=MetadataDataset[0]['globalID'])
+            if MetadataDataset['resource_metadata']:
+                r = Resource.objects.get(global_id=MetadataDataset['resource_metadata'][0]['globalID'])
                 permision = r.can_read(user)
                 globalID = MetadataDataset[0]['globalID']
             num_metch = dataset_elem[0].text

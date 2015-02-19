@@ -47,13 +47,20 @@
       <option value="<="><=</option>
       <option value="<"> < </option>
       <option value=">"> > </option>
-      <option value="=--EMPTY">is empty</option>
-      <option value="NOT=--EMPTY">is not empty</option>
     </select>
     </script>
 
      <script id="string_options" type="text/html">
-     <select class="inline operator"><option value="=">=</option><option value="NOT=">not =</option><option value="STARTS WITH">starts with</option><option value="ENDS WITH">ends with</option><option VALUE="CONTAINS">contains</option><option value="DOES NOT START WITH">doesn't start with</option><option value="DOES NOT END WITH">doesn't end with</option><option value="DOES NOT CONTAIN">doesn't contain</option><option VALUE="=--EMPTY">is empty</option><option value="NOT=--EMPTY">is not empty</option></select>
+     <select class="inline operator">
+         <option value="=">=</option>
+         <option value="NOT=">not =</option>
+         <option value="STARTS WITH">starts with</option>
+         <option value="ENDS WITH">ends with</option>
+         <option VALUE="CONTAINS">contains</option>
+         <option value="DOES NOT START WITH">doesn't start with</option>
+         <option value="DOES NOT END WITH">doesn't end with</option>
+         <option value="DOES NOT CONTAIN">doesn't contain</option>
+     </select>
     </script>
 
     <script id="inside_condition" type="text/html">
@@ -107,6 +114,7 @@
     <div class="well well-small well-white">
     <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }} {% if query_to_load %} - {{ query_to_load.name }}{% endif %}
     </h1>
+    {% if endpoint == 'True' %}
     <div id="query-results" class="row-fluid hide" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
         <div class="span12">
             <table cellpadding="0" cellspacing="0" border="0" class="display cell-border" id="dataset-results-table">
@@ -209,8 +217,6 @@
                   <div class="alert alert-info">
                       <button type="button" class="close" data-dismiss="alert">&times;</button>
                       Select the columns which you want to have in your result table.
-                      <hr>
-                      If you leave empty, all the columns will be selected.
                   </div>
                   <div id="select-message-error" class="alert alert-error hide hideMe"></div>
                   {% for select in query_to_load.query.select %}
@@ -281,6 +287,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     </div>
 
 {% endblock %}

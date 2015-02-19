@@ -7,7 +7,7 @@ from permissions.models import PrincipalRoleRelation, Role
 from django.http import HttpResponse
 from piston.handler import BaseHandler
 from masterinterface.scs_auth.auth import authenticate
-from masterinterface.atos.metadata_connector import filter_resources_by_facet, filter_resources_by_type, get_resource_metadata
+from masterinterface.atos.metadata_connector_json import filter_resources_by_facet, get_resource_metadata
 from masterinterface.scs_resources.models import Resource, Workflow
 from raven.contrib.django.raven_compat.models import client
 
@@ -72,11 +72,11 @@ class has_local_roles(BaseHandler):
                             metadata = get_resource_metadata(global_id)
                             author = User.objects.get(username=metadata['author'])
                             if metadata['type'] == "Workflow":
-                                resource, created = Workflow.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author)
+                                resource, created = Workflow.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author, type=metadata['type'])
                                 resource.save()
                                 resource = resource.resource_ptr
                             else:
-                                resource, created = Resource.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author)
+                                resource, created = Resource.objects.get_or_create(global_id=global_id, metadata=metadata, owner=author, type=metadata['type'])
                                 resource.save()
 
                         if resource.can_I(role, user):
@@ -86,7 +86,7 @@ class has_local_roles(BaseHandler):
 
                     if len(resources) == 0:
                         # no resources with given ids!
-                        response = HttpResponse(status=404)
+                        response = HttpResponse(status=403)
                         response._is_string = True
                         return response
 
@@ -98,25 +98,26 @@ class has_local_roles(BaseHandler):
                     resources = []
                     for local_id in local_ids:
                         r = filter_resources_by_facet(request.GET['type'], 'localID', local_id )
-                        resources += r
+                        resources += r['resource_metadata']
 
                     if len(resources) == 0:
                         # no resources with given ids!
-                        response = HttpResponse(status=404)
+                        response = HttpResponse(status=403)
                         response._is_string = True
                         return response
 
                     for resource in resources:
+                        resource = resource.value
                         try:
                             if resource['localID'] not in local_ids:
                                 continue
                             author = User.objects.get(username=resource['author'])
                             if resource['type'] == "Workflow":
-                                resource_in_db, created = Workflow.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author)
+                                resource_in_db, created = Workflow.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author, type=resource['type'])
                                 resource_in_db.save()
                                 resource_in_db = resource_in_db.resource_ptr
                             else:
-                                resource_in_db, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author)
+                                resource_in_db, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata=resource, owner=author, type=resource['type'])
                                 resource_in_db.save()
 
                             if not resource_in_db.can_I(role, user):
@@ -186,33 +187,14 @@ class get_resources_list(BaseHandler):
                     return response
 
                 role = request.GET['role']
-                if request.GET.get('type', None) is not None:
-                    resources = filter_resources_by_type(resource_type=request.GET['type'])
-                    user_resources = []
-
-                    for metadata in resources:
-                        try:
-                            try:
-                                author = User.objects.get(username=metadata['author'])
-                            except Exception, e:
-                                continue
-
-                            if metadata['type'] == "Workflow":
-                                resource, created = Workflow.objects.get_or_create(global_id=metadata['globalID'], metadata=metadata, owner=author)
-                                resource.save()
-                                resource = resource.resource_ptr
-                                resource.metadata = metadata
-                            else:
-                                resource, created = Resource.objects.get_or_create(global_id=metadata['globalID'], metadata=metadata, owner=author)
-                                resource.save()
-
-                            if resource.can_I(role,user):
-                                user_resources.append({"local_id": resource.metadata['localID'], "global_id": resource.global_id})
-
-
-                        except ObjectDoesNotExist, e:
-                            # not in local db, no roles
+                types = request.GET.get('type', None)
+                user_resources = []
+                if types is not None:
+                    resources = Resource.objects.filter_by_roles(role=role, user=user, types=types, numResults=300 )
+                    for resource in resources['data']:
+                        if resource.type == 'File' and not resource.can_I(role, user):
                             continue
+                        user_resources.append({"local_id": resource.metadata['localID'], "global_id": resource.global_id})
                     return user_resources
                 else:
                     user_resources = []

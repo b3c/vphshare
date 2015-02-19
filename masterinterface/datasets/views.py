@@ -33,9 +33,15 @@ def query_builder(request, global_id):
                 request.session['errormessage'] = "The query you are looking for doesn't exist."
                 redirect("query_builder",global_id=global_id)
         dataset.load_additional_metadata(request.ticket)
+        endpoint = dataset.metadata.get('sparqlEndpoint',dataset.metadata['localID'])
+        if 'read/sparql' not in endpoint:
+            request.session['errormessage'] = "The dataset you are looking for is not supported with the new query builder. Please update and try again."
+            endpoint = 'False'
+        else:
+            endpoint = 'True'
         return render_to_response(
             'datasets/query_builder.html',
-            {'dataset': dataset , "query_to_load": query_to_load, "query_list":request.user.datasetquery_set.filter(global_id=global_id)},
+            {'dataset': dataset , "query_to_load": query_to_load, "query_list":request.user.datasetquery_set.filter(global_id=global_id), "endpoint":endpoint},
             RequestContext(request)
         )
     return page403(request)

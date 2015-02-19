@@ -16,6 +16,7 @@
 
 {%  block content %}
 <div>
+    {% block header_buttons%}
     <h1>Browse resources in vph-share</h1>
     <ul class="nav nav-pills">
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/data/" class="resource-tab active">
@@ -58,6 +59,7 @@
         }
       );</script>
     </ul>
+        {% endblock %}
     <div id="dashboard-container" style="position: relative;min-height: 50px;width: 100%;">
 
     </div>
@@ -102,7 +104,7 @@
             );
             if (loadDashboard.hasClass('resource-tab')){
                 $(window).scroll(function() {
-                    if($(window).scrollTop() + $(window).height() >= $('.resource:last').position().top+300 && self.$atomic == false && loadDashboard.hasClass('active') ) {
+                    if($(window).scrollTop() + $(window).height() >= $('.resource:last').position().top+300 && self.$atomic == false && loadDashboard.hasClass('active') && self.$page < self.$pages) {
                         self.$atomic = true;
                         self.$page += 1;
                         self.next();
@@ -129,6 +131,7 @@
 
         LoadDashboard.prototype.getCallBack = function(data,self){
             $('.loading').remove();
+            this.$pages = data['info']['pages'];
             this.$target.append(data['data']);
             if (data['data'].trim() != "")
                 this.$atomic = false;
