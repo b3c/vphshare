@@ -41,6 +41,5 @@ urlpatterns = patterns(
     url(r'^workflows/$', workflowsView, name='workflows'),
     url(r'^workflows/new/$', edit_resource, name='create_workflow'),
     url(r'^workflows/edit/(?P<id>\d+)/$', edit_resource, name='edit_workflow'),
-
 )
 

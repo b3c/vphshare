@@ -1,19 +1,19 @@
 {% load scs_extras %}
-{% for result in results %}
-    <div class="popover-list result-item">
+{% for result in result.values %}
+    <div class="popover-list result.value-item">
         <div class="popover-content">
-            {% if result.type == 'User' %}
-                <p><i class="icon-user {{ result.type }}-color"></i><b ><a  class="{{ result.type }}-color" href="/profile/{{ result.description }}"> {{ result.name }}</a></b></p>
-            {% elif result.type == 'Institution' %}
-                <p><i class="icon-group {{ result.type }}-color"></i><a target="_blank" href="/groups/{{ result.id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
-            {% elif result.type == 'AtomicService' %}
-                <p><i class="icon-group Application-color-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="Application-color"> {{ result.name }}</b></a></p>
-            {% elif result.type == 'SemanticWebService' %}
-                <p><i class="icon-group SWS-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="SWS-color"> {{ result.name }}</b></a></p>
+            {% if result.value.type == 'User' %}
+                <p><i class="icon-user {{ result.value.type }}-color"></i><b ><a  class="{{ result.value.type }}-color" href="/profile/{{ result.value.description }}"> {{ result.value.name }}</a></b></p>
+            {% elif result.value.type == 'Institution' %}
+                <p><i class="icon-group {{ result.value.type }}-color"></i><a target="_blank" href="/groups/{{ result.value.id}}"><b class="{{ result.value.type }}-color"> {{ result.value.name }}</b></a></p>
+            {% elif result.value.type == 'AtomicService' %}
+                <p><i class="icon-group Application-color-color"></i><a target="_blank" href="/resources/{{ result.value.globalID}}"><b class="Application-color"> {{ result.value.name }}</b></a></p>
+            {% elif result.value.type == 'SemanticWebService' %}
+                <p><i class="icon-group SWS-color"></i><a target="_blank" href="/resources/{{ result.value.globalID}}"><b class="SWS-color"> {{ result.value.name }}</b></a></p>
             {% else %}
-                <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
+                <p><i class="icon-th {{ result.value.type }}-color"></i><a target="_blank" href="/resources/{{ result.value.globalID}}"><b class="{{ result.value.type }}-color"> {{ result.value.name }}</b></a></p>
             {% endif %}
-            <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {% if result.type == "AtomicService" %}Application{% elif result.type == "SemanticWebService" %}Semantic web service{% else %}{{ result.type }}{% endif %}</p>
+            <p style="font-size: 13px"> {{ result.value.description|strCut:'100' }} | Type: {% if result.value.type == "AtomicService" %}Application{% elif result.value.type == "SemanticWebService" %}Semantic web service{% else %}{{ result.value.type }}{% endif %}</p>
         </div>
     </div>
 {% endfor %}

@@ -44,13 +44,15 @@ GLOBAL_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata'
 
 RESOURCE_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/%s'
 
-FACETS_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s/%s?value=%s&numResults=%s&page=%s'
+FACETS_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s/%s?value=%s&numResults=%s&page=%s&orderBy=%s&orderType=%s'
 
-TYPE_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s?numResults=%s&page=%s'
+TYPE_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s?numResults=%s&page=%s&orderBy=%s&orderType=%s'
 
-FILTER_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s'
+FILTER_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s&orderBy=%s&orderType=%s'
 
-SEARCH_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/multifield?params=name,description,tags&text=%s&numResults=%s&page=%s'
+FILTER_METADATA_BY_GLOBALID = settings.ATOS_METADATA_URL + '/rest/metadata/filter?numResults=%s&page=%s&orderBy=%s&orderType=%s'
+
+SEARCH_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/multifield?params=name,description,tags&text=%s&numResults=%s&page=%s&orderBy=%s&orderType=%s'
 #SEARCH_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/multifield?params=name,description,tags&text=%s'
 
 FACETS_LIST = [u'type', u'name', u'description', u'author', u'category', u'tags', u'semantic_annotations', u'licence', u'rating', u'views', u'local_id']

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 from masterinterface.scs_groups.models import Institution, Study
 from masterinterface.scs_resources.models import Resource, Workflow
-from masterinterface.atos.metadata_connector import set_resource_metadata, update_resource_metadata
+from masterinterface.atos.metadata_connector_json import set_resource_metadata, update_resource_metadata
 from django_select2 import Select2MultipleChoiceField, Select2ChoiceField, HeavySelect2TagField, HeavySelect2MultipleChoiceField
 from django_select2.widgets import Select2Mixin
 from django.core.files.storage import default_storage

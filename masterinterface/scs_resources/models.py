@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from masterinterface.atos.metadata_connector import update_resource_metadata, get_resource_metadata, delete_resource_metadata
-from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
 from workflows.utils import do_transition, set_workflow_for_model
 from permissions.utils import add_local_role
 from django.contrib.contenttypes.models import ContentType
@@ -9,11 +7,15 @@ from django.contrib.auth.models import Group
 from permissions.models import PrincipalRoleRelation, Role
 from django.db.models import ObjectDoesNotExist
 from django.db.models import Q
-from masterinterface.scs_groups.models import VPHShareSmartGroup
 from django.db.models import Avg
 from django.core.cache import cache
 from django.conf import settings
+
+from masterinterface.atos.metadata_connector_json import update_resource_metadata, get_resource_metadata, delete_resource_metadata, get_resources_metadata_by_list
+from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
+from masterinterface.scs_groups.models import VPHShareSmartGroup
 from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name, grant_permission, is_request_pending
+
 try:
     from collections import OrderedDict
 except ImportError:
@@ -59,16 +61,65 @@ class ResourceManager(models.Manager):
                 resource.metadata = cache.get(resource.global_id)
         return resource
 
-    def all(self, metadata=False):
-        resources = super(ResourceManager, self).all()
-        if metadata:
-            for resource in resources:
-                if cache.get(resource.global_id) is None:
-                    resource.metadata = get_resource_metadata(resource.global_id)
-                    cache.set(resource.global_id, resource.metadata, 120)
-                else:
-                    resource.metadata = cache.get(resource.global_id)
-        return resources
+    def all(self):
+        return super(ResourceManager, self).all()
+
+    def all_metadata(self, page=1, orderBy='name', orderType='asc'):
+        resources = super(ResourceManager, self).all().values_list('global_id', flat=True)
+        resources_metadata = get_resources_metadata_by_list(resources, page=page, numResults=100, orderBy=orderBy, orderType=orderType)
+        resources = []
+        if resources_metadata:
+            for resource in resources_metadata['resource_metadata']:
+                r = self.get(metadata=False, global_id=resource.value['globalID'])
+                r.metadata = resource.value
+                resources.append(r)
+            resources_metadata['data'] = resources
+        return resources_metadata
+
+    def filter_by_roles(self, role = None, user=None, types=None, group=None, public=True, page=1, orderBy='name', orderType='asc', numResults=10):
+        roles = Roles[Roles.index(Role.objects.get(name=role).name):]
+        if user:
+            if public:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(user=user) | Q(group__in=user.groups.all()) | Q(group=None, user=None),
+                    role__name__in=roles,
+                    content_type__name='resource'
+                )
+            else:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(user=user) | Q(group__in=user.groups.all()),
+                    role__name__in=roles,
+                    content_type__name='resource'
+                )
+        elif group:
+            if public:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(group=group) | Q(group=None, user=None),
+                    role__name__in=roles,
+                    content_type__name = 'resource'
+                )
+            else:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(group=group),
+                    role__name__in=roles,
+                    content_type__name = 'resource'
+                )
+        else:
+            return get_resources_metadata_by_list()
+        resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True), type=types)
+        resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType)
+        resources = []
+        if resources_metadata['resource_metadata']:
+            for resource in resources_metadata['resource_metadata']:
+                r = self.get(metadata=False, global_id=resource.value['globalID'])
+                roles = role_relations.filter(content_id=r.id).values_list('role__name', flat=True)
+                r.is_manager = "Manager" in roles
+                r.is_editor = "Editor" in roles
+                r.is_reader = "Reader" in roles
+                r.metadata = resource.value
+                resources.append(r)
+        resources_metadata['data'] = resources
+        return resources_metadata
 
     def solr_filter(self, rows=100, page=0, q=None, *args, **kwargs):
         #to check with Ivan if we can use the solr endpoint
@@ -85,7 +136,7 @@ class ResourceManager(models.Manager):
             if user.exists():
                 #the results retunr by the search engine is a list with length one.
                 result['type'] = result['type'][0]
-                r, created = self.get_or_create(result["globalID"], metadata=result , owner=user[0])[0]
+                r, created = self.get_or_create(result["globalID"], metadata=result , owner=user[0], type=result['type'])[0]
                 if created:
                     r.save()
                 resources.append(r)
@@ -100,6 +151,7 @@ class Resource(models.Model):
 
     global_id = models.CharField(null=True, max_length=39)
     owner = models.ForeignKey(User, default=1)
+    type = models.CharField(null=True, max_length=20)
 
     # hack for security
     security_policy = models.CharField(verbose_name="Security Policy Name ", max_length=125, null=True, blank=True)
@@ -114,7 +166,6 @@ class Resource(models.Model):
         else:
             # TODO this action should be performed only for workflows!
             # now it is ok since we have only Resource and Workflow
-            update_resource_metadata(self.global_id, {'localID': self.id, 'type': self.__class__.__name__},self.__class__.__name__ )
             add_local_role(self.resource_ptr, self.owner, resource_owner)
 
     def __unicode__(self):
@@ -217,23 +268,16 @@ class Resource(models.Model):
             #metadata has loaded from solr so some fields are missing the basic schema.
             #TOUSE only if the metadata are loaded by solr
             self.metadata = xmltodict.parse(self.metadata['mrRaw'][0].encode('utf-8'))
-        self.metadata['rating'] = float(self.metadata['rating'])
-        if self.metadata.get('relatedResources',None) is not None and self.metadata.get('relatedResource',None) is not None:
-            if  not isinstance(self.metadata['relatedResources']['relatedResource'], list):
-                relatedResources = [self.metadata['relatedResources']['relatedResource'].copy()]
-            else:
-                relatedResources = self.metadata['relatedResources']['relatedResource'][:]
-            self.metadata['relatedResources'] = []
-            for global_id in relatedResources:
-                r = Resource.objects.get(global_id=global_id['resourceID'])
-                self.metadata['relatedResources'].append((global_id['resourceID'],r.metadata['name']))
 
-        if self.metadata.get('linkedTo',None) is not None:
-            if  not isinstance(self.metadata['linkedTo']['link'], list):
-                self.metadata['linkedTo']['link'] = [self.metadata['linkedTo']['link'].copy()]
-        if self.metadata.get('semanticAnnotations', None) is not None and self.metadata.get('semanticConcept', None) is not None:
-            if  not isinstance(self.metadata['semanticAnnotations']['semanticConcept'], list):
-                self.metadata['semanticAnnotations']['semanticConcept'] = [self.metadata['semanticAnnotations']['semanticConcept'].copy()]
+        self.metadata['rating'] = float(self.metadata['rating'])
+        relatedResource = []
+        for key, global_id in enumerate(self.metadata['relatedResources']):
+            try:
+                r = Resource.objects.get(global_id=global_id['resourceID'])
+            except ObjectDoesNotExist:
+                continue
+            relatedResource.append(( global_id['resourceID'], r.metadata['name']))
+        self.metadata['relatedResources'] = relatedResource
 
     def reset_permissions(self):
         return PrincipalRoleRelation.objects.filter(role__name__in=['Reader', 'Editor', 'Manager'], content_id = self.id).delete()
@@ -355,6 +399,45 @@ class Resource(models.Model):
 
         return permissions_map
 
+    def attach_permissions(self, user=None, group=None, public=True):
+        """
+        Faster way to attach in the resrouce object the permission for the user or the group is requested in the group.
+        """
+        if user:
+            if public:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(user=user) | Q(group__in=user.groups.all()) | Q(group=None, user=None),
+                    content_type__name='resource',
+                    content_id=self.id
+                )
+            else:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(user=user) | Q(group__in=user.groups.all()),
+                    content_type__name='resource',
+                    content_id=self.id
+                )
+        elif group:
+            if public:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(group=group) | Q(group=None, user=None),
+                    content_type__name = 'resource',
+                    content_id=self.id
+                )
+            else:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(group=group),
+                    content_type__name = 'resource',
+                    content_id=self.id
+                )
+        else:
+            self.is_manager = False
+            self.is_editor = False
+            self.is_reader = False
+
+        roles = role_relations.values_list('role__name', flat=True)
+        self.is_manager = "Manager" in roles
+        self.is_editor = "Editor" in roles
+        self.is_reader = "Reader" in roles
 
     def can_I(self,role, user):
         roles = Roles[Roles.index(Role.objects.get(name=role).name):]

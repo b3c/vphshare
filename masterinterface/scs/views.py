@@ -9,7 +9,8 @@ from django.contrib.messages.api import get_messages
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 import ordereddict
-from scs import __version__ as version
+from masterinterface.scs import __version__ as version
+from masterinterface.scs_groups.models import Institution
 from permissions.models import Role
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -18,7 +19,7 @@ from django.contrib.auth.models import User
 from masterinterface import wsdl2mi
 from utils import is_staff
 from masterinterface import settings
-from masterinterface.atos.metadata_connector import *
+from masterinterface.atos.metadata_connector_json import search_resource
 from masterinterface.scs_resources.models import get_pending_requests_by_user
 from masterinterface.scs_groups.views import is_pending_institution, is_pending_action
 
@@ -126,53 +127,6 @@ def test(request):
     return render_to_response("scs/test.html", {'ajax':request.is_ajax}, RequestContext(request))
 
 
-@login_required
-def services(request):
-    """ a page with all available applications """
-    serviceList = []
-
-    message={}
-    if 'delete' in request.GET:
-        serviceToDelete=request.GET['delete']
-        success = wsdl2mi.DeleteService(serviceToDelete)
-        if success[0]:
-
-            message['statusmessage']=success[1]
-
-        else:
-
-            message['errormessage']=success[1]
-
-    if 'wsdlURL' in request.POST:
-        wsdlURL=request.POST['wsdlURL']
-        try:
-            val = URLValidator(verify_exists=False)
-            val(wsdlURL)
-            success = wsdl2mi.startInstallService(wsdlURL)
-            if success[0]:
-
-                message['statusmessage']=success[1]
-
-            else:
-
-                message['errormessage']=success[1]
-
-        except ValidationError, e:
-            message['errormessage']="This wsdl URL is not valid"
-
-    for app in settings.INSTALLED_APPS:
-        # TODO do a better check
-        if app.count('masterinterface') and not app.count('scs') and not app.count('cyfronet'):
-            service = app.split('.')[1]
-            serviceList.append( service )
-
-    message['services']=serviceList
-
-    return render_to_response("scs/services.html",
-            message,
-        RequestContext(request))
-
-
 def contacts(request):
 
     if request.method == 'GET':
@@ -222,7 +176,7 @@ def search_service(request):
         pages = request.session['pages']
         results = request.session['results']
         if page > request.session['page']:
-            results, countType, pages = search_resource(search_text, expression, numResults=20,  page=page)
+            results = search_resource(search_text, expression, numResults=20,  page=page)
             for ctype, counter in countType.items():
                 request.session['countType'][ctype] += counter
             countType = request.session['countType']
@@ -309,7 +263,6 @@ def search(request):
                 countType['User'] = len(users)
 
         if (types == [] or 'Institution' in types) and (filterby == [] or 'Institution' in filterby or 'Institution' in types):
-            from scs_groups.models import Institution
             institutions = Institution.objects.filter(
                 Q(name__icontains=search_text) | Q(description__icontains=search_text)
             )
@@ -360,35 +313,6 @@ def users_access_admin(request):
                               RequestContext(request))
 
 
-def browse_data_az(request):
-    """
-        browse data in alphabetical order
-    """
-    resources_by_letter = {}
-    try:
-        all_resources = []
-        all_resources.extend(filter_resources_by_type('File'))
-        all_resources.extend(filter_resources_by_type('Dataset'))
-
-        resources_by_letter = ordereddict.OrderedDict()
-
-        for letter in string.uppercase:
-            resources_by_letter[letter] = []
-
-        resources_by_letter['0-9'] = []
-
-        for r in all_resources:
-            key = str(r.get('name', ' ')).upper()[0]
-            if key in resources_by_letter:
-                resources_by_letter[key].append(r)
-            else:
-                resources_by_letter['0-9'].append(r)
-    except Exception, e:
-        request.session['errormessage'] = 'Metadata server is down. Please try later'
-        pass
-
-    return render_to_response("scs/browseaz.html", {"resources_by_letter": resources_by_letter, "letters": string.uppercase}, RequestContext(request))
-
 def page400(request):
 
     return render_to_response("scs/400.html", {}, RequestContext(request))
@@ -432,110 +356,6 @@ def support(request):
 
     return render_to_response("scs/support.html", {'contactForm':contactForm , 'reported': reported}, RequestContext(request))
 ## Manage-data modals services ##
-
-@csrf_exempt
-def delete_tag_service(request):
-    """
-        remove tag to resource's metadata
-    """
-    try:
-        if request.method == 'POST':
-
-            removed_tag = request.POST.get('tag', "")
-            global_id = request.POST.get('global_id', "")
-
-            metadata = get_resource_metadata(global_id)
-            new_tag = {'tags': ''}
-            metadata_tags = metadata['tags'].split(',')
-            if ''in metadata_tags:
-                metadata_tags.remove('')
-            for tag in metadata_tags:
-                if tag != removed_tag:
-                    new_tag['tags'] += "%s," % tag
-            new_tag['tags'] = new_tag['tags'].strip()
-            update_resource_metadata(global_id, new_tag, metadata['type'] )
-
-            response = HttpResponse(status=200)
-            response._is_string = True
-            return response
-
-        raise
-
-    except Exception, e:
-        from raven.contrib.django.raven_compat.models import client
-        client.captureException()
-        response = HttpResponse(status=403)
-        response._is_string = True
-        return response
-
-
-@csrf_exempt
-def add_tag_service(request):
-    """
-        add tag to resource's metadata
-    """
-    try:
-        if request.method == 'POST':
-
-            added_tag = request.POST.get('tag', "")
-            global_id = request.POST.get('global_id', "")
-
-            metadata = get_resource_metadata(global_id)
-            if metadata['tags'] is not None:
-
-                metadata_tags = metadata['tags'].split(',')
-                if ''in metadata_tags:
-                    metadata_tags.remove('')
-                for tag in metadata_tags:
-                    added_tags = added_tag.split(',')
-                    if '' in added_tags:
-                        added_tags.remove('')
-                    if tag.strip() in added_tags:
-                        raise
-                new_tags = {'tags': "%s, %s" % (metadata['tags'], added_tag)}
-            else:
-                new_tags = {'tags': added_tag.strip()}
-            update_resource_metadata(global_id, new_tags, metadata['type'])
-
-            response = HttpResponse(status=200)
-            response._is_string = True
-            return response
-
-        raise
-
-    except Exception, e:
-        from raven.contrib.django.raven_compat.models import client
-        client.captureException()
-        response = HttpResponse(status=403)
-        response._is_string = True
-        return response
-
-
-@csrf_exempt
-def edit_description_service(request):
-    """
-        add tag to resource's metadata
-    """
-    try:
-        if request.method == 'POST':
-
-            description = request.POST.get('description', "")
-            global_id = request.POST.get('global_id', "")
-            metadata = get_resource_metadata(global_id)
-            update_resource_metadata(global_id, {'description': description}, metadata['type'])
-
-            response = HttpResponse(status=200)
-            response._is_string = True
-            return response
-
-        raise
-
-    except Exception, e:
-        from raven.contrib.django.raven_compat.models import client
-        client.captureException()
-        response = HttpResponse(status=403)
-        response._is_string = True
-        return response
 
 
 @csrf_exempt
