@@ -53,8 +53,8 @@ def set_resource_metadata(metadata, type):
     """
 
     try:
-        headerss = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
-        response = requests.post(GLOBAL_METADATA_API, data=from_dict_to_payload(metadata, type), headerss=headerss)
+        headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
+        response = requests.post(GLOBAL_METADATA_API, data=from_dict_to_payload(metadata, type), headers=headers)
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
@@ -73,8 +73,8 @@ def update_resource_metadata(global_id, metadata, type):
     """
 
     try:
-        headerss = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
-        response = requests.put(RESOURCE_METADATA_API % global_id, data=from_dict_to_payload(metadata, type), headerss=headerss)
+        headers = {'Accept': '*/*', 'content-type': 'application/xml', 'Cache-Control': 'no-cache'}
+        response = requests.put(RESOURCE_METADATA_API % global_id, data=from_dict_to_payload(metadata, type), headers=headers)
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)

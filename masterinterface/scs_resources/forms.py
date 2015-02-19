@@ -60,10 +60,7 @@ class ResourceForm(forms.ModelForm):
                         continue
                     self.fields['relatedResources'].choices += ((global_id,r.metadata['name']),)
             except Exception, e:
-                if not isinstance(self.data['relatedResources']['relatedResource'], list):
-                    relatedResources = [self.data['relatedResources']['relatedResource'].copy()]
-                else:
-                    relatedResources = self.data['relatedResources']['relatedResource'][:]
+                relatedResources = self.data['relatedResources']
                 self.data['relatedResources'] = []
                 for global_id in relatedResources:
                     try:
@@ -74,10 +71,7 @@ class ResourceForm(forms.ModelForm):
                     self.data['relatedResources'].append(global_id['resourceID'])
         if self.data.get('semanticAnnotations',None) is not None:
             try:
-                if not isinstance(self.data['semanticAnnotations']['semanticConcept'], list):
-                    relatedResources = [self.data['semanticAnnotations']['semanticConcept'].copy()]
-                else:
-                    relatedResources = self.data['semanticAnnotations']['semanticConcept'][:]
+                relatedResources = self.data['semanticAnnotations']
                 self.data['semanticAnnotations'] = ''
                 for conceptURI in relatedResources:
                     if self.data['semanticAnnotations'] == '':
@@ -100,12 +94,9 @@ class ResourceForm(forms.ModelForm):
                 self.data['linkedTo'] += [{'link':{'linkURI':fileURI,'linkType':fileDescription}} ]
         else:
             #if the form is load for first time
-
-            if  not isinstance(self.data['linkedTo']['link'], list):
-                self.data['linkedTo']['link'] = [self.data['linkedTo']['link'].copy()]
-            linkedTo = self.data['linkedTo'].copy()
+            linkedTo = self.data['linkedTo']
             self.data['linkedTo'] = []
-            for link in linkedTo['link']:
+            for link in linkedTo:
                 self.data['linkedTo'] += [{'link':{'linkURI':link['linkURI'],'linkType':link['linkType']}}]
 
 

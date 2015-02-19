@@ -685,6 +685,7 @@ def edit_resource(request, id=False):
 
         if request.method == "GET":
             if id:
+                dbResource.load_additional_metadata(request.ticket)
                 dbResource.metadata['title'] = dbResource.metadata['name']
                 if dbResource.metadata['type'] == "Workflow":
                     form = WorkflowForm(dbResource.metadata, instance=dbResource)
