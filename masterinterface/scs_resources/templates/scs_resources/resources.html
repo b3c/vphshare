@@ -131,7 +131,8 @@
 
         LoadDashboard.prototype.getCallBack = function(data,self){
             $('.loading').remove();
-            this.$pages = data['info']['pages'];
+            if ('info' in data)
+                this.$pages = data['info']['pages'];
             this.$target.append(data['data']);
             if (data['data'].trim() != "")
                 this.$atomic = false;
