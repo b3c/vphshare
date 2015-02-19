@@ -44,7 +44,10 @@ class DatasetQuery(models.Model):
             "where": json_query["where"]
         }
         xml_query = render_to_response("datasets/query_template.xml", data)
-        results = requests.post("%s/xmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
+        if dataset.metadata['localID'][-1] != '/':
+            dataset.metadata['localID'] = dataset.metadata['localID'] + '/'
+
+        results = requests.post("%sxmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
                       data=xml_query.content,
                       auth=("admin", ticket),
                       headers = {'content-type': 'text/xml', 'SOAPAction': 'http://vph-share.eu/dms/Query'},

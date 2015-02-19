@@ -288,6 +288,18 @@
 
     QueryBuilder.prototype.validation = function () {
         var self = this;
+        if (self.$root.find('#select-columns > .select:not(.new-select)').length == 0){
+            $("#select-message-error").text("Please, select at least one column.").fadeIn().delay(5000).slideUp();
+            $('#myTab a:first').tab('show');
+            return false;
+        }
+
+        if (self.$root.find('#where > .condition:not(.new-condition)').length == 0){
+            $("#where-message-error").text("Please, define at least one -where- condition.").fadeIn().delay(5000).slideUp();
+            $('#myTab a:last').tab('show');
+            return false;
+        }
+
         var errors = self.$root.find("input,select,textarea").jqBootstrapValidation("collectErrors");
         for (key in errors){
             if (errors[key].length){
@@ -371,6 +383,8 @@
                     alert("Some errors occurs, retry");
                 }
             })
+        }else{
+            $('#query_button').button('reset');
         }
     };
 
@@ -404,7 +418,18 @@
                         previous: "«",
                         next: "»"
                     }
-                }
+                },
+                "columnDefs": [
+                    {
+                        "render": function ( data, type, row ) {
+                            if (data.indexOf("http") > -1) {
+                                return "<a href='"+data+"'>"+data+"</a>";
+                            }
+                            return data
+                        }
+                    }
+
+                ]
         });
         $('#query_button').button('reset');
     };

@@ -49,7 +49,7 @@ def automatic_search_connector(free_text, user = None):
             if MetadataDataset['resource_metadata']:
                 r = Resource.objects.get(global_id=MetadataDataset['resource_metadata'][0].value['globalID'])
                 permision = r.can_read(user)
-                globalID = MetadataDataset[0].value['globalID']
+                globalID = MetadataDataset['resource_metadata'][0].value['globalID']
             num_metch = dataset_elem[0].text
             rdf_data = dataset_elem[1].text
             dataset_dict[dataset_label] = [num_metch, rdf_data, globalID, permision]
