@@ -1,0 +1,154 @@
+{% load scs_extras %}
+<!--
+{% if type == 'workflow'  and page == 1 and user.is_authenticated %}
+    <style> 
+        .workflow-header>li>a:hover, .workflow-header>li>a:focus {
+            color: #fff;!important;
+            background-color: #04c; !important;
+        }
+    </style>
+    <ul class="nav nav-pills workflow-header">
+
+        <li style="float: right;margin-left: 10px;" >
+            <a class="btn btn-primary" style="color:#ffffff;"  target="_blank" class="btn btn-primary" href="http://onlinehpc.com/wizard/workflow/">Taverna Online</a>
+        </li>
+        <li style="float: right;margin-left: 10px;" >
+            <a class="btn btn-primary" style="color:#ffffff;"  class="btn btn-primary" href="/workflows/new/">Upload new workflow</a>
+        </li>
+    </ul>
+{% endif %}
+-->
+    <!--1000-->
+                 <style>
+                    .rating-gold {
+                        color: gold;
+                        text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+						font-size:0.8em;
+                    }
+                    .rating-grey {
+                        color:#BCBCBC;
+                        text-shadow:1px 1px grey, 2px 2px #BCBCBC, .1em .1em .2em rgba(0,0,0,.5);
+						font-size:0.8em;
+                    }
+                 </style>
+     <!--1000-->                           
+     <!--1000-->
+           <div class="resource well-G well-small">
+            <div class="row">
+                <div  class="span1">TYPE</div>
+                <div  class="span4">NAME</div>
+                <div class="span1">OWNER</div>
+                <div class="span1">UPDATED</div>
+                <div class="span1">RATING</div>  
+                <div class="span1">DETAILS</div>
+                <div class="span2">ACTION</div>
+            </div>
+           </div>
+     <!--1000-->                                 
+                
+
+{% if resources|length == 0  and 'dashboard' in request.path and page == 1%}
+    <div class="alert alert-info">
+        <span> you don't have {{ type }} yet.</span>
+    </div>
+{% endif %}
+{%for resource in resources%}
+        {% if resource.metadata.type in types %}
+            {% if resource|is_active or user|can_manage:resource%}
+                <div id="{{ resource.id }}"  class="resource well-{{ resource.metadata.type }} well-small">
+                <div class="row">
+                    <div  class="span1">
+                    &nbsp;<img src="/static/vph-dare/{{ resource.metadata.type }}.png"/ alt="{{ resource.metadata.type }}">
+                    </div>
+                    <div  class="span4">
+                        {{ resource.metadata.name }}
+                    </div>
+                    
+                    <div class="span1">
+                        {{ resource.metadata.author }} 
+                    </div>
+
+                    <div class="span1">
+                        {{ resource.metadata.metadataUpdateDate|strTodate|date:"SHORT_DATE_FORMAT" }}
+                    </div>
+                    
+                    <div class="span1">
+                         <!-- Rating: {{ resource.metadata.rating }} 1000-->
+                    	{% if resource.metadata.rating >= '4.5' and resource.metadata.rating <= '5.1' %} <span class="rating-gold"><strong> ★ ★ ★ ★ ★ </strong></span>
+                        {% endif %}
+                   		{% if resource.metadata.rating >= '3.5' and resource.metadata.rating <= '4.4' %} <span class="rating-gold"><strong> ★ ★ ★ ★ </strong></span><span class="rating-grey"><strong>★</strong></span>
+                        {% endif %}
+                   		{% if resource.metadata.rating >= '2.5' and resource.metadata.rating <= '3.4' %} <span class="rating-gold"><strong> ★ ★ ★ </strong></span><span class="rating-grey"><strong>★ ★</strong></span>
+                        {% endif %}
+                    	{% if resource.metadata.rating >= '1.5' and resource.metadata.rating <= '2.4' %} <span class="rating-gold"><strong> ★ ★ </strong></span><span class="rating-grey"><strong>★ ★ ★</strong></span>
+                        {% endif %}
+                   		{% if resource.metadata.rating >= '0.2' and resource.metadata.rating <= '1.4' %} <span class="rating-gold"><strong> ★ </strong></span><span class="rating-grey"><strong>★ ★ ★ ★</strong></span>
+                        {% endif %}
+                        {% if resource.metadata.rating >= '0' and resource.metadata.rating <= '0.1' %} <span class="rating-grey"><strong>★ ★ ★ ★ ★</strong></span>
+                        {% endif %}
+                    </div>    
+
+					<div class="span1">
+                        <a id="details-button" class="btn btn-warning  accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ resource.id }}-details">
+                            <i class="icon-reorder"></i>
+                        </a>
+                    </div>
+
+                    <div class="span2">
+                        <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
+                        {% if user|can_edit:resource %}
+                        <a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
+                            {% if resource.metadata.type == "Workflow"%}
+                                <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
+                                   <i class="icon-edit"></i> T.O.
+                                </a>
+                            {% endif%}
+                        {% endif %}
+
+                        {% if user|can_manage:resource %}
+                            {% if resource.requests and resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div id="{{ resource.id }}-details" class="accordion-body collapse {% if resource.global_id in collapse %}in{% endif %}">
+                    <ul class="nav nav-tabs" id="details-tab">
+                        <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
+                            <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
+                        </li>
+                        {% if user|can_manage:resource %}
+                        <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
+                            <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
+                        </li>
+                        {% endif %}
+                        <script>
+                            $(function(){
+                                $('#{{ resource.id }}-details > ul > li').each(function(index, element) {
+                                    new LoadDashboard(element);
+                                });
+                                var start = true;
+                                $('#{{ resource.id }}-details').on('shown', function(){
+                                    if (start)
+                                        $('#{{ resource.id }}-details > ul > li').first().click();
+                                    start = false;
+                                })
+                            });
+                        </script>
+                    </ul>
+                    <div class="tab-content">
+                    <div class="alert hide">
+                        <span id="modal-message"></span>
+                    </div>
+                        <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
+                        &nbsp
+                        </div>
+                        {% if user|can_manage:resource %}
+                        <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
+                        &nbsp
+                        </div> <!-- end tabpane2 -->
+                        {% endif %}
+                    </div><!-- end tabcontent -->
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endfor %}

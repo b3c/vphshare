@@ -117,6 +117,12 @@ class Institution(VPHShareSmartGroup):
     breach_phone = models.CharField(max_length=64, blank=True, help_text='Breach contact phone number')
     breach_email = models.EmailField(max_length=64, blank=True, help_text='Breach contact email')
 
+    #site customization
+    subdomain = models.CharField(max_length=16, blank=True, help_text='Subdomain')
+    subdomain_name = models.CharField(max_length=64, blank=True, help_text='Name for the site')
+    background = models.CharField(max_length=64, blank=True, help_text='Background colour (e.g. #ddeadf)')
+    header_background = models.CharField(max_length=64, blank=True, help_text='Background colour in the header (e.g. #3fa14f)')
+
     class Meta:
         verbose_name_plural = "Institutions"
         ordering = ['name']

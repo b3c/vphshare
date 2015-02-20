@@ -1,0 +1,369 @@
+{% load scs_extras %}<!DOCTYPE html>
+{% load raven %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+
+    {% if not_registered_subdomain == "yes" %}
+    <meta http-equiv="refresh" content="0; url=http://mi.vph-dare.eu:8080" />
+    {% endif %}
+
+    <title>
+        {%  block title %}
+            Welcome to {{ group_subdomain_name }}
+        {% endblock %}
+    </title>
+
+   	<link href='https://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'/>
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel='stylesheet' type='text/css'/>
+
+   	{% block stylesheets %}
+    {% endblock %}
+
+    <link href="/static/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet"/>
+    <link href="/static/ui-lightness/jquery.ui.1.9.2.ie.css" rel="stylesheet"/>
+    <script src="/static/jquery-1.8.3.min.js"></script>
+    <script src="/static/jquery-ui-1.9.2.custom.min.js"></script>
+    <script src="/static/jquery.tools.min.js"></script>
+    <script src="/static/scs.js"></script>
+
+    <!--<script src="//cdn.ravenjs.com/1.1.11/jquery,native/raven.min.js"></script>-->
+    <!-- START bootstrap  -->
+
+    <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css" type="text/css" media="screen" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/bootstrap-responsive.min.css" type="text/css" media="screen" />
+    <script src="/static/bootstrap.min.js" type="text/javascript"></script>
+    <!--<script>Raven.config('{% sentry_public_dsn %}').install()</script>-->
+    <!-- END bootstrap  -->
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" />
+    {% if 'devel' in BASE_URL %}
+        <link rel="stylesheet" href="/static/style-dev.css" type="text/css" media="screen" />
+    {% endif %}
+
+    <style type="text/css" media="screen">
+        body{
+            font-family: 'Ubuntu','sans-serif';
+        }
+
+        @-webkit-keyframes fade-in {
+          0%   { opacity: 0; }
+          50%  { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        
+        @-webkit-keyframes fade-out {
+          0%   { opacity: 1; }
+          50%  { opacity: 1; }
+          100% { opacity: 0; }
+        }
+    
+        @-webkit-keyframes network-fade-in {
+          0%   { opacity: 0; top: -20px; }
+          60%   { opacity: 0; top: -20px; }
+          100% { opacity: 1; top: 0; }
+        }
+        
+        @-webkit-keyframes disco { 0% { background: url('/static/square.png') repeat top right, #066DAB; }2% { background: url('/static/square.png') repeat top right, #8f4; }4% { background: url('/static/square.png') repeat top right, #86c; }6% { background: url('/static/square.png') repeat top right, #7f4; }8% { background: url('/static/square.png') repeat top right, #8af; }10% { background: url('/static/square.png') repeat top right, #a84; }12% { background: url('/static/square.png') repeat top right, #c60; }14% { background: url('/static/square.png') repeat top right, #319; }16% { background: url('/static/square.png') repeat top right, #0a9; }18% { background: url('/static/square.png') repeat top right, #301; }20% { background: url('/static/square.png') repeat top right, #775; }22% { background: url('/static/square.png') repeat top right, #df5; }24% { background: url('/static/square.png') repeat top right, #27b; }26% { background: url('/static/square.png') repeat top right, #ffa; }28% { background: url('/static/square.png') repeat top right, #474; }30% { background: url('/static/square.png') repeat top right, #41d; }32% { background: url('/static/square.png') repeat top right, #8d4; }34% { background: url('/static/square.png') repeat top right, #816; }36% { background: url('/static/square.png') repeat top right, #110; }38% { background: url('/static/square.png') repeat top right, #b50; }40% { background: url('/static/square.png') repeat top right, #dc7; }42% { background: url('/static/square.png') repeat top right, #2a7; }44% { background: url('/static/square.png') repeat top right, #7ce; }46% { background: url('/static/square.png') repeat top right, #3bd; }48% { background: url('/static/square.png') repeat top right, #ef4; }50% { background: url('/static/square.png') repeat top right, #336; }52% { background: url('/static/square.png') repeat top right, #1c4; }54% { background: url('/static/square.png') repeat top right, #555; }56% { background: url('/static/square.png') repeat top right, #b77; }58% { background: url('/static/square.png') repeat top right, #b3c; }60% { background: url('/static/square.png') repeat top right, #c09; }62% { background: url('/static/square.png') repeat top right, #433; }64% { background: url('/static/square.png') repeat top right, #bbf; }66% { background: url('/static/square.png') repeat top right, #afb; }68% { background: url('/static/square.png') repeat top right, #8db; }70% { background: url('/static/square.png') repeat top right, #d1e; }72% { background: url('/static/square.png') repeat top right, #42b; }74% { background: url('/static/square.png') repeat top right, #871; }76% { background: url('/static/square.png') repeat top right, #e38; }78% { background: url('/static/square.png') repeat top right, #5fc; }80% { background: url('/static/square.png') repeat top right, #2cc; }82% { background: url('/static/square.png') repeat top right, #c10; }84% { background: url('/static/square.png') repeat top right, #fcc; }86% { background: url('/static/square.png') repeat top right, #f7b; }88% { background: url('/static/square.png') repeat top right, #a09; }90% { background: url('/static/square.png') repeat top right, #5da; }92% { background: url('/static/square.png') repeat top right, #41c; }94% { background: url('/static/square.png') repeat top right, #0a4; }96% { background: url('/static/square.png') repeat top right, #187; }98% { background: url('/static/square.png') repeat top right, #ae7; }100% { background: url('/static/square.png') repeat top right, #613; } }
+
+
+
+.submenu{
+	padding:3px 20px;
+	clear:both;
+	font-size:0.9em;
+	font-weight:normal;
+	line-height:0.9em;
+	color:#333;
+}
+
+
+
+
+{% if current_subdomain_url != 'PORTAL' %}
+
+.nav-pills>li{float:left; position: relative; margin-left: auto; margin-right: auto; left:20%; right:20%;/* 1000 */}
+
+
+.well-AtomicService{min-height:15px;padding:5px;margin-bottom:2px;background-color:#F7ECA9/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+.well-Workflow{min-height:15px;padding:5px;margin-bottom:2px;background-color:#F8C1C2/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+.well-File{min-height:15px;padding:5px;margin-bottom:2px;background-color:#D9BDF8/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+.well-Dataset{min-height:15px;padding:5px;margin-bottom:2px;background-color:#CEEDFC/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+.well-G{min-height:15px;padding:5px;margin-bottom:2px;background-color:#D1CFCF/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+
+body {
+        min-height: 768px;
+	background: {{group_background}} !important;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+margin: 0;
+padding: 0;
+border: 0 none;
+outline: 0 none;
+font-size: 100%;
+vertical-align: middle; /* mltn */
+background: transparent;
+}
+
+#breadcrumbs-wrapper{
+	height: 12px; /* mltn */
+	margin: 0px auto 0px auto;
+	padding-bottom: 14px !important;
+}
+
+#logo-left{
+	float: left;
+	background-image: url("{{ group_images }}logo-web.png"); /* mltn */
+	width: 443px;
+	height: 90px;
+}
+
+#page-title-wrapper{
+	background: url('/static/vph-dare/square.png') repeat top right, -ms-linear-gradient(left, #fff 0%,#f7f8f9 31%,{{ group_header_background }} 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff', endColorstr='#119ed1',GradientType=1 ); /* IE6-9 */
+	background: url('/static/vph-dare/square.png') repeat top right, -moz-linear-gradient(right, #fff,{{ group_header_background }}); /* Mozilla */
+	background: url('/static/vph-dare/square.png') repeat top right, -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to({{ group_header_background }})); /* Webkit */
+	background: url('/static/vph-dare/square.png') repeat top right, -webkit-linear-gradient(top, #fff, {{ group_header_background }}); /* Webkit */
+	background: url('/static/vph-dare/square.png') repeat top right, linear-gradient(to right, #fff 0%,#f7f8f9 31%,{{ group_header_background }} 100%); /* W3C */
+	height: 90px;
+	border-radius: 10px; /* mltn */ 
+}
+
+.navbar {
+	margin-bottom: 10px; /* mltn */
+	margin-top: 0px; /* mltn */
+	width:70% !important; /* mltn */
+	margin-left: auto; /* mltn */
+	margin-right: auto; /* mltn */
+}
+
+.navbar .nav > li > a {
+       padding: 8px 8px !important;
+}
+
+.navbar-inner {
+    min-height: 30px;
+    margin-top: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    border-radius: 4px;
+}
+
+@media (max-width: 979px){
+    .navbar .nav > li {
+        display: block;
+        width: auto;
+    }
+    #logo-left{
+        float: left;
+        background-image: url("{{ group_images }}logo.png");
+        width: 85px; /* mltn */
+        height: 85px; /* mltn */
+    }
+
+{% endif %}
+
+
+</style>
+
+
+
+    {% block javascripts %} {% endblock %}
+
+    {% block extrahead %} {% endblock %}
+</head>
+<body>
+    <div class="container">
+        {% if not request.is_ajax %}
+            {% block header %}
+                    <!--<div class="alert alert-error" style="text-align: center">
+                            <strong>BETA!</strong>
+                            The Portal is now accessible only by the VPH-Share Consortium. Please contact <a href="mailto:support@vph-share.eu">our support service</a> if you like to join our Beta User Program.
+                    </div>-->
+                    <div id="page-title-wrapper" class="dev-page-title-wrapper">
+                        <a href="/"><div id="logo-left" ></div></a>
+                        <div id="page-title">
+                            <span id="page-title-links">
+                                <a href="/help">Help</a>
+                                <span class="divider">|</span>
+                                <a href="/about">About</a>
+                                {% block login %}
+                                    {% if not request.user.is_authenticated %}
+                                        <a id="login" href="#"  data-toggle="popover" data-placement="bottom" title="" data-original-title="Enter your BiomedTown credentials" style="padding-left: 35px;">Login</a>
+                                        <span class="divider">|</span>
+                                        <a href="/registration">Registration</a>
+                                        <script type="text/javascript">
+
+                                            $("#login").popover({
+                                                placement : 'bottom', //placement of the popover. also can use top, bottom, left or right
+                                                title : '', //this is the top title bar of the popover. add some basic css
+                                                html: 'true', //needed to show html of course
+                                                content : '<style>.popover {max-width:none !important;}</style><iframe id="loginFrame" src="/scs_auth/bt_loginform" width="100%" height="350px" frameborder="0" align="middle"></iframe>',
+                                                container: 'body'
+                                            });
+
+                                        </script>
+                                   {% else %}
+                                        <div class="" style="margin-left:30px;position: relative;display: inline-block;">
+                                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                                Hi, {{ request.user.first_name|default:"Friend"}}!
+                                                <span class="caret" style="vertical-align: middle"></span>
+                                            </a>
+                                            <ul class="dropdown-menu" style="color: #000000; text-align: center">
+                                                <li><a style="color: #000000;" href="/dashboard/">Dashboard</a></li>
+                                                <li><a style="color: #000000;" href="/workspace/">Workspace</a></li>
+                                                <li><a style="color: #000000;" href="/profile/">Profile</a></li>
+						<li><a style="color: #000000;" href="/groups/">Groups</a></li>
+                                                {% if request.user.is_staff %}
+                                                    <li><a style="color: #000000;" href="/users_admin/">Admin tools</a></li>
+                                                {% endif %}
+                                                <li class="divider"></li>
+						<li>SITES
+						<div class="submenu" style="color: #000000; text-align: center">
+							<a style="color: #000000;" href="http://cistib.mi.vph-dare.eu:8080">CISTIB</a>
+							<br><a style="color: #000000;" href="http://vph-dare.mi.vph-dare.eu:8080">VPH-DARE</a>
+							<br><a style="color: #000000;" href="http://mi.vph-dare.eu:8080">Portal</a>
+						</div>
+						</li>
+						<li class="divider"></li>
+                                                <li><a style="color: #000000;" class="popup" rel="#overlay" href="/logout">Logout</a></li>
+                                            </ul>
+						
+                                        </div>
+                                    {% endif %}
+                                {% endblock %}
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                   {% block breadcrumbs %}
+                    {% if not request.path|breadcrumbs|length_is:"0" %}
+                    <div id="breadcrumbs-wrapper">
+                        <ul id="breadcrumbs" class="breadcrumb">
+                            <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>
+                            {%  for crumb in request.path|breadcrumbs %}
+                                <li {% if forloop.last %}class="active"{% endif %}><a href="{{ crumb.url }}" title="{{ crumb.name }}">{{ crumb.name }}</a>{% if not forloop.last %}<span class="divider">|</span>{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% endblock %}
+
+
+
+                    {% block nav %}
+
+                    <div class="navbar ">
+
+                        <div class="navbar-inner " style="padding: 0px;">
+                            <button type="button" class="btn btn-navbar collapsed btn-mobile" data-toggle="collapse" data-target=".nav-collapse">
+                                <span class="icon-bar" style="background-color: #000000"></span>
+                                <span class="icon-bar" style="background-color: #000000"></span>
+                                <span class="icon-bar" style="background-color: #000000"></span>
+                            </button>
+                            <div class="container nav-collapse collapse">
+                                <ul class="nav" style="margin: 0px;display: table;width: 100%}">
+                                <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
+                                    <li {% if 'discovery' == request.path|basepath %}class="active" {% endif %}><a href="/discoveries">DISCOVERY</a></li>
+                                    <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
+                                    <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools">APPLICATIONS</a></li>
+                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
+                                    <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search">SEARCH</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endblock %}
+ 
+
+ 
+            {% endblock %}
+        {% endif %}
+        {% for n in notifications %}
+        <div id="notify_{{ n.pk }}" class="alert alert-info">
+            <button onclick="hide_notification({{ n.pk }})" type="button" class="close" data-dismiss="alert">&times;</button>
+            <span id="statusmessage">
+                {% if n.subject != '' and n.subject %}<h4>{{ n.subject }}</h4>{% endif %}
+                {% autoescape off %}{{ n.content|urlizetrunctarget:60000 }}{% endautoescape %}
+            </span>
+        </div>
+        {% endfor %}
+        {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
+        {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
+        {% if welcome %}<div class="alert alert-info"><h4>Welcome!</h4><span id="statusmessage">{% autoescape off %}{{ welcome  }} {% endautoescape %}</span></div>{% endif %}
+        {% block content %} {% endblock %}
+
+        {% if not OK_COOKIES and not request.user.is_authenticated %}
+            <script type="text/javascript">
+                $(function(){
+                    $("#cookies-ok").click(function(){
+                        $.ajax({
+                                    type: 'get',
+                                    url: '/?cookie-agree=true',
+                                    success: function(data){
+                                        $('#cookies-message').slideUp();
+                                        return true;
+                                    },
+                                    error: function(data){
+                                        $('#cookies-message').slideUp();
+                                        return true;}
+                                }
+                        );
+                    });
+                });
+            </script>
+        <div id="cookies-message" class="alert alert-warning" >
+                <p>We use cookies on our websites to help us offer you the best online experience. We've already placed some of these little packets of information on your browser to do this. By continuing to use our website, you're agreeing to our use of cookies. Alternatively, you can manage them in your browser settings.
+                <button id="cookies-ok" class="btn btn-success">I accept</button> <a href="/privacy-policy#cookies">FIND OUT MORE ABOUT COOKIES</a></p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if not request.is_ajax %}
+        {% block footer %}
+        <footer>
+            <p class="muted">
+                <a href="/static/VPH-Share_TermsOfUse_1v2.pdf">Terms of use</a>
+                <span class="divider">|</span>
+                <a href="/privacy-policy">Privacy policy</a>
+                <span class="divider">|</span>
+                <a href="/privacy-policy#cookies">Cookie policy</a>
+                <span class="divider">|</span>
+                <a href="/static/VPHShare_security1v0.pdf">Security</a>
+                <span class="divider">|</span>
+                <a href="/monitoring">Monitoring</a>
+                <span class="divider">|
+                <a href="/support">Report a bug</a>
+                <span class="divider">|</span>
+                <span>&copy;Copyright 2015 
+                <span class="divider">|</span ><a href="https://portal.vph-share.eu/" target="_blank">Powered by</a></span>&nbsp;&nbsp;<a href="https://portal.vph-share.eu/" target="_blank"><img src="/static/logo_sm1.png"/></a>
+            </p>
+        </footer>
+        {% endblock %}
+    {% endif %}
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-28624885-4', 'vph-share.eu');
+  ga('send', 'pageview');
+</script>
+{% block endbodyextra %}{% endblock %}
+</body>
+</html>

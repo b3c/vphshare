@@ -41,5 +41,11 @@ urlpatterns = patterns(
     url(r'^workflows/$', workflowsView, name='workflows'),
     url(r'^workflows/new/$', edit_resource, name='create_workflow'),
     url(r'^workflows/edit/(?P<id>\d+)/$', edit_resource, name='edit_workflow'),
+    url(r'^discoveries/$', discoveries,  name='discoveries'),
+    url(r'^discoveries/list/(?P<resource_type>[\w\-]+)/(?P<page>\d+)', get_discoveries_list),
+    url(r'^discoveries/list/(?P<resource_type>[\w\-]+)/', get_discoveries_list,  name='get_discoveries_list'),
+    url(r'^discovery/$', discovery,  name='discovery'),
+    url(r'^discovery/list/(?P<resource_type>[\w\-]+)/(?P<page>\d+)', get_discovery_list),
+    url(r'^discovery/list/(?P<resource_type>[\w\-]+)/', get_discovery_list,  name='get_discovery_list'),
 )
 

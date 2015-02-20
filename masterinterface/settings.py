@@ -204,7 +204,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'scs.templates_middleware.statusMessage',
     'scs.templates_middleware.get_notifications',
     'scs.templates_middleware.baseurl',
-    'scs.templates_middleware.okcookies'
+    'scs.templates_middleware.okcookies',
+    'templatedomain.domainx' # groups_sites
     )
 
 PASSWORD_HASHERS = (
