@@ -391,8 +391,19 @@
     QueryBuilder.prototype.getReults = function (results) {
         var self = this;
         var header = [];
+        var render = function ( data, type, row, meta ) {
+                            if (data === undefined)
+                                return data;
+                            if (data.indexOf("https://lobcder.vph.cyfronet.pl/lobcder/dav/") > -1){
+                                return "<a target='blank' href='"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav","/filestore#show?")+"'>"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav/","lobcder://")+"</a>";
+                            }
+                            else if (data.indexOf("http") > -1) {
+                                return "<a target='blank' href='"+data+"'>"+data+"</a>";
+                            }
+                            return data
+                        };
         for (column in results['header']){
-            header.push({"title":results['header'][column]});
+            header.push({"title":results['header'][column], "render":render});
         }
         var table = $('<table cellpadding="0" cellspacing="0" border="0" class="display cell-border" id="dataset-results-table"></table>');
         $("#query-results > .span12").empty();
@@ -401,8 +412,8 @@
         $("#hr-query-results").show();
         table.dataTable({
                 /*"data": dataSet,*/
+                "columns":  header,
                 "data": results['results'],
-                "columns": header,
                 "paging": true,
                 "ordering": true,
                 "info": true,
@@ -418,18 +429,8 @@
                         previous: "«",
                         next: "»"
                     }
-                },
-                "columnDefs": [
-                    {
-                        "render": function ( data, type, row ) {
-                            if (data.indexOf("http") > -1) {
-                                return "<a href='"+data+"'>"+data+"</a>";
-                            }
-                            return data
-                        }
-                    }
+                }
 
-                ]
         });
         $('#query_button').button('reset');
     };
