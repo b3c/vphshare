@@ -2,6 +2,7 @@ __author__ = "Matteo Balasso (m.balasso@scsitaly.com)"
 
 from django.db import models
 from django.contrib.auth.models import Group, User
+import os
 
 
 class VPHShareSmartGroup(Group):
@@ -117,12 +118,6 @@ class Institution(VPHShareSmartGroup):
     breach_phone = models.CharField(max_length=64, blank=True, help_text='Breach contact phone number')
     breach_email = models.EmailField(max_length=64, blank=True, help_text='Breach contact email')
 
-    #site customization
-    subdomain = models.CharField(max_length=16, blank=True, help_text='Subdomain')
-    subdomain_name = models.CharField(max_length=64, blank=True, help_text='Name for the site')
-    background = models.CharField(max_length=64, blank=True, help_text='Background colour (e.g. #ddeadf)')
-    header_background = models.CharField(max_length=64, blank=True, help_text='Background colour in the header (e.g. #3fa14f)')
-
     class Meta:
         verbose_name_plural = "Institutions"
         ordering = ['name']
@@ -163,3 +158,31 @@ class SubscriptionRequest(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.user.username, self.group.name)
+
+class InstitutionPortalObject(models.Manager):
+
+    def get(self, *args, **kwargs):
+        res = super(InstitutionPortalObject, self).get(*args,**kwargs)
+        if res.carusel_img:
+            import json
+            res.carusel_imgs = json.loads(res.carusel_img)
+        return res
+
+
+class InstitutionPortal(models.Model):
+
+    def get_upload_path(instance, filename):
+        return "./institution_portal_folder/%s/" % instance.subdomain
+
+    #site customization
+    institution = models.OneToOneField(Institution, primary_key=True)
+    subdomain = models.CharField(verbose_name="Vph-share subdomain", max_length=16, blank=False, help_text='The name of your personal vph-share subdomain - you.vph-share.eu', unique=True, null=False)
+    title = models.CharField(verbose_name="Portal title *", max_length=64, blank=False, help_text='Your portal title', null=False)
+    welcome = models.CharField(verbose_name="Welcome message *", max_length=200, blank=False, null=False, default="Welcome to our vph-share institutional portal")
+    description = models.TextField(verbose_name="Portal description", null=True)
+    background = models.CharField(verbose_name="Background",max_length=64, blank=True, help_text='Background colour')
+    header_background = models.CharField(max_length=64, blank=True, help_text='Background colour in the header')
+    header_logo = models.FileField(verbose_name="Logo *", upload_to=get_upload_path, help_text="Logo min size 90x90px" ,null=True)
+    carusel_img = models.TextField(null=True)
+
+    objects = InstitutionPortalObject()
