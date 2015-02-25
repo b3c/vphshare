@@ -14,7 +14,7 @@ from django.shortcuts import render_to_response, redirect
 from django.utils.datastructures import SortedDict
 from django.core.validators import URLValidator
 from django.core.exceptions import ObjectDoesNotExist
-from scs_auth import __version__ as version
+from masterinterface.scs_auth import __version__ as version
 from piston.handler import BaseHandler
 from permissions.utils import add_role, remove_role
 
