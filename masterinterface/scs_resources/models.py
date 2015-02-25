@@ -106,10 +106,13 @@ class ResourceManager(models.Manager):
                 )
         else:
             return get_resources_metadata_by_list()
-        resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True), type=types)
+        if types == None:
+            resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True))
+        else:
+            resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True), type=types)
         resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType)
         resources = []
-        if resources_metadata['resource_metadata']:
+        if resources_metadata.get('resource_metadata', []):
             for resource in resources_metadata['resource_metadata']:
                 r = self.get(metadata=False, global_id=resource.value['globalID'])
                 roles = role_relations.filter(content_id=r.id).values_list('role__name', flat=True)
@@ -118,6 +121,8 @@ class ResourceManager(models.Manager):
                 r.is_reader = "Reader" in roles or "Editor" in roles or "Manager" in roles or "Owner" in roles
                 r.metadata = resource.value
                 resources.append(r)
+        else:
+            resources_metadata['resource_metadata'] = []
         resources_metadata['data'] = resources
         return resources_metadata
 

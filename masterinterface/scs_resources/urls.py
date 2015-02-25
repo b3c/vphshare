@@ -44,8 +44,6 @@ urlpatterns = patterns(
     url(r'^discoveries/$', discoveries,  name='discoveries'),
     url(r'^discoveries/list/(?P<resource_type>[\w\-]+)/(?P<page>\d+)', get_discoveries_list),
     url(r'^discoveries/list/(?P<resource_type>[\w\-]+)/', get_discoveries_list,  name='get_discoveries_list'),
-    url(r'^discovery/$', discovery,  name='discovery'),
-    url(r'^discovery/list/(?P<resource_type>[\w\-]+)/(?P<page>\d+)', get_discovery_list),
-    url(r'^discovery/list/(?P<resource_type>[\w\-]+)/', get_discovery_list,  name='get_discovery_list'),
+    url(r'^discoveries/list/', get_discoveries_list,  name='get_discoveries_list'),
 )
 

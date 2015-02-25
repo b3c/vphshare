@@ -12,18 +12,6 @@ from exceptions import AtosServiceException
 
 JSON_XPATH_PARSER  = parse('resource_metadata[*].gm.*')
 
-EMPTY_LIST = {"page": 0,
-                "pages": 0,
-                "fileCount": 0,
-                "atsCount": 0,
-                "swsCount": 0,
-                "wfCount": 9,
-                "wsCount": 0,
-                "datasetCount": 0,
-                "resource_metadata": [],
-                "numCurrentPageMetadata": 0,
-                "numTotalMetadata": 0}
-
 def decompose_payload(sub_metadata):
 
     s = "<%s>%s</%s>"
@@ -126,7 +114,7 @@ def get_resources_metadata_by_list(global_id = [], page=1, numResults=10, orderB
     """
     try:
         if list(global_id) == []:
-            return EMPTY_LIST
+            return EMPTY_LIST.copy()
         payload = decompose_payload({'globalID_list':",".join(global_id)})
         response = requests.post(FILTER_METADATA_BY_GLOBALID % ( numResults, page, orderBy, orderType), headers={'Content-Type':'application/xml', 'Accept' : 'application/json'}, data=payload)
         if response.status_code != 200:
@@ -142,7 +130,7 @@ def get_resources_metadata_by_list(global_id = [], page=1, numResults=10, orderB
             return response
         except Exception, e:
             client.captureException()
-            return EMPTY_LIST
+            return EMPTY_LIST.copy()
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
 
@@ -170,7 +158,7 @@ def filter_resources_by_facet(type, facet = None, value = None, page=1, numResul
             return response
         except Exception, e:
             client.captureException()
-            return EMPTY_LIST
+            return EMPTY_LIST.copy()
 
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
@@ -222,4 +210,4 @@ def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name',
         return response
 
     except BaseException, e:
-        return EMPTY_LIST
+        return EMPTY_LIST.copy()

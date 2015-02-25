@@ -56,3 +56,15 @@ SEARCH_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/multifield?pa
 #SEARCH_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/multifield?params=name,description,tags&text=%s'
 
 FACETS_LIST = [u'type', u'name', u'description', u'author', u'category', u'tags', u'semantic_annotations', u'licence', u'rating', u'views', u'local_id']
+
+EMPTY_LIST = {"page": 0,
+                "pages": 0,
+                "fileCount": 0,
+                "atsCount": 0,
+                "swsCount": 0,
+                "wfCount": 0,
+                "wsCount": 0,
+                "datasetCount": 0,
+                "resource_metadata": [],
+                "numCurrentPageMetadata": 0,
+                "numTotalMetadata": 0}
