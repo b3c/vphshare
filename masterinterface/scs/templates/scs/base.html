@@ -76,6 +76,11 @@
 
     .nav-pills>li{float:left; position: relative; margin-left: auto; margin-right: auto; left:20%; right:20%;/* 1000 */}
 
+    .carousel-inner>.item>img, .carousel-inner>.item>a>img {
+    display: block;
+    line-height: 1;
+    width: 100%;
+    }
 
     .well-AtomicService{min-height:15px;padding:5px;margin-bottom:2px;background-color:#F7ECA9/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
     .well-Workflow{min-height:15px;padding:5px;margin-bottom:2px;background-color:#F8C1C2/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
@@ -114,7 +119,7 @@
 
     #logo-left{
         float: left;
-        background-image: url("{{ institutionportal.header_logo.url }}"); /* mltn */
+        background: url({{ institutionportal.header_logo.url }}) no-repeat;
         width: 443px;
         height: 90px;
     }

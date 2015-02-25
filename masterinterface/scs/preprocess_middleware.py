@@ -1,21 +1,25 @@
 from django.conf import settings
 from masterinterface.scs_groups.models import InstitutionPortal
-from masterinterface.scs.views import page403
 from django.http import HttpResponsePermanentRedirect
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 class institutionPortaleMiddleware(object):
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         try:
             if request.user.is_authenticated():
+                print request.META['HTTP_HOST']
                 subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
-                if subdomain != 'portal': # we are in a institutional portal
+                if subdomain not in ['portal','devel']: # we are in a institutional portal
                     institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
                     request.session['institutionportal'] = institutionportal
                 else:
                     if request.session.get('institutionportal', None):
                         del(request.session['institutionportal'])
         except Exception:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             if request.session.get('institutionportal', None):
                 del(request.session['institutionportal'])
             pass
@@ -23,17 +27,19 @@ class institutionPortaleMiddleware(object):
     def process_response(self, request, response):
         try:
             subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
-            if subdomain != 'portal': # we are in a institutional portal
+            if subdomain not in ['portal','devel']: # we are in a institutional portal
                 institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
                 request.session['institutionportal'] = institutionportal
-                if request.user not in institutionportal.institution.user_set.all():
+                if 'login' not in request.path and 'done' not in request.path and request.user not in institutionportal.institution.user_set.all():
                     request.session['errormessage'] = "You can't access if you are not memeber of the %s institution group" %institutionportal.institution.name
-                    return page403(request)
+                    return render_to_response("scs/403.html", {}, RequestContext(request))
             else:
                 if request.session.get('institutionportal', None):
                     del(request.session['institutionportal'])
             return response
         except Exception, e:
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
             if request.session.get('institutionportal', None):
                 del(request.session['institutionportal'])
             return HttpResponsePermanentRedirect(settings.BASE_URL)

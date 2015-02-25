@@ -129,6 +129,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -137,7 +138,6 @@ MIDDLEWARE_CLASSES = (
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
     'scs.preprocess_middleware.institutionPortaleMiddleware',
     'paraviewweb.middleware.paraviewWebMiddleware',
-    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
 )
 
 ROOT_URLCONF = 'masterinterface.urls'
@@ -158,6 +158,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'raven.contrib.django.raven_compat',
     'social_auth',
     'masterinterface.scs',
     'masterinterface.scs_auth',
@@ -177,7 +178,6 @@ INSTALLED_APPS = (
     'masterinterface.datasets',
     'kombu.transport.django',
     'djcelery',
-    'raven.contrib.django.raven_compat',
     'paintstore'
 
     ##NEW_APP
