@@ -1,4 +1,4 @@
-{% extends base_group %}
+{% extends 'scs/base.html' %}
 {% load macros %}
 {% load django_select2_tags %}
 {% macro group_details group %}
@@ -96,7 +96,7 @@
                     <ul class="nav nav-tabs" style="height: 300px;">
                         <li class="{% if not group.selected_study and 'studies' not in request.get_full_path%}active{% endif %}" ><a href="#lA" data-toggle="tab">Users</a></li>
                         {% if group.type == 'institution' %}<li class="{% if group.selected_study or 'studies' in request.get_full_path %}active{% endif %}"><a href="#lB" data-toggle="tab" >Studies</a></li>{% endif %}
-                        {% if group.type == 'institution' %}<li class="{% if group.selected_study or 'studies' in request.get_full_path %}active{% endif %}"><a href="#lC" data-toggle="tab" >URL</a></li>{% endif %}
+                        {% if group.type == 'institution' and request.user in group.managers.all %}<li><a href="#lC" data-toggle="tab" >Portal</a></li>{% endif %}
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane {% if not group.selected_study and 'studies' not in request.get_full_path%}active{% endif %} nano" id="lA">
@@ -232,31 +232,39 @@
                         {% endif %}
 
                         {% if group.type == 'institution' %}
-                        <div class="tab-pane {% if group.selected_study or 'studies' in request.get_full_path %}active{% endif %} nano" id="lC">
-                            <div class="content">
-                                <table class="table table-condensed">
-                                    <thead>
-                                    <tr>
-                                        <th>SITE:</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody style="font-size:0.8em;">
-                                        <tr>
-                                            <td>	
-    						URL: <a href="http://{{ group.subdomain }}.mi.vph-dare.eu:8080"><b>http://{{ group.subdomain }}.mi.vph-dare.eu:8080</b></a><br>
-        					Instituton name: <b>{{ group.name }}</b><br>
-						Instituton subdomain: <b>{{ group.subdomain }}</b><br>
-						Site Name: <b>{{ group.subdomain_name }}</b> <br>
-						Background color: <b>{{ group.background }}</b> <br> 
-						Header background color: <b>{{ group.header_background }}</b> <br>
-						Group images: <b>/static/groups/{{ group.subdomain }}</b> <br>
-						<a href="/admin/scs_groups/institution/{{ group.id }}/"><strong class="btn">Edit</strong></a>
-                                            </td>
-                                        </tr>                                   
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                            {% if group.portal %}
+                                <div class="tab-pane {% if group.selected_study or 'studies' in request.get_full_path %}active{% endif %} nano" id="lC">
+                                    <div class="content">
+                                        <table class="table table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th>SITE:</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody style="font-size:0.8em;">
+                                                <tr>
+                                                    <td>
+                                    URL: <a href="http://{{ group.subdomain }}.mi.vph-dare.eu:8080"><b>http://{{ group.subdomain }}.mi.vph-dare.eu:8080</b></a><br>
+                                    Instituton name: <b>{{ group.name }}</b><br>
+                                    Instituton subdomain: <b>{{ group.subdomain }}</b><br>
+                                    Site Name: <b>{{ group.subdomain_name }}</b> <br>
+                                    Background color: <b>{{ group.background }}</b> <br>
+                                    Header background color: <b>{{ group.header_background }}</b> <br>
+                                    Group images: <b>/static/groups/{{ group.subdomain }}</b> <br>
+                                    <a href="/admin/scs_groups/institution/{{ group.id }}/"><strong class="btn">Edit</strong></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="tab-pane nano" id="lC">
+                                    <div class="content">
+                                        <a class="btn btn-info" href="/groups/create_portal_institution/{{ group.id }}">Create your vph-share institutional portal</a>
+                                    </div>
+                                </div>
+                            {% endif %}
                         {% endif %}
 
                     </div>

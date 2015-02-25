@@ -4,11 +4,12 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.admin.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from workflows.utils import get_state, set_workflow, set_state, do_transition
 from permissions.utils import add_local_role
 from config import *
-from models import SubscriptionRequest, Study, Institution, VPHShareSmartGroup
-from forms import StudyForm, InstitutionForm, UserFinder, StudyUserFinder
+from models import SubscriptionRequest, Study, Institution, VPHShareSmartGroup, InstitutionPortal
+from forms import StudyForm, InstitutionForm, UserFinder, StudyUserFinder, InstitutionPortalForm
 
 
 def get_group_by_name(name):
@@ -129,6 +130,10 @@ def group_details(request, idGroup=None, idStudy=None):
             selected_group = institution
             selected_group.selected_study = None
             selected_group.type = 'institution'
+            try:
+                selected_group.portal = institution.institutionportal
+            except ObjectDoesNotExist:
+                selected_group.portal = None
         for study in institution.studies:
             if request.user.is_authenticated():
                 join_group_subscription(request.user, study)
@@ -194,6 +199,35 @@ def group_details(request, idGroup=None, idStudy=None):
         RequestContext(request)
     )
 
+@login_required
+def institution_portal_form(request, institution_id):
+    institution = Institution.objects.get(id=institution_id)
+    try:
+        edit = institution.institutionportal if institution.institutionportal else False
+    except ObjectDoesNotExist:
+        edit = None
+    if request.user in institution.managers.all():
+        if request.POST:
+            form = InstitutionPortalForm(data=request.POST, files=request.FILES, instance=edit)
+            if form.is_valid():
+                institution_portal = form.save()
+                request.session['statusmessage'] = "You institutional vph-share portal created with succeed. <a href='https://%s.vph-share.eu'>Go now!</a>" %institution_portal.subdomain
+                return redirect("institution_portal_form",institution_id)
+        elif edit:
+            form = InstitutionPortalForm(instance=edit)
+        else:
+            form = InstitutionPortalForm(initial={
+                "institution": institution,
+                "subdomain": institution.name.replace(" ", "_").lower(),
+                "title": institution.name,
+                "welcome": "Welcome to the %s vph-share institutional portal"%institution.name})
+
+        return render_to_response('scs_groups/portalgroupform.html', {
+            'form': form,
+            'edit': edit
+        }, RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required
 def manage_group_request(request):

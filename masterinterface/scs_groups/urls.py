@@ -1,4 +1,4 @@
-__author__ = 'Matteo Balasso <m.balasso@scsitaly.com>'
+__author__ = 'Alfredo saglimbeni <a.saglimbeni@cineca.it>, Matteo Balasso <m.balasso@scsitaly.com>'
 
 from django.conf.urls import patterns, url
 from scs_groups.views import *
@@ -25,6 +25,7 @@ urlpatterns = patterns(
     url(r'^subscribe/$', 'subscribe'),
     url(r'^create_study/$', 'create_study'),
     url(r'^create_institution/$', 'create_institution'),
+    url(r'^create_portal_institution/(?P<institution_id>\d+)/$', 'institution_portal_form', name="institution_portal_form"),
     url(r'^manage_group_request/$', 'manage_group_request'),
     url(r'^api/$', 'api_help'),
 

@@ -1,0 +1,139 @@
+{% extends 'scs/base.html' %}
+{% load scs_extras %}
+
+{% block extrahead %}
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+    {{ form.media }}
+    <style>
+    .colorpicker input{
+        width: inherit !important;
+    }
+    </style>
+{% endblock %}
+{%  block title %}
+    {% if edit %}
+         VPH-Share - Edit your vph-share portal details.
+    {% else %}
+        VPH-Share - Create your vph-share institutional portal.
+    {% endif %}
+{% endblock %}
+
+{% block page-title %}
+    <span class="title">Institution portal</span>
+    <span class="subtitle"></span>
+{% endblock%}
+
+{%  block content %}
+        {% if form %}
+            <div class="span9">
+
+            {% if edit %}
+                <h3>Edit your vph-share portal details.</h3>
+            {% else %}
+                <h3>Create your vph-share institutional portal.</h3>
+            {% endif %}
+
+        <form class="form-horizontal" enctype="multipart/form-data" method="post" action="">
+        {% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {% for field in form.visible_fields %}
+                <div class="control-group{% if field.errors %}{% endif %}">
+                    <label class="control-label" for="{{ field.id }}">
+                        {{ field.label }}
+                    </label>
+                    <div class="controls">
+                        {{ field }}
+                        {% if field.errors %}
+                            <span class="badge badge-important" title="{{ field.errors|first }}">!</span><span class="help-inline"> {{ field.errors|first }}</span>
+                        {% else %}
+                            <span class="help-inline">{{ field.help_text }}</span>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% endfor %}
+            <div class="additional-group">
+                <label class="control-label">
+                        Carousel configuration
+                </label>
+                <div class="controls">
+                    <div id="addFile" class="btn btn-primary">Add home page carousel images</div>
+                </div>
+                <hr>
+                <div class="additional-link row-fluid {% if not form.data.linkedTo %}hide{% endif %}">
+                    <div class="span4 text-center">Label</div>
+                    <div class="span4 text-center"> Link </div>
+                    <div class="span3 text-center"> &nbsp </div>
+                    {% for link in form.data.linkedTo %}
+                        <div class="row-fluid"><div class="span4"><input class="link-description" type="text" name="description_key[0]" value="{{ link.link.linkType }}" ></div><div class="span4"> <input class="link-value" type="text" name="link_value[0]" value="{{ link.link.linkURI }}"></div><div class="btn btn-danger span3">Remove</div></div>
+                    {% endfor %}
+                </div>
+                <div class="additional-file row-fluid {% if not form.data.carusel_imgs %}hide {% endif %}">
+                    <div class="span4 text-center">Label</div>
+                    <div class="span4 text-center"> Image  </div>
+                    <div class="span3 text-center"> &nbsp </div>
+                    {% for img in form.data.carusel_imgs %}
+                        <div class="row-fluid"><div class="span4"><a target="_blank" href="{{ img.1 }}">{{ img.0 }}</a></div><div class="btn btn-danger span3">Remove</div></div>
+                    {% endfor %}
+                </div>
+                <script type="application/javascript">
+                    $(function(){
+                        $('.btn-danger').each(function(){
+                            var object = $(this);
+                            object.click(function(){
+                                object.parent().slideUp({complete:function(){
+                                    object.parent().remove();
+                                    if ($('.link-value').length == 0)
+                                        $('.additional-link').slideUp();
+                                }});
+
+                            });
+                        });
+                        $('#addFile').click(function(){
+                            $('.additional-file').slideDown();
+                            $.ajax('/resources/form/addFile/', {
+                                data: {key:0},
+                                type: 'POST',
+                                success: function(data) {
+                                    var file = $(data);
+                                    file.children('.btn-danger').click(function(){
+                                        file.slideUp({complete:function(){
+                                            file.remove();
+                                            if ($('.file-value').length == 0)
+                                                $('.additional-file').slideUp();
+                                        }});
+                                    });
+                                    file.hide();
+                                    file.appendTo('.additional-file').slideDown();
+                                },
+                                error: function(data) { return; }
+                            });
+                        });
+                    });
+                </script>
+
+            </div>
+
+            <div class="control-group">
+                <div class="control-label"><i>* Required fields.</i></div>
+            </div>
+
+            {% if edit %}
+                 <input type="submit" class="btn btn-primary" value="Update" />
+            {% else %}
+                 <input type="submit" class="btn btn-primary" value="Create" />
+            {% endif %}
+
+
+        </form>
+        </div>
+    {% endif %}
+
+{% endblock %}
+

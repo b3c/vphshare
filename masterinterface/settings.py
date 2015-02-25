@@ -15,6 +15,7 @@ ADMINS = (
 
 AUTH_SERVICES = "http://auth.biomedtown.org/api"
 BASE_URL = "https://portal.vph-share.eu"
+SESSION_COOKIE_DOMAIN = ".vph-share.eu"
 
 MANAGERS = ADMINS
 
@@ -128,12 +129,13 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
+    'scs.preprocess_middleware.institutionPortaleMiddleware',
     'paraviewweb.middleware.paraviewWebMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
 )
@@ -175,7 +177,8 @@ INSTALLED_APPS = (
     'masterinterface.datasets',
     'kombu.transport.django',
     'djcelery',
-    'raven.contrib.django.raven_compat'
+    'raven.contrib.django.raven_compat',
+    'paintstore'
 
     ##NEW_APP
 )

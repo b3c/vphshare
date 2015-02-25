@@ -1,12 +1,14 @@
 from django import forms
-from models import Study, Institution, VPHShareSmartGroup
+from models import Study, Institution, VPHShareSmartGroup, InstitutionPortal
 from permissions.utils import add_local_role
 from config import *
 from django.contrib.admin import ModelAdmin
 from datetimewidget.widgets import DateTimeWidget
 from django_select2 import Select2MultipleChoiceField
 from django.contrib.auth.models import User
-
+from django.core.files.storage import default_storage
+from paintstore.widgets import ColorPickerWidget
+import json
 my_default_errors = {
     'required': 'This field is required',
     'invalid': 'Enter a valid value'
@@ -109,6 +111,38 @@ class InstitutionForm(forms.ModelForm):
             # 'managers': forms.HiddenInput(),
         }
         exclude = ['parent', 'active']
+
+class InstitutionPortalForm(forms.ModelForm):
+
+    class Meta:
+        model = InstitutionPortal
+
+        widgets = {
+            'institution': forms.HiddenInput(),
+            'carusel_img': forms.HiddenInput(),
+            'background': ColorPickerWidget(),
+            'header_background': ColorPickerWidget()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(InstitutionPortalForm, self).__init__(*args, **kwargs)
+        from masterinterface.scs_resources.forms import AdditionalFile
+        new_file = AdditionalFile().value_from_datadict(self.data, self.files, 0)
+        carusel_img = []
+        for fileDescription, filePayLoad in new_file:
+            path = "./institution_portal_folder/%s/%s" % (self.data['subdomain'], filePayLoad.name)
+            path = default_storage.save(path,filePayLoad)
+            carusel_img.append([fileDescription,default_storage.url(path)])
+
+        if new_file:
+            self.data['carusel_img'] = json.dumps(carusel_img)
+            self.data['carusel_imgs'] = json.loads(self.data['carusel_img'])
+        elif self.instance and self.instance.carusel_img:
+            self.data['carusel_imgs'] = json.loads(self.instance.carusel_img)
+
+
+
+
 
 
 class UserFinder(forms.Form):
