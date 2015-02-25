@@ -171,6 +171,7 @@ background: transparent;
         width: 85px; /* mltn */
         height: 85px; /* mltn */
     }
+}
 
 {% endif %}
 
@@ -224,19 +225,21 @@ background: transparent;
                                                 <li><a style="color: #000000;" href="/dashboard/">Dashboard</a></li>
                                                 <li><a style="color: #000000;" href="/workspace/">Workspace</a></li>
                                                 <li><a style="color: #000000;" href="/profile/">Profile</a></li>
-						<li><a style="color: #000000;" href="/groups/">Groups</a></li>
+						                        <li><a style="color: #000000;" href="/groups/">Groups</a></li>
                                                 {% if request.user.is_staff %}
                                                     <li><a style="color: #000000;" href="/users_admin/">Admin tools</a></li>
                                                 {% endif %}
                                                 <li class="divider"></li>
-						<li>SITES
-						<div class="submenu" style="color: #000000; text-align: center">
-							<a style="color: #000000;" href="http://cistib.mi.vph-dare.eu:8080">CISTIB</a>
-							<br><a style="color: #000000;" href="http://vph-dare.mi.vph-dare.eu:8080">VPH-DARE</a>
-							<br><a style="color: #000000;" href="http://mi.vph-dare.eu:8080">Portal</a>
-						</div>
-						</li>
-						<li class="divider"></li>
+                                                <li>Your portal</li>
+                                            <li><a style="color: #000000;" href="/groups/">Groups</a></li>
+
+                                            <div class="submenu" style="color: #000000; text-align: center">
+                                                <a style="color: #000000;" href="http://cistib.mi.vph-dare.eu:8080">CISTIB</a>
+                                                <br><a style="color: #000000;" href="http://vph-dare.mi.vph-dare.eu:8080">VPH-DARE</a>
+                                                <br><a style="color: #000000;" href="http://mi.vph-dare.eu:8080">Portal</a>
+                                            </div>
+
+                                            <li class="divider"></li>
                                                 <li><a style="color: #000000;" class="popup" rel="#overlay" href="/logout">Logout</a></li>
                                             </ul>
 						

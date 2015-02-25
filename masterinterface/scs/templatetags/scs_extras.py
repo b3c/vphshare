@@ -6,6 +6,8 @@ from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
 from django.utils.html import urlize as urlize_impl
 from permissions.utils import get_roles
+from masterinterface.scs_groups. models import Institution
+from django.db.models import ObjectDoesNotExist
 # get a register Library instance
 register = template.Library()
 
@@ -115,6 +117,19 @@ def timewidget_tag(widget_name, widget_value=""):
     from datetimewidget.widgets import TimeWidget
     widget = TimeWidget(options={'clearBtn':False})
     return widget.media.render() + widget.render(widget_name, widget_value)
+
+@register.filter
+def get_user_institutions_portal(user):
+    institutions_portal_list = []
+    for inst in Institution.objects.all():
+        try:
+            portal = inst.institutionportal
+        except ObjectDoesNotExist:
+            continue
+        if user in inst.user_set.all():
+            institutions_portal_list.append(portal)
+    return institutions_portal_list
+
 
 # register filters
 register.filter('breadcrumbs', breadcrumbs)

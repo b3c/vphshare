@@ -1,8 +1,4 @@
-{% extends base_group %}
-
-{%  block title %} Welcome to {{ group_subdomain_name }} Master Interface {% endblock %}
-
-
+{% extends 'scs/base.html' %}
 
 {% block page-title %}
     {% if request.user.is_authenticated %}
@@ -14,8 +10,44 @@
     {% endif %}
 {% endblock%}
 {%  block content %}
-
-    <div id="myCarousel" class="carousel slide">
+    {% if institutionportal %}
+        {% if institutionportal.carusel_imgs %}
+        <div id="myCarousel" class="carousel slide">
+            <ol class="carousel-indicators">
+            {% for carusel_img in institutionportal.carusel_imgs%}
+                <li data-target="#myCarousel" data-slide-to="{{ forloop.counter }}" class="{% if forloop.first %}active{% endif %}"></li>
+            {% endfor %}
+            </ol>
+            <!-- Carousel items -->
+            <div class="carousel-inner">
+                {% for carusel_img in institutionportal.carusel_imgs%}
+                    <div class="{% if forloop.first %}active{% endif %} item"><img src="{{ carusel_img.1 }}" class="img-rounded" />
+                        <div class="carousel-caption pull-right img-rounded" style="padding: 3px;">
+                            <h2><b>{{ carusel_img.0 }}</b></h2>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- Carousel nav -->
+            <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+            <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+        </div>
+        <script type="text/javascript">
+        $('.carousel').carousel({
+            interval: 8000
+        });
+        </script>
+        {% endif %}
+        <div class="row">
+            <div class="span12" style="border-bottom: 2px solid;padding-bottom: 5px;"  align="center">
+            <h6>
+                <strong>{{ institutionportal.welcome }}</strong></br>
+                {{ institutionportal.description }}
+            </h6>
+            </div>
+        </div>
+    {% else %}
+        <div id="myCarousel" class="carousel slide">
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#myCarousel" data-slide-to="1"></li>
@@ -23,48 +55,39 @@
         </ol>
         <!-- Carousel items -->
         <div class="carousel-inner">
-            <div class="active item"><img src="{{ group_images }}carousel1.jpg" class="img-rounded" />
+            <div class="active item"><img src="/static/img/carousel1.jpg" class="img-rounded" />
                 <div class="carousel-caption pull-right img-rounded" style="padding: 3px;">
-                    <h2><b>Connect with {{ group_subdomain_name }} data providers</b></h2>
+                    <h2><b>Connect with data providers</b></h2>
                 </div>
             </div>
-            <div class="item"><img src="{{ group_images }}carousel2.jpg" class="img-rounded" />
+            <div class="item"><img src="/static/img/carousel2.jpg" class="img-rounded" />
                 <div class="carousel-caption pull-right img-rounded" style="padding: 3px;">
-                    <h2><b>Search {{ group_subdomain_name }} data sets</b></h2>
+                    <h2><b>Search VPH data sets</b></h2>
                 </div>
             </div>
-            <div class="item"><img src="{{ group_images }}carousel3.jpg" class="img-rounded" />
+            <div class="item"><img src="/static/img/carousel3.jpg" class="img-rounded" />
                 <div class="carousel-caption pull-right img-rounded" style="padding: 3px;">
-                    <h2><b>Run {{ group_subdomain_name }} workflows</b></h2>
+                    <h2><b>Run ViroLab workflow</b></h2>
                 </div>
             </div>
         </div>
+            <script type="text/javascript">
+        $('.carousel').carousel({
+            interval: 8000
+        });
+        </script>
         <!-- Carousel nav -->
         <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
         <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
-    </div>
-    <script type="text/javascript">
-    $('.carousel').carousel({
-        interval: 8000
-    });
-    </script>
-    <div class="row"  ><div class="span12" style="border-bottom: 2px solid;padding-bottom: 5px;"  align="center">
-      <h6><strong>WELCOME TO THE {{ group_subdomain_name }} Master Interface!</strong></br>
-      {{ group_subdomain_name }} is an online environment for the development, construction and storage of biomedical workflows. It is designed to help researchers, clinicians and software developers share resources - data and tools – to build workflows quickly and easily.</h6></div></div>
+        </div>
+        <div class="row"  ><div class="span12" style="border-bottom: 2px solid;padding-bottom: 5px;"  align="center"><h6><b>WELCOME TO THE MASTER INTERFACE!</b></br>VPH-Share is an online environment for the development, construction and storage of biomedical workflows. It is designed to help researchers, clinicians and software developers share resources - data and tools – to build workflows quickly and easily.</h6></div></div>
+        <div class="row" style="margin-top: 10px;">
+        <div class="span3"><a href="/beta_programme/"><img style="width: 100%" src="/static/img/biomedical_data.jpg" class="img-rounded"/><h6 class="pagination-centered">BETA USERS PROGRAM</h6></a></div>
+        <div class="span3"><a href="/workspace/"><img style="width: 100%" src="/static/img/tools.jpg" class="img-rounded"/><h6 class="pagination-centered">WORKSPACE</h6></a></div>
+        <div class="span3"><a href="/groups/"><img style="width: 100%" src="/static/img/workspace.jpg" class="img-rounded"/><h6 class="pagination-centered">GROUPS</h6></a></div>
+        <div class="span3"><a href="/search/"><img style="width: 100%" src="/static/img/search.jpg" class="img-rounded"/><h6 class="pagination-centered">SEARCH</h6></a></div>
+        </div>
+    {% endif %}
 
-{% if current_subdomain_url != 'PORTAL' %}
-<!-- 
-{% endif %}
-
-Carousel nav   <div class="row" style="margin-top: 10px;">
-    <div class="span3"><a href="/beta_programme/"><img style="width: 100%" src="/static/img/biomedical_data.jpg" class="img-rounded"/><h6 class="pagination-centered">BETA USERS PROGRAM</h6></a></div>
-    <div class="span3"><a href="/workspace/"><img style="width: 100%" src="/static/img/tools.jpg" class="img-rounded"/><h6 class="pagination-centered">WORKSPACE</h6></a></div>
-    <div class="span3"><a href="/groups/"><img style="width: 100%" src="/static/img/workspace.jpg" class="img-rounded"/><h6 class="pagination-centered">GROUPS</h6></a></div>
-    <div class="span3"><a href="/search/"><img style="width: 100%" src="/static/img/search.jpg" class="img-rounded"/><h6 class="pagination-centered">SEARCH</h6></a></div>
-    </div> 
-
-{% if current_subdomain_url != 'PORTAL' %}
---> 
-{% endif %}
 
 {% endblock %}

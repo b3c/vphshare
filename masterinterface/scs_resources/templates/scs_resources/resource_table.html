@@ -1,0 +1,67 @@
+{% extends 'scs/base.html' %}
+{% load scs_extras %}
+{%  block title %} Browse resources in vph-share {% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+    <style>
+    .select2-container.select2-container-multi {
+        width: 200px !important;
+    }
+    </style>
+{% endblock %}
+
+{%  block content %}
+<div>
+    <h1>Browse resources in vph-share</h1>
+    <ul class="nav nav-pills">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/data/" class="resource-tab active">
+          <a>
+            Datasets
+          </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/file/" class="resource-tab active">
+          <a>
+            Files/Folders
+          </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/application/" class="resource-tab">
+            <a>
+                Applications
+            </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/workflow/" class="resource-tab">
+        <a>
+            Workflows
+        </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/sws/" class="resource-tab">
+        <a>
+            Semantic Web services
+        </a>
+      </li>
+      <script>$(function(){
+          {% if tab == 'file' %}
+              $('.resource-tab')[1].click();
+          {% elif tab == 'application' %}
+              $('.resource-tab')[2].click();
+          {% elif tab == 'workflow' %}
+              $('.resource-tab')[3].click();
+          {% elif tab == 'sws' %}
+              $('.resource-tab')[4].click();
+          {% else %}
+              $('.resource-tab')[0].click();
+          {% endif %}
+        }
+      );</script>
+    </ul>
+    <div id="dashboard-container" style="position: relative;min-height: 50px;width: 100%;">
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -3,10 +3,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-
     <title>
         {%  block title %}
-            Welcome to VPH-Share Master Interface
+            Welcome to {%if institutionportal%}{{ institutionportal.title }}{%else%}Vph-Share{%endif%} Master Interface
         {% endblock %}
     </title>
 
@@ -72,6 +71,100 @@
 	color:#333;
 }
 
+
+    {% if institutionportal %}
+
+    .nav-pills>li{float:left; position: relative; margin-left: auto; margin-right: auto; left:20%; right:20%;/* 1000 */}
+
+
+    .well-AtomicService{min-height:15px;padding:5px;margin-bottom:2px;background-color:#F7ECA9/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+    .well-Workflow{min-height:15px;padding:5px;margin-bottom:2px;background-color:#F8C1C2/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+    .well-File{min-height:15px;padding:5px;margin-bottom:2px;background-color:#D9BDF8/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+    .well-Dataset{min-height:15px;padding:5px;margin-bottom:2px;background-color:#CEEDFC/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+    .well-G{min-height:15px;padding:5px;margin-bottom:2px;background-color:#D1CFCF/* 1000 */;border:1px solid #e3e3e3;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);box-shadow:inset 0 1px 1px rgba(0,0,0,0.05)}
+
+    body {
+            min-height: 768px;
+        background: {{institutionportal.background}} !important;
+    }
+
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, font, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0 none;
+    outline: 0 none;
+    font-size: 100%;
+    vertical-align: middle; /* mltn */
+    background: transparent;
+    }
+
+    #breadcrumbs-wrapper{
+        height: 12px; /* mltn */
+        margin: 0px auto 0px auto;
+        padding-bottom: 14px !important;
+    }
+
+    #logo-left{
+        float: left;
+        background-image: url("{{ institutionportal.header_logo.url }}"); /* mltn */
+        width: 443px;
+        height: 90px;
+    }
+
+    #page-title-wrapper{
+        background: url('/static/vph-dare/square.png') repeat top right, -ms-linear-gradient(left, #fff 0%,#f7f8f9 31%,{{ institutionportal.header_background }} 100%); /* IE10+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff', endColorstr='#119ed1',GradientType=1 ); /* IE6-9 */
+        background: url('/static/vph-dare/square.png') repeat top right, -moz-linear-gradient(right, #fff,{{ institutionportal.header_background }}); /* Mozilla */
+        background: url('/static/vph-dare/square.png') repeat top right, -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to({{ institutionportal.header_background }})); /* Webkit */
+        background: url('/static/vph-dare/square.png') repeat top right, -webkit-linear-gradient(top, #fff, {{ institutionportal.header_background }}); /* Webkit */
+        background: url('/static/vph-dare/square.png') repeat top right, linear-gradient(to right, #fff 0%,#f7f8f9 31%,{{ institutionportal.header_background }} 100%); /* W3C */
+        height: 90px;
+        border-radius: 10px; /* mltn */
+    }
+
+    .navbar {
+        margin-bottom: 10px; /* mltn */
+        margin-top: 0px; /* mltn */
+        width:70% !important; /* mltn */
+        margin-left: auto; /* mltn */
+        margin-right: auto; /* mltn */
+    }
+
+    .navbar .nav > li > a {
+           padding: 8px 8px !important;
+    }
+
+    .navbar-inner {
+        min-height: 30px;
+        margin-top: 10px;
+        padding-right: 20px;
+        padding-left: 20px;
+        border-radius: 4px;
+    }
+
+    @media (max-width: 979px){
+        .navbar .nav > li {
+            display: block;
+            width: auto;
+        }
+        #logo-left{
+            float: left;
+            background-image: inherit;
+            width: 85px; /* mltn */
+            height: 85px; /* mltn */
+        }
+    }
+
+    {% endif %}
+
     </style>
     {% block javascripts %} {% endblock %}
 
@@ -118,19 +211,16 @@
                                                 <li><a style="color: #000000;" href="/dashboard/">Dashboard</a></li>
                                                 <li><a style="color: #000000;" href="/workspace/">Workspace</a></li>
                                                 <li><a style="color: #000000;" href="/profile/">Profile</a></li>
-						<li><a style="color: #000000;" href="/groups/">Groups</a></li>
+						                        <li><a style="color: #000000;" href="/groups/">Groups</a></li>
                                                 {% if request.user.is_staff %}
                                                     <li><a style="color: #000000;" href="/users_admin/">Admin tools</a></li>
                                                 {% endif %}
                                                 <li class="divider"></li>
-						<li>SITES
-						<div class="submenu" style="color: #000000; text-align: center">
-							<a style="color: #000000;" href="http://cistib.mi.vph-dare.eu:8080">CISTIB</a>
-							<br><a style="color: #000000;" href="http://vph-dare.mi.vph-dare.eu:8080">VPH-DARE</a>
-							<br><a style="color: #000000;" href="http://mi.vph-dare.eu:8080">Portal</a>
-						</div>
-						</li>
-						<li class="divider"></li>
+                                                <li>Portals</li>
+                                                {% for portal in request.user|get_user_institutions_portal %}
+                                                    <li><a style="color: #000000;" href="http://{{ portal.subdomain }}{{ settings.SESSION_COOKIE_DOMAIN }}">{{ portal.title }}</a></li>
+                                                {% endfor %}
+                                                <li class="divider"></li>
                                                 <li><a style="color: #000000;" class="popup" rel="#overlay" href="/logout">Logout</a></li>
                                             </ul>
                                         </div>
@@ -142,27 +232,25 @@
                     </div>
 
                     {% block nav %}
-
-                    <div class="navbar ">
-
-                        <div class="navbar-inner " style="padding: 0px;">
-                            <button type="button" class="btn btn-navbar collapsed btn-mobile" data-toggle="collapse" data-target=".nav-collapse">
-                                <span class="icon-bar" style="background-color: #000000"></span>
-                                <span class="icon-bar" style="background-color: #000000"></span>
-                                <span class="icon-bar" style="background-color: #000000"></span>
-                            </button>
-                            <div class="container nav-collapse collapse">
-                                <ul class="nav" style="margin: 0px;display: table;width: 100%}">
-                                <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
-                                    <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data">DATA</a></li>
-                                    <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools">APPLICATIONS</a></li>
-                                    <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows">WORKFLOWS</a></li>
-                                    <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search">SEARCH</a></li>
-                                </ul>
+                            <div class="navbar ">
+                                <div class="navbar-inner " style="padding: 0px;">
+                                    <button type="button" class="btn btn-navbar collapsed btn-mobile" data-toggle="collapse" data-target=".nav-collapse">
+                                        <span class="icon-bar" style="background-color: #000000"></span>
+                                        <span class="icon-bar" style="background-color: #000000"></span>
+                                        <span class="icon-bar" style="background-color: #000000"></span>
+                                    </button>
+                                    <div class="container nav-collapse collapse">
+                                        <ul class="nav" style="margin: 0px;display: table;width: 100%}">
+                                        <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
+                                        {% if institutionportal %}<li {% if 'discovery' == request.path|basepath %}class="active" {% endif %}><a href="/discoveries/">DISCOVERY</a></li>{% endif %}
+                                            <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data/">DATA</a></li>
+                                            <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools/">APPLICATIONS</a></li>
+                                            <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows/">WORKFLOWS</a></li>
+                                            <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search/">SEARCH</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                    </div>
                     {% endblock %}
                     {% block breadcrumbs %}
                     {% if not request.path|breadcrumbs|length_is:"0" %}
@@ -231,9 +319,13 @@
                 <a href="/static/VPHShare_security1v0.pdf">Security</a>
                 <span class="divider">|</span>
                 <a href="/monitoring">Monitoring</a>
-                <span class="divider">|
+                <span class="divider">|</span>
                 <a href="/support">Report a bug</a>
                 <span class="divider">|</span>
+                {% if institutionportal %}
+                    <a href="{{ settings.BASE_URL }}">Back to portal</a>
+                    <span class="divider">|</span>
+                {% endif %}
                 <span>&copy;Copyright 2014 VPH-Share All rights reserved</span>
             </p>
         </footer>
