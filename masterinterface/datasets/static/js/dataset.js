@@ -379,7 +379,8 @@
                 success: function(data){
                     self.getReults(data);
                 },
-                fail: function(data){
+                error: function(data){
+                    $('#query_button').button('reset');
                     alert("Some errors occurs, retry");
                 }
             })
