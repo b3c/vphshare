@@ -131,12 +131,12 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'scs.preprocess_middleware.institutionPortaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'scs_auth.preprocess_middleware.masterInterfaceMiddleware',
-    'scs.preprocess_middleware.institutionPortaleMiddleware',
     'paraviewweb.middleware.paraviewWebMiddleware',
 )
 

@@ -32,7 +32,9 @@ def lobcder(request, path = '/'):
     			'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
             	'lobcderRestUrl': settings.LOBCDER_REST_URL,
             	'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH,
-            	'vphTicket': request.ticket
+            	'vphTicket': request.ticket,
+                #give the group name to show only the resource sharred with the institution
+                'institutionPortal':  request.session['institutionalportal'].institution.name if request.session.get('institutionalportal',None) else None
             }, RequestContext(request))
 
 @csrf_exempt

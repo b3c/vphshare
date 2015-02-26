@@ -229,6 +229,22 @@ def institution_portal_form(request, institution_id):
     else:
         raise PermissionDenied
 
+
+@login_required
+def institution_portal_delete(request, institution_id):
+    institution = Institution.objects.get(id=institution_id)
+    try:
+        edit = institution.institutionportal if institution.institutionportal else False
+    except ObjectDoesNotExist:
+        edit = None
+    if request.user in institution.managers.all() and edit:
+        request.session['statusmessage'] = "%s portal deleted with succeed." %edit.title
+        edit.delete()
+    else:
+        raise PermissionDenied
+
+    return redirect('/groups/%s/'%institution_id)
+
 @login_required
 def manage_group_request(request):
     """

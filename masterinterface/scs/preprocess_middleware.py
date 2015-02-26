@@ -9,7 +9,6 @@ class institutionPortaleMiddleware(object):
     def process_view(self, request, callback, callback_args, callback_kwargs):
         try:
             if request.user.is_authenticated():
-                print request.META['HTTP_HOST']
                 subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
                 if subdomain not in ['portal','devel']: # we are in a institutional portal
                     institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
@@ -26,6 +25,8 @@ class institutionPortaleMiddleware(object):
 
     def process_response(self, request, response):
         try:
+            if isinstance(response,HttpResponsePermanentRedirect):
+                return response
             subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
             if subdomain not in ['portal','devel']: # we are in a institutional portal
                 institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)

@@ -35,11 +35,11 @@
 {% endif %}
 {%for resource in resources.data%}
         {% if resource.metadata.type == "AtomicService" %}
-            {% if resource|is_active or user|can_manage:resource%}
+            {% if resource|is_active or resource.is_manager%}
                 <div id="{{ resource.id }}"  class="resource well-{{ resource.metadata.type }} well-small">
                 <div class="row">
                     <div  class="span1">
-                    &nbsp;<img src="/static/{{ resource.metadata.type }}.png"/ alt="{{ resource.metadata.type }}">
+                    &nbsp;<img src="/static/{{ resource.metadata.type }}.png" alt="{{ resource.metadata.type }}">
                     </div>
                     <div  class="span4">
                         {{ resource.metadata.name }}
@@ -77,7 +77,7 @@
 
                     <div class="span2">
                         <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
-                        {% if user|can_edit:resource %}
+                        {% if resource.is_editor %}
                         <a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
                             {% if resource.metadata.type == "Workflow"%}
                                 <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
@@ -86,7 +86,7 @@
                             {% endif%}
                         {% endif %}
 
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                             {% if resource.requests and resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
                         {% endif %}
                     </div>
@@ -96,7 +96,7 @@
                         <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
                             <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
                         </li>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
                             <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
                         </li>
@@ -122,7 +122,7 @@
                         <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
                         &nbsp
                         </div>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
                         &nbsp
                         </div> <!-- end tabpane2 -->
@@ -136,11 +136,11 @@
 
 {%for resource in resources.data%}
         {% if resource.metadata.type == "File" %}
-            {% if resource|is_active or user|can_manage:resource%}
+            {% if resource|is_active or resource.is_manager%}
                 <div id="{{ resource.id }}"  class="resource well-{{ resource.metadata.type }} well-small">
                 <div class="row">
                     <div  class="span1"> 
-                     &nbsp;<img src="/static/{{ resource.metadata.type }}.png"/ alt="{{ resource.metadata.type }}">
+                     &nbsp;<img src="/static/{{ resource.metadata.type }}.png" alt="{{ resource.metadata.type }}">
                     </div>
                     <div  class="span4">
                         {{ resource.metadata.name }}
@@ -178,7 +178,7 @@
                                        
                     <div class="span2">
                         <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
-                        {% if user|can_edit:resource %}
+                        {% if resource.is_editor %}
                         <a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
                             {% if resource.metadata.type == "Workflow"%}
                                 <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
@@ -187,7 +187,7 @@
                             {% endif%}
                         {% endif %}
 
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                             {% if resource.requests and resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
                         {% endif %}
                     </div>
@@ -197,7 +197,7 @@
                         <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
                             <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
                         </li>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
                             <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
                         </li>
@@ -223,7 +223,7 @@
                         <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
                         &nbsp
                         </div>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
                         &nbsp
                         </div> <!-- end tabpane2 -->
@@ -237,11 +237,11 @@
 
 {%for resource in resources.data%}
         {% if resource.metadata.type == "Dataset" %}
-            {% if resource|is_active or user|can_manage:resource%}
+            {% if resource|is_active or resource.is_manager%}
                 <div id="{{ resource.id }}"  class="resource well-{{ resource.metadata.type }} well-small">
                 <div class="row">
                     <div  class="span1"> 
-                     &nbsp;<img src="/static/{{ resource.metadata.type }}.png"/ alt="{{ resource.metadata.type }}">
+                     &nbsp;<img src="/static/{{ resource.metadata.type }}.png" alt="{{ resource.metadata.type }}">
                     </div>
                      <div  class="span4"> 
                         {{ resource.metadata.name }}
@@ -279,7 +279,7 @@
                      
                     <div class="span2">
                         <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
-                        {% if user|can_edit:resource %}
+                        {% if resource.is_editor %}
                         <a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
                             {% if resource.metadata.type == "Workflow"%}
                                 <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
@@ -288,7 +288,7 @@
                             {% endif%}
                         {% endif %}
 
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                             {% if resource.requests and resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
                         {% endif %}
                     </div>
@@ -298,7 +298,7 @@
                         <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
                             <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
                         </li>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
                             <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
                         </li>
@@ -324,7 +324,7 @@
                         <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
                         &nbsp
                         </div>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
                         &nbsp
                         </div> <!-- end tabpane2 -->
@@ -338,11 +338,11 @@
 
 {%for resource in resources.data%}
         {% if resource.metadata.type == "Workflow" %}
-            {% if resource|is_active or user|can_manage:resource%}
+            {% if resource|is_active or resource.is_manager%}
                 <div id="{{ resource.id }}"  class="resource well-{{ resource.metadata.type }} well-small">
                 <div class="row">
                     <div  class="span1"> 
-                     &nbsp;<img src="/static/{{ resource.metadata.type }}.png"/ alt="{{ resource.metadata.type }}">
+                     &nbsp;<img src="/static/{{ resource.metadata.type }}.png" alt="{{ resource.metadata.type }}">
                     </div>
                     <div  class="span4">  
                         {{ resource.metadata.name }}
@@ -380,7 +380,7 @@
                                       
                     <div class="span2">
                         <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
-                        {% if user|can_edit:resource %}
+                        {% if resource.is_editor %}
                         <a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
                             {% if resource.metadata.type == "Workflow"%}
                                 <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
@@ -389,7 +389,7 @@
                             {% endif%}
                         {% endif %}
 
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                             {% if resource.requests and resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
                         {% endif %}
                     </div>
@@ -399,7 +399,7 @@
                         <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
                             <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
                         </li>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
                             <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
                         </li>
@@ -425,7 +425,7 @@
                         <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
                         &nbsp
                         </div>
-                        {% if user|can_manage:resource %}
+                        {% if resource.is_manager %}
                         <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
                         &nbsp
                         </div> <!-- end tabpane2 -->

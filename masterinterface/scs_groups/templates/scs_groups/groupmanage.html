@@ -233,35 +233,17 @@
 
                         {% if group.type == 'institution' %}
                             {% if group.portal %}
-                                <div class="tab-pane {% if group.selected_study or 'studies' in request.get_full_path %}active{% endif %} nano" id="lC">
+                                <div class="tab-pane nano" id="lC">
                                     <div class="content">
-                                        <table class="table table-condensed">
-                                            <thead>
-                                            <tr>
-                                                <th>SITE:</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody style="font-size:0.8em;">
-                                                <tr>
-                                                    <td>
-                                    URL: <a href="http://{{ group.subdomain }}.mi.vph-dare.eu:8080"><b>http://{{ group.subdomain }}.mi.vph-dare.eu:8080</b></a><br>
-                                    Instituton name: <b>{{ group.name }}</b><br>
-                                    Instituton subdomain: <b>{{ group.subdomain }}</b><br>
-                                    Site Name: <b>{{ group.subdomain_name }}</b> <br>
-                                    Background color: <b>{{ group.background }}</b> <br>
-                                    Header background color: <b>{{ group.header_background }}</b> <br>
-                                    Group images: <b>/static/groups/{{ group.subdomain }}</b> <br>
-                                    <a href="/admin/scs_groups/institution/{{ group.id }}/"><strong class="btn">Edit</strong></a>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <a class="btn btn-info" href="/groups/portal_institution/{{ group.id }}/">Edit vph-share institutional portal</a>
+                                        <hr/>
+                                        <a class="btn btn-warning" href="/groups/portal_institution/{{ group.id }}/delete/">Delete vph-share institutional portal</a>
                                     </div>
                                 </div>
                             {% else %}
                                 <div class="tab-pane nano" id="lC">
                                     <div class="content">
-                                        <a class="btn btn-info" href="/groups/create_portal_institution/{{ group.id }}">Create your vph-share institutional portal</a>
+                                        <a class="btn btn-info" href="/groups/portal_institution/{{ group.id }}">Create your vph-share institutional portal</a>
                                     </div>
                                 </div>
                             {% endif %}
