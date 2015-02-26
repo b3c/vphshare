@@ -30,9 +30,17 @@ class institutionPortaleMiddleware(object):
             if subdomain not in ['portal','devel']: # we are in a institutional portal
                 institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
                 request.session['institutionportal'] = institutionportal
-                if 'login' not in request.path and 'done' not in request.path and request.user not in institutionportal.institution.user_set.all():
+                if all(x not in request.path for x in ['login', 'done', 'media', 'static']) and request.user not in institutionportal.institution.user_set.all():
                     request.session['errormessage'] = "You can't access if you are not memeber of the %s institution group" %institutionportal.institution.name
-                    return render_to_response("scs/403.html", {}, RequestContext(request))
+                    if request.user.is_anonymous() and request.path not in ['/','']:
+                        request.session['errormessage'] = "Please login to access to the requested resource"
+                        if request.path not in ['/','']:
+                            return render_to_response("scs/login.html", {}, RequestContext(request))
+                    else:
+                        request.session['errormessage'] = "You can't access if you are not memeber of the %s institution group" %institutionportal.institution.name
+                        if request.path not in ['/','']:
+                            return render_to_response("scs/403.html", {}, RequestContext(request))
+
             else:
                 if request.session.get('institutionportal', None):
                     del(request.session['institutionportal'])
