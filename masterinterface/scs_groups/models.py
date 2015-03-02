@@ -172,7 +172,7 @@ class InstitutionPortalObject(models.Manager):
 class InstitutionPortal(models.Model):
 
     def get_upload_path(instance, filename):
-        return "./institution_portal_folder/%s/" % instance.subdomain
+        return "./institution_portal_folder/%s" % instance.subdomain
 
     #site customization
     institution = models.OneToOneField(Institution, primary_key=True)
@@ -182,7 +182,7 @@ class InstitutionPortal(models.Model):
     description = models.TextField(verbose_name="Portal description *", null=True)
     background = models.CharField(verbose_name="Background *",max_length=64,  help_text='Background colour')
     header_background = models.CharField(verbose_name="Header background *", max_length=64, help_text='Background colour in the header')
-    header_logo = models.FileField(verbose_name="Logoi *",  upload_to=get_upload_path, help_text="Logo min size 90x90px" ,null=True)
+    header_logo = models.FileField(verbose_name="Logo *",  upload_to=get_upload_path, help_text="Logo min size 90x90px" ,null=True)
     carusel_img = models.TextField(null=True, blank = True)
 
     objects = InstitutionPortalObject()

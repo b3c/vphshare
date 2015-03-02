@@ -8,14 +8,14 @@ class institutionPortaleMiddleware(object):
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         try:
-            if request.user.is_authenticated():
-                subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
-                if subdomain not in ['portal','devel']: # we are in a institutional portal
-                    institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
-                    request.session['institutionportal'] = institutionportal
-                else:
-                    if request.session.get('institutionportal', None):
-                        del(request.session['institutionportal'])
+            #if request.user.is_authenticated():
+            subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
+            if subdomain not in ['portal','devel']: # we are in a institutional portal
+                institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
+                request.session['institutionportal'] = institutionportal
+            else:
+                if request.session.get('institutionportal', None):
+                    del(request.session['institutionportal'])
         except Exception:
             from raven.contrib.django.raven_compat.models import client
             client.captureException()
@@ -31,15 +31,14 @@ class institutionPortaleMiddleware(object):
             if subdomain not in ['portal','devel']: # we are in a institutional portal
                 institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
                 request.session['institutionportal'] = institutionportal
-                if all(x not in request.path for x in ['login', 'done', 'media', 'static']) and request.user not in institutionportal.institution.user_set.all():
-                    request.session['errormessage'] = "You can't access if you are not memeber of the %s institution group" %institutionportal.institution.name
+                if all(x not in request.path for x in ['login', 'done', 'scs_auth', 'media', 'static']) and request.user not in institutionportal.institution.user_set.all():
                     if request.user.is_anonymous() and request.path not in ['/','']:
                         request.session['errormessage'] = "Please login to access to the requested resource"
                         if request.path not in ['/','']:
                             return render_to_response("scs/login.html", {}, RequestContext(request))
                     else:
-                        request.session['errormessage'] = "You can't access if you are not memeber of the %s institution group" %institutionportal.institution.name
                         if request.path not in ['/','']:
+                            request.session['errormessage'] = "You can't access if you are not memeber of the %s institution group" %institutionportal.institution.name
                             return render_to_response("scs/403.html", {}, RequestContext(request))
 
             else:
