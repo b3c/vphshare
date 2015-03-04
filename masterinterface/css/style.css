@@ -1045,15 +1045,26 @@ a.search-data-link:hover{
     margin:2px 0 2px 0 !important;
     background-color: #ffffff;
     min-width: 15px;
+    padding: 18px;
 }
 
 .Dataset-bkgr{
-    background-color: #3eb6b5;
+    background-color: #00b7e2;
+    min-width: 15px;
+}
+
+.Dataset-light-bkgr{
+    background-color: rgba(0, 206, 255, 0.21) !important;
     min-width: 15px;
 }
 
 .Workflow-bkgr{
-    background-color: #4eb8e4;
+    background-color: #8abf6e;
+    min-width: 15px;
+}
+
+.Workflow-light-bkgr{
+    background-color: rgba(184, 255, 147, 0.21) !important;
     min-width: 15px;
 }
 
@@ -1063,17 +1074,32 @@ a.search-data-link:hover{
 }
 
 .File-bkgr{
-    background-color: #c26aa3;
+    background-color: #00b7af;
     min-width: 15px;
 }
 
-.SWS-bkgr{
+.File-light-bkgr{
+    background-color: rgba(0, 255, 247, 0.20) !important;
+    min-width: 15px;
+}
+
+.SWS-bkgr, .SemanticWebService-bkgr{
     background-color: #c2bb51;
     min-width: 15px;
 }
 
-.Application-bkgr{
+.SemanticWebService-light-bkgr{
+    background-color: rgba(255, 201, 0, 0.20) !important;
+    min-width: 15px;
+}
+
+.Application-bkgr, .AtomicService-bkgr{
     background-color: #e4675e;
+    min-width: 15px;
+}
+
+.AtomicService-light-bkgr{
+    background-color: rgba(255, 115, 105, 0.20) !important;
     min-width: 15px;
 }
 
@@ -1092,6 +1118,127 @@ a.search-data-link:hover{
     min-width: 15px;
 }
 
+/* alternative rating*/
+.line-rating {
+  margin: 10px 0;
+}
+
+.line-rating i {
+  display: inline-block;
+  width: 0;
+  height: 1.5em;
+  border-width: 0 0.75em;
+  border-style: solid;
+  border-color: transparent;
+  border-radius: .22em;
+  color: #000000;
+  background: transparent;
+  font-style: normal;
+  line-height: 1.6em;
+  text-indent: -0.5em;
+  text-shadow: 1px 0 1px #000000;
+}
+
+[data-rate^='1.0'] .star-1 {
+  color: #cc8b1f;
+}
+
+[data-rate^='1'] .star-1 {
+  color: #cc8b1f;
+}
+
+[data-rate='1.5'] > .star-1 , [data-rate='1.5'] > .star-2 {
+  color: #cc8b1f;
+}
+
+[data-rate^='2.0'] > .star-1, [data-rate^='2.0'] > .star-2{
+  color: #dcb228;
+}
+
+[data-rate^='2'] > .star-1, [data-rate^='2'] > .star-2{
+  color: #dcb228;
+}
+
+[data-rate='2.5'] > .star-1, [data-rate='2.5'] > .star-2, [data-rate='2.5'] > .star-3{
+  color: #dcb228;
+}
+
+[data-rate^='3.0'] > .star-1, [data-rate^='3.0'] > .star-2, [data-rate^='3.0'] > .star-3{
+  color: #f0991e;
+}
+
+[data-rate^='3'] > .star-1, [data-rate^='3'] > .star-2, [data-rate^='3'] > .star-3{
+  color: #f0991e;
+}
+
+
+[data-rate='3.5'] > .star-1, [data-rate='3.5'] > .star-2, [data-rate='3.5'] > .star-3, [data-rate='3.5'] > .star-4{
+  color: #f0991e;
+}
+
+[data-rate^='4.0'] > .star-1, [data-rate^='4.0'] > .star-2 ,[data-rate^='4.0'] > .star-3, [data-rate^='4.0'] > .star-4 {
+  color: #f26a2c;
+}
+
+[data-rate^='4'] > .star-1, [data-rate^='4'] > .star-2 ,[data-rate^='4'] > .star-3, [data-rate^='4'] > .star-4 {
+  color: #f26a2c;
+}
+
+[data-rate='4.5'] > .star-1, [data-rate='4.5'] >  .star-2, [data-rate='4.5'] >  .star-3, [data-rate='4.5'] >  .star-4 {
+  color: #f26a2c;
+}
+
+[data-rate='5.0'] > i {
+  color: #dd050b;
+}
+
+[data-rate='5'] > i {
+  color: #dd050b;
+}
+
+/** Print */
+@media print {
+  .line-rating {
+    -webkit-print-color-adjust: exact;
+  }
+  .line-rating i {
+    text-shadow: none;
+  }
+}
+
+/*end alternative rating*/
+
+.resource-datatable td{
+    text-align: center;
+    word-wrap: break-word;
+}
+.fa-Dataset:before {
+    content: "\f1c0";
+}
+
+.fa-AtomicService:before {
+    content: "\f085";
+}
+
+.fa-Workflow:before {
+    content: "\f135";
+}
+
+.fa-File:before {
+    content: "\f0c5";
+}
+
+.fa-SemanticWebService:before {
+    content: "\f12e";
+}
+
+.fa-User:before {
+    content: "\f007";
+}
+
+.fa-Institution:before {
+    content: "\f0c0";
+}
 /*text color*/
 .Dataset-color{
     color: #3eb6b5;
@@ -1141,6 +1288,7 @@ a.search-data-link:hover{
     background-color: #f5f5f5 !important;
     max-width: 50% !important;
     padding: 0px !important;
+    margin:0px !important;
 
 }
 
@@ -1317,7 +1465,20 @@ background-color: rgba(0, 173, 14, 0.63);
 }
 .well.filter{
     cursor: pointer;
+    display: inline-flex;
 }
+
+.well.button{
+    cursor: pointer;
+    display: inline-flex;
+}
+
+.well.refine{
+    cursor: pointer;
+    display: inline-block;
+    padding: 9px;
+}
+
 
 .fieldrequired {
 display: inline;

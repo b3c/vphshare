@@ -895,6 +895,77 @@ def discoveries(request,tab=''):
     )
 
 
+def globalsearch(request):
+    if request.method == 'GET':
+        try:
+            #get the list of owned resource from the metadata repository
+            page = int(request.GET['start'])/int(request.GET['length']) + 1
+            columns = ['type', 'name', 'author', 'updateDate', 'rating', 'views']
+            search_text = request.GET.get('request[search_text]', '*')
+            types = request.GET.get('types', [])
+            if type(types) in (str, unicode):
+                types = types.split(',')[:-1]
+            filterby = request.GET.getlist('request[filterby][]', [])
+            if type(filterby) in (str, unicode):
+                filterby = filterby.split(',')[:-1]
+            categories = request.GET.getlist('request[categories][]', [])
+            if type(categories) in (str, unicode):
+                categories = categories.split(',')[:-1]
+            authors = request.GET.getlist('request[authors][]', [])
+            if type(authors) in (str, unicode):
+                authors = authors.split(',')[:-1]
+            licences = request.GET.getlist('request[licences][]', [])
+            if type(licences) in (str, unicode):
+                licences = licences.split(',')[:-1]
+            tags = request.GET.getlist('request[tags][]', [])
+            if type(tags) in (str, unicode):
+                tags = tags.split(',')[:-1]
+
+            expression = {
+                'type': [] if 'all' in filterby else filterby,
+                'category': categories,
+                'author': authors,
+                'licence': licences,
+                'tags': tags
+            }
+            resources = search_resource(search_text,expression, numResults=int(request.GET['length']), page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'))
+
+            results = {
+              "draw":0,
+              "recordsTotal": resources['numTotalMetadata'],
+              "recordsFiltered": resources['numTotalMetadata'],
+              "data": [],
+              "DT_RowClass":[]
+            }
+            for resource in resources['resource_metadata']:
+                resource = resource.value
+                #create the resrouce entry in my db if it doesn't exisit
+                u, usercreated = User.objects.get_or_create(username=resource['author'])
+                r, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata = resource)
+                if created:
+                    r.owner = u
+                    r.type = resource['type']
+                    r.save()
+
+                results['data'].append({
+                    'type':'<i class="fa fa-%s"></i>'%resource['type'],
+                    'name':str(resource.get('name','')),
+                    'owner':resource['author'],
+                    'update':resource['updateDate'],
+                    'rating':resource['rating'],
+                    'views':resource['views'],
+                    'actions':{'global_id':resource['globalID']},
+                    'DT_RowClass': resource['type']+'-light-bkgr',
+                })
+
+            del(resources['resource_metadata'])
+            results['info'] = resources
+            return HttpResponse(status=200,
+                            content=json.dumps(results, sort_keys=False),
+                            content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500)
+
 def get_discoveries_list(request, resource_type=None, page=1):
     if request.method == 'GET':
         try:

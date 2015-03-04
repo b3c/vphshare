@@ -211,97 +211,42 @@ def search_service(request):
 
 def search(request):
 
-    if request.GET.get('search_text', None):
-        search_text = request.GET.get('search_text', '')
-        types = request.GET.get('types', [])
-        if type(types) in (str, unicode):
-            types = types.split(',')[:-1]
-        filterby = request.GET.get('filterby', [])
-        if type(filterby) in (str, unicode):
-            filterby = filterby.split(',')[:-1]
-        categories = request.GET.get('categories', [])
-        if type(categories) in (str, unicode):
-            categories = categories.split(',')[:-1]
-        authors = request.GET.get('authors', [])
-        if type(authors) in (str, unicode):
-            authors = authors.split(',')[:-1]
-        licences = request.GET.get('licences', [])
-        if type(licences) in (str, unicode):
-            licences = licences.split(',')[:-1]
-        tags = request.GET.get('tags', [])
-        if type(tags) in (str, unicode):
-            tags = tags.split(',')[:-1]
 
-        search = {
-            'search_text': search_text,
-            'type': types,
-            'categories': categories,
-            'authors': authors,
-            'licences': licences,
-            'tags': tags,
-            'filterby': filterby
-        }
-        expression = {
-            'type': types,
-            'category': categories,
-            'author': authors,
-            'licence': licences,
-            'tags': tags
-        }
-
-        results, countType, pages = search_resource(search_text, expression, numResults=50)
-
-        from django.db.models import Q
-        if types == [] and (filterby == [] or 'User' in filterby):
-            from django.contrib.auth.models import User
-            users = User.objects.filter(
-                Q(username__icontains=search_text) | Q(email__icontains=search_text) | Q(first_name__icontains=search_text) | Q(last_name__icontains=search_text)
-            )
-            users = [{"description": user.username, "name": "%s %s (%s)" % (user.first_name, user.last_name, user.username), "email": user.email, "type": 'User'} for user in users if user.userprofile.privacy is True]
-            results += users
-            if 'User' not in countType:
-                countType['User'] = len(users)
-
-        if (types == [] or 'Institution' in types) and (filterby == [] or 'Institution' in filterby or 'Institution' in types):
-            institutions = Institution.objects.filter(
-                Q(name__icontains=search_text) | Q(description__icontains=search_text)
-            )
-            institutions = [{"description": institution.description, "name": institution.name, "id": institution.id, "type":'Institution'} for institution in institutions]
-            results += institutions
-            if 'Institution' not in countType:
-                countType['Institution'] = len(institutions)
-
-        #if types == [] and (filterby == [] or 'Study' in filterby):
-        #    from scs_groups.models import Study
-        #    studies = Study.objects.filter(
-        #        Q(name__icontains=search_text) | Q(description__icontains=search_text)
-        #    )
-        #    studies = [{"description": studie.description, "name": studie.name, "id": studie.id, 'institution': studie.institution.id,  "type":'Study'} for studie in studies]
-        #    results += studies
-        #    if 'Study' not in countType:
-        #        countType['Study'] = len(studies)
-
-        request.session['results'] = results
-        request.session['search_text'] = search_text
-        request.session['expression'] = expression
-        request.session['countType'] = countType
-        request.session['pages'] = pages
-        request.session['page'] = 1
-        request.session['types'] = countType
-        return render_to_response("scs/search.html",
-                                  {'search': search, "results": results, "numResults": len(results), 'countType': countType, 'pages':pages,
-                                  'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'User', 'Institution']},
-                                  RequestContext(request))
+    search_text = request.GET.get('search_text', '')
     types = request.GET.get('types', [])
     if type(types) in (str, unicode):
-            types = types.split(',')[:-1]
+        types = types.split(',')[:-1]
+    filterby = request.GET.get('filterby', [])
+    if type(filterby) in (str, unicode):
+        filterby = filterby.split(',')[:-1]
+    categories = request.GET.get('categories', [])
+    if type(categories) in (str, unicode):
+        categories = categories.split(',')[:-1]
+    authors = request.GET.get('authors', [])
+    if type(authors) in (str, unicode):
+        authors = authors.split(',')[:-1]
+    licences = request.GET.get('licences', [])
+    if type(licences) in (str, unicode):
+        licences = licences.split(',')[:-1]
+    tags = request.GET.get('tags', [])
+    if type(tags) in (str, unicode):
+        tags = tags.split(',')[:-1]
+
     search = {
-            'type': types,
+        'search_text': search_text,
+        'type': types,
+        'categories': categories,
+        'authors': authors,
+        'licences': licences,
+        'tags': tags,
+        'filterby': filterby
     }
+
     return render_to_response("scs/search.html",
-                              {'search': search, "results": None, "numResults": 0, 'countType': {},
-                               'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService', 'User', 'Institution']},
+                              {'search': search, "results":None, "numResults": 0, 'countType': {},
+                              'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService']},
                               RequestContext(request))
+
 
 @is_staff()
 def users_access_admin(request):

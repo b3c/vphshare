@@ -4,10 +4,19 @@
 
 {% block extrahead %}
     <script src="/static/jquery-scrolltofixed-min.js"></script>
-    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css"  type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/dataTables.bootstrap.min.css" type="text/css" media="screen" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <!--[if IE 7]>
     <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
     <![endif]-->
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/dataTables.tableTools.min.js"></script>
+    <script src="/static/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/js/ICanHaz.min.js"></script>
 {% endblock %}
 
 {% block page-title %}
@@ -17,146 +26,88 @@
 
 {%  block content %}
     <div class="row">
-        <div class="span12 text-center search-box" style="{% if results != None %}padding: 5px;{% endif %}">
-            <form id="form-search" class="form-search">
-            <div class="input-prepend input-append">
-                <div class="btn-group">
-                    <button class="btn dropdown-toggle search-btn-left" data-toggle="dropdown">
-                        All resources
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu text-left">
-
-                        {% for type in types %}
-                            {% if type != 'Other' %}
-                            <li><a id="{{ type }}" class="multicheck{% if type in search.type %} checked {% endif %}" href="#">
-                                {% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}
-                                <span class="pull-right {% if type in search.type %} icon-ok {% endif %}"></span></a></li>
-                            {% endif %}
-                        {% endfor %}
-                        <div class="clearfix"></div>
-                    </ul>
-                </div>
-                <input class="span4 search-query" id="search_text" type="text" name="search_text" value="{{ search.search_text }}">
-                <button type="submit" class="btn search-btn-right">Search</button>
-                <div style="font-size: 12px;padding-top: 5px;text-align: right;">Or use <a href="/semantic-search/">Semantic search</a></div>
-            </div>
-            </form>
-        </div>
-    </div>
-    {% if results != None %}
-    <div class="row-contet row-fluid" style="min-height: 566px;">
-        <div class="span9 left-list search-list">
+        <div class="span12 left-list" >
             <div class="popover-list ">
-                <div class="popover-content">
-                    {% for type in search.type %}
-                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
-                    {% endfor %}
-                    {% for category in search.categories %}
-                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >Category: {{ category }}</div><div data-value="{{ category }}" data-field="categories" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
-                    {% endfor %}
-                    {% for author in search.authors %}
-                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Author: {{ author }}</div><div data-value="{{ author }}" data-field="authors"  type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
-                    {% endfor %}
-                    {% for licence in search.licences %}
-                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Licence: {{ licence }}</div><div data-value="{{ licence }}" data-field="licences" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
-                    {% endfor %}
-                    {% for tags in search.tags %}
-                        <div class="pull-right"><span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Tags: {{ tags }}</div><div data-value="{{ tags }}" data-field="tags" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span></div>
-                    {% endfor %}
-                    <div>We've found <div style="display:inline" id="numResults">{{ numResults }}</div> repository results</div>
-                </div>
-            </div>
-            {% for result in results %}
-                {% if result.type in search.filterby or search.filterby|length_is:'0' %}
-                <div class="popover-list result-item">
-                    <div class="popover-content">
-                        {% if result.type == 'User' %}
-                            <p><i class="icon-user {{ result.type }}-color"></i><b> <a class="{{ result.type }}-color" href="/profile/{{ result.description }}">{{ result.name }}</a></b></p>
-                        {% elif result.type == 'Institution' %}
-                            <p><i class="icon-group {{ result.type }}-color"></i><a target="_blank" href="/groups/{{ result.id}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
-                        {% elif result.type == 'AtomicService' %}
-                            <p><i class="icon-group Application-color-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="Application-color"> {{ result.name }}</b></a></p>
-                        {% elif result.type == 'SemanticWebService' %}
-                            <p><i class="icon-group SWS-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="SWS-color"> {{ result.name }}</b></a></p>
-                        {% else %}
-                            <p><i class="icon-th {{ result.type }}-color"></i><a target="_blank" href="/resources/{{ result.globalID}}"><b class="{{ result.type }}-color"> {{ result.name }}</b></a></p>
-                        {% endif %}
-                        <p style="font-size: 13px"> {{ result.description|strCut:'100' }} | Type: {% if result.type == "AtomicService" %}Application{% elif result.type == "SemanticWebService" %}Semantic web service{% else %}{{ result.type }}{% endif %}</p>
+                <div class="popover-content" style="padding-top: 0px">
+                    <div class="input-append">
+                        <input class="search-query" id="search_text" type="text" name="search_text" value="{{ search.search_text }}">
+                        <button type="submit" class="btn search-btn-right btn-info"><i class="fa fa-search"></i></button>
+                        <div style="font-size: 12px;padding-top: 5px;text-align: right;">Or use <a href="/semantic-search/">Semantic search</a></div>
                     </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-            <div id="loading-wait" class="popover-list loading hide" style="position: relative">
-                <div  class="popover-content">
-
+                    <div title = "Total results" data-value="all" class="well well-small well-white button filtred"><i class="fa fa-asterisk "></i> <b class="counter-0"></b> <span class="badge pull-right text-center"></span></div>
+                    {% for type in types %}
+                        <div title="Filter by {{ type }}" data-value="{{ type }}" class="well well-small well-white filter {% if type not in search.filterby %}filtred{% endif %} {{ type }}-bkgr">
+                            <i class="fa fa-{{ type }}"><b class="counter-{{ forloop.counter }}"></b></i>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
-        <div class="span3 rigth-list" style="margin-left: 0px;border-left: 1px solid #e5e5e5;top: 0px;" >
-        <!--- TODO  fixed rigth bar, to-top button -->
-            <div class="totop" style="display: none;">
-                <div class="gototop">
-                    <div class="arrowgototop "><i class="icon-chevron-up icon-white" style="color: #ffffff;"></i></div>
-                </div>
-            </div>
-            <div class="popover-list">
-                <div class="popover-content">
-                    <p><b>Filter By</b></p>
-                    {% for type in types %}
-                        {% if type == "AtomicService" %}
-                            <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">Application<span id="count-{{ type }}" class="badge pull-right Application-bkgr text-center">{{countType|keyvalue:type}}</span></div>
-                        {% elif type == "SemanticWebService" %}
-                            <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">Semantic web service<span id="count-{{ type }}" class="badge pull-right SWS-bkgr text-center">{{countType|keyvalue:type}}</span></div>
-                        {% else  %}
-                            <div data-value="{{ type }}" class="well well-small well-white filter {% if type in search.filterby %}filtred{% endif %}">{{ type }}<span id="count-{{ type }}" class="badge pull-right {{ type }}-bkgr text-center">{{countType|keyvalue:type}}</span></div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="popover-list">
+        <div class="span12 left-list" >
+            <div class="popover-list " style="padding-top: 0px">
                 <div class="popover-content">
                     <p><b>Refine</b></p>
-                    <div class="well well-small well-white">Category<input id="categories" class="input-refine pull-right" type="text"></div>
-                    <div class="well well-small well-white">Author<input id="authors" class="input-refine pull-right" type="text"></div>
-                    <div class="well well-small well-white">Licence<input id="licences" class="input-refine pull-right" type="text"></div>
-                    <div class="well well-small well-white">Tags<input id="tags"  class="input-refine pull-right" type="text"></div>
-                    <!--<div class="btn-group well well-small well-white btn-refine">
-                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            Service Type
-                            <span class="caret pull-right"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>Type1</li>
-                        </ul>
-                    </div>
-                    <div class="btn-group well well-small well-white btn-refine">
-                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            Application Type
-                            <span class="caret pull-right"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>Type1</li>
-                        </ul>
-                    </div>
-                    <div class="btn-group well well-small well-white btn-refine">
-                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            Workflow Engine
-                            <span class="caret pull-right"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>Type1</li>
-                        </ul>
-                    </div>-->
+                    <div class="well well-small well-white refine">Category<input id="categories" class="input-refine pull-right" type="text"></div>
+                    <div class="well well-small well-white refine">Author<input id="authors" class="input-refine pull-right" type="text"></div>
+                    <div class="well well-small well-white refine">Licence<input id="licences" class="input-refine pull-right" type="text"></div>
+                    <div class="well well-small well-white refine">Tags<input id="tags"  class="input-refine pull-right" type="text"></div>
+                    <hr/>
+                    {% for type in search.type %}
+                        <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                    {% endfor %}
+                    {% for category in search.categories %}
+                        <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >Category: {{ category }}</div><div data-value="{{ category }}" data-field="categories" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                    {% endfor %}
+                    {% for author in search.authors %}
+                        <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Author: {{ author }}</div><div data-value="{{ author }}" data-field="authors"  type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                    {% endfor %}
+                    {% for licence in search.licences %}
+                        <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Licence: {{ licence }}</div><div data-value="{{ licence }}" data-field="licences" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                    {% endfor %}
+                    {% for tags in search.tags %}
+                        <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Tags: {{ tags }}</div><div data-value="{{ tags }}" data-field="tags" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                    {% endfor %}
                 </div>
             </div>
         </div>
+
     </div>
-    {% endif %}
+    <hr/>
+    <div id="results" class="row-fluid">
+        <div class="span12">
+            <table id="example" class="row-border resource-datatable" cellspacing="0" width="100%">
+                <thead>
+                    <tr >
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Owner</th>
+                        <th>Updated</th>
+                        <th>Rating</th>
+                        <th>Views</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tfoot>
+                    <tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Owner</th>
+                        <th>Updated</th>
+                        <th>Rating</th>
+                        <th>Views</th>
+                        <th>Actions</th>
+                    </tr>
+                </tfoot>
+
+            </table>
+        </div>
+    </div>
     <script type="text/javascript">
         (function() {
             var global = this;
             var $ = global.$;
+
             var console = global.console || {log:function() {}};
 
 
@@ -168,7 +119,6 @@
                 var self = this;
 
                //init multicheck dropdown menu
-                this.$form = $('#form-search');
                 this.$search_text = $('#search_text');
                 this.$search_text.keypress(
                     function(e){
@@ -177,48 +127,16 @@
                             var input = $(this);
                             var value = input.val().trim();
                             var key = input.attr('id');
-                            if ( value == '')
-                                return false;
-                            self.$form.submit();
+                            self.submit();
                         }
                         return true;
                     }
                 );
-                this.$atomic = false;
-                this.$min = 20;
-                this.$max = 40;
-                this.$numResults = {{ numResults }};
-                this.$pages = true;
-                this.$page = 1;
-                this.$loadingBox = $('.loading');
-                this.$rigthList = $('.rigth-list');
-                $('.totop').click(function(){$('html, body').animate({ scrollTop: 0 }, 'slow');});
-                this.$rigthList.scrollToFixed({
-                    unfixed : function() {
-                        $(this).css({'top':'0px'});
-                        $('.totop').fadeOut();
-                    },
-                    fixed : function() {
-                        $('.totop').fadeIn();
-                    }
-
-                });
                 // event when add some refine input
                 $('.input-refine').keypress(function(e){self.refine($(this),e);});
                 this.tooltipMessage($('.input-refine'),'Type enter to send','focus');
-                $('.multicheck').click(function(e){self.multicheck($(this),e)});
-
-                this.$form.on('submit',function(e){self.submit();return false;});
                 $('.remove-tag').click(function(e){self.removeTag(e,$(this).data('value'),$(this).data('field'));});
                 $('.filter').click(function(e){self.filter($(this),$(this).data('value'));});
-                $(window).scroll(function() {
-                    if($(window).scrollTop() + $(window).height() >= self.$loadingBox.position().top+300 && self.$atomic == false && self.$pages ) {
-                        self.$page = self.$page+1;
-                        self.$atomic = true;
-                        $('#loading-wait').show();
-                        self.loading();
-                    }
-                });
 
                 this.$request = {types:[{% for types in search.type %}'{{ types }}',{% endfor %}],
                            filterby:[{% for filterby in search.filterby %}'{{ filterby }}',{% endfor %}],
@@ -228,6 +146,60 @@
                            licences:[{% for licences in search.licences %}'{{ licences }}',{% endfor %}],
                            tags:[{% for tags in search.tags %}'{{ tags }}',{% endfor %}]
                 };
+                this.$datatable = $('#example').dataTable({
+                        /*"data": dataSet,*/
+                        "processing": true,
+                        "serverSide": true,
+                        "ajax": {
+                            "url": "/resources/globalsearch/",
+                            "data": function ( d ) {
+                                d.request = self.$request
+                            },
+                            "dataSrc": function ( json ) {
+                                var filters = ["numTotalMetadata", "datasetCount", "wfCount",  "atsCount", "fileCount", "swsCount"];
+                                var i;
+                                for (i=0 ; i < filters.length; i++){
+                                    $('.counter-'+i).text(json['info'][filters[i]]);
+                                }
+                                delete json['info'];
+                                return json['data']
+                            }
+                        },
+                        "columns": [
+                            { "data": "type", "orderable": false },
+                            { "data": "name" },
+                            { "data": "owner" },
+                            { "data": "update" },
+                            {
+                                "data": "rating",
+                                "render": function(data,type,row,meta){
+                                    var rating = '<div class="line-rating" data-rate="'+data+'" title="'+data+'"> <i class="star-1">★</i> <i class="star-2">★</i> <i class="star-3">★</i> <i class="star-4">★</i> <i class="star-5">★</i> </div>';
+                                    return rating;
+                                }
+
+                            },
+                            { "data": "views" },
+                            {
+                                "data": "actions",
+                                "render": function(data, type, row, meta){
+                                    return '<a target="_blank" href="/resources/'+data['global_id']+'/"><i class="fa fa-external-link-square"></i></a>';
+                                }
+                            }
+                        ],
+                        "order": [[ 1, 'asc' ]],
+                        "paging": true,
+                        "ordering": true,
+                        "info": true,
+                        "search": false,
+                        "dom": 'liprtip',
+                        language: {
+                            paginate: {
+                                previous: "«",
+                                next: "»"
+                            }
+                        }
+
+                });
             };
 
             SearchController.prototype.tooltipMessage = function(where, message, trigger){
@@ -277,26 +249,21 @@
 
                 var self = this;
                 $('.result-item').remove();
-                button.toggleClass("filtred");
                 var index = $.inArray(filter,this.$request.filterby);
                 if (index<0){
                     this.$request.filterby.push(filter);
                 }else if (index>=0){
                     this.$request.filterby.splice(index,1);
                 }
-                self.$min = 0;
-                self.$max = 20;
-                self.$atomic = true;
-                $('#loading-wait').show();
-                this.loading();
+                button.toggleClass("filtred");
+                this.submit();
             };
 
             SearchController.prototype.submit = function(){
 
-                if (this.$search_text.val().trim() == '')
-                    return false;
 
                 this.$request.search_text = this.$search_text.val();
+
                 var types = '',categories ='',authors='',licences='';
                 var url_submit = "/search?search_text="+this.$request.search_text;
                 var i;
@@ -360,24 +327,10 @@
 
                     this.$request[key].push(value);
                     this.submit();
-
                 }
                 return true
             };
 
-            SearchController.prototype.multicheck = function(type, e){
-                type.toggleClass("checked");
-                type.find("span").toggleClass("icon-ok");
-                var index = $.inArray(type.attr('id'),this.$request.types);
-                if(type.hasClass("checked")){
-                    if (index<0)
-                        this.$request.types.push(type.attr('id'));
-                }else{
-                    if (index>=0)
-                        this.$request.types.splice(index,1);
-                }
-                return false;
-            };
 
             new SearchController();
         }).call(this);
