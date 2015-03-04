@@ -11,6 +11,7 @@ urlpatterns = patterns(
     url(r'^resources/search_sws/$', smart_get_SWS, name='smart_get_SWS'),
     url(r'^resources/search/$', smart_get_resources, name='smart_get_resources'),
     url(r'^resources/globalsearch/$', globalsearch, name='globalsearch'),
+    url(r'^resources/resource_modal/(?P<global_id>[\w\-]+)$', resource_modal, name='resource_modal'),
     url(r'^resources/edit/(?P<id>[\w\-]+)/$', edit_resource, name='editResource'),
     url(r'^resources/list/(?P<resource_type>[\w\-]+)/(?P<page>\d+)', get_resources_list),
     url(r'^resources/list/(?P<resource_type>[\w\-]+)/', get_resources_list,  name='get_resources_list'),

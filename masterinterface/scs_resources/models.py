@@ -154,7 +154,7 @@ class ResourceManager(models.Manager):
 
 class Resource(models.Model):
 
-    global_id = models.CharField(null=True, max_length=39)
+    global_id = models.CharField(null=True, max_length=39, unique=True)
     owner = models.ForeignKey(User, default=1)
     type = models.CharField(null=True, max_length=20)
 
@@ -175,6 +175,40 @@ class Resource(models.Model):
 
     def __unicode__(self):
         return "%s" % self.global_id
+
+    def attach_pemissions(self, user=None, group=None, public=True):
+        if user:
+            if public:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(user=user) | Q(group__in=user.groups.all()) | Q(group=None, user=None),
+                    role__name__in=Roles,
+                    content_type__name='resource'
+                )
+            else:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(user=user) | Q(group__in=user.groups.all()),
+                    role__name__in=Roles,
+                    content_type__name='resource'
+                )
+        elif group:
+            if public:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(group=group) | Q(group=None, user=None),
+                    role__name__in=Roles,
+                    content_type__name = 'resource'
+                )
+            else:
+                role_relations = PrincipalRoleRelation.objects.filter(
+                    Q(group=group),
+                    role__name__in=Roles,
+                    content_type__name = 'resource'
+                )
+        else:
+            return get_resources_metadata_by_list()
+        roles = role_relations.filter(content_id=self.id).values_list('role__name', flat=True)
+        self.is_manager = "Manager" in roles or "Owner" in roles
+        self.is_editor = "Editor" in roles or "Manager" in roles or "Owner" in roles
+        self.is_reader = "Reader" in roles or "Editor" in roles or "Manager" in roles or "Owner" in roles
 
     def load_permission(self):
         #method provide the load permission for specific types of resource : File and Dataset

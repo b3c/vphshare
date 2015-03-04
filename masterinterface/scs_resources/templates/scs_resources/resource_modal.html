@@ -1,0 +1,36 @@
+<div id="{{ resource.id }}-details" class="accordion-body ">
+    <ul class="nav nav-tabs" id="details-tab">
+        <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
+            <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
+        </li>
+        {% if resource.is_manager %}
+        <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
+            <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
+        </li>
+        {% endif %}
+        <script>
+            $(function(){
+                $('#{{ resource.id }}-details > ul > li').each(function(index, element) {
+                    new LoadDashboard(element);
+                });
+                var start = true;
+                if (start)
+                    $('#{{ resource.id }}-details > ul > li').first().click();
+                start = false;
+            });
+        </script>
+    </ul>
+    <div class="tab-content">
+    <div class="alert hide">
+        <span id="modal-message"></span>
+    </div>
+        <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
+        &nbsp
+        </div>
+        {% if resource.is_manager %}
+        <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
+        &nbsp
+        </div> <!-- end tabpane2 -->
+        {% endif %}
+    </div><!-- end tabcontent -->
+</div>

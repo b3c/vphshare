@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.template.context import RequestContext
 from django.core.cache import cache
-from django.core.exceptions import SuspiciousOperation
+from django.core.exceptions import SuspiciousOperation, PermissionDenied
 
 from masterinterface.scs_security.politicizer import create_policy_file
 from masterinterface.cyfronet import cloudfacade
@@ -948,13 +948,13 @@ def globalsearch(request):
                     r.save()
 
                 results['data'].append({
-                    'type':'<i class="fa fa-%s"></i>'%resource['type'],
+                    'type':'<i title="%s" class="fa fa-%s"></i>'%( resource['type'], resource['type']),
                     'name':str(resource.get('name','')),
                     'owner':resource['author'],
                     'update':resource['updateDate'],
                     'rating':resource['rating'],
                     'views':resource['views'],
-                    'actions':{'global_id':resource['globalID']},
+                    'actions':{'global_id':resource['globalID'], 'name':resource['name']},
                     'DT_RowClass': resource['type']+'-light-bkgr',
                 })
 
@@ -964,7 +964,20 @@ def globalsearch(request):
                             content=json.dumps(results, sort_keys=False),
                             content_type='application/json')
         except Exception, e:
-            return HttpResponse(status=500)
+            from raven.contrib.django.raven_compat.models import client
+            client.captureException()
+            raise SuspiciousOperation
+
+def resource_modal(request, global_id):
+    if request.user.is_authenticated():
+        r = Resource.objects.get(global_id=global_id)
+        r.load_additional_metadata(request.ticket)
+        r.load_permission()
+        r.attach_pemissions(user=request.user)
+
+        return render_to_response("scs_resources/resource_modal.html",{'resource':r},RequestContext(request))
+    else:
+        raise PermissionDenied
 
 def get_discoveries_list(request, resource_type=None, page=1):
     if request.method == 'GET':

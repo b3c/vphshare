@@ -1120,7 +1120,7 @@ a.search-data-link:hover{
 
 /* alternative rating*/
 .line-rating {
-  margin: 10px 0;
+  margin: 3px 0;
 }
 
 .line-rating i {
@@ -1207,6 +1207,29 @@ a.search-data-link:hover{
 }
 
 /*end alternative rating*/
+
+.modal-share {
+    text-align: left;
+    width: 950px;
+    margin-left: -475px;
+}
+
+.modal-share td{
+    text-align: left !important;
+}
+
+.select2-container.select2-container-multi {
+    width: 200px !important;
+}
+
+.well-linetable{
+    margin: 0px 5px 0px 4px;
+    padding: 9px;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: inline-block;
+
+}
+
 
 .resource-datatable td{
     text-align: center;
