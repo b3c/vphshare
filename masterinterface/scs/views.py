@@ -243,7 +243,7 @@ def search(request):
     }
 
     return render_to_response("scs/search.html",
-                              {'search': search, "results":None, "numResults": 0, 'countType': {},
+                              {'search': search, "results":None, "numResults": 0, 'countType': {}, 'filterToshow':'false',
                               'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService']},
                               RequestContext(request))
 

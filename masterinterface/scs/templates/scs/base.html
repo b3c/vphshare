@@ -260,7 +260,7 @@
                             </div>
                     {% endblock %}
                     {% block breadcrumbs %}
-                    {% if not request.path|breadcrumbs|length_is:"0" and institution%}
+                    {% if not request.path|breadcrumbs|length_is:"0"%}
                     <div id="breadcrumbs-wrapper">
                         <ul id="breadcrumbs" class="breadcrumb">
                             <li><a href="/"  title="Home">home</a><span class="divider">|</span></li>

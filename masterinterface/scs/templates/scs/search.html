@@ -34,9 +34,9 @@
                         <button type="submit" class="btn search-btn-right btn-info"><i class="fa fa-search"></i></button>
                         <div style="font-size: 12px;padding-top: 5px;text-align: right;">Or use <a href="/semantic-search/">Semantic search</a></div>
                     </div>
-                    <div title = "Total results" data-value="all" class="well well-small well-white button filtred"><i class="fa fa-asterisk "></i> <b class="counter-0"></b> <span class="badge pull-right text-center"></span></div>
+                    <div title = "Total results" data-value="all" class="well well-small well-white button filtred" {% if filterToshow == 'true' %}style="display: none;"{% endif %}><i class="fa fa-asterisk "></i> <b class="counter-0"></b> <span class="badge pull-right text-center"></span></div>
                     {% for type in types %}
-                        <div title="Filter by {{ type }}" data-value="{{ type }}" class="well well-small well-white filter {% if type not in search.filterby %}filtred{% endif %} {{ type }}-bkgr">
+                        <div title="Filter by {{ type }}" data-value="{{ type }}" class="well well-small well-white filter {% if type not in search.filterby %}filtred{% endif %} {{ type }}-bkgr" {% if type not in search.filterby and filterToshow == 'true' %}style="display: none;"{% endif %}>
                             <i class="fa fa-{{ type }}"><b class="counter-{{ forloop.counter }}"></b></i>
                         </div>
                     {% endfor %}
@@ -146,6 +146,7 @@
                            licences:[{% for licences in search.licences %}'{{ licences }}',{% endfor %}],
                            tags:[{% for tags in search.tags %}'{{ tags }}',{% endfor %}]
                 };
+                this.$filterToShow = {{ filterToshow }};
                 this.$datatable = $('#example').dataTable({
                         /*"data": dataSet,*/
                         "processing": true,
@@ -306,6 +307,9 @@
                     for(i = 0; i < this.$request.filterby.length; i++){
                         url_submit += this.$request.filterby[i]+',';
                     }
+                }
+                if(this.$filterToShow == true){
+                    url_submit += '&filterToShow='+this.$filterToShow
                 }
                 window.location.href = url_submit;
                 return false;

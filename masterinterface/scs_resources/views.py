@@ -193,79 +193,80 @@ def request_for_sharing(request):
     response = HttpResponse(content=response_body, content_type='application/json')
     return response
 
-def resources(request,tab=''):
-    return render_to_response(
-        "scs_resources/resources.html",
-        {
-         'tab':tab
-        },
-        RequestContext(request)
-    )
+def resources(request,tab='Dataset'):
+
+    search_text = request.GET.get('search_text', '')
+    types = request.GET.get('types', [])
+    if type(types) in (str, unicode):
+        types = types.split(',')[:-1]
+    filterby = [tab]
+    if type(filterby) in (str, unicode):
+        filterby = filterby.split(',')[:-1]
+    categories = request.GET.get('categories', [])
+    if type(categories) in (str, unicode):
+        categories = categories.split(',')[:-1]
+    authors = request.GET.get('authors', [])
+    if type(authors) in (str, unicode):
+        authors = authors.split(',')[:-1]
+    licences = request.GET.get('licences', [])
+    if type(licences) in (str, unicode):
+        licences = licences.split(',')[:-1]
+    tags = request.GET.get('tags', [])
+    if type(tags) in (str, unicode):
+        tags = tags.split(',')[:-1]
+
+    search = {
+        'search_text': search_text,
+        'type': types,
+        'categories': categories,
+        'authors': authors,
+        'licences': licences,
+        'tags': tags,
+        'filterby': filterby
+    }
+
+    return render_to_response("scs_resources/resources.html",
+                              {'search': search, "results":None, "numResults": 0, 'countType': {}, 'filterToshow':'true',
+                              'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService'] , 'tab': tab},
+                              RequestContext(request))
 
 
-def get_resources_list(request, resource_type, page=1):
-    if request.method == 'GET':
-        try:
-            resources = EMPTY_LIST
-            #get the list of owned resource from the metadata repository
-            if resource_type == "data":
-                resources = filter_resources_by_facet('Dataset', page=page)
-                types= ['Dataset']
-            if resource_type == "file":
-                resources =  filter_resources_by_facet('File', page=page)
-                types= ['File']
-            if resource_type == "application":
-                resources = filter_resources_by_facet('AtomicService', page=page)
-                types= ['AtomicService']
-            if resource_type == "workflow":
-                resources = filter_resources_by_facet('Workflow', page=page)
-                types= ['Workflow']
-            if resource_type == "sws":
-                resources = filter_resources_by_facet('SemanticWebService', page=page)
-                types= ['SemanticWebService']
-            resources['data'] = []
-            for resource_meta in resources['resource_metadata']:
-                resource_meta = resource_meta.value
-                try:
-                    user = User.objects.get(username=resource_meta['author'])
-                except Exception, e:
-                    continue
-                if resource_meta['type'] == "Workflow":
-                    resource, created = Workflow.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user, type=resource_meta['type'])
-                else:
-                    #some metadata File type are corrupted
-                    if resource_meta['type'] == "File" and resource_meta['localID'] == "0":
-                        continue
-                    resource, created = Resource.objects.get_or_create(global_id=resource_meta['globalID'], metadata=resource_meta, owner=user, type=resource_meta['type'])
-                if created:
-                    resource.save()
+def get_resources_list(request, resource_type):
 
-                if resource.metadata['type'] not in types:
-                    #skip the resoruce that are not the same type requested
-                    continue
+    search_text = request.GET.get('search_text', '')
+    types = request.GET.get('types', [])
+    if type(types) in (str, unicode):
+        types = types.split(',')[:-1]
+    filterby = [resource_type]
+    if type(filterby) in (str, unicode):
+        filterby = filterby.split(',')[:-1]
+    categories = request.GET.get('categories', [])
+    if type(categories) in (str, unicode):
+        categories = categories.split(',')[:-1]
+    authors = request.GET.get('authors', [])
+    if type(authors) in (str, unicode):
+        authors = authors.split(',')[:-1]
+    licences = request.GET.get('licences', [])
+    if type(licences) in (str, unicode):
+        licences = licences.split(',')[:-1]
+    tags = request.GET.get('tags', [])
+    if type(tags) in (str, unicode):
+        tags = tags.split(',')[:-1]
 
-                if 'File' in types and resource.metadata['type'] == 'File':
-                    #load additional metadata and permission from LOBCDER services
-                    if not resource.load_additional_metadata(request.ticket):
-                        #if something go wrong with the lobcder loader I skip it
-                        continue
-                resource.load_permission()
-                if request.user.is_authenticated():
-                    resource.attach_permissions(user=request.user)
-                else:
-                    resource.attach_permissions()
-                #load requests pending for this resource
-                resource.requests = resource.get_pending_requests_by_resource()
-                resources['data'].append(resource)
+    search = {
+        'search_text': search_text,
+        'type': types,
+        'categories': categories,
+        'authors': authors,
+        'licences': licences,
+        'tags': tags,
+        'filterby': filterby
+    }
 
-            resultsRender = render_to_string("scs_resources/resource_list.html", {"resources": resources, "types":types, "type":resource_type, 'user':request.user, 'page':page})
-            del(resources['resource_metadata'])
-            del(resources['data'])
-            return HttpResponse(status=200,
-                            content=json.dumps({'data': resultsRender, 'info':resources}, sort_keys=False),
-                            content_type='application/json')
-        except Exception, e:
-            return HttpResponse(status=500)
+    return render_to_response("scs_resources/resource_list.html",
+                              {'search': search, "results":None, "numResults": 0, 'countType': {}, 'filterToshow':'true',
+                              'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService']},
+                              RequestContext(request))
 
 
 @login_required

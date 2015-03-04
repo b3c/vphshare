@@ -3,296 +3,59 @@
 {%  block title %} Browse resources in vph-share {% endblock %}
 
 {% block extrahead %}
-    <link rel="stylesheet" href="/static/font-awesome.min.css">
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css"  type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/dataTables.bootstrap.min.css" type="text/css" media="screen" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <!--[if IE 7]>
     <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
     <![endif]-->
-    <style>
-    .select2-container.select2-container-multi {
-        width: 200px !important;
-    }
-    </style>
 {% endblock %}
+
+{% block javascripts %}
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/dataTables.tableTools.min.js"></script>
+    <script src="/static/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/js/ICanHaz.min.js"></script>
+{% endblock %}
+
 
 {%  block content %}
 <div>
     {% block header_buttons%}
     <h1>Browse resources in vph-share</h1>
     <ul class="nav nav-pills">
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/data/" class="resource-tab active">
-          <a>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab {% if tab == 'Dataset' %}active{% endif %}">
+          <a href="{{ BASE_URL }}/browse/Dataset/">
             Datasets
           </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/file/" class="resource-tab active">
-          <a>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/File/" class="resource-tab {% if tab == 'File' %}active{% endif %}" >
+          <a href="{{ BASE_URL }}/browse/File/">
             Files/Folders
           </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/application/" class="resource-tab">
-            <a>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/AtomicService/" class="resource-tab {% if tab == 'AtomicService' %}active{% endif %}" >
+            <a href="{{ BASE_URL }}/browse/AtomicService/">
                 Applications
             </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/workflow/" class="resource-tab">
-        <a>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Workflow/" class="resource-tab {% if tab == 'Workflow' %}active{% endif %}" >
+        <a href="{{ BASE_URL }}/browse/Workflow/">
             Workflows
         </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/sws/" class="resource-tab">
-        <a>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/SemanticWebService/" class="resource-tab {% if tab == 'SemanticWebService' %}active{% endif %}" >
+        <a href="{{ BASE_URL }}/browse/SemanticWebService/">
             Semantic Web services
         </a>
       </li>
-      <script>$(function(){
-          {% if tab == 'file' %}
-              $('.resource-tab')[1].click();
-          {% elif tab == 'application' %}
-              $('.resource-tab')[2].click();
-          {% elif tab == 'workflow' %}
-              $('.resource-tab')[3].click();
-          {% elif tab == 'sws' %}
-              $('.resource-tab')[4].click();
-          {% else %}
-              $('.resource-tab')[0].click();
-          {% endif %}
-        }
-      );</script>
     </ul>
         {% endblock %}
     <div id="dashboard-container" style="position: relative;min-height: 50px;width: 100%;">
-
+        {% include 'scs_resources/resource_list.html' %}
     </div>
 
 </div>
-<script type="text/javascript">
-
-    (function() {
-        var global = this;
-        var $ = global.$;
-        var console = global.console || {log:function() {}};
-        var atomicRequest = global.atomicRequest = false;
-
-        var LoadDashboard = global.LoadDashboard = function(element, options) {
-            this.inizialize($(element));
-        };
-
-        LoadDashboard.prototype.inizialize = function(loadDashboard){
-            var self = this;
-            this.$target = $(loadDashboard.data('target'));
-            this.$getURL = loadDashboard.data('get');
-            this.$loadDashboard = loadDashboard;
-            this.$loading = '<div class="loading">Loading&#8230;</div>';
-            self.$atomic = false;
-            self.$page = 1;
-            atomicRequest = false;
-            loadDashboard.bind('click', function(){
-                        if (atomicRequest != false)
-                            atomicRequest.abort();
-                            atomicRequest = false;
-
-                        if (atomicRequest === false) {
-                            if($(this).hasClass('resource-tab')){
-                                $('.resource-tab').removeClass('active');
-                                $(this).addClass('active');
-                            }
-                            atomicRequest = true;
-                            self.get();
-                        }
-                        return true;
-                    }
-            );
-            if (loadDashboard.hasClass('resource-tab')){
-                $(window).scroll(function() {
-                    if($(window).scrollTop() + $(window).height() >= $('.resource:last').position().top+300 && self.$atomic == false && loadDashboard.hasClass('active') && self.$page < self.$pages) {
-                        self.$atomic = true;
-                        self.$page += 1;
-                        self.next();
-                    }
-                });
-            }
-        };
-
-        LoadDashboard.prototype.alert = function(message,style){
-            style = "alert-"+style;
-            var alert = this.$target.parent().find('.alert');
-            alert.find('#modal-message').text(message);
-            alert.addClass(style);
-            alert.fadeIn().delay(3000).fadeOut(1000, function(){
-                $(this).removeClass(style).find('#modal-message').text('');
-            });
-        };
-
-        LoadDashboard.prototype.loading = function(){
-            var self = this;
-            $('.loading').remove();
-            this.$target.append(this.$loading);
-        };
-
-        LoadDashboard.prototype.getCallBack = function(data,self){
-            $('.loading').remove();
-            if ('info' in data)
-                this.$pages = data['info']['pages'];
-            this.$target.append(data['data']);
-            if (data['data'].trim() != "")
-                this.$atomic = false;
-            atomicRequest = false;
-        };
-
-        LoadDashboard.prototype.next = function(){
-            var self = this;
-            self.loading();
-            atomicRequest=$.ajax(self.$getURL+self.$page, {
-                type: 'GET',
-                success: function(data) { self.getCallBack(data,self); },
-                error: function(data) { $('.loading').remove();
-            atomicRequest = false;self.$atomic = false;self.alert('Metadata Service return an error.Try later.','error'); }
-            });
-        };
-
-        LoadDashboard.prototype.get = function(){
-            var self = this;
-            this.$target.empty();
-            self.loading();
-            atomicRequest=$.ajax(self.$getURL, {
-                type: 'GET',
-                success: function(data) { self.getCallBack(data,self); },
-                error: function(data) { $('.loading').remove();
-            atomicRequest = false;self.alert('Metadata Service return an error.Try later.','error'); }
-            });
-        };
-
-
-        LoadDashboard.autoDiscover = function() {
-            $('.resource-tab').each(function(index, element) {
-                new LoadDashboard(element);
-            });
-
-        };
-        LoadDashboard.autoDiscover();
-    }).call(this);
-
-    (function() {
-        var global = this;
-        var $ = global.$;
-        var console = global.console || {log:function() {}};
-
-
-        var ShareTab = global.ShareTab = function(element, options) {
-            this.inizialize($(element));
-        };
-
-        ShareTab.prototype.inizialize = function(shareModal){
-            var self = this;
-            this.$globalId = shareModal.data('globalid');
-            this.$localid = shareModal.data('localid');
-            this.$csrfmiddlewaretoken = shareModal.find("input[name=csrfmiddlewaretoken]").val();
-            this.$shareModal = shareModal;
-            this.permissionMap = [];
-
-            shareModal.find('.permissions-map > tr ').each(function(index,element){
-                var updating_alert = $(element).find('.updating-alert');
-
-                $(element).find('.roles').click(function(e){
-                    updating_alert.show();
-                    var rolename =  $(this).data('rolename');
-                    var name =  $(this).data('name');
-                    if (this.checked){
-                        self.grant( name,rolename,0, element)
-                    }else{
-                        self.grant( name,rolename,1, element)
-                    }
-
-                });
-            });
-
-            shareModal.find('#accept-request').submit(function(e){
-                e.preventDefault();
-                var form = $(this);
-                $.ajax( {
-                  type: "POST",
-                  url: form.attr( 'action' ),
-                  data: form.serialize(),
-                  success: function( response ) {
-                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
-                  }
-                } );
-            });
-
-            shareModal.find('#newshare').submit(function(e){
-                e.preventDefault();
-                var form = $(this);
-                $.ajax( {
-                  type: "POST",
-                  url: form.attr( 'action' ),
-                  data: form.serialize(),
-                  success: function( response ) {
-                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
-                  }
-                } );
-            });
-
-            shareModal.find('.reject-request').submit(function(e){
-                e.preventDefault();
-                var form = $(this);
-                $.ajax( {
-                  type: "POST",
-                  url: form.attr( 'action' ),
-                  data: form.serialize(),
-                  success: function( response ) {
-                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
-                  }
-                } );
-            });
-
-            shareModal.find('.pendig-users > tr').each(function(index, element){
-
-                $(element).find('.accept').click(function(e){
-                    $(this).hide();
-                    $(element).find('.accept-roles').show();
-                });
-
-            });
-
-            this.$alert = shareModal.find('.alert');
-        };
-
-        ShareTab.prototype.alert = function(message,style){
-            style = "alert-"+style;
-
-            this.$alert.find('#modal-message').text(message);
-            this.$alert.addClass(style);
-            this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
-                $(this).removeClass(style).find('#modal-message').text('');
-            });
-        };
-
-
-        ShareTab.prototype.grant = function(setTo, roleToset, method, element){
-            var self = this;
-            var urls = ['/grantrole', '/revokerole'];
-            var url = urls[method];
-            $.ajax({
-                dataType: "json",
-                url: url,
-                method: 'get',
-                data: {name: setTo, role: roleToset, csrfmiddlewaretoken: self.$csrfmiddlewaretoken, global_id: self.$globalId},
-                success: function(data){
-                    $(element).find('.updating-alert').hide(); $(element).find('.updating-ok').show().delay(10000).hide();},
-                error: function(data){
-                    $(element).find('.updating-alert').hide(); $(element).find('.updating-error').show().delay(10000).hide();}
-            });
-        };
-
-
-        ShareTab.autoDiscover = function() {
-            $('.share-pannel').each(function(index, element) {
-                new ShareTab(element);
-            });
-
-        };
-        ShareTab.autoDiscover();
-    }).call(this);
-</script>
 
 {% endblock %}

@@ -1,95 +1,441 @@
-{% load scs_extras %}
-{% if type == 'workflow'  and page == 1 and user.is_authenticated %}
-    <style>
-        .workflow-header>li>a:hover, .workflow-header>li>a:focus {
-            color: #fff;!important;
-            background-color: #04c; !important;
-        }
-    </style>
-    <ul class="nav nav-pills workflow-header">
 
-        <li style="float: right;margin-left: 10px;" >
-            <a class="btn btn-primary" style="color:#ffffff;"  target="_blank" class="btn btn-primary" href="http://onlinehpc.com/wizard/workflow/">Taverna Online</a>
-        </li>
-        <li style="float: right;margin-left: 10px;" >
-            <a class="btn btn-primary" style="color:#ffffff;"  class="btn btn-primary" href="/workflows/new/">Upload new workflow</a>
-        </li>
-    </ul>
-{% endif %}
-{% if resources.data|length == 0  and 'dashboard' in request.path and page == 1%}
-    <div class="alert alert-info">
-        <span> you don't have {{ type }} yet.</span>
+<div class="row">
+    <div class="span12 left-list" >
+        <div class="popover-list ">
+            <div class="popover-content" style="padding-top: 0px">
+                <div class="input-append">
+                    <input class="search-query" id="search_text" type="text" name="search_text" value="{{ search.search_text }}">
+                    <button type="submit" class="btn search-btn-right btn-info"><i class="fa fa-search"></i></button>
+                    <div style="font-size: 12px;padding-top: 5px;text-align: right;">Or use <a href="/semantic-search/">Semantic search</a></div>
+                </div>
+                <div title = "Total results" data-value="all" class="well well-small well-white button filtred" {% if  filterToshow == 'true' %}style="display: none;"{% endif %}><i class="fa fa-asterisk "></i> <b class="counter-0"></b> <span class="badge pull-right text-center"></span></div>
+                {% for type in types %}
+                    <div title="Filter by {{ type }}" data-value="{{ type }}" class="well well-small well-white filter {% if type not in search.filterby %}filtred{% endif %} {{ type }}-bkgr" {% if type not in search.filterby and filterToshow == 'true' %}style="display: none;"{% endif %}>
+                        <i class="fa fa-{{ type }}"><b class="counter-{{ forloop.counter }}"></b></i>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-{% endif %}
-{%for resource in resources.data%}
-        {% if resource.metadata.type in types %}
-            {% if resource|is_active or resource.is_manager%}
-                <div id="{{ resource.id }}"  class="resource well well-small">
-                <div class="row">
-                    <div  class="span3">
-                        {{ resource.metadata.name }}
-                    </div>
-                    <div class="span5">
-                        {% if user.is_authenticated %}Owner: {{ resource.metadata.author }} |{% endif %} Updated: {{ resource.metadata.metadataUpdateDate|strTodate|date:"SHORT_DATE_FORMAT" }}
-                    </div>
+    <div class="span12 left-list" >
+        <div class="popover-list " style="padding-top: 0px">
+            <div class="popover-content">
+                <p><b>Refine</b></p>
+                <div class="well well-small well-white refine">Category<input id="categories" class="input-refine pull-right" type="text"></div>
+                <div class="well well-small well-white refine">Author<input id="authors" class="input-refine pull-right" type="text"></div>
+                <div class="well well-small well-white refine">Licence<input id="licences" class="input-refine pull-right" type="text"></div>
+                <div class="well well-small well-white refine">Tags<input id="tags"  class="input-refine pull-right" type="text"></div>
+                <hr/>
+                {% for type in search.type %}
+                    <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >{% if type == "AtomicService" %}Application{% elif type == "SemanticWebService" %}Semantic web service{% else %}{{ type }}{% endif %}</div><div data-value="{{ type }}" data-field="types"  type="button" class=" remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                {% endfor %}
+                {% for category in search.categories %}
+                    <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left" >Category: {{ category }}</div><div data-value="{{ category }}" data-field="categories" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                {% endfor %}
+                {% for author in search.authors %}
+                    <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Author: {{ author }}</div><div data-value="{{ author }}" data-field="authors"  type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                {% endfor %}
+                {% for licence in search.licences %}
+                    <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Licence: {{ licence }}</div><div data-value="{{ licence }}" data-field="licences" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                {% endfor %}
+                {% for tags in search.tags %}
+                    <span class="label tag-label" style="vertical-align: middle;margin-right: 5px;"><div class="tag pull-left">Tags: {{ tags }}</div><div data-value="{{ tags }}" data-field="tags" type="button" class="remove-tag close pull-rigth" style="margin-left:5px;line-height: 14px">×</div></span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
-                    <div class="span3">
-                        <a  id="link-button" class="btn btn-info " title="Open in new tab" href="/resources/{{ resource.global_id }}" style="color:#ffffff;" target="_blank"><i class="icon-external-link"></i></a>
-                        {% if resource.is_editor %}
-                        <a id="link-button"  class="btn btn-info" title="Edit metadata" href="/resources/edit/{{ resource.global_id }}/" style="color:#ffffff;" target="_blank"><i class="icon-edit"></i></a>
-                            {% if resource.metadata.type == "Workflow"%}
-                                <a id="details-button" class="btn btn-info accordion-toggle" title="Edit workflow in Taverna Online"  href="http://onlinehpc.com/workflows/editor?provider=vphshare&workflowId={{ resource.global_id }}&login=true" target="_blank">
-                                   <i class="icon-edit"></i> T.O.
-                                </a>
-                            {% endif%}
-                        {% endif %}
-                        <a id="details-button" class="btn btn-warning  accordion-toggle" title="Show details" data-toggle="collapse" href="#{{ resource.id }}-details">
-                            <i class="icon-reorder"></i>
-                        </a>
-                        {% if resource.is_manager%}
-                            {% if resource.requests and resource.requests|length > 0 %}<span class="badge badge-important"><strong>!</strong></span>{% endif %}
-                        {% endif %}
-                    </div>
-                </div>
-                <div id="{{ resource.id }}-details" class="accordion-body collapse {% if resource.global_id in collapse %}in{% endif %}">
-                    <ul class="nav nav-tabs" id="details-tab">
-                        <li  data-target="#{{ resource.id }}-metadata" data-get="{{ BASE_URL }}/dashboard/details/{{ resource.global_id }}/"   class="active">
-                            <a href="#{{ resource.id }}-metadata" data-toggle="tab">Details</a>
-                        </li>
-                        {% if resource.is_manager %}
-                        <li data-target="#{{ resource.id }}-share" data-get="{{ BASE_URL }}/dashboard/share/{{ resource.global_id }}/"  class="{% if resource.global_id in collapse %}active{% endif %}">
-                            <a href="#{{ resource.id }}-share" data-toggle="tab">Share</a>
-                        </li>
-                        {% endif %}
-                        <script>
-                            $(function(){
-                                $('#{{ resource.id }}-details > ul > li').each(function(index, element) {
-                                    new LoadDashboard(element);
-                                });
-                                var start = true;
-                                $('#{{ resource.id }}-details').on('shown', function(){
-                                    if (start)
-                                        $('#{{ resource.id }}-details > ul > li').first().click();
-                                    start = false;
-                                })
-                            });
-                        </script>
-                    </ul>
-                    <div class="tab-content">
-                    <div class="alert hide">
-                        <span id="modal-message"></span>
-                    </div>
-                        <div data-globalid="{{ resource.global_id }}" style="min-height: 100px;" class="tab-pane active manage-modal-data" id="{{ resource.id }}-metadata">
-                        &nbsp
-                        </div>
-                        {% if resource.is_manager %}
-                        <div   data-globalid="{{ resource.global_id }}" data-localid="{{ resource.id }}" style="min-height: 100px;" class="tab-pane share-pannel" id="{{ resource.id }}-share">
-                        &nbsp
-                        </div> <!-- end tabpane2 -->
-                        {% endif %}
-                    </div><!-- end tabcontent -->
-                </div>
-            {% endif %}
-        {% endif %}
+</div>
+<hr/>
+<div id="results" class="row-fluid">
+    <div class="span12">
+        <table id="example" class="row-border  resource-datatable" cellspacing="0" width="100%">
+            <thead>
+                <tr >
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Updated</th>
+                    <th>Rating</th>
+                    <th>Views</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tfoot>
+                <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Updated</th>
+                    <th>Rating</th>
+                    <th>Views</th>
+                    <th>Actions</th>
+                </tr>
+            </tfoot>
+
+        </table>
     </div>
-{% endfor %}
+</div>
+<script type="text/javascript">
+    (function() {
+        var global = this;
+        var $ = global.$;
+
+        var console = global.console || {log:function() {}};
+
+
+        var SearchController = global.SearchController = function() {
+            this.inizialize();
+        };
+
+        SearchController.prototype.inizialize = function(){
+            var self = this;
+
+           //init multicheck dropdown menu
+            this.$search_text = $('#search_text');
+            this.$search_text.keypress(
+                function(e){
+                    if(e.keyCode == 13)
+                    {
+                        var input = $(this);
+                        var value = input.val().trim();
+                        var key = input.attr('id');
+                        self.submit();
+                    }
+                    return true;
+                }
+            );
+            // event when add some refine input
+            $('.input-refine').keypress(function(e){self.refine($(this),e);});
+            this.tooltipMessage($('.input-refine'),'Type enter to send','focus');
+            this.$filterToShow = {{ filterToshow }};
+            $('.remove-tag').click(function(e){self.removeTag(e,$(this).data('value'),$(this).data('field'));});
+            if (!this.$filterToShow)
+                $('.filter').click(function(e){self.filter($(this),$(this).data('value'));});
+            this.$request = {types:[{% for types in search.type %}'{{ types }}',{% endfor %}],
+                       filterby:[{% for filterby in search.filterby %}'{{ filterby }}',{% endfor %}],
+                       search_text:'{{ search.search_text }}',
+                       categories:[{% for categories in search.categories %}'{{ categories }}',{% endfor %}],
+                       authors:[{% for authors in search.authors %}'{{ authors }}',{% endfor %}],
+                       licences:[{% for licences in search.licences %}'{{ licences }}',{% endfor %}],
+                       tags:[{% for tags in search.tags %}'{{ tags }}',{% endfor %}]
+            };
+
+            this.$datatable = $('#example').dataTable({
+                    /*"data": dataSet,*/
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": {
+                        "url": "/resources/globalsearch/",
+                        "data": function ( d ) {
+                            d.request = self.$request
+                        },
+                        "dataSrc": function ( json ) {
+                            var filters = ["numTotalMetadata", "datasetCount", "wfCount",  "atsCount", "fileCount", "swsCount"];
+                            var i;
+                            for (i=0 ; i < filters.length; i++){
+                                $('.counter-'+i).text(json['info'][filters[i]]);
+                            }
+                            delete json['info'];
+                            return json['data']
+                        }
+                    },
+                    "columns": [
+                        { "data": "type", "orderable": false },
+                        { "data": "name" },
+                        { "data": "owner" },
+                        { "data": "update", "orderable": false },
+                        {
+                            "data": "rating",
+                            "render": function(data,type,row,meta){
+                                var rating = '<div class="line-rating" data-rate="'+data+'" title="'+data+'"> <i class="star-1">★</i> <i class="star-2">★</i> <i class="star-3">★</i> <i class="star-4">★</i> <i class="star-5">★</i> </div>';
+                                return rating;
+                            }
+
+                        },
+                        { "data": "views" },
+                        {
+                            "data": "actions",
+                            "render": function(data, type, row, meta){
+                                var link =  '<a class="well well-small well-linetable" title="open in a new page" target="_blank" href="/resources/'+data['global_id']+'/"><i class="fa fa-external-link-square"></i></a>';
+                                var modal = '<a class="well well-small well-linetable" title="details" data-toggle="modal" href="/resources/resource_modal/'+data['global_id']+'" data-target="#modal-'+data['global_id']+'"><i class="fa fa-bars"></i></a><div id="modal-'+data['global_id']+'" class="modal hide fade modal-share" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> <h3 id="myModalLabel">'+data['name']+' details</h3> </div> <div class="modal-body"> </div> </div>';
+                                return modal+link
+                            },
+                            "orderable": false
+                        }
+                    ],
+                    "order": [[ 1, 'asc' ]],
+                    "paging": true,
+                    "ordering": true,
+                    "info": true,
+                    "search": false,
+                    "dom": 'liprtip',
+                    language: {
+                        paginate: {
+                            previous: "«",
+                            next: "»"
+                        }
+                    }
+
+            });
+        };
+
+        SearchController.prototype.tooltipMessage = function(where, message, trigger){
+            where.tooltip({
+                placement: 'right',
+                trigger : trigger,
+                title:message,
+                container: 'body'
+            });
+        };
+
+        SearchController.prototype.loadingError = function(data){
+
+
+
+        };
+
+        SearchController.prototype.loadingCallBack = function(data,self){
+
+            if (data['data'].trim() == "")
+                self.$pages = false;
+            $(data['data']).insertBefore(self.$loadingBox);
+            self.$numResults = parseInt(data['numResults']);
+            $('#numResults').text(self.$numResults);
+            for (var type in data['countType']) {
+                $('#count-'+type).text(data['countType'][type]);
+            }
+            self.$loadingBox.hide();
+            self.$atomic = false;
+
+        };
+
+        SearchController.prototype.loading = function(){
+
+            var self = this;
+
+            $.ajax('/search_results/', {
+                data: {page:self.$page, filterby:JSON.stringify(self.$request.filterby)},
+                type: 'POST',
+                success: function(data) { self.loadingCallBack(data,self); },
+                error: function(data) { self.loadingError(data); }
+            });
+
+        };
+
+        SearchController.prototype.filter = function(button, filter){
+
+            var self = this;
+            $('.result-item').remove();
+            var index = $.inArray(filter,this.$request.filterby);
+            if (index<0){
+                this.$request.filterby.push(filter);
+            }else if (index>=0){
+                this.$request.filterby.splice(index,1);
+            }
+            button.toggleClass("filtred");
+            this.submit();
+        };
+
+        SearchController.prototype.submit = function(){
+
+
+            this.$request.search_text = this.$search_text.val();
+
+            var types = '',categories ='',authors='',licences='';
+            var url_submit = "?search_text="+this.$request.search_text;
+            var i;
+            if(this.$request.types.length>0){
+                url_submit += '&types=';
+                for(i = 0; i < this.$request.types.length; i++){
+                    url_submit += this.$request.types[i]+',';
+                }
+            }
+
+            if(this.$request.categories.length>0){
+                url_submit += '&categories=';
+                for(i = 0; i < this.$request.categories.length; i++){
+                    url_submit += this.$request.categories[i]+',';
+                }
+            }
+            if(this.$request.authors.length>0){
+                url_submit += '&authors=';
+                for(i = 0; i < this.$request.authors.length; i++){
+                    url_submit += this.$request.authors[i]+',';
+                }
+            }
+            if(this.$request.licences.length>0){
+                url_submit += '&licences=';
+                for(i = 0; i < this.$request.licences.length; i++){
+                    url_submit += this.$request.licences[i]+',';
+                }
+            }
+            if(this.$request.tags.length>0){
+                url_submit += '&tags=';
+                for(i = 0; i < this.$request.tags.length; i++){
+                    url_submit += this.$request.tags[i]+',';
+                }
+            }
+            if(this.$request.filterby.length>0){
+                url_submit += '&filterby=';
+                for(i = 0; i < this.$request.filterby.length; i++){
+                    url_submit += this.$request.filterby[i]+',';
+                }
+            }
+            if(this.$fiterToShow == true){
+                url_submit += '&filterToShow='+this.$filterToShow
+            }
+            window.location.href = url_submit;
+            return false;
+
+        };
+
+        SearchController.prototype.removeTag = function(e, value, key){
+            this.$request[key].splice($.inArray(value,this.$request[key]),1);
+            this.submit();
+        };
+
+        SearchController.prototype.refine = function(input, e){
+
+            if(e.keyCode == 13)
+            {
+                var value = input.val().trim();
+                var key = input.attr('id');
+                if ( value == '')
+                    return false;
+                if ($.inArray(value,this.$request[key]) >= 0)
+                    return false;
+
+                this.$request[key].push(value);
+                this.submit();
+            }
+            return true
+        };
+
+
+        new SearchController();
+    }).call(this);
+
+    (function() {
+        var global = this;
+        var $ = global.$;
+        var console = global.console || {log:function() {}};
+
+
+        var ShareTab = global.ShareTab = function(element, options) {
+            this.inizialize($(element));
+        };
+
+        ShareTab.prototype.inizialize = function(shareModal){
+            var self = this;
+            this.$globalId = shareModal.data('globalid');
+            this.$localid = shareModal.data('localid');
+            this.$csrfmiddlewaretoken = shareModal.find("input[name=csrfmiddlewaretoken]").val();
+            this.$shareModal = shareModal;
+            this.permissionMap = [];
+
+            shareModal.find('.permissions-map > tr ').each(function(index,element){
+                var updating_alert = $(element).find('.updating-alert');
+
+                $(element).find('.roles').click(function(e){
+                    updating_alert.show();
+                    var rolename =  $(this).data('rolename');
+                    var name =  $(this).data('name');
+                    if (this.checked){
+                        self.grant( name,rolename,0, element)
+                    }else{
+                        self.grant( name,rolename,1, element)
+                    }
+
+                });
+            });
+
+            shareModal.find('#accept-request').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax( {
+                  type: "POST",
+                  url: form.attr( 'action' ),
+                  data: form.serialize(),
+                  success: function( response ) {
+                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                  }
+                } );
+            });
+
+            shareModal.find('#newshare').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax( {
+                  type: "POST",
+                  url: form.attr( 'action' ),
+                  data: form.serialize(),
+                  success: function( response ) {
+                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                  }
+                } );
+            });
+
+            shareModal.find('.reject-request').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax( {
+                  type: "POST",
+                  url: form.attr( 'action' ),
+                  data: form.serialize(),
+                  success: function( response ) {
+                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                  }
+                } );
+            });
+
+            shareModal.find('.pendig-users > tr').each(function(index, element){
+
+                $(element).find('.accept').click(function(e){
+                    $(this).hide();
+                    $(element).find('.accept-roles').show();
+                });
+
+            });
+
+            this.$alert = shareModal.find('.alert');
+        };
+
+        ShareTab.prototype.alert = function(message,style){
+            style = "alert-"+style;
+
+            this.$alert.find('#modal-message').text(message);
+            this.$alert.addClass(style);
+            this.$alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                $(this).removeClass(style).find('#modal-message').text('');
+            });
+        };
+
+
+        ShareTab.prototype.grant = function(setTo, roleToset, method, element){
+            var self = this;
+            var urls = ['/grantrole', '/revokerole'];
+            var url = urls[method];
+            $.ajax({
+                dataType: "json",
+                url: url,
+                method: 'get',
+                data: {name: setTo, role: roleToset, csrfmiddlewaretoken: self.$csrfmiddlewaretoken, global_id: self.$globalId},
+                success: function(data){
+                    $(element).find('.updating-alert').hide(); $(element).find('.updating-ok').show().delay(10000).hide();},
+                error: function(data){
+                    $(element).find('.updating-alert').hide(); $(element).find('.updating-error').show().delay(10000).hide();}
+            });
+        };
+
+
+        ShareTab.autoDiscover = function() {
+            $('.share-pannel').each(function(index, element) {
+                new ShareTab(element);
+            });
+
+        };
+        ShareTab.autoDiscover();
+    }).call(this);
+</script>
