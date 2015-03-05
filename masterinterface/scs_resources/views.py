@@ -1017,15 +1017,16 @@ def globalsearch(request):
             raise SuspiciousOperation
 
 def resource_modal(request, global_id):
+    r = Resource.objects.get(global_id=global_id)
     if request.user.is_authenticated():
-        r = Resource.objects.get(global_id=global_id)
         r.load_additional_metadata(request.ticket)
         r.load_permission()
         r.attach_pemissions(user=request.user)
-
         return render_to_response("scs_resources/resource_modal.html",{'resource':r},RequestContext(request))
     else:
-        raise PermissionDenied
+        r.attach_pemissions()
+
+    return render_to_response("scs_resources/resource_modal.html",{'resource':r},RequestContext(request))
 
 def get_discoveries_list(request, resource_type=None, page=1):
     if request.method == 'GET':

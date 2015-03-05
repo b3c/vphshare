@@ -190,6 +190,7 @@ class Resource(models.Model):
                     role__name__in=Roles,
                     content_type__name='resource'
                 )
+            roles = role_relations.filter(content_id=self.id).values_list('role__name', flat=True)
         elif group:
             if public:
                 role_relations = PrincipalRoleRelation.objects.filter(
@@ -203,9 +204,10 @@ class Resource(models.Model):
                     role__name__in=Roles,
                     content_type__name = 'resource'
                 )
+            roles = role_relations.filter(content_id=self.id).values_list('role__name', flat=True)
         else:
-            return get_resources_metadata_by_list()
-        roles = role_relations.filter(content_id=self.id).values_list('role__name', flat=True)
+            roles = []
+
         self.is_manager = "Manager" in roles or "Owner" in roles
         self.is_editor = "Editor" in roles or "Manager" in roles or "Owner" in roles
         self.is_reader = "Reader" in roles or "Editor" in roles or "Manager" in roles or "Owner" in roles
