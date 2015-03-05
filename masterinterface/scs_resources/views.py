@@ -968,6 +968,10 @@ def globalsearch(request):
             elif request.user.is_authenticated() and request.user.username == user:
                 response = Resource.objects.filter_by_roles(role='Reader',user=request.user,types=filterby[0],public=False,page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'),numResults=int(request.GET['length']))
                 resources = response['data']
+            elif request.session.get('institutionportal', None) is not None:
+                group=request.session['institutionportal'].institution.group_ptr
+                response = Resource.objects.filter_by_roles(role='Reader',group=group,public=False,page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'),numResults=int(request.GET['length']))
+                resources = response['data']
             else:
                 response = search_resource(search_text,expression, numResults=int(request.GET['length']), page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'))
                 resources = response['resource_metadata']

@@ -28,7 +28,7 @@
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab">
           <a href="/search" class="">
             <i class="fa fa-search"></i>
-            Search vph-share resources
+            Search {%if institutionportal%}{{ institutionportal.title }}{%else%}Vph-Share{%endif%} resources
           </a>
       </li>
     </ul>
