@@ -970,7 +970,8 @@ def globalsearch(request):
                 resources = response['data']
             elif request.session.get('institutionportal', None) is not None:
                 group=request.session['institutionportal'].institution.group_ptr
-                response = Resource.objects.filter_by_roles(role='Reader',group=group,public=False,page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'),numResults=int(request.GET['length']))
+                types = None if 'all' in filterby or filterby == [] else filterby[0]
+                response = Resource.objects.filter_by_roles(role='Reader',types=types, group=group,public=False,page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'),numResults=int(request.GET['length']))
                 resources = response['data']
             else:
                 response = search_resource(search_text,expression, numResults=int(request.GET['length']), page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'))
