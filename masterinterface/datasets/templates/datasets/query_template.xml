@@ -30,7 +30,7 @@
                           <field fieldname="{{ operation.name }}" publishaddress="{{ dataset.metadata.publishaddress }}" dbname="{{ dataset.metadata.dbname }}" tablename="{{ operation.tablename }}" type="{{ operation.type }}"/>
                       </leftnode>
                       {% if operation.operator == 'isnull' or operation.operator == 'isnotnull' %}
-                          <rightnode isnull='true' />
+                          <rightnode ><qvalue type="numeric" isnull="true">0</qvalue></rightnode>
                       {% else %}
                           <rightnode>
                           <qvalue type="{{ operation.valueType }}">{{ operation.value }}</qvalue>

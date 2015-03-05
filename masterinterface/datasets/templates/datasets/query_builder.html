@@ -37,7 +37,16 @@
       );
     </script>
 {% endblock %}
-
+{% block content-title %}
+    <ul class="nav nav-pills nav-header-page">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab">
+          <a href="" class="">
+            <i class="fa fa-magic"></i>
+            Query builder
+          </a>
+      </li>
+    </ul>
+{% endblock %}
 {% block content %}
     <script id="numeric_options" type="text/html">
     <select class="inline operator">
@@ -115,7 +124,7 @@
        </div>
     </script>
 
-    <div class="well well-small well-white">
+    <div class="well well-small well-white" style="margin-top: 0px !important;">
     <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ dataset.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
     {% if endpoint == 'True' %}
     <div id="query-results" class="row-fluid hide" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
