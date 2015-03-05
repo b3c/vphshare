@@ -1049,7 +1049,7 @@ a.search-data-link:hover{
 }
 
 .Dataset-bkgr{
-    background-color: #00b7e2;
+    background-color: #00b7e2 !important;
     min-width: 15px;
 }
 
@@ -1059,7 +1059,7 @@ a.search-data-link:hover{
 }
 
 .Workflow-bkgr{
-    background-color: #8abf6e;
+    background-color: #8abf6e !important;
     min-width: 15px;
 }
 
@@ -1069,12 +1069,12 @@ a.search-data-link:hover{
 }
 
 .Service-bkgr{
-    background-color: #675c9c;
+    background-color: #675c9c !important;
     min-width: 15px;
 }
 
 .File-bkgr{
-    background-color: #00b7af;
+    background-color: #00b7af !important;
     min-width: 15px;
 }
 
@@ -1084,7 +1084,7 @@ a.search-data-link:hover{
 }
 
 .SWS-bkgr, .SemanticWebService-bkgr{
-    background-color: #c2bb51;
+    background-color: #c2bb51 !important;
     min-width: 15px;
 }
 
@@ -1094,7 +1094,7 @@ a.search-data-link:hover{
 }
 
 .Application-bkgr, .AtomicService-bkgr{
-    background-color: #e4675e;
+    background-color: #e4675e !important;
     min-width: 15px;
 }
 
@@ -1117,7 +1117,57 @@ a.search-data-link:hover{
     background-color: #06F ;
     min-width: 15px;
 }
+/*
+Navbar adjustment - better interface
+*/
 
+.nav-resources{
+    margin-bottom: 0px;
+    display: table;
+    width: 100%;
+}
+
+.nav-resources li{
+    display: table-cell;
+    float: none;
+    text-align: center;
+}
+.nav-resources-Dataset{
+    border-bottom: 2px solid #00b7e2;
+    border-top: 2px solid #00b7e2;
+}
+
+.nav-resources  a{
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    border-radius: inherit !important;
+    color: #59676E;
+}
+
+.nav-resources-File{
+    border-bottom: 2px solid #00b7af;
+    border-top: 2px solid #00b7af;
+}
+
+.nav-resources-AtomicService{
+    border-bottom: 2px solid #e4675e;
+    border-top: 2px solid #e4675e;
+}
+
+.nav-resources-Workflow{
+    border-bottom: 2px solid #8abf6e;
+    border-top: 2px solid #8abf6e;
+}
+
+
+
+.nav-resources-SemanticWebService{
+    border-bottom: 2px solid #c2bb51;
+    border-top: 2px solid #c2bb51;
+}
+
+
+/*end*/
 /* alternative rating*/
 .line-rating {
   margin: 3px 0;
@@ -1348,7 +1398,7 @@ a.search-data-link:hover{
 }
 
 .filtred{
-    background-color: rgba(126, 199, 240, 0.29);
+    background-color: rgba(126, 199, 240, 0.29) !important;
 }
 
 
