@@ -172,7 +172,7 @@ class InstitutionPortalObject(models.Manager):
 class InstitutionPortal(models.Model):
 
     def get_upload_path(instance, filename):
-        return "./institution_portal_folder/%s" % instance.subdomain
+        return "./institution_portal_folder/%s/" % (instance.subdomain,filename)
 
     #site customization
     institution = models.OneToOneField(Institution, primary_key=True)
