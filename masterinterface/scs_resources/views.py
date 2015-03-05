@@ -227,7 +227,7 @@ def resources(request,tab='Dataset'):
 
     return render_to_response("scs_resources/resources.html",
                               {'search': search, "results":None, "numResults": 0, 'countType': {}, 'filterToshow':'true',
-                              'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService'] , 'tab': tab},
+                              'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService'] , 'tab': tab, 'user':''},
                               RequestContext(request))
 
 
@@ -270,14 +270,44 @@ def get_resources_list(request, resource_type):
 
 
 @login_required
-def manage_resources(request,tab=''):
-    return render_to_response(
-        "scs_resources/manage_resources.html",
-        {
-         'tab':tab
-        },
-        RequestContext(request)
-    )
+def manage_resources(request, tab='Dataset'):
+    if request.user.is_authenticated():
+        search_text = request.GET.get('search_text', '')
+        types = request.GET.get('types', [])
+        if type(types) in (str, unicode):
+            types = types.split(',')[:-1]
+        filterby = [tab]
+        if type(filterby) in (str, unicode):
+            filterby = filterby.split(',')[:-1]
+        categories = request.GET.get('categories', [])
+        if type(categories) in (str, unicode):
+            categories = categories.split(',')[:-1]
+        authors = request.GET.get('authors', [])
+        if type(authors) in (str, unicode):
+            authors = authors.split(',')[:-1]
+        licences = request.GET.get('licences', [])
+        if type(licences) in (str, unicode):
+            licences = licences.split(',')[:-1]
+        tags = request.GET.get('tags', [])
+        if type(tags) in (str, unicode):
+            tags = tags.split(',')[:-1]
+
+        search = {
+            'search_text': search_text,
+            'type': types,
+            'categories': categories,
+            'authors': authors,
+            'licences': licences,
+            'tags': tags,
+            'filterby': filterby
+        }
+
+        return render_to_response("scs_resources/manage_resources.html",
+                                  {'search': search, "results":None, "numResults": 0, 'countType': {}, 'filterToshow':'true',
+                                  'types': ['Dataset', 'Workflow', 'AtomicService', 'File', 'SemanticWebService'] , 'tab': tab, 'user':request.user.username},
+                                  RequestContext(request))
+    else:
+        raise PermissionDenied
 
 @login_required
 def get_resources_list_by_author(request, resource_type, page=1):
@@ -903,6 +933,7 @@ def globalsearch(request):
             page = int(request.GET['start'])/int(request.GET['length']) + 1
             columns = ['type', 'name', 'author', 'updateDate', 'rating', 'views']
             search_text = request.GET.get('request[search_text]', '*')
+            user = request.GET.get('request[dashboard]', '')
             types = request.GET.get('types', [])
             if type(types) in (str, unicode):
                 types = types.split(',')[:-1]
@@ -929,24 +960,38 @@ def globalsearch(request):
                 'licence': licences,
                 'tags': tags
             }
-            resources = search_resource(search_text,expression, numResults=int(request.GET['length']), page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'))
+
+            if not request.user.is_authenticated() and user !='':
+                raise PermissionDenied
+            elif request.user.is_authenticated() and user !='' and request.user.username != user:
+                return PermissionDenied
+            elif request.user.is_authenticated() and request.user.username == user:
+                response = Resource.objects.filter_by_roles(role='Reader',user=request.user,types=filterby[0],public=False,page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'),numResults=int(request.GET['length']))
+                resources = response['data']
+            else:
+                response = search_resource(search_text,expression, numResults=int(request.GET['length']), page= page, orderBy=columns[int(request.GET.get('order[0][column]'))], orderType=request.GET.get('order[0][dir]'))
+                resources = response['resource_metadata']
+
 
             results = {
               "draw":0,
-              "recordsTotal": resources['numTotalMetadata'],
-              "recordsFiltered": resources['numTotalMetadata'],
+              "recordsTotal": response['numTotalMetadata'],
+              "recordsFiltered": response['numTotalMetadata'],
               "data": [],
               "DT_RowClass":[]
             }
-            for resource in resources['resource_metadata']:
-                resource = resource.value
-                #create the resrouce entry in my db if it doesn't exisit
-                u, usercreated = User.objects.get_or_create(username=resource['author'])
-                r, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata = resource)
-                if created:
-                    r.owner = u
-                    r.type = resource['type']
-                    r.save()
+            for resource in resources:
+                if hasattr(resource, 'metadata'):
+                    resource = resource.metadata
+                else:
+                    resource = resource.value
+                    #create the resrouce entry in my db if it doesn't exisit
+                    u, usercreated = User.objects.get_or_create(username=resource['author'])
+                    r, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata = resource)
+                    if created:
+                        r.owner = u
+                        r.type = resource['type']
+                        r.save()
 
                 results['data'].append({
                     'type':'<i title="%s" class="fa fa-%s"></i>'%( resource['type'], resource['type']),
@@ -959,8 +1004,10 @@ def globalsearch(request):
                     'DT_RowClass': resource['type']+'-light-bkgr',
                 })
 
-            del(resources['resource_metadata'])
-            results['info'] = resources
+            del(response['resource_metadata'])
+            if response.get('data',None):
+                del(response['data'])
+            results['info'] = response
             return HttpResponse(status=200,
                             content=json.dumps(results, sort_keys=False),
                             content_type='application/json')

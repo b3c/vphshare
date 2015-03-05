@@ -1,4 +1,4 @@
-
+{% if user  == '' %}
 <div class="row">
     <div class="span12 left-list" >
         <div class="popover-list ">
@@ -46,6 +46,8 @@
     </div>
 
 </div>
+
+{% endif %}
 <hr/>
 <div id="results" class="row-fluid">
     <div class="span12">
@@ -119,7 +121,8 @@
                        categories:[{% for categories in search.categories %}'{{ categories }}',{% endfor %}],
                        authors:[{% for authors in search.authors %}'{{ authors }}',{% endfor %}],
                        licences:[{% for licences in search.licences %}'{{ licences }}',{% endfor %}],
-                       tags:[{% for tags in search.tags %}'{{ tags }}',{% endfor %}]
+                       tags:[{% for tags in search.tags %}'{{ tags }}',{% endfor %}],
+                       dashboard:'{% if user %}{{ user }}{% endif %}'
             };
 
             this.$datatable = $('#example').dataTable({
@@ -175,7 +178,8 @@
                         paginate: {
                             previous: "«",
                             next: "»"
-                        }
+                        },
+                        "emptyTable": "No resources available."
                     }
 
             });
@@ -316,6 +320,103 @@
 
         new SearchController();
     }).call(this);
+
+
+    (function() {
+            var global = this;
+            var $ = global.$;
+            var console = global.console || {log:function() {}};
+            var atomicRequest = global.atomicRequest = false;
+
+            var LoadDashboard = global.LoadDashboard = function(element, options) {
+                this.inizialize($(element));
+            };
+
+            LoadDashboard.prototype.inizialize = function(loadDashboard){
+                var self = this;
+                this.$target = $(loadDashboard.data('target'));
+                this.$getURL = loadDashboard.data('get');
+                this.$loadDashboard = loadDashboard;
+                this.$loading = '<div class="loading">Loading&#8230;</div>';
+                self.$atomic = false;
+                self.$page = 1;
+                atomicRequest = false;
+                loadDashboard.bind('click', function(){
+                            if (atomicRequest != false)
+                                atomicRequest.abort();
+                                atomicRequest = false;
+
+                            if (atomicRequest === false) {
+                                if($(this).hasClass('resource-tab')){
+                                    $('.resource-tab').removeClass('active');
+                                    $(this).addClass('active');
+                                }
+                                atomicRequest = true;
+                                self.get();
+                            }
+                            return true;
+                        }
+                );
+            };
+
+            LoadDashboard.prototype.alert = function(message,style){
+                style = "alert-"+style;
+                var alert = this.$target.parent().find('.alert');
+                alert.find('#modal-message').text(message);
+                alert.addClass(style);
+                alert.fadeIn().delay(3000).fadeOut(1000, function(){
+                    $(this).removeClass(style).find('#modal-message').text('');
+                });
+            };
+
+            LoadDashboard.prototype.loading = function(){
+                var self = this;
+                $('.loading').remove();
+                this.$target.append(this.$loading);
+            };
+
+            LoadDashboard.prototype.getCallBack = function(data,self){
+                $('.loading').remove();
+                if ('info' in data)
+                    this.$pages = data['info']['pages'];
+                this.$target.append(data['data']);
+                if (data['data'].trim() != "")
+                    this.$atomic = false;
+                atomicRequest = false;
+            };
+
+            LoadDashboard.prototype.next = function(){
+                var self = this;
+                self.loading();
+                atomicRequest=$.ajax(self.$getURL+self.$page, {
+                    type: 'GET',
+                    success: function(data) { self.getCallBack(data,self); },
+                    error: function(data) { $('.loading').remove();
+                atomicRequest = false;self.$atomic = false;self.alert('Metadata Service return an error.Try later.','error'); }
+                });
+            };
+
+            LoadDashboard.prototype.get = function(){
+                var self = this;
+                this.$target.empty();
+                self.loading();
+                atomicRequest=$.ajax(self.$getURL, {
+                    type: 'GET',
+                    success: function(data) { self.getCallBack(data,self); },
+                    error: function(data) { $('.loading').remove();
+                atomicRequest = false;self.alert('Metadata Service return an error.Try later.','error'); }
+                });
+            };
+
+
+            LoadDashboard.autoDiscover = function() {
+                $('.resource-tab').each(function(index, element) {
+                    new LoadDashboard(element);
+                });
+
+            };
+
+        }).call(this);
 
     (function() {
         var global = this;

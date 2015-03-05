@@ -2,47 +2,48 @@
 {% load scs_extras %}
 {%  block title %} Dashboard {% endblock %}
 
+{% block content-title %}
+    <ul class="nav nav-pills nav-header-page">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab">
+          <a href="/explore" class="">
+            <i class="fa fa-bars "></i>
+            Dashboard
+          </a>
+      </li>
+    </ul>
+{% endblock %}
 
     {%  block header_buttons %}
-    <ul class="nav nav-pills">
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/data/" class="resource-tab active">
-          <a>
+    <ul class="nav nav-pills nav-resources nav-resources-{{ tab }}">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab Dataset {% if tab == 'Dataset' %}active{% endif %}">
+          <a href="{{ BASE_URL }}/dashboard/Dataset/" class="{% if tab == 'Dataset' %}{{ tab }}-bkgr{% endif %}">
+            <i class="fa fa-Dataset"></i>
             My Datasets
           </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/file/" class="resource-tab active">
-          <a>
-            My Files/Folders
-          </a>
-      </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/application/" class="resource-tab">
-            <a>
-                My Applications
-            </a>
-      </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/workflow/" class="resource-tab">
-        <a>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Workflow/" class="resource-tab Workflow {% if tab == 'Workflow' %}active{% endif %}" >
+        <a href="{{ BASE_URL }}/dashboard/Workflow/" class="{% if tab == 'Workflow' %}{{ tab }}-bkgr{% endif %}">
+            <i class="fa fa-Workflow"></i>
             My Workflows
         </a>
       </li>
-      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/dashboard/list/sws/" class="resource-tab">
-        <a>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/File/" class="resource-tab File {% if tab == 'File' %}active{% endif %}" >
+          <a href="{{ BASE_URL }}/dashboard/File/" class="{% if tab == 'File' %}{{ tab }}-bkgr{% endif %}">
+            <i class="fa fa-File"></i>
+            My Files/Folders
+          </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/AtomicService/" class="resource-tab  AtomicService {% if tab == 'AtomicService' %}active{% endif %}" >
+            <a href="{{ BASE_URL }}/dashboard/AtomicService/" class="{% if tab == 'AtomicService' %}{{ tab }}-bkgr{% endif %}">
+            <i class="fa fa-AtomicService"></i>
+                My Applications
+            </a>
+      </li>
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/SemanticWebService/" class="resource-tab SemanticWebService {% if tab == 'SemanticWebService' %}active{% endif %}" >
+        <a href="{{ BASE_URL }}/dashboard/SemanticWebService/" class="{% if tab == 'SemanticWebService' %}{{ tab }}-bkgr{% endif %}">
+            <i class="fa fa-SemanticWebService"></i>
             My Semantic Web services
         </a>
       </li>
-      <script>$(function(){
-          {% if tab == 'file' %}
-              $('.resource-tab')[1].click();
-          {% elif tab == 'application' %}
-              $('.resource-tab')[2].click();
-          {% elif tab == 'workflow' %}
-              $('.resource-tab')[3].click();
-          {% elif tab == 'sws' %}
-              $('.resource-tab')[4].click();
-          {% else %}
-              $('.resource-tab')[0].click();
-          {% endif %}
-        }
-      );</script>
     </ul>
     {% endblock %}
