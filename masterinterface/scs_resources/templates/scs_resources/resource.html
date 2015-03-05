@@ -524,7 +524,7 @@
                             <a target="_blank" href="{% if not resource.metadata.explore %}##{% endif %}{{ resource.metadata.explore }}" class="btn btn-block btn-large btn-success {% if not resource.metadata.explore %}disabled{% endif %}">{% if resource.metadata.explore %}Explore Dataset{% else %}Explore not available{% endif %}</a>
                             <a  href="/query_builder/{{ resource.global_id }}/" class="btn btn-block btn-large btn-success">Query the dataset</a>
                         {% elif resource.metadata.type == "AtomicService" or resource.metadata.type == "Atomic Service" %}
-                            <a  href="{{ BASE_URL }}/tools/#startInstance?{{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
+                            <a  href="{{ BASE_URL }}/applications/#startInstance?{{ resource.metadata.localID }}" class="btn btn-block btn-large btn-success">Start application</a>
                         {% elif resource.metadata.type == "Workflow" %}
                             {% if resource.workflow.t2flow %}
                                 <a target="_blank" href="{{  resource.workflow.t2flow.url }}" class="btn btn-block btn-large btn-success">Download workflow file</a>

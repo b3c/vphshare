@@ -23,7 +23,16 @@
     <span class="title">Search</span>
     <span class="subtitle">&nbsp</span>
 {% endblock%}
-
+{% block content-title %}
+    <ul class="nav nav-pills nav-header-page">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab">
+          <a href="/search" class="">
+            <i class="fa fa-search"></i>
+            Search vph-share resources
+          </a>
+      </li>
+    </ul>
+{% endblock %}
 {%  block content %}
     <div class="row">
         <div class="span12 left-list" >

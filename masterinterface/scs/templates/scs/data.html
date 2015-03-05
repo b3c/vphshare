@@ -3,14 +3,28 @@
 {%  block title %} Data - Vph-Share {% endblock %}
 
 
+{% block extrahead %}
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+{% endblock %}
 
 {% block page-title %}
     <span class="title">Data</span>
     <span class="subtitle">&nbsp</span>
 {% endblock%}
-
+{% block content-title %}
+    <ul class="nav nav-pills nav-header-page nav-resources-Dataset ">
+      <li class="resource-tab">
+          <a href="" class="Dataset-bkgr">
+            <i class="fa fa-Dataset"></i>
+            Biomedical Data at your Fingertips
+          </a>
+      </li>
+    </ul>
+{% endblock %}
 {%  block content %}
-    <div class="row-fluid"><div class="span12 text-center"><h1><p>Biomedical Data at your Fingertips</p></h1></div></div>
     <div class="row-fluid"><div class="span8"><h6>Whether you are looking for data to use in research, development, or clinical practice or you are the owner of data, wishing to share it with the community, VPH-Share will provide you with the right tools for the job. Our rich data library has been populated by an array of VPH research projects, allowing users to search for data from across the complete range of biological sub-systems. VPH-Share supports data owners upload data and manage the sharing process.</h6></div><div class="span4"><img class="img-rounded" src="/static/img/data_logo6.jpg"/></div> </div>
     <div class="row-fluid row-contet">
         <div class="span9" style="margin-top:15px;">

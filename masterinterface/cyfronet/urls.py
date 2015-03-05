@@ -7,6 +7,6 @@ urlpatterns = patterns(
     'cyfronet.views',
     url(r'^lobcder(.*)$', 'lobcder'),
     url(r'^filestore(.*)$', 'lobcder'),
-    url(r'^tools/$', 'tools'),
+    url(r'^applications/$', 'tools'),
     url(r'^retrivevtk/$', 'retriveVtk'),
 )

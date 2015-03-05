@@ -8,12 +8,20 @@
         <span class="title">Report a bug.</span>
         <span class="subtitle">&nbsp</span>
 {% endblock%}
-
+{% block content-title %}
+    <ul class="nav nav-pills nav-header-page ">
+      <li class="resource-tab">
+          <a href="" class="">
+            <i class="fa fa-paper-plane-o "></i>
+             Report a bug
+          </a>
+      </li>
+    </ul>
+{% endblock %}
 {%  block content %}
     <div class="row">
         <div class="span9">
             {% if not reported  %}
-                <h3>Report a bug</h3>
                 <form class="form-horizontal" enctype="multipart/form-data" method="post" action="/support/">
                 {% csrf_token %}
                     {% for hidden in contactForm.hidden_fields %}

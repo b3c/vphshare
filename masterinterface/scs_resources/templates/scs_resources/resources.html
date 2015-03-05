@@ -18,37 +18,47 @@
     <script src="/static/js/ICanHaz.min.js"></script>
 {% endblock %}
 
-
+{% block content-title %}
+    <ul class="nav nav-pills nav-header-page">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab">
+          <a href="/explore" class="">
+            <i class="fa fa-globe"></i>
+            Explore vph-share resources
+          </a>
+      </li>
+    </ul>
+{% endblock %}
 {%  block content %}
 <div>
+
     {% block header_buttons%}
     <ul class="nav nav-pills nav-resources nav-resources-{{ tab }}">
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab Dataset {% if tab == 'Dataset' %}active{% endif %}">
-          <a href="{{ BASE_URL }}/browse/Dataset/" class="{% if tab == 'Dataset' %}{{ tab }}-bkgr{% endif %}">
+          <a href="{{ BASE_URL }}/explore/Dataset/" class="{% if tab == 'Dataset' %}{{ tab }}-bkgr{% endif %}">
             <i class="fa fa-Dataset"></i>
             Datasets
           </a>
       </li>
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Workflow/" class="resource-tab Workflow {% if tab == 'Workflow' %}active{% endif %}" >
-        <a href="{{ BASE_URL }}/browse/Workflow/" class="{% if tab == 'Workflow' %}{{ tab }}-bkgr{% endif %}">
+        <a href="{{ BASE_URL }}/explore/Workflow/" class="{% if tab == 'Workflow' %}{{ tab }}-bkgr{% endif %}">
             <i class="fa fa-Workflow"></i>
             Workflows
         </a>
       </li>
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/File/" class="resource-tab File {% if tab == 'File' %}active{% endif %}" >
-          <a href="{{ BASE_URL }}/browse/File/" class="{% if tab == 'File' %}{{ tab }}-bkgr{% endif %}">
+          <a href="{{ BASE_URL }}/explore/File/" class="{% if tab == 'File' %}{{ tab }}-bkgr{% endif %}">
             <i class="fa fa-File"></i>
             Files/Folders
           </a>
       </li>
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/AtomicService/" class="resource-tab  AtomicService {% if tab == 'AtomicService' %}active{% endif %}" >
-            <a href="{{ BASE_URL }}/browse/AtomicService/" class="{% if tab == 'AtomicService' %}{{ tab }}-bkgr{% endif %}">
+            <a href="{{ BASE_URL }}/explore/AtomicService/" class="{% if tab == 'AtomicService' %}{{ tab }}-bkgr{% endif %}">
             <i class="fa fa-AtomicService"></i>
                 Applications
             </a>
       </li>
       <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/SemanticWebService/" class="resource-tab SemanticWebService {% if tab == 'SemanticWebService' %}active{% endif %}" >
-        <a href="{{ BASE_URL }}/browse/SemanticWebService/" class="{% if tab == 'SemanticWebService' %}{{ tab }}-bkgr{% endif %}">
+        <a href="{{ BASE_URL }}/explore/SemanticWebService/" class="{% if tab == 'SemanticWebService' %}{{ tab }}-bkgr{% endif %}">
             <i class="fa fa-SemanticWebService"></i>
             Semantic Web services
         </a>

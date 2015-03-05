@@ -11,6 +11,10 @@
 
    	<link href='https://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'/>
     <link href='https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel='stylesheet' type='text/css'/>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
 
    	{% block stylesheets %}
     {% endblock %}
@@ -248,17 +252,18 @@
                                     </button>
                                     <div class="container nav-collapse collapse">
                                         <ul class="nav" style="margin: 0px;display: table;width: 100%}">
-                                        <!--     <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/">EXPLORE</a></li> -->
+                                             <li {% if 'explore' == request.path|basepath %}class="active" {% endif %} id="navhome"><a href="/explore"><i class="fa fa-globe"></i> EXPLORE</a></li>
                                         {% if institutionportal %}<li {% if 'discovery' == request.path|basepath %}class="active" {% endif %}><a href="/discoveries/">DISCOVERY</a></li>{% endif %}
-                                            <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data/">DATA</a></li>
-                                            <li {% if 'tools' == request.path|basepath %}class="active" {% endif %}><a href="/tools/">APPLICATIONS</a></li>
-                                            <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows/">WORKFLOWS</a></li>
-                                            <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search/">SEARCH</a></li>
+                                            <li {% if 'data' == request.path|basepath %}class="active" {% endif %}><a href="/data/"><i class="fa fa-Dataset"></i> DATA</a></li>
+                                            <li {% if 'applications' == request.path|basepath %}class="active" {% endif %}><a href="/applications/"><i class="fa fa-AtomicService"></i> APPLICATIONS</a></li>
+                                            <li {% if 'workflows' == request.path|basepath %}class="active" {% endif %}><a href="/workflows/"><i class="fa fa-Workflow"></i> WORKFLOWS</a></li>
+                                            <li {% if 'search' == request.path|basepath %}class="active" {% endif %}><a href="/search/"><i class="fa fa-search"></i> SEARCH</a></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                     {% endblock %}
+
                     {% block breadcrumbs %}
                     {% if not request.path|breadcrumbs|length_is:"0"%}
                     <div id="breadcrumbs-wrapper">
@@ -271,6 +276,7 @@
                     </div>
                     {% endif %}
                     {% endblock %}
+                    {% block content-title %}{% endblock %}
             {% endblock %}
         {% endif %}
         {% for n in notifications %}
@@ -285,6 +291,7 @@
         {% if errormessage %}<div class="alert alert-error"><span id="errormessage">{% autoescape off %}{{ errormessage  }} {% endautoescape %}</span></div>{% endif %}
         {% if statusmessage %}<div class="alert alert-success"><span id="statusmessage">{% autoescape off %}{{ statusmessage  }} {% endautoescape %}</span></div>{% endif %}
         {% if welcome %}<div class="alert alert-info"><h4>Welcome!</h4><span id="statusmessage">{% autoescape off %}{{ welcome  }} {% endautoescape %}</span></div>{% endif %}
+
         {% block content %} {% endblock %}
 
         {% if not OK_COOKIES and not request.user.is_authenticated %}
