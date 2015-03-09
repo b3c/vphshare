@@ -992,7 +992,10 @@ def globalsearch(request):
                     resource = resource.value
                     #create the resrouce entry in my db if it doesn't exisit
                     u, usercreated = User.objects.get_or_create(username=resource['author'])
-                    r, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata = resource)
+                    if resource['type'] == 'Workflow':
+                        r, created = Workflow.objects.get_or_create(global_id=resource['globalID'], metadata = resource)
+                    else:
+                        r, created = Resource.objects.get_or_create(global_id=resource['globalID'], metadata = resource)
                     if created:
                         r.owner = u
                         r.type = resource['type']
