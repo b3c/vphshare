@@ -59,8 +59,11 @@ def done(request):
     except Exception as e:
             # This is done to skip an erratic behaviour of the webdav, that is triggering an exception
             # even after the directory is successfully created
-            if webdav.exists(foldertocreate) == False:
-                raise e
+            try:
+                if webdav.exists(foldertocreate) == False:
+                    pass
+            except Exception as e:
+                pass
     response = render_to_response(
         'scs_auth/done.html',
         ctx,
