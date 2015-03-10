@@ -49,7 +49,7 @@ def done(request):
 
     #Create home folder for the user
     webdav = easywebdav.connect(settings.LOBCDER_HOST, username='user',
-                                password=request.ticket, protocol='http'
+                                password=request.ticket, protocol='https'
                                 )
     foldertocreate = settings.LOBCDER_ROOT + "/home/%s" % request.user.username
     try:
@@ -59,8 +59,11 @@ def done(request):
     except Exception as e:
             # This is done to skip an erratic behaviour of the webdav, that is triggering an exception
             # even after the directory is successfully created
-            if webdav.exists(foldertocreate) == False:
-                raise e
+            try:
+                if webdav.exists(foldertocreate) == False:
+                    pass
+            except Exception as e:
+                pass
     response = render_to_response(
         'scs_auth/done.html',
         ctx,
