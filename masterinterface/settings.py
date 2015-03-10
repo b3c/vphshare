@@ -39,17 +39,27 @@ CYFRONET_DB = {
         'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
     }
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
-        'USER': 'vph',                      # Not used with sqlite3.
-        'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'USER': 'gscs0001',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '10.100.1.172',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#        'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
+#        'USER': 'vph',                      # Not used with sqlite3.
+#        'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
+#        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+#        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#    }
+#}
 
 #Define class where extened user profile
 AUTH_PROFILE_MODULE = 'scs_auth.UserProfile'
@@ -303,7 +313,8 @@ LOBCDER_ROOT = '/lobcder/dav'
 
 LOBCDER_WEBDAV_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/dav'
 LOBCDER_WEBDAV_HREF = '/lobcder/dav'
-LOBCDER_REST_URL = 'http://lobcder.vph.cyfronet.pl/lobcder/rest'
+LOBCDER_REST_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/rest'
+LOBCDER_FOLDER_DOWNLOAD_PATH = '/compress/getzip'
 
 #PARAVIEW settings
 LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
@@ -318,7 +329,7 @@ WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'
 
 #PARAVIEW CONFIGS
 
-PARAVIEW_PYTHON_BIN = "/usr/local/bin/pvpython"
+PARAVIEW_PYTHON_BIN = "/scs/app/ParaViewWeb/ParaView/build-pw4/bin/pvpython"
 PARAVIEWWEB_SERVER = os.path.join(PROJECT_ROOT, 'paraviewweb/app/paraviewweb_xmlrpc.py')
 PARAVIEWWEB_SERVER_TIMEOUT = 600
 PARAVIEWWEB_PORT = 5000
