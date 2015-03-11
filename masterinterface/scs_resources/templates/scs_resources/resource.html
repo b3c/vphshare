@@ -250,9 +250,12 @@
                               data: formData,
                               success: function( response ) {
                                     self.parents('.accordion-body').find('#details-tab >li')[1].click();
+                                    return false;
                               }
                             } );
+                            return false;
                         });
+
 
                         shareModal.find('#newshare').submit(function(e){
                             e.preventDefault();
