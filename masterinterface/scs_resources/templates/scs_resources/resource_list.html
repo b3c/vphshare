@@ -452,17 +452,22 @@
                 });
             });
 
-            shareModal.find('#accept-request').submit(function(e){
+             shareModal.find('#accept-request').find('input[type=submit]').click(function(e){
                 e.preventDefault();
-                var form = $(this);
+                var self = $(this);
+                form = self.closest('form');
+                var formData = form.serializeArray();
+                formData.push({ name: self.attr('name'), value: self.val() });
                 $.ajax( {
                   type: "POST",
                   url: form.attr( 'action' ),
-                  data: form.serialize(),
+                  data: formData,
                   success: function( response ) {
-                        self.$shareModal.parents('.accordion-body').find('#details-tab >li')[1].click();
+                        self.parents('.accordion-body').find('#details-tab >li')[1].click();
+                        return false;
                   }
                 } );
+                return false;
             });
 
             shareModal.find('#newshare').submit(function(e){

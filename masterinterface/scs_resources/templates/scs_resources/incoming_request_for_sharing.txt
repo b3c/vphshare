@@ -4,7 +4,7 @@ Dear {{ resource.owner.first_name }}, you have received a new request for sharin
     Requestor: {{ requestor.first_name }} {{ requestor.last_name }}
     Message: {{ message }}
 
-Please visit your dashboard to manage this request: {{ BASE_URL }}/dashboard
+Please visit the resource page to manage this request: {{ BASE_URL }}/dashboard
 
 Best regards,
 The VPH-Share Staff

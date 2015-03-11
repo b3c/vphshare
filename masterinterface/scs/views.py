@@ -33,7 +33,7 @@ def home(request):
         # check if the user has pending requests to process
         pending_requests = get_pending_requests_by_user(request.user)
         if pending_requests:
-            data['statusmessage'] = 'Dear %s, you have %s pending request(s) waiting for your action.' % (request.user.first_name, len(pending_requests))
+            data['statusmessage'] = 'Dear %s, you have %s pending request(s) waiting for your action: %s' % (request.user.first_name, len(pending_requests), ''.join(['</br><a href="/resources/%s">%s %s requested %s</a>'%(r.resource.global_id, r.requestor.first_name, r.requestor.last_name, r.resource.metadata['name']) for r in pending_requests]))
 
         if is_pending_institution(request, None):
             data['errormessage'] = 'Dear %s, you have pending Intitution(s) waiting for your action <a href="/groups">go here</a>.' % request.user.first_name

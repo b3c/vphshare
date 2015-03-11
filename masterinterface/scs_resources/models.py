@@ -38,6 +38,7 @@ def get_pending_requests_by_user(user):
     pending_requests = []
     for r in requests:
         if is_request_pending(r):
+            r.resource = Resource.objects.get(global_id=r.resource.global_id)
             pending_requests.append(r)
     return pending_requests
 
