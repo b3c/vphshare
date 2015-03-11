@@ -169,20 +169,19 @@ class workflows_api(BaseHandler):
                     response._is_string = True
                     return response
             else:
-                workflows = Workflow.objects.all(metadata=True)
+                workflows = Workflow.objects.filter_by_roles(role="Reader", user=user, types='Workflow', numResults=300)
                 results = []
-                for workflow in workflows:
-                    if user is not None and workflow.resource_ptr.can_read(user):
-                        t2flow = inputDefinition = ''
-                        if workflow.t2flow:
-                            t2flow = workflow.t2flow.read()
-                        if workflow.xml:
-                            inputDefinition = workflow.xml.read()
-                        results.append({'global_id': workflow.global_id,
-                                        't2flow': base64.b64encode(t2flow),
-                                        'input_definition': base64.b64encode(inputDefinition),
-                                        'metadata': workflow.metadata}
-                        )
+                for workflow in workflows['data']:
+                    t2flow = inputDefinition = ''
+                    if workflow.t2flow:
+                        t2flow = workflow.t2flow.read()
+                    if workflow.xml:
+                        inputDefinition = workflow.xml.read()
+                    results.append({'global_id': workflow.global_id,
+                                    't2flow': base64.b64encode(t2flow),
+                                    'input_definition': base64.b64encode(inputDefinition),
+                                    'metadata': workflow.metadata}
+                    )
                 return results
         except Exception, e:
             response = HttpResponse(status=500)
