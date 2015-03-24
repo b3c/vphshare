@@ -280,7 +280,7 @@ class Resource(models.Model):
                     self.metadata['explore'] = self.metadata['explore'].replace('https://','https://admin:%s@'%ticket)
                     self.metadata['endpoint'] = endpoint.replace('read/sparql', '')
                     #get DPS schema
-                    dpsschema = requests.get('%s/dpsschema.xml' % self.metadata['endpoint'],
+                    dpsschema = requests.get('%sdpsschema.xml' % self.metadata['endpoint'],
                                              auth=('admin', ticket),
                                              verify=False,
                                              headers={'Content-Type':'application/xml','Accept':'application/xml'}).text

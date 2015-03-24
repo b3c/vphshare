@@ -40,7 +40,7 @@
                 <div class="popover-content" style="padding-top: 0px">
                     <div class="input-append">
                         <input class="search-query" id="search_text" type="text" name="search_text" value="{{ search.search_text }}">
-                        <button type="submit" class="btn search-btn-right btn-info"><i class="fa fa-search"></i></button>
+                        <button id="search_button" type="submit" class="btn search-btn-right btn-info"><i class="fa fa-search"></i></button>
                         <div style="font-size: 12px;padding-top: 5px;text-align: right;">Or use <a href="/semantic-search/">Semantic search</a></div>
                     </div>
                     <div title = "Total results" data-value="all" class="well well-small well-white button filtred" {% if filterToshow == 'true' %}style="display: none;"{% endif %}><i class="fa fa-asterisk "></i> <b class="counter-0"></b> <span class="badge pull-right text-center"></span></div>
@@ -141,6 +141,14 @@
                         return true;
                     }
                 );
+                this.$search_button = $('#search_button');
+                this.$search_button.click(
+                        function(){
+                        var input = $(this);
+                        var value = input.val().trim();
+                        var key = input.attr('id');
+                        self.submit();
+                });
                 // event when add some refine input
                 $('.input-refine').keypress(function(e){self.refine($(this),e);});
                 this.tooltipMessage($('.input-refine'),'Type enter to send','focus');
