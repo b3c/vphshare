@@ -4,7 +4,7 @@ import xmltodict
 import base64
 import types
 
-class Taverna2WorkflowIO:
+class Taverna2WorkflowIO(object):
     """ 
     Class for allowing the management of Taverna 2.x workflows inputs and outputs.
     Note that this class only supports input/output ports of depth 0 and depth 1.

@@ -2,35 +2,128 @@
 
 {% load scs_extras %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/css/dataset.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css"  type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/dataTables.bootstrap.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/datetimepicker.css" type="text/css" media="all" rel="stylesheet">
+
+ {% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/static/js/dataset.min.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/dataTables.tableTools.min.js"></script>
+    <script src="/static/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/js/jqBootstrapValidation.min.js"></script>
+    <script src="/static/js/ICanHaz.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js"></script>
+{% endblock %}
+
 {% block content %}
     <div class="well">
         <h3>{{ workflow.metadata.name }}</h3>
 
-        <form action="/workspace/create" enctype="multipart/form-data" method="post">
+        <form id="create-execution" action="/workspace/create" enctype="multipart/form-data" method="post">
 
             {{ form.as_p }}
 
             {% csrf_token %}
             <script>
             $(function(){
+                $('#id_inputFile').parent().appendTo('#baclava');
                 $('#id_default_inputs').click(function(elem){
                     if ($('#id_default_inputs').is(':checked')){
-                        $('#id_inputFile').parent().show();
+                        $('#input_definition').show();
                     }else{
-                       $('#id_inputFile').parent().hide();
+                       $('#input_definition').hide();
                     }
                 });
                 if ($('#id_default_inputs').is(':checked')){
-                    $('#id_inputFile').parent().show();
+                    $('#input_definition').show();
                 }else{
-                   $('#id_inputFile').parent().hide();
+                   $('#input_definition').hide();
                 }
 
             });
             </script><br/>
+            <div id="input_definition" style="display: none;">
+                <ul class="nav nav-tabs" id="myTab">
+                  <li ><a href="#query" data-value="dataset">Dataset query</a></li>
+                  <li class="active" data-value="baclava"><a href="#baclava">Baclava</a></li>
+                </ul>
+
+                <div class="tab-content">
+                  <div class="tab-pane " id="query">
+                      <span>Select Dataset query results: <select id="dataset-select" name="dataset"><option value=""></option>{% for d in dataset_queries %}<option value="{{ d.id }}">{{ d.name}}</option>{% endfor %}</select> <i id="loading_dataset" class="fa fa-spinner fa-spin" style="display: none"></i></span>
+                      <hr/>
+                      <div id="dataset-input-div"> </div>
+                    </div>
+                  <div class="tab-pane active" id="baclava">
+                  </div>
+                </div>
+            </div>
+            <input id="input_definition_tab" type="hidden" value="baclava" name="input_definition_tab">
+            <script>
+              $('#myTab a').click(function (e) {
+                  e.preventDefault();
+                  $('#input_definition_tab').val($(this).data('value'));
+                  $(this).tab('show');
+                  $()
+                });
+            </script>
             <input type="submit" class="btn btn-success" value="Initialize execution" />
         </form>
 
     </div>
+    <script>
+    (function() {
+        var global = this;
+        var $ = global.$;
 
+        var console = global.console || {log:function() {}};
+
+
+        var DatasetInputs = global.DatasetInputs = function() {
+            this.inizialize();
+        };
+
+        DatasetInputs.prototype.inizialize = function(){
+            var self = this;
+            this.$loading_dataset = $('#loading_dataset');
+           //init multicheck dropdown menu
+            this.$dataset_select = $('#dataset-select');
+            this.$workflow_global_id = '{{ workflow.global_id }}';
+            this.$dataset_select.on('change', function() {
+                var value = $(this).val();
+
+                self.getTable(value);
+            });
+            this.$dataset_input_div = $('#dataset-input-div');
+
+        };
+
+
+        DatasetInputs.prototype.getTableCallBack = function(data,self){
+            self.$dataset_input_div.html(data);
+        };
+
+        DatasetInputs.prototype.getTable = function(value){
+
+            var self = this;
+            this.$loading_dataset.show();
+            $.ajax('/workspace/getDatasetInputs', {
+                data: {value:value, workflowId:self.$workflow_global_id},
+                type: 'POST',
+                success: function(data) { self.getTableCallBack(data,self); self.$loading_dataset.hide();},
+                error: function(data) {self.$loading_dataset.hide(); return false; }
+            });
+
+        };
+
+
+
+        $.datasetInput=new DatasetInputs();
+    }).call(this);
+    </script>
 {% endblock %}
