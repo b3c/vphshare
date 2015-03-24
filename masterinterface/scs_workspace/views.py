@@ -5,11 +5,13 @@ from django.template import RequestContext
 from models import TavernaExecution
 from forms import TavernaExecutionForm
 from masterinterface.scs.utils import get_file_data
-from masterinterface.scs_resources.models import Workflow
+from masterinterface.scs_resources.models import Workflow, Resource
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
+from masterinterface.scs_workspace.Taverna2WorkflowIO import Taverna2WorkflowIO
+from masterinterface.datasets.models import DatasetQuery
 
 
 @login_required
@@ -32,7 +34,23 @@ def create(request):
         taverna_execution.title = request.POST['title']
         taverna_execution.t2flow = get_file_data(workflow.t2flow)
         if request.POST.get('default_inputs','off') == 'on':
-            taverna_execution.baclava = get_file_data(request.FILES['inputFile'])
+            if request.POST['input_definition_tab'] == 'baclava':
+                taverna_execution.baclava = get_file_data(request.FILES['inputFile'])
+            if request.POST['input_definition_tab'] == 'dataset':
+                dataset_query = DatasetQuery.objects.get(id=request.POST['dataset_queryid'])
+                tavernaIO = Taverna2WorkflowIO()
+                tavernaIO.loadFromT2FLOWString(taverna_execution.t2flow)
+                input_ports = tavernaIO.getInputPorts()
+                results = dataset_query.get_results(request.ticket)
+                header = dataset_query.get_header(request.ticket)
+                for input in input_ports:
+                    dataset_results_field = request.POST[input]
+                    values = []
+                    index = header.index(dataset_results_field)
+                    for row in results:
+                        values.append(row[index])
+                    tavernaIO.setInputPortValues(input,values)
+                taverna_execution.baclava = tavernaIO.inputsToBaclava()
         else:
             taverna_execution.baclava = get_file_data(workflow.xml)
         #taverna_execution.baclava = get_file_data(workflow.xml)
@@ -52,13 +70,36 @@ def create(request):
         form = TavernaExecutionForm()
         form.fields['workflowId'].initial = workflow.global_id
         form.fields['title'].initial = workflow.metadata['name'] + " execution " + str(n)
+        tavernaIO = Taverna2WorkflowIO()
+        tavernaIO.loadFromT2FLOWString(workflow.t2flow)
+        tavernaIO.loadInputsFromBaclavaString(workflow.xml)
+        t = tavernaIO.getInputPorts()
+        dataset_queries = request.user.datasetquery_set.all().values('id','name')
         return render_to_response(
         'scs_workspace/create.html',
-        {'form': form, 'workflow': workflow},
+        {'form': form, 'workflow': workflow, 'dataset_queries':dataset_queries},
         RequestContext(request)
         )
     else:
         raise PermissionDenied
+
+@csrf_exempt
+def getDatasetInputs(request):
+    value = request.POST['value']
+    dataset_query = DatasetQuery.objects.get(id=value)
+    dataset = Resource.objects.get(global_id=dataset_query.global_id)
+    workflow = Workflow.objects.get(global_id=request.POST['workflowId'])
+    tavernaIO = Taverna2WorkflowIO()
+    tavernaIO.loadFromT2FLOWString(workflow.t2flow)
+    tavernaIO.loadInputsFromBaclavaString(workflow.xml)
+    workflow_input = tavernaIO.getInputPorts()
+    return render_to_response(
+        'scs_workspace/datasetInputs.html',
+        {'workflow_input': workflow_input, 'dataset': dataset,'dataset_query':dataset_query, 'query_header': dataset_query.get_header(request.ticket), 'results':dataset_query.get_results(request.ticket)},
+        RequestContext(request)
+    )
+
+
 
 @csrf_exempt
 def startExecution(request):
