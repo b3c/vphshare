@@ -18,6 +18,7 @@ import logging
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+EMPTY_BACLAVA = '<?xml version="1.0" encoding="UTF-8"?><b:dataThingMap xmlns:b="http://org.embl.ebi.escience/baclava/0.1alpha"></b:dataThingMap>'
 
 class workflows_api(BaseHandler):
     """
@@ -86,6 +87,8 @@ class workflows_api(BaseHandler):
                 form = WorkflowForm(put, request.FILES, instance=dbWorkflow)
                 if form.is_valid():
                     workflow = form.save(commit=False, owner=dbWorkflow.owner)
+                    #fix to the taverna online update injection.
+                    workflow.xml = dbWorkflow.xml
                     workflow.save()
                     return workflow.global_id
                 #logger.error('API:Update workflow bad request', exc_info=True, extra={
