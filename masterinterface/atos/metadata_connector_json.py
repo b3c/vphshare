@@ -163,7 +163,7 @@ def filter_resources_by_facet(type, facet = None, value = None, page=1, numResul
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
 
-def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name', orderType='asc'):
+def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name', orderType='asc', global_id = []):
 
     try:
         if text == '*':
@@ -179,7 +179,11 @@ def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name',
                     filters_url = filters_url[:-2]
                     filters_url += ") AND "
             filters_url = filters_url[:-5]
-            response = requests.get(FILTER_METADATA_API % (filters_url, numResults, page, orderBy, orderType), headers={'Accept' : 'application/json'})
+            if list(global_id) == []:
+                response = requests.get(FILTER_METADATA_API % (filters_url, numResults, page, orderBy, orderType), headers={'Accept' : 'application/json'})
+            else:
+                payload = decompose_payload({'globalID_list':",".join(global_id)})
+                response = requests.post(FILTER_METADATA_API % (filters_url, numResults, page, orderBy, orderType), headers={'Content-Type':'application/xml', 'Accept' : 'application/json'}, data=payload)
         else:
             request_url = SEARCH_METADATA_API % (text, numResults, page, orderBy, orderType)
             #filters['name'] = text.split()
@@ -195,8 +199,12 @@ def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name',
                     filters_url = filters_url[:-2]
                     filters_url += ') AND '
             filters_url = filters_url[:-5]
+            if list(global_id) == []:
+                response = requests.get(request_url + filters_url, headers={'Accept' : 'application/json'})
+            else:
+                payload = decompose_payload({'globalID_list':",".join(global_id)})
+                response = requests.post(request_url + filters_url, headers={'Content-Type':'application/xml', 'Accept' : 'application/json'}, data=payload)
 
-            response = requests.get(request_url + filters_url, headers={'Accept' : 'application/json'})
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)

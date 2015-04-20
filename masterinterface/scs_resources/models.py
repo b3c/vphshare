@@ -11,7 +11,7 @@ from django.db.models import Avg
 from django.core.cache import cache
 from django.conf import settings
 
-from masterinterface.atos.metadata_connector_json import update_resource_metadata, get_resource_metadata, delete_resource_metadata, get_resources_metadata_by_list
+from masterinterface.atos.metadata_connector_json import update_resource_metadata, get_resource_metadata, delete_resource_metadata, get_resources_metadata_by_list, search_resource
 from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
 from masterinterface.scs_groups.models import VPHShareSmartGroup
 from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name, grant_permission, is_request_pending
@@ -77,7 +77,7 @@ class ResourceManager(models.Manager):
             resources_metadata['data'] = resources
         return resources_metadata
 
-    def filter_by_roles(self, role = None, user=None, types=None, group=None, public=True, page=1, orderBy='name', orderType='asc', numResults=10):
+    def filter_by_roles(self, role = None, user=None, types=None, group=None, public=True, page=1, orderBy='name', orderType='asc', numResults=10, search_text='', expression=''):
         roles = Roles[Roles.index(Role.objects.get(name=role).name):]
         if user:
             if public:
@@ -111,7 +111,10 @@ class ResourceManager(models.Manager):
             resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True))
         else:
             resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True), type=types)
-        resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType)
+        if search_text == '':
+            resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType)
+        else:
+            resources_metadata = search_resource(search_text ,expression, numResults=numResults, page= page, orderBy=orderBy, orderType=orderType)
         resources = []
         if resources_metadata.get('resource_metadata', []):
             for resource in resources_metadata['resource_metadata']:
