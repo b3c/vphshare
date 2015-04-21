@@ -77,7 +77,7 @@ class ResourceManager(models.Manager):
             resources_metadata['data'] = resources
         return resources_metadata
 
-    def filter_by_roles(self, role = None, user=None, types=None, group=None, public=True, page=1, orderBy='name', orderType='asc', numResults=10, search_text='', expression=''):
+    def filter_by_roles(self, role = None, user=None, types=None, group=None, public=True, page=1, orderBy='name', orderType='asc', numResults=10, search_text='', expression={}):
         roles = Roles[Roles.index(Role.objects.get(name=role).name):]
         if user:
             if public:
