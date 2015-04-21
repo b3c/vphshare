@@ -111,10 +111,7 @@ class ResourceManager(models.Manager):
             resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True))
         else:
             resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True), type=types)
-        if search_text == '':
-            resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType)
-        else:
-            resources_metadata = search_resource(search_text ,expression, numResults=numResults, page= page, orderBy=orderBy, orderType=orderType)
+        resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType, search_text=search_text, filters=expression)
         resources = []
         if resources_metadata.get('resource_metadata', []):
             for resource in resources_metadata['resource_metadata']:
