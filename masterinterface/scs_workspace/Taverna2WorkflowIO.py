@@ -227,7 +227,10 @@ class Taverna2WorkflowIO(object):
             t2flowDict = xmltodict.parse(t2flow_str)
 
             # inputs
-            inputPorts = t2flowDict['workflow']['dataflow']['inputPorts']
+            if type(t2flowDict['workflow']['dataflow']) is list:
+                inputPorts = t2flowDict['workflow']['dataflow'][0]['inputPorts']
+            else:
+                inputPorts = t2flowDict['workflow']['dataflow']['inputPorts']
             inputPortsList = []
             if type(inputPorts['port']) is list: 
                 for port in inputPorts['port']:
@@ -268,7 +271,10 @@ class Taverna2WorkflowIO(object):
                     pass # something went wrong reading the sample input values, but the port were acquired so we can continue
                     
             # outputs
-            outputPorts = t2flowDict['workflow']['dataflow']['outputPorts']
+            if type(t2flowDict['workflow']['dataflow']) is list:
+                outputPorts = t2flowDict['workflow']['dataflow'][0]['outputPorts']
+            else:
+                outputPorts = t2flowDict['workflow']['dataflow']['outputPorts']
             outputPortsList = []
             if type(outputPorts['port']) is list: 
                 for port in outputPorts['port']:
