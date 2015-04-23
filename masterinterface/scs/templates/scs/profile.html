@@ -20,6 +20,15 @@
             }
         });
 
+        var zclip_filestore = $('a#copy-filestore').zclip({
+            path:'/static/ZeroClipboard.swf',
+            copy: function(){ return $('div#filestore-tkt').text();},
+            afterCopy:function(){
+                $('#filestore-copied-message').removeClass("invisible");
+                $(this).preventDefault();
+            }
+        });
+
         $('#expire-option').change(function(){
             var expire = "";
             var updating = $('.updating-alert').clone();
@@ -114,8 +123,9 @@
                 <option value="1">1 day</option>
                 <option value="7">7 days</option>
                 <option value="30">30 days</option>
-            </select>
-            <br/><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
+            </select><span id="copied-message" class="invisible badge badge-info">COPIED!</span></li>
+            <li><a class="btn" id="copy-filestore" href="#filestore-copied">Copy your Filestore Password to clipboard</a>
+            <span id="filestore-copied-message" class="invisible badge badge-info">COPIED!</span></li>
             <li><a class="btn" href="/groups">Groups</a><br/></li>
                 {% if request.user.is_superuser %}
                     <hr/>
@@ -131,6 +141,7 @@
           </ul>
             {% if request.user == user %}
                 <span class="invisible"><div id="copy" class="invisible">{{ tkt64 }}</div></span></li>
+                <span class="invisible"><div id="filestore-tkt" class="invisible">{{ filestore_tkt }}</div></span></li>
             {% endif %}
         </fieldset>
     {% else %}
