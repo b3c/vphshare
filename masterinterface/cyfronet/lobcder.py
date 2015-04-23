@@ -37,7 +37,7 @@ class LobcderEntry:
         self.uid = None
 
 def getShortTicket(ticket):
-    response = requests.get(settings.LOBCDER_REST_URL + '/' + ticket)
+    response = requests.get('https://lobcder.vph.cyfronet.pl/lobcder/urest/getshort/' + ticket, verify=False)
     return response.content
 
 def getMetadata(path, ticket):
