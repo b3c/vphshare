@@ -22,6 +22,7 @@ from masterinterface import settings
 from masterinterface.atos.metadata_connector_json import search_resource
 from masterinterface.scs_resources.models import get_pending_requests_by_user
 from masterinterface.scs_groups.views import is_pending_institution, is_pending_action
+from masterinterface.cyfronet.lobcder import getShortTicket
 
 def home(request):
     """Home view """
@@ -88,6 +89,7 @@ def profile(request, user=None):
     """Login complete view, displays user data"""
 
     tkt64 = request.ticket
+    filestore_tkt = getShortTicket(tkt64)
 
     if user is None:
         user = request.user
@@ -98,6 +100,7 @@ def profile(request, user=None):
         'version': version,
         'last_login': request.session.get('social_auth_last_login_backend'),
         'tkt64': tkt64,
+        'filestore_tkt': filestore_tkt,
         'user': user,
         'users':  [u.username for u in User.objects.all()]
     }
