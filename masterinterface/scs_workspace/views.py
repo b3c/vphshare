@@ -91,7 +91,7 @@ def getDatasetInputs(request):
     workflow = Workflow.objects.get(global_id=request.POST['workflowId'])
     tavernaIO = Taverna2WorkflowIO()
     tavernaIO.loadFromT2FLOWString(workflow.t2flow)
-    tavernaIO.loadInputsFromBaclavaString(workflow.xml)
+    #tavernaIO.loadInputsFromBaclavaString(workflow.xml)
     workflow_input = tavernaIO.getInputPorts()
     return render_to_response(
         'scs_workspace/datasetInputs.html',
