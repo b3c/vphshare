@@ -81,4 +81,6 @@ def retriveVtk(request):
 def tools(request):
     return render_to_response('cyfronet/clew.html', {
     			'cloudFacadeUrl': settings.CLOUDFACACE_URL,
-    			'vphTicket': request.ticket}, RequestContext(request))
+    			'vphTicket': request.ticket,
+    			'institutionPortal':  request.session['institutionalportal'].institution.name if request.session.get('institutionalportal',None) else None
+    		}, RequestContext(request))

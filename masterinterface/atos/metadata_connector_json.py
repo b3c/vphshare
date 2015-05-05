@@ -108,15 +108,27 @@ def get_resource_metadata(global_id):
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
 
-def get_resources_metadata_by_list(global_id = [], page=1, numResults=10, orderBy = 'name', orderType='asc'):
+def get_resources_metadata_by_list(global_id = [], page=1, numResults=10, orderBy = 'name', orderType='asc', search_text = '' ,filters = {}):
     """
         given the list of the resource given a list of global_id
     """
     try:
+        filters_url = "((status='Active') OR (status='active')) AND "
+        for key, values in filters.items():
+            if type(values) is list and len(values) > 0:
+                filters_url += '('
+                for value in values:
+                    if key == 'tags':
+                        filters_url += " %s LIKE '%%25%s%%25' OR" % (key, value)
+                    else:
+                        filters_url += " %s='%s' OR" % (key, value)
+                filters_url = filters_url[:-2]
+                filters_url += ") AND "
+        filters_url = filters_url[:-5]
         if list(global_id) == []:
             return EMPTY_LIST.copy()
         payload = decompose_payload({'globalID_list':",".join(global_id)})
-        response = requests.post(FILTER_METADATA_BY_GLOBALID % ( numResults, page, orderBy, orderType), headers={'Content-Type':'application/xml', 'Accept' : 'application/json'}, data=payload)
+        response = requests.post(FILTER_METADATA_BY_GLOBALID % ( search_text, filters_url, numResults, page, orderBy, orderType), headers={'Content-Type':'application/xml', 'Accept' : 'application/json'}, data=payload)
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)
         try:
@@ -163,7 +175,7 @@ def filter_resources_by_facet(type, facet = None, value = None, page=1, numResul
     except BaseException, e:
         raise AtosServiceException("Error while contacting Atos Service: %s" % e.message)
 
-def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name', orderType='asc'):
+def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name', orderType='asc', global_id = []):
 
     try:
         if text == '*':
@@ -179,7 +191,11 @@ def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name',
                     filters_url = filters_url[:-2]
                     filters_url += ") AND "
             filters_url = filters_url[:-5]
-            response = requests.get(FILTER_METADATA_API % (filters_url, numResults, page, orderBy, orderType), headers={'Accept' : 'application/json'})
+            if list(global_id) == []:
+                response = requests.get(FILTER_METADATA_API % (filters_url, numResults, page, orderBy, orderType), headers={'Accept' : 'application/json'})
+            else:
+                payload = decompose_payload({'globalID_list':",".join(global_id)})
+                response = requests.post(FILTER_METADATA_API % (filters_url, numResults, page, orderBy, orderType), headers={'Content-Type':'application/xml', 'Accept' : 'application/json'}, data=payload)
         else:
             request_url = SEARCH_METADATA_API % (text, numResults, page, orderBy, orderType)
             #filters['name'] = text.split()
@@ -195,8 +211,12 @@ def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name',
                     filters_url = filters_url[:-2]
                     filters_url += ') AND '
             filters_url = filters_url[:-5]
+            if list(global_id) == []:
+                response = requests.get(request_url + filters_url, headers={'Accept' : 'application/json'})
+            else:
+                payload = decompose_payload({'globalID_list':",".join(global_id)})
+                response = requests.post(request_url + filters_url, headers={'Content-Type':'application/xml', 'Accept' : 'application/json'}, data=payload)
 
-            response = requests.get(request_url + filters_url, headers={'Accept' : 'application/json'})
 
         if response.status_code != 200:
             raise AtosServiceException("Error while contacting Atos Service: status code = %s" % response.status_code)

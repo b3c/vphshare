@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<MSF Version="2.2">
+  <Root Crypting="0" Id="-1" MaxNodeId="22" Name="root" Type="mafVMERoot">
+    <Attributes NumberOfItems="2">
+      <Item NumberOfTags="0" Type="mafTagArray">
+        <Name>LHDL</Name>
+      </Item>
+      <Item NumberOfTags="2" Type="mafTagArray">
+        <Name>TagArray</Name>
+        <TItem Mult="1" Name="APP_STAMP" Type="STR">
+          <TItem>
+            <TC>LHPBuilder</TC>
+          </TItem>
+        </TItem>
+        <TItem Mult="1" Name="Creation_Date" Type="STR">
+          <TItem>
+            <TC>02/09/2013 15:38:54</TC>
+          </TItem>
+        </TItem>
+      </Item>
+    </Attributes>
+    <Links NumberOfLinks="0"/>
+    <Children NumberOfItems="1"/>
+    <MaxItemId>15</MaxItemId>
+    <Transform TimeStamp="0">1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</Transform>
+  </Root>
+</MSF>

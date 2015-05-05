@@ -50,7 +50,7 @@ TYPE_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/facets/%s?numRe
 
 FILTER_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/filter?logicalExpression=%s&numResults=%s&page=%s&orderBy=%s&orderType=%s'
 
-FILTER_METADATA_BY_GLOBALID = settings.ATOS_METADATA_URL + '/rest/metadata/filter?numResults=%s&page=%s&orderBy=%s&orderType=%s'
+FILTER_METADATA_BY_GLOBALID = settings.ATOS_METADATA_URL + '/rest/metadata/filter?params=name,description,tags&text=%s&logicalExpression=%s&numResults=%s&page=%s&orderBy=%s&orderType=%s'
 
 SEARCH_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/multifield?params=name,description,tags&text=%s&numResults=%s&page=%s&orderBy=%s&orderType=%s'
 #SEARCH_METADATA_API = settings.ATOS_METADATA_URL + '/rest/metadata/multifield?params=name,description,tags&text=%s'
