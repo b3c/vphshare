@@ -13,7 +13,7 @@ from django.conf import settings
 
 from masterinterface.atos.metadata_connector_json import update_resource_metadata, get_resource_metadata, delete_resource_metadata, get_resources_metadata_by_list, search_resource
 from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
-from masterinterface.scs_groups.models import VPHShareSmartGroup
+from masterinterface.scs_groups.models import VPHShareSmartGroup, Institution, Study
 from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name, grant_permission, is_request_pending
 
 try:
@@ -368,7 +368,7 @@ class Resource(models.Model):
                     permissions_map.append(r.user)
             if r.group is not None and r.content_id == self.id:
 
-                if self.metadata['type'] == 'Dataset':
+                if self.metadata['type'] == 'Dataset' and not Institution.objects.exists(name=r.group.name) and not Study.objects.exists(name=r.group.name) :
                     ##Only for dataset maintain the Woody approach.
                     try:
                         vph_smart_group = VPHShareSmartGroup.objects.get(name=r.group.name)
