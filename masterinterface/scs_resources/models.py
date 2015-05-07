@@ -368,7 +368,7 @@ class Resource(models.Model):
                     permissions_map.append(r.user)
             if r.group is not None and r.content_id == self.id:
 
-                if self.metadata['type'] == 'Dataset' and not Institution.objects.exists(name=r.group.name) and not Study.objects.exists(name=r.group.name) :
+                if self.metadata['type'] == 'Dataset' and not Institution.objects.filter(name=r.group.name).exists() and not Study.objects.filter(name=r.group.name).exists() :
                     ##Only for dataset maintain the Woody approach.
                     try:
                         vph_smart_group = VPHShareSmartGroup.objects.get(name=r.group.name)
