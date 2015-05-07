@@ -71,9 +71,6 @@ def create(request):
         form.fields['workflowId'].initial = workflow.global_id
         form.fields['title'].initial = workflow.metadata['name'] + " execution " + str(n)
         tavernaIO = Taverna2WorkflowIO()
-        tavernaIO.loadFromT2FLOWString(workflow.t2flow)
-        tavernaIO.loadInputsFromBaclavaString(workflow.xml)
-        t = tavernaIO.getInputPorts()
         dataset_queries = request.user.datasetquery_set.all().values('id','name')
         return render_to_response(
         'scs_workspace/create.html',
