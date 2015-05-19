@@ -46,8 +46,9 @@ def execute_workflow(ticket, execution_id, title, taverna_atomic_id, t2flow, bac
                     #problem with email notification. Ignored.(only for local instance)
                     pass
         return True
-    except Exception, e:
-        print e
+    except Exception, e:        
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
         return False
 
 
@@ -62,40 +63,43 @@ def get_execution_infos(execution_id, ticket):
         Success: The execution is end and all the informations are stored in the database.
         Fail : False , It mean that the execution is not started yet, or the execution id requested not exist.
     """
-    ret = {}
-    taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
-    keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
-    # Update the database every 5 seconds until user delete the execution or the execution is end.
-    while not(taverna_execution is None and ret == False) and (ret.get('executionstatus', -1) < 8 and ret.get('error', False) != True):
+    try:
+        ret = {}
+        taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
+        keys = ['executionstatus', 'error', 'error_msg', 'workflowId', 'endpoint', 'asConfigId', 'createTime', 'expiry', 'startTime', 'Finished', 'exitcode', 'stdout', 'stderr', 'outputfolder']
+        # Update the database every 5 seconds until user delete the execution or the execution is end.
+        while not(taverna_execution is None and ret == False) and (ret.get('executionstatus', -1) < 8 and ret.get('error', False) != True):
+            ret_new = WorkflowManager.getWorkflowInformation(execution_id, ticket)
+            taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
+            if ret_new != ret and type(ret_new) is not bool:
+                ret = ret_new
+                for key in keys:
+                    setattr(taverna_execution,key,ret_new.get(key, ''))
+                taverna_execution.save()
+            time.sleep(5)
         ret_new = WorkflowManager.getWorkflowInformation(execution_id, ticket)
         taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
-        if ret_new != ret and type(ret_new) is not bool:
-            ret = ret_new
-            for key in keys:
-                setattr(taverna_execution,key,ret_new.get(key, ''))
-            taverna_execution.save()
-        time.sleep(5)
-    ret_new = WorkflowManager.getWorkflowInformation(execution_id, ticket)
-    taverna_execution = TavernaExecution.objects.get(pk=execution_id, ticket=ticket)
-    for key in keys:
-        setattr(taverna_execution,key,ret_new.get(key, ''))
-    taverna_execution.task_id = None
-    taverna_execution.status = 'Completed'
-    taverna_execution.save()
-    WorkflowManager.deleteExecution(taverna_execution.id, ticket)
-    # Add notification when it finished
-    user_data = settings.TICKET.validateTkt(base64.b64decode(ticket))
-    if user_data:
-        try:
-            user = User.objects.get(username = user_data[2][0])
-            subject = "Workflow execution is completed"
-            message = '%s is completed, click <a href="%s/workspace/#%s">here</a> to see the results.' % (taverna_execution.title, settings.BASE_URL, execution_id)
-            Notification(recipient=user, message=message, subject=subject).save()
-        except Exception, e:
-            #problem with email notification. Ignored.
-            pass
-    return True
-
-
+        for key in keys:
+            setattr(taverna_execution,key,ret_new.get(key, ''))
+        taverna_execution.task_id = None
+        taverna_execution.status = 'Completed'
+        taverna_execution.save()
+        WorkflowManager.deleteExecution(taverna_execution.id, ticket)
+        # Add notification when it finished
+        user_data = settings.TICKET.validateTkt(base64.b64decode(ticket))
+        if user_data:
+            try:
+                user = User.objects.get(username = user_data[2][0])
+                subject = "Workflow execution is completed"
+                message = '%s is completed, click <a href="%s/workspace/#%s">here</a> to see the results.' % (taverna_execution.title, settings.BASE_URL, execution_id)
+                Notification(recipient=user, message=message, subject=subject).save()
+            except Exception, e:
+                #problem with email notification. Ignored.
+                pass
+        return True
+    except Exception, e :
+        from raven.contrib.django.raven_compat.models import client
+        client.captureException()
+        return False
 
 
