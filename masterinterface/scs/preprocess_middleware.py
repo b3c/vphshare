@@ -10,7 +10,7 @@ class institutionPortaleMiddleware(object):
         try:
             #if request.user.is_authenticated():
             subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
-            if subdomain not in ['portal','devel']: # we are in a institutional portal
+            if subdomain not in ['portal','devel'] and request.META['HTTP_HOST'] not in settings.BASE_URL: # we are in a institutional portal
                 institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
                 request.session['institutionportal'] = institutionportal
             else:
@@ -28,7 +28,7 @@ class institutionPortaleMiddleware(object):
             if isinstance(response,HttpResponsePermanentRedirect):
                 return response
             subdomain = request.META['HTTP_HOST'].split(settings.SESSION_COOKIE_DOMAIN)[0]
-            if subdomain not in ['portal','devel']: # we are in a institutional portal
+            if subdomain not in ['portal','devel'] and request.META['HTTP_HOST'] not in settings.BASE_URL: # we are in a institutional portal
                 institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
                 request.session['institutionportal'] = institutionportal
                 if all(x not in request.path for x in ['login', 'done', 'scs_auth', 'media', 'static', 'api']) and request.user not in institutionportal.institution.user_set.all():
@@ -46,6 +46,8 @@ class institutionPortaleMiddleware(object):
                     del(request.session['institutionportal'])
             return response
         except Exception, e:
+            print e
+            print request.META['HTTP_HOST']
             from raven.contrib.django.raven_compat.models import client
             client.captureException()
             if request.session.get('institutionportal', None):
