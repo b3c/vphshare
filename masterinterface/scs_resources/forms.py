@@ -122,6 +122,8 @@ class ResourceForm(forms.ModelForm):
         metadata_payload.update(additional_metadata)
         try:
             cache.delete(self.instance.global_id)
+            if self.instance.global_id is None:
+                raise Exception()
             update_resource_metadata(self.instance.global_id, metadata_payload, metadata_payload['type'])
         except Exception, e:
             if self.instance.global_id is not None:

@@ -31,7 +31,7 @@ class institutionPortaleMiddleware(object):
             if subdomain not in ['portal','devel']: # we are in a institutional portal
                 institutionportal = InstitutionPortal.objects.get(subdomain=subdomain)
                 request.session['institutionportal'] = institutionportal
-                if all(x not in request.path for x in ['login', 'done', 'scs_auth', 'media', 'static']) and request.user not in institutionportal.institution.user_set.all():
+                if all(x not in request.path for x in ['login', 'done', 'scs_auth', 'media', 'static', 'api']) and request.user not in institutionportal.institution.user_set.all():
                     if request.user.is_anonymous() and request.path not in ['/','']:
                         request.session['errormessage'] = "Please login to access to the requested resource"
                         if request.path not in ['/','']:

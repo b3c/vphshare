@@ -527,5 +527,5 @@ handler.register(rpc_refresh_tkt, "refresh_tkt")
 ############################################################################
 
 if __name__ == "__main__":
-    app.run(port=6623, host='46.105.98.182', debug=True)
+    app.run(port=6623, host='0.0.0.0', debug=True)
     #pass
