@@ -127,28 +127,6 @@ class ResourceManager(models.Manager):
         resources_metadata['data'] = resources
         return resources_metadata
 
-    def solr_filter(self, rows=100, page=0, q=None, *args, **kwargs):
-        #to check with Ivan if we can use the solr endpoint
-        if q is None:
-            q = " AND ".join('%s:"%s"' % (key,kwargs[key]) for key in kwargs.keys() if  not isinstance(kwargs[key], list))
-            #query with inlusive list
-            q2 = " AND ".join('%s:[%s]' % (key," ".join(str(value) for value in kwargs[key])) for key in kwargs.keys() if  isinstance(kwargs[key], list))
-            if len(q2):
-                q += " AND %s" % q2
-        resources = []
-        results = settings.MD_SEARCH_ENGINE.search(q, start=rows*page, rows=rows)
-        for result in results:
-            user = User.objects.filter(username=result['author'])
-            if user.exists():
-                #the results retunr by the search engine is a list with length one.
-                result['type'] = result['type'][0]
-                r, created = self.get_or_create(result["globalID"], metadata=result , owner=user[0], type=result['type'])[0]
-                if created:
-                    r.save()
-                resources.append(r)
-        #resources = super(ResourceManager, self).filter(*args, **kwargs)
-        return resources, results.hits
-
 
     def filter(self, *args, **kwargs):
         return super(ResourceManager, self).filter(*args, **kwargs)

@@ -2,18 +2,16 @@
 
 import os
 from mod_auth import SignedTicket, Ticket
-import pysolr
 
 DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Matteo Balasso', 'm.balasso@scsitaly.com'),
     ('Alfredo Saglimbeni', 'a.saglimbeni@scsitaly.com')
 )
 
-AUTH_SERVICES = "http://auth.biomedtown.org/api"
+AUTH_SERVICES = "https://portal.vph-share.eu/api/auth/api"
 BASE_URL = "https://portal.vph-share.eu"
 SESSION_COOKIE_DOMAIN = ".vph-share.eu"
 
@@ -31,36 +29,17 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 #}
 
 # Cyfronet Database
-CYFRONET_DB = {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'masterinterface',                      # Or path to database file if using sqlite3.
-        'USER': 'vph',                      # Not used with sqlite3.
-        'PASSWORD': 'vph123',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-    }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
-        'USER': 'gscs0001',                      # Not used with sqlite3.
+        'NAME': '',                      # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '10.100.1.172',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#        'NAME': 'vphsharedb',                      # Or path to database file if using sqlite3.
-#        'USER': 'vph',                      # Not used with sqlite3.
-#        'PASSWORD': 'vph.0RG',                  # Not used with sqlite3.
-#        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-#        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-#    }
-#}
 
 #Define class where extened user profile
 AUTH_PROFILE_MODULE = 'scs_auth.UserProfile'
@@ -324,7 +303,7 @@ LOBCDER_FOLDER_DOWNLOAD_PATH = '/compress/getzip'
 
 #PARAVIEW settings
 LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
-PARAVIEW_HOST = '46.105.98.182:9000'
+PARAVIEW_HOST = '0.0.0.0:9000'
 
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-extended'
@@ -359,8 +338,6 @@ RAVEN_CONFIG = {
     'dsn': 'http://2d9a99aec6be407cb4fff11ec2fdf236:86c4c065a476469b9dbf57744e21254a@sentry.vph-share.eu/2',
 }
 
-# SOLR search engine for metadata (faster way to have access to the metadata:
-MD_SEARCH_ENGINE = pysolr.Solr('http://vphshare.atosresearch.eu/solr/vph_big_prod/', timeout=100)
 ##################
 # LOCAL SETTINGS #
 ##################
