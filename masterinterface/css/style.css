@@ -1759,3 +1759,11 @@ left: 50%;
     .well-white {display: inline-block;width: 34%;}
     .left-list{margin-top:384px }
 }
+
+/* uncomment this style if you want to have the disco style header
+.dev-page-title-wrapper{
+    -webkit-animation-name: disco;
+    -webkit-animation-duration: 360s;
+    -webkit-animation-iteration-count: infinite;
+}
+*/
