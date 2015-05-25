@@ -11,9 +11,9 @@ from django.db.models import Avg
 from django.core.cache import cache
 from django.conf import settings
 
-from masterinterface.atos.metadata_connector_json import update_resource_metadata, get_resource_metadata, delete_resource_metadata, get_resources_metadata_by_list
+from masterinterface.atos.metadata_connector_json import update_resource_metadata, get_resource_metadata, delete_resource_metadata, get_resources_metadata_by_list, search_resource
 from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
-from masterinterface.scs_groups.models import VPHShareSmartGroup
+from masterinterface.scs_groups.models import VPHShareSmartGroup, Institution, Study
 from masterinterface.scs_resources.utils import get_resource_local_roles, get_resource_global_group_name, grant_permission, is_request_pending
 
 try:
@@ -77,7 +77,7 @@ class ResourceManager(models.Manager):
             resources_metadata['data'] = resources
         return resources_metadata
 
-    def filter_by_roles(self, role = None, user=None, types=None, group=None, public=True, page=1, orderBy='name', orderType='asc', numResults=10):
+    def filter_by_roles(self, role = None, user=None, types=None, group=None, public=True, page=1, orderBy='name', orderType='asc', numResults=10, search_text='', expression={}):
         roles = Roles[Roles.index(Role.objects.get(name=role).name):]
         if user:
             if public:
@@ -111,7 +111,7 @@ class ResourceManager(models.Manager):
             resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True))
         else:
             resources = self.filter(pk__in=role_relations.values_list('content_id', flat=True), type=types)
-        resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType)
+        resources_metadata = get_resources_metadata_by_list(resources.values_list('global_id', flat=True), page=page, numResults=numResults, orderBy=orderBy, orderType=orderType, search_text=search_text, filters=expression)
         resources = []
         if resources_metadata.get('resource_metadata', []):
             for resource in resources_metadata['resource_metadata']:
@@ -126,28 +126,6 @@ class ResourceManager(models.Manager):
             resources_metadata['resource_metadata'] = []
         resources_metadata['data'] = resources
         return resources_metadata
-
-    def solr_filter(self, rows=100, page=0, q=None, *args, **kwargs):
-        #to check with Ivan if we can use the solr endpoint
-        if q is None:
-            q = " AND ".join('%s:"%s"' % (key,kwargs[key]) for key in kwargs.keys() if  not isinstance(kwargs[key], list))
-            #query with inlusive list
-            q2 = " AND ".join('%s:[%s]' % (key," ".join(str(value) for value in kwargs[key])) for key in kwargs.keys() if  isinstance(kwargs[key], list))
-            if len(q2):
-                q += " AND %s" % q2
-        resources = []
-        results = settings.MD_SEARCH_ENGINE.search(q, start=rows*page, rows=rows)
-        for result in results:
-            user = User.objects.filter(username=result['author'])
-            if user.exists():
-                #the results retunr by the search engine is a list with length one.
-                result['type'] = result['type'][0]
-                r, created = self.get_or_create(result["globalID"], metadata=result , owner=user[0], type=result['type'])[0]
-                if created:
-                    r.save()
-                resources.append(r)
-        #resources = super(ResourceManager, self).filter(*args, **kwargs)
-        return resources, results.hits
 
 
     def filter(self, *args, **kwargs):
@@ -368,7 +346,7 @@ class Resource(models.Model):
                     permissions_map.append(r.user)
             if r.group is not None and r.content_id == self.id:
 
-                if self.metadata['type'] == 'Dataset':
+                if self.metadata['type'] == 'Dataset' and not Institution.objects.filter(name=r.group.name).exists() and not Study.objects.filter(name=r.group.name).exists() :
                     ##Only for dataset maintain the Woody approach.
                     try:
                         vph_smart_group = VPHShareSmartGroup.objects.get(name=r.group.name)

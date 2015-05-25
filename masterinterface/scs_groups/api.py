@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from piston.handler import BaseHandler
 from permissions.utils import add_local_role
 from masterinterface.scs_auth.auth import authenticate
-from models import VPHShareSmartGroup
+from models import VPHShareSmartGroup, InstitutionPortal
 from config import group_manager
 
 
@@ -551,9 +551,13 @@ class user_groups(BaseHandler):
                         response = HttpResponse(status=404)
                         response._is_string = True
                         return response
-
-                    return [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in
+                    if request.GET.get('institution', None) is None:
+                        res = [{"groupname": g.name, "subscribers": len(g.user_set.all())} for g in
                             target_user.groups.all()]
+                    else:
+                        res = [{"groupname": g.institution.name, "subscribers": len(g.institution.user_set.all())} for g in
+                           InstitutionPortal.objects.all() if target_user in g.institution.user_set.all()]
+                    return res
 
                 else:
                     response = HttpResponse(status=403)

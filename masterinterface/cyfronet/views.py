@@ -34,7 +34,7 @@ def lobcder(request, path = '/'):
             	'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH,
             	'vphTicket': request.ticket,
                 #give the group name to show only the resource sharred with the institution
-                'institutionPortal':  request.session['institutionalportal'].institution.name if request.session.get('institutionalportal',None) else ''
+                'institutionPortal':  request.session['institutionportal'].institution.name if request.session.get('institutionportal',None) else ''
             }, RequestContext(request))
 
 @csrf_exempt
@@ -82,5 +82,5 @@ def tools(request):
     return render_to_response('cyfronet/clew.html', {
     			'cloudFacadeUrl': settings.CLOUDFACACE_URL,
     			'vphTicket': request.ticket,
-    			'institutionPortal':  request.session['institutionalportal'].institution.name if request.session.get('institutionalportal',None) else ''
+    			'institutionPortal':  request.session['institutionportal'].institution.name if request.session.get('institutionportal',None) else ''
     		}, RequestContext(request))

@@ -1,4 +1,3 @@
-{% if user  == '' %}
 <div class="row">
     <div class="span12 left-list" >
         <div class="popover-list ">
@@ -13,6 +12,11 @@
                     <div title="Filter by {{ type }}" data-value="{{ type }}" class="well well-small well-white filter {% if type not in search.filterby %}filtred{% endif %} {{ type }}-bkgr" {% if type not in search.filterby and filterToshow == 'true' %}style="display: none;"{% endif %}>
                         <i class="fa fa-{{ type }}"><b class="counter-{{ forloop.counter }}"></b></i>
                     </div>
+                    {% if type == 'File' %}
+                        <div title="Go to Filestore" data-value="{{ type }}" class="well well-small well-white filter {% if type not in search.filterby %}filtred{% endif %} {{ type }}-bkgr" style="{% if type not in search.filterby and filterToshow == 'true' %}display: none;{% endif %}float: right;padding: 7px;">
+                        <a href="/filestore/" style="color:#000000;"><i class="fa fa-external-link">Filestore</i></a>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -46,8 +50,6 @@
     </div>
 
 </div>
-
-{% endif %}
 <hr/>
 <div id="results" class="row-fluid">
     <div class="span12">
