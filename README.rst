@@ -194,6 +194,7 @@ Use the master interface under apache web server
         <master-interface-folder> : your masterinterface folder.
         <authentication-services-folder>: the authtentication folder in this packet.
 
+    After that you can copy it in your apache site-enable folder.
 
 
 
