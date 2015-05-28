@@ -143,6 +143,18 @@ Create a new application
     That's all.
     See the documentation of django south for more info https://south.readthedocs.org/en/latest/
 
+--------------------------------
+Run Celery
+--------------------------------
+
+    To support the execution of the workflow the master interface need even to run Celery.
+    To start Celery run the command::
+
+        python manage.py celery worker -A masterinterface
+
+    By default celery have 8 workers it means that can run 8 taverna workflow at the same time and use the database backend.
+    It is possible to configure the celery cluster in a different wat (rabbitmq / redis  etc..) see the documentation for more information http://docs.celeryproject.org/en/latest/index.html.
+    To run it as daemon user supervisor and use the content of the -supervisor_celery_prog.conf- file in the masterinterface folder, copy it in the /etc/supervisor.conf.
 
 --------------------------------
 Paraview Web Install guide
@@ -195,6 +207,13 @@ Use the master interface under apache web server
         <authentication-services-folder>: the authtentication folder in this packet.
 
     After that you can copy it in your apache site-enable folder.
+    Remeber to run the command ::
+
+        python manage.py collectstatic
+
+    This permit to apache to serve the static files directly (faster configuration).
+
+
 
 
 
