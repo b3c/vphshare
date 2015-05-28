@@ -105,3 +105,4 @@ except Exception, e:
     can_remove_user_from_smartgroup = None
     can_add_smartgroup = None
     can_delete_smartgroup = None
+    pass

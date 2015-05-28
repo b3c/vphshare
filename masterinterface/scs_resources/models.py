@@ -679,8 +679,11 @@ class Workflow(Resource):
         return self.resource_ptr.rate(user, rating)
 
 # SET CONTENTYPE WORKFLOW
-set_workflow_for_model(ContentType.objects.get_for_model(ResourceRequest), ResourceRequestWorkflow)
-set_workflow_for_model(ContentType.objects.get_for_model(Resource), ResourceWorkflow)
+try:
+    set_workflow_for_model(ContentType.objects.get_for_model(ResourceRequest), ResourceRequestWorkflow)
+    set_workflow_for_model(ContentType.objects.get_for_model(Resource), ResourceWorkflow)
+except Exception,e:
+    pass
 
 class Rating(models.Model):
     rate = models.IntegerField(blank=False, null=False)
