@@ -25,7 +25,7 @@ Clone our repository with git
     By default, git will clone the repository into the *./vphshare/masterinterface* directory
 
     While the *vphshare* directory is meant to be just a container, the *masterinterface* directory will be the base
-    project location
+    project location even the *authentication* regards the authentication services
 
 
 Python installation requirements
@@ -37,13 +37,21 @@ Python installation requirements
 
     Download and install **setuptools** according to your Python version from http://pypi.python.org/pypi/setuptools
 
+    Download and install **pip** according to your Python version from https://pypi.python.org/pypi/pip
+
     Move into *vphshare/masterinterface* directory, then run the command::
 
-        python setup.py install
+        pip -f requirements.txt
 
-    **depending on your os, the command may need to be executed as a super user**
+    All Python dependencies packages will be installed into your system except the mod_auth_tkt library.
 
-    All Python dependencies packages will be installed into your system
+    To install the mod_auth_tkt you have to download it manually from https://github.com/b3c/mod_auth/zipball/master
+
+    Unzip the file and move inside the packet then run::
+
+        pytho setup.py install
+
+    **depending on your os, the installation commands may need to be executed as a super user**
 
 ------
 Django
@@ -67,22 +75,14 @@ Database Syncronization
     run the command ::
 
         python manage.py syncdb
+        #!!!When the system ask you to create the superuser reply NO.
         python manage.py migrate
 	
 
     You will be asked for some information.
     
-    Not create Admin user in this step please. (see 'Create Superuser')
+    Not create Admin user druing the syndb (see 'Create Superuser')
 
-Database Migration
-+++++++++++++++++++++++
-    
-    When there is a new version of Database schema, Master Interface need to be update schema 
-    and data to new version.
-    Run the command ::
-        
-        python manage.py migrate
-    
 Create Superuser
 +++++++++++++++++++++++
 
@@ -92,8 +92,9 @@ Create Superuser
         
         python manage.py createsuperuser
 
-    and follow the wizard. 
-
+    and follow the wizard.
+    Remeber you can use the admin user only in the admin backend http://<yourdomain>/admin
+    It doesn't work with the login backend of the master interface that work with Biomedtown.
 
 
 Start and Stop the web application
@@ -108,26 +109,31 @@ Start and Stop the web application
     To stop the service, simply kill the process.
 
 --------------------------------
-Create a new service application
+Create a new application
 --------------------------------
 
-    To create the interface application for your service within the master interface project,
-    just run the command ::
+    To create the application for the master interface just run the command ::
 
-        python wsdl2mi.py <your wsdl url>
+        python manage.py startapp <your_app_name>
 
-    To have an example of what it will be created, try to run the following ::
+    The master interface use a versioning control of the database called South
+    It is important to respect the versioning of your ORM in the models.py
+    so each time you create a new model class you have to run the command::
 
-        python wsdl2mi.py http://www.webservicex.net/sendsmsworld.asmx?WSDL
+        python manage.py  schemamigration --initial
+
+    Each time you modify your models class you have to run::
+
+        python manage.py  schemamigration --auto
+
+    After that you ahve to apply fisically your model in your database running the command::
+
+        python manage.py migrate
+
+    That's all.
+    See the documentation of django south for more info https://south.readthedocs.org/en/latest/
 
 
-wsdl2mi limitations at version 0.1
-++++++++++++++++++++++++++++++++++
 
-    Only SOAP services
 
-    One service per WSDL
 
-    One port per service
-
-    Complex types can only be a composition of simple types
