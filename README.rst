@@ -108,13 +108,23 @@ Start and Stop the web application
 
     To stop the service, simply kill the process.
 
---------------------------------
+Use the local setting to customize your MI settings
++++++++++++++++++++++++++
+
+    In the masterinterface folder there the .local_settings.py
+    It is a good practies to use the local setting in case you have a local instance of the master interface.
+    So rename it removing the . (dot) all the parameters defined in the local_setting will override the orginal in the settings.py
+    In the default local_setting you can find the default parameters for the development endpoints of the metadata reposiory and the cloud api.
+    Remeber to read the comments above each parameters in settings.py before you override them.
+
 Create a new application
---------------------------------
++++++++++++++++++++++++++
 
     To create the application for the master interface just run the command ::
 
         python manage.py startapp <your_app_name>
+
+    Then update the INSTALLED_APPS in your settings.
 
     The master interface use a versioning control of the database called South
     It is important to respect the versioning of your ORM in the models.py
@@ -132,6 +142,57 @@ Create a new application
 
     That's all.
     See the documentation of django south for more info https://south.readthedocs.org/en/latest/
+
+
+--------------------------------
+Paraview Web Install guide
+--------------------------------
+    Paraviewweb is not require to run the masterinterface but you need it if you want to render vtk files via Web.
+    The guide to install Paraviewweb is pretty difficult and it need so much patience and some adaptations depending on you operating system.
+    Remeber that you have to install the exact version reported in this documentation.
+
+    Paraview in server without GPU need to emulate it using the osmesa library. So first of all you have to install it:
+    Omesa 7.9.2 : ftp://ftp.freedesktop.org/pub/mesa/older-versions/7.x/7.9.2/MesaLib-7.9.2.zip
+    Paraview 4.0.1: http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v4.0&type=source&os=all&downloadFile=ParaView-v4.0.1-source.zip
+    Requirements::
+        cmake >= 2.8.8
+        python >= 2.7
+        libreria OMesa = 7.9.x
+        paraview=4.0.1 64bit
+
+    Unzip opemsa paket and go insde it and run the command::
+
+         ./configure --with-driver=osmesa --prefix=<omesa_installation_folder>
+         make
+         make install
+
+    If something goes wrong check the system library that you need to install using -apt-get install-.
+
+    Unzip the Paraview source code and remeberd the <paraview-source-code-path> then  outside the soruce folder create a new folder called paraview-build.
+    Go inside the paraview-build folder then run this command::
+
+        cmake <paraview-source-code-path> -DPARAVIEW_ENABLE_PYTHON:BOOL=ON -DPARAVIEW_BUILD_QT_GUI:BOOL=OFF -DOPENGL_INCLUDE_DIR:STRING=<omesa_installation_folder>/include  -DOPENGL_glu_LIBRARY:STRING=/usr/mesa/lib/libGLU.so -DVTK_OPENGL_HAS_OSMESA:BOOL=ON -DOSMESA_INCLUDE_DIR:STRING=<omesa_installation_folder>/include -DOSMESA_LIBRARY:STRING=<omesa_installation_folder>/lib/libOSMesa.so -DVTK_USE_X:BOOL=OFF -DOPENGL_gl_LIBRARY:STRING=''
+
+    Replace what is needed in the command according with your installation then ready to build it:
+
+        make
+        make install
+
+    By default the paraview will be installed here /usr/local/lib/paraview-4.0/
+    Remember to change in the master interface settings the param PARAVIEW_PYTHON_BIN in case you have a different location.
+
+
+------------------------------------------------
+Use the master interface under apache web server
+------------------------------------------------
+
+    Some of the features of the master itnerface are developed to work with apache web server (see the institutional folder)
+    In the masterinterface folder you can find the -sample-mi_vhost.com- redefine in according with your configuration the follow parameters:
+
+        <port-443-or-80> : define it as port 80 (HTTP) in case you have an SSL certificate user 443 (HTTPS)
+        <master-interface-domain> : your master itnerface domain name.
+        <master-interface-folder> : your masterinterface folder.
+        <authentication-services-folder>: the authtentication folder in this packet.
 
 
 

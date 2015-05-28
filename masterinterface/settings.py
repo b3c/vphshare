@@ -11,8 +11,12 @@ ADMINS = (
     ('Alfredo Saglimbeni', 'a.saglimbeni@scsitaly.com')
 )
 
+# Depending on your configuration this endpoint regards the authentication services located in the folder /authentication
+#Follow the readme inside that folder to configure this parameter properly
 AUTH_SERVICES = "https://portal.vph-share.eu/api/auth/api"
+#Your master interface base URL , all the HTTPRedirect response use this parameter.
 BASE_URL = "https://portal.vph-share.eu"
+#Where the sessionid is stored in the browser. this support he cros subdomain sessions.
 SESSION_COOKIE_DOMAIN = ".vph-share.eu"
 
 MANAGERS = ADMINS
@@ -28,8 +32,9 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 #    'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 #}
 
-# Cyfronet Database
-
+#By default the master interface use a local sqlite database
+#don't use this configuration in production but reconfigure it using local_settings.py
+#The sugested database to use in production is Postgres
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -41,7 +46,7 @@ DATABASES = {
     }
 }
 
-#Define class where extened user profile
+#Define class where extened user profile most of them come from Biomedtown
 AUTH_PROFILE_MODULE = 'scs_auth.UserProfile'
 
 # Local time zone for this installation. Choices can be found here:
@@ -138,6 +143,8 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT,'templates'),
 )
 
+#The installed apps of the master interface
+#Remeber to add your own apps if it needs.
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -172,6 +179,11 @@ INSTALLED_APPS = (
     ##NEW_APP
 )
 
+
+#For the master interface we use the default Bioemdtown backend
+#It is an extension od the original openID of social_auth packet
+#If you want to use your own identtity provider uncomment what you need bellow
+#and configure in according with the django-social-auth packet (see the documentation)
 AUTHENTICATION_BACKENDS = (
     'scs_auth.backends.biomedtown.BiomedTownTicketBackend',
     'scs_auth.backends.biomedtown.FromTicketBackend',
@@ -300,11 +312,6 @@ LOBCDER_WEBDAV_HREF = '/lobcder/dav'
 LOBCDER_REST_URL = 'https://lobcder.vph.cyfronet.pl/lobcder/rest'
 LOBCDER_FOLDER_DOWNLOAD_PATH = '/compress/getzip'
 
-
-#PARAVIEW settings
-LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
-PARAVIEW_HOST = '0.0.0.0:9000'
-
 #METADATA SERVICE URL
 ATOS_METADATA_URL = 'http://vphshare.atosresearch.eu/metadata-extended'
 METADATA_TYPE = ['Dataset', 'File', 'SemanticWebService', 'Workflow', 'AtomicService', 'Workspace']
@@ -312,8 +319,9 @@ METADATA_TYPE = ['Dataset', 'File', 'SemanticWebService', 'Workflow', 'AtomicSer
 #WORKFLOW MANAGER URL
 WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'
 
-#PARAVIEW CONFIGS
-
+#PARAVIEWWEB CONFIGS
+LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
+PARAVIEW_HOST = '0.0.0.0:9000'
 PARAVIEW_PYTHON_BIN = "/usr/local/lib/paraview-4.0/pvpython"
 PARAVIEWWEB_SERVER = os.path.join(PROJECT_ROOT, 'paraviewweb/app/paraviewweb_xmlrpc.py')
 PARAVIEWWEB_SERVER_TIMEOUT = 600
@@ -333,7 +341,7 @@ CACHES = {
     }
 }
 
-#SENTRY AND RAVEN CONFIGS
+#SENTRY AND RAVEN CONFIGS for Sentry log manager.
 RAVEN_CONFIG = {
     'dsn': 'http://2d9a99aec6be407cb4fff11ec2fdf236:86c4c065a476469b9dbf57744e21254a@sentry.vph-share.eu/2',
 }

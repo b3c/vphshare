@@ -29,7 +29,7 @@
     </Directory>
 
     WSGIPassAuthorization On
-    WSGIScriptAlias /api/auth /scs/app/django/vphshare-prod/vphshare/authentication/authentication.wsgi
+    WSGIScriptAlias /api/auth <authentication-services-folder>/authentication/authentication.wsgi
     WSGIScriptAlias / <master-interface-folder>/master.wsgi
 
     #Install libapache2-mod-auth-tkt  packet from apt-get
@@ -40,6 +40,7 @@
         TKTAuthGuestLogin on
         TKTAuthBackArgName came_from
         TKTAuthDomain <master-interface-domain>
-	TKTAuthTimeout 0
+	    TKTAuthTimeout 0
+	    TKTAuthSecret "secret"
     </Location>
 </VirtualHost>
