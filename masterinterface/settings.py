@@ -154,26 +154,47 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    #client for Sentry log manager
     'raven.contrib.django.raven_compat',
+    #base application for the biomwedtown auth backend
     'social_auth',
+    #base app for the master interface here you can find the base template and the most of the general views.
     'masterinterface.scs',
+    #authentication backend
     'masterinterface.scs_auth',
+    #Cyfronet filestore and cloufacade
     'masterinterface.cyfronet',
+    #semantic search
     'masterinterface.scs_search',
+    #django-workflow paket to manage the different status of the sharring request and group mebership request
     'workflows',
+    #Initaly used to manage the permission of the master interface not used anymore but left here to avoid conflicts.
     'permissions',
+    #Institutrions and vph-share smart group application.
     'masterinterface.scs_groups',
+    #Security procy configurator
     'masterinterface.scs_security',
+    #Resrouce manager , it works with the metadata repository the core application of the mater interface.
     'masterinterface.scs_resources',
+    # the client connentor for the atos services.
     'masterinterface.atos',
+    #DB versioning control
     'south',
+    #datetime widget for form inputs date type
     'datetimewidget',
+    #widget for the select input in the form
     'django_select2',
-    'masterinterface.scs_workspace',    
+    #Workspace of the master interface where the user can configure the exectution and run the workflow.
+    'masterinterface.scs_workspace',
+    #Application that manage the paraviews instances
     'masterinterface.paraviewweb',
+    #evolution of the scs_search regard only the refactor of the dataset query_builder.
     'masterinterface.datasets',
+    #library for django-celery
     'kombu.transport.django',
+    #celery
     'djcelery',
+    # color picker widget used in the insitutional portal wizard.
     'paintstore'
 
     ##NEW_APP
