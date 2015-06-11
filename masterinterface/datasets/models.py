@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
+
 from masterinterface.scs_resources.models import Resource
+
 import json
 import requests
 import StringIO

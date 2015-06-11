@@ -1,10 +1,11 @@
 # Create your views here.
-from django.template.loader import render_to_string
+# from django.template.loader import render_to_string
+# from django.core.exceptions import SuspiciousOperation
+# from django.http import Http404, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse
+
 from django.shortcuts import render_to_response, redirect
-from django.shortcuts import render_to_response
-from django.core.exceptions import SuspiciousOperation
 from django.template import RequestContext
-from django.http import Http404, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
@@ -30,7 +31,7 @@ def query_builder(request, global_id):
                     "name": dataset_query.name,
                     "query": json.loads(dataset_query.query)
                 }
-            except Exception, e:
+            except:
                 request.session['errormessage'] = "The query you are looking for doesn't exist."
                 redirect("query_builder",global_id=global_id)
         dataset.load_additional_metadata(request.ticket)
