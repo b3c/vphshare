@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.cache import cache as cc
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
 
@@ -8,6 +9,7 @@ import json
 import requests
 import StringIO
 import csv
+import hashlib as hl
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -35,6 +37,11 @@ class DatasetQuery(models.Model):
     def __unicode__(self):
         return self.name
 
+    def send_federate_query(self, ticket):
+        """get related dbs"""
+        dataset_id = self.global_id
+        pass
+
     def send_query(self, ticket):
         """
         """
@@ -45,20 +52,32 @@ class DatasetQuery(models.Model):
             "select": json_query["select"],
             "where": json_query["where"]
         }
-        xml_query = render_to_response("datasets/query_template.xml", data)
-        if dataset.metadata['localID'][-1] != '/':
-            dataset.metadata['localID'] = dataset.metadata['localID'] + '/'
 
-        results = requests.post("%sxmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
-                      data=xml_query.content,
-                      auth=("admin", ticket),
-                      headers = {'content-type': 'text/xml', 'SOAPAction': 'http://vph-share.eu/dms/Query'},
-                      verify=False
-        ).text
-        if "<QueryResult />" in results:
-            return ""
+        # getting hex sha1 id
+        sha1_input = dataset + ":" + self.query
+        sha1_id = hl.sha1(sha1_input.encode()).hexdigest()
+        # check from cache
+        cached_query = cc.get(sha1_id)
+        if cached_query is None:
+            xml_query = render_to_response("datasets/query_template.xml", data)
+            if dataset.metadata['localID'][-1] != '/':
+                dataset.metadata['localID'] = dataset.metadata['localID'] + '/'
+
+            results = requests.post("%sxmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
+                          data=xml_query.content,
+                          auth=("admin", ticket),
+                          headers = {'content-type': 'text/xml', 'SOAPAction': 'http://vph-share.eu/dms/Query'},
+                          verify=False
+            ).text
+            if "<QueryResult />" in results:
+                return ""
+            else:
+                cached_results = results[results.find("<QueryResult>")+len("<QueryResult>"):results.find("</QueryResult>")]
+                cc.set(sha1_id, cached_results, 120)
+                return cached_results
+
         else:
-            return results[results.find("<QueryResult>")+len("<QueryResult>"):results.find("</QueryResult>")]
+            return cached_query
 
     def get_header(self, ticket):
         csv_results = self.send_query(ticket)
