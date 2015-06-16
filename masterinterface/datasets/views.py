@@ -26,6 +26,9 @@ def query_builder(request, global_id):
                 return page403(request)
 
             query_to_load = None
+            dataset_query = None
+            rel_datasets = []
+
             if "q" in request.GET:
                 try:
                     dataset_query = DatasetQuery.objects.get(id=request.GET['q'])
@@ -47,7 +50,14 @@ def query_builder(request, global_id):
                 endpoint = 'True'
 
             # here, we get all related datasets to pass to the template
-            rel_datasets = None
+            # TODO load all datasets resources
+            if dataset_query is not None:
+                rel_guids = dataset_query.send_data_intersect_summary(request.ticket)
+
+                for guid in rel_guids:
+                    ds = Resource.objects.get(global_id=guid)
+                    ds.load_additional_metadata(request.ticket)
+                    rel_datasets.append(ds)
 
             return render_to_response(
                 'datasets/query_builder.html',
@@ -55,7 +65,8 @@ def query_builder(request, global_id):
                     "query_to_load": query_to_load,
                     "query_list":request.user.datasetquery_set.filter(global_id=global_id),
                     "endpoint":endpoint,
-                    "rel_datasets": rel_datasets},
+                    "rel_datasets": rel_datasets,
+                },
                 RequestContext(request) )
 
         except:

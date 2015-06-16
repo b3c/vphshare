@@ -10,6 +10,8 @@ import requests
 import StringIO
 import csv
 import hashlib as hl
+from lxml import etree, objectify
+import collections as colls
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -37,10 +39,22 @@ class DatasetQuery(models.Model):
     def __unicode__(self):
         return self.name
 
-    def send_federate_query(self, ticket):
-        """get related dbs"""
+    def send_data_intersect_summary(self, ticket):
+        """get related dbs using global_id.
+            returns: [] if not related datasets else a [] with their global_id
+        """
         dataset_id = self.global_id
-        pass
+
+        results = requests.post("%sxmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
+                      data="datasetGUID=%s" % (dataset_id,),
+                      auth=("admin", ticket),
+                      headers = {'content-type': 'application/x-www-form-urlencoded'},
+                      verify=False
+                      ).text
+
+        xml_tree = objectify.fromstring(results)
+        return [ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]
+
 
     def send_query(self, ticket):
         """
@@ -54,7 +68,7 @@ class DatasetQuery(models.Model):
         }
 
         # getting hex sha1 id
-        sha1_input = dataset + ":" + self.query
+        sha1_input = self.global_id + ":" + str( colls.OrderedDict(sorted(json_query)) )
         sha1_id = hl.sha1(sha1_input.encode()).hexdigest()
         # check from cache
         cached_query = cc.get(sha1_id)
@@ -73,7 +87,7 @@ class DatasetQuery(models.Model):
                 return ""
             else:
                 cached_results = results[results.find("<QueryResult>")+len("<QueryResult>"):results.find("</QueryResult>")]
-                cc.set(sha1_id, cached_results, 120)
+                cc.set(sha1_id, cached_results, 60)
                 return cached_results
 
         else:
