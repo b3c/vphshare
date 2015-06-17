@@ -13,6 +13,9 @@ import csv
 import hashlib as hl
 from lxml import etree, objectify
 import collections as colls
+import logging
+
+logger = logging.getLogger(__name__)
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -59,6 +62,7 @@ class DatasetQuery(models.Model):
             return [ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]
 
         else:
+            logger.error("FEDERATE_QUERY_URL var in settings.py doesn't exist")
             return []
 
 
