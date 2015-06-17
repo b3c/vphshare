@@ -2,6 +2,7 @@ from django.db import models
 from django.core.cache import cache as cc
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
+from django.conf import settings
 
 from masterinterface.scs_resources.models import Resource
 
@@ -45,15 +46,20 @@ class DatasetQuery(models.Model):
         """
         dataset_id = self.global_id
 
-        results = requests.post("%sxmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
-                      data="datasetGUID=%s" % (dataset_id,),
-                      auth=("admin", ticket),
-                      headers = {'content-type': 'application/x-www-form-urlencoded'},
-                      verify=False
-                      ).text
+        if settings.FEDERATE_QUERY_URL:
+            results = requests.post("%s/DataInsersectSummary" % 
+                        (settings.FEDERATE_QUERY_URL,) ,
+                          data="datasetGUID=%s" % (dataset_id,),
+                          auth=("admin", ticket),
+                          headers = {'content-type': 'application/x-www-form-urlencoded'},
+                          verify=False
+                          ).text
 
-        xml_tree = objectify.fromstring(results)
-        return [ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]
+            xml_tree = objectify.fromstring(results)
+            return [ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]
+
+        else:
+            return []
 
 
     def send_query(self, ticket):
