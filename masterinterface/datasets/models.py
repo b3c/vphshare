@@ -48,18 +48,25 @@ class DatasetQuery(models.Model):
             returns: [] if not related datasets else a [] with their global_id
         """
         dataset_id = self.global_id
+        dss = []
 
         if settings.FEDERATE_QUERY_URL:
-            results = requests.post("%s/DataInsersectSummary" % 
-                        (settings.FEDERATE_QUERY_URL,) ,
-                          data="datasetGUID=%s" % (dataset_id,),
-                          auth=("admin", ticket),
-                          headers = {'content-type': 'application/x-www-form-urlencoded'},
-                          verify=False
-                          ).text
+            try:
+                logger.debug("send_data_intersect_summary dataset gid: ", dataset_id)
+                results = requests.post("%s/DataInsersectSummary" % 
+                            (settings.FEDERATE_QUERY_URL,) ,
+                              data="datasetGUID=%s" % (dataset_id,),
+                              auth=("admin", ticket),
+                              headers = {'content-type': 'application/x-www-form-urlencoded'},
+                              verify=False
+                              ).text
 
-            xml_tree = objectify.fromstring(results)
-            return [ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]
+                xml_tree = objectify.fromstring(results)
+                dss = [ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]
+            except Exception, e:
+                logger.exception(e)
+            finally:
+                return dss
 
         else:
             logger.error("FEDERATE_QUERY_URL var in settings.py doesn't exist")
