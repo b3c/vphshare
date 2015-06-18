@@ -51,13 +51,12 @@ def query_builder(request, global_id):
 
             # here, we get all related datasets to pass to the template
             # TODO load all datasets resources
-            if dataset_query is not None:
-                rel_guids = dataset_query.send_data_intersect_summary(request.ticket)
+            rel_guids = DatasetQuery(global_id=global_id).send_data_intersect_summary(request.ticket)
 
-                for guid in rel_guids:
-                    ds = Resource.objects.get(global_id=guid)
-                    ds.load_additional_metadata(request.ticket)
-                    rel_datasets.append(ds)
+            for guid in rel_guids:
+                ds = Resource.objects.get(global_id=guid)
+                ds.load_additional_metadata(request.ticket)
+                rel_datasets.append(ds)
 
             return render_to_response(
                 'datasets/query_builder.html',
