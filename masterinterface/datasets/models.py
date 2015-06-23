@@ -48,7 +48,7 @@ class DatasetQuery(models.Model):
             returns: [] if not related datasets else a [] with their global_id
         """
         dataset_id = self.global_id
-        dss = []
+        dss = [dataset_id,]
 
         if settings.FEDERATE_QUERY_URL:
             try:
@@ -59,10 +59,10 @@ class DatasetQuery(models.Model):
                               auth=("admin", ticket),
                               headers = {'content-type': 'application/x-www-form-urlencoded'},
                               verify=False
-                              ).text
+                              ).content
 
                 xml_tree = objectify.fromstring(results)
-                dss = [ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]
+                dss = list(set(dss).union([ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]))
             except Exception, e:
                 logger.exception(e)
             finally:
@@ -70,7 +70,7 @@ class DatasetQuery(models.Model):
 
         else:
             logger.error("FEDERATE_QUERY_URL var in settings.py doesn't exist")
-            return []
+            return dss
 
 
     def send_query(self, ticket):

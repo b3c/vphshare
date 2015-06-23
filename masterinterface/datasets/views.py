@@ -13,6 +13,9 @@ import json
 from masterinterface.scs_resources.models import Resource
 from masterinterface.scs.views import page403, page404
 from masterinterface.datasets.models import DatasetQuery
+import logging
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def query_builder(request, global_id):
@@ -57,7 +60,6 @@ def query_builder(request, global_id):
                 ds = Resource.objects.get(global_id=guid)
                 ds.load_additional_metadata(request.ticket)
                 rel_datasets.append(ds)
-
             return render_to_response(
                 'datasets/query_builder.html',
                 {'dataset': dataset ,
