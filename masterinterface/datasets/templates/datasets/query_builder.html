@@ -131,9 +131,7 @@
 		<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }}</option>
 		{% endfor %}
 	</select>
-	{% with el = rel_datasets.0 %}
-    <h1><i class="fa fa-database"></i> {{ el.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ el.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
-	{% endwith %}
+    <h1><i class="fa fa-database"></i> {{ rel_datasets.0.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ rel_datasets.0.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
 
     {% if endpoint == 'True' %}
     <div id="query-results" class="row-fluid hide" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
