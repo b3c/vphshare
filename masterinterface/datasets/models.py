@@ -99,7 +99,7 @@ class DatasetQuery(models.Model):
         }
 
         # getting hex sha1 id
-        sha1_input = self.global_id + ":" + str( colls.OrderedDict(sorted(json_query)) )
+        sha1_input = self.global_id + ":" + str( json_query )
         sha1_id = hl.sha1(sha1_input.encode()).hexdigest()
         # check from cache
         cached_query = cc.get(sha1_id)
