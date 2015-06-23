@@ -53,7 +53,7 @@ class DatasetQuery(models.Model):
         if settings.FEDERATE_QUERY_URL:
             try:
                 logger.debug("send_data_intersect_summary dataset gid: ", dataset_id)
-                results = requests.post("%s/DataInsersectSummary" % 
+                results = requests.post("%s/DataIntersectSummary" % 
                             (settings.FEDERATE_QUERY_URL,) ,
                               data="datasetGUID=%s" % (dataset_id,),
                               auth=("admin", ticket),
