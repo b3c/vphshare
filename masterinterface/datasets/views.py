@@ -17,6 +17,7 @@ import logging
 
 logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
 fileHandler.setFormatter(logFormatter)
@@ -81,9 +82,10 @@ def query_builder(request, global_id):
                 },
                 RequestContext(request) )
 
-        except:
+        except Exception, e:
             # provably dataset not found or non-existent in the uri
             # so roughly prevent 500 fails
+            logger.exception(e)
             return page404(request)
 
     return page403(request)
