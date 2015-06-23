@@ -15,7 +15,16 @@ from masterinterface.scs.views import page403, page404
 from masterinterface.datasets.models import DatasetQuery
 import logging
 
-logger = logging.getLogger(__name__)
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+logger = logging.getLogger()
+
+fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
+fileHandler.setFormatter(logFormatter)
+logger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+logger.addHandler(consoleHandler)
 
 @login_required
 def query_builder(request, global_id):
@@ -60,6 +69,8 @@ def query_builder(request, global_id):
                 ds = Resource.objects.get(global_id=guid)
                 ds.load_additional_metadata(request.ticket)
                 rel_datasets.append(ds)
+
+            logger.debug("QueryBuilder: ", str(rel_guids))
             return render_to_response(
                 'datasets/query_builder.html',
                 {'dataset': dataset ,

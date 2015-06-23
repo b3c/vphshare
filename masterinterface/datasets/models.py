@@ -15,7 +15,16 @@ from lxml import etree, objectify
 import collections as colls
 import logging
 
-logger = logging.getLogger(__name__)
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+logger = logging.getLogger()
+
+fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
+fileHandler.setFormatter(logFormatter)
+logger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+logger.addHandler(consoleHandler)
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -61,12 +70,15 @@ class DatasetQuery(models.Model):
                               verify=False
                               ).content
 
-                xml_tree = objectify.fromstring(results)
+                parser = etree.XMLParser(ns_clean=True, recover=True, encoding='utf-8')
+                xml_tree = objectify.fromstring(results, parser=parser)
                 dss = list(set(dss).union([ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]))
             except Exception, e:
                 logger.exception(e)
             finally:
                 return dss
+
+            logger.debug("send_data_intersect_summary: ",str(dss))
 
         else:
             logger.error("FEDERATE_QUERY_URL var in settings.py doesn't exist")
