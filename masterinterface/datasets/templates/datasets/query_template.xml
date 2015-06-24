@@ -1,6 +1,6 @@
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
   <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <Query xmlns="http://vph-share.eu/dms/">
+    <FederatedQuery xmlns="http://vph-share.eu/dms/">
       <doc><query guid="7e07e87c-07b2-4502-bdd9-9d84484a5640" name="7d0d68fb-be8a-438e-9721-7c0c3169ee10" xmlns="">
         <select>
           {% for field in select %}
@@ -45,6 +45,6 @@
         </where>
         </query>
       </doc>
-    </Query>
+    </FederatedQuery>
   </s:Body>
 </s:Envelope>

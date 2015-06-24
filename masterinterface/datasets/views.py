@@ -23,10 +23,6 @@ fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
 fileHandler.setFormatter(logFormatter)
 logger.addHandler(fileHandler)
 
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
-logger.addHandler(consoleHandler)
-
 @login_required
 def query_builder(request, global_id):
     """Home view """
@@ -64,12 +60,8 @@ def query_builder(request, global_id):
 
             # here, we get all related datasets to pass to the template
             # TODO load all datasets resources
-            rel_guids = DatasetQuery(global_id=global_id).send_data_intersect_summary(request.ticket)
-
-            for guid in rel_guids:
-                ds = Resource.objects.get(global_id=guid)
-                ds.load_additional_metadata(request.ticket)
-                rel_datasets.append(ds)
+            (rel_guids, rel_datasets) = \
+                DatasetQuery(global_id=global_id).send_data_intersect_summary(request.ticket)
 
             logger.debug("QueryBuilder: ", str(rel_guids))
             return render_to_response(

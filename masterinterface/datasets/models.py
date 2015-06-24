@@ -12,6 +12,7 @@ import StringIO
 import csv
 import hashlib as hl
 from lxml import etree, objectify
+import xml.dom.minidom as dom
 import collections as colls
 import logging
 
@@ -22,10 +23,6 @@ logger.setLevel(logging.DEBUG)
 fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
 fileHandler.setFormatter(logFormatter)
 logger.addHandler(fileHandler)
-
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
-logger.addHandler(consoleHandler)
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -53,6 +50,20 @@ class DatasetQuery(models.Model):
     def __unicode__(self):
         return self.name
 
+    def send_data_intersect_summary_with_metadata(self, ticket):
+        """call send_data_insersect_summary and get metadata foreach guid
+            returns a tuple with ([guids],[datasets objs])
+        """
+        rel_guids = self.send_data_intersect_summary(ticket)
+        rel_dss = []
+        for guid in rel_guids:
+            ds = Resource.objects.get(global_id=guid)
+            ds.load_additional_metadata(ticket)
+            rel_dss.append(ds)
+
+        return (rel_guids,rel_dss)
+
+
     def send_data_intersect_summary(self, ticket):
         """get related dbs using global_id.
             returns: [] if not related datasets else a [] with their global_id
@@ -71,6 +82,7 @@ class DatasetQuery(models.Model):
                               verify=False
                               ).content
 
+                # xml parsing
                 xml_tree = objectify.fromstring(results)
                 dss = list(set(dss).union([ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]))
             except Exception, e:
@@ -90,34 +102,49 @@ class DatasetQuery(models.Model):
         """
         json_query = json.loads(self.query)
         dataset = Resource.objects.get(global_id=self.global_id)
+        (_, rel_datasets) = self.send_data_intersect_summary_with_metadata(ticket)
         data = {
             "dataset": dataset,
+            "rel_datasets": rel_datasets,
             "select": json_query["select"],
             "where": json_query["where"]
         }
 
         # getting hex sha1 id
-        sha1_input = self.global_id + ":" + str( json_query )
+        sha1_input = self.global_id + ":" + str( ticket ) + ":" + str( json_query )
         sha1_id = hl.sha1(sha1_input.encode()).hexdigest()
+
         # check from cache
         cached_query = cc.get(sha1_id)
         if cached_query is None:
-            xml_query = render_to_response("datasets/query_template.xml", data)
-            if dataset.metadata['localID'][-1] != '/':
-                dataset.metadata['localID'] = dataset.metadata['localID'] + '/'
+            if settings.FEDERATE_QUERY_SOAP_URL:
+                xml_query = render_to_response("datasets/query_template.xml", data)
 
-            results = requests.post("%sxmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
-                          data=xml_query.content,
-                          auth=("admin", ticket),
-                          headers = {'content-type': 'text/xml', 'SOAPAction': 'http://vph-share.eu/dms/Query'},
-                          verify=False
-            ).text
-            if "<QueryResult />" in results:
-                return ""
+                results = requests.post(
+                            "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
+                              data=xml_query.content,
+                              auth=("admin", ticket),
+                              headers = {'content-type': 'text/xml', 
+                                        'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
+                              verify=False
+                ).content
+                
+                root = dom.parseString(results)
+                cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
+                        childNodes[0].\
+                        data.\
+                        strip()
+
+                if len(cached_results.split(" ")) > 1:
+                    cc.set(sha1_id, cached_results, 60)
+                    return cached_results
+                else:
+                    return ""
+
             else:
-                cached_results = results[results.find("<QueryResult>")+len("<QueryResult>"):results.find("</QueryResult>")]
-                cc.set(sha1_id, cached_results, 60)
-                return cached_results
+                logger.error("FEDERATE_QUERY_SOAP_URL var in settings.py doesn't exist")
+                return ""
+
 
         else:
             return cached_query
