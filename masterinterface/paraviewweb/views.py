@@ -97,11 +97,11 @@ def pvw_method_call(request):
 
             data = json.loads(request.POST['data'])
             pvw_instance = ParaviewInstance.objects.get(user=request.user, deletion_time__exact=None)
-            if request.session[str(pvw_instance.pid)].poll() is None:
-                pvw_render_connector = ServerProxy('http://127.0.0.1:%s/api' % pvw_instance.port)
-                result = pvw_render_connector.pvw_call_method(data['method'], json.dumps(data['args']))
-            else:
-                raise Exception
+#            if request.session[str(pvw_instance.pid)].poll() is None:
+            pvw_render_connector = ServerProxy('http://127.0.0.1:%s/api' % pvw_instance.port)
+	    result = pvw_render_connector.pvw_call_method(data['method'], json.dumps(data['args']))
+#            else:
+#                raise Exception
             #sistemare se stinga o dizionario!!
             if result is None:
                 response = HttpResponse(content="")
