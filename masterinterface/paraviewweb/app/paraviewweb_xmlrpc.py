@@ -735,7 +735,7 @@ if __name__ == "__main__":
     cmd_args = parser.parse_args()
     app_options = {"port": cmd_args.port}
 
-    ParaViewWebProtocol.pathToList = "/scs/app/git/vphshare-dev/vphshare/masterinterface/data_paraview/"
+    ParaViewWebProtocol.pathToList = "/app/vphshare-prod/vphshare/masterinterface/data_paraview/"
 
     pvw_protocol = ParaViewWebProtocol()
 
