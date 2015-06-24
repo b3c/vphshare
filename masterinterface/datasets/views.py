@@ -63,7 +63,6 @@ def query_builder(request, global_id):
             (rel_guids, rel_datasets) = \
                 DatasetQuery(global_id=global_id).send_data_intersect_summary(request.ticket)
 
-            logger.debug("QueryBuilder: ", str(rel_guids))
             return render_to_response(
                 'datasets/query_builder.html',
                 {'dataset': dataset ,
