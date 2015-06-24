@@ -71,8 +71,6 @@ class DatasetQuery(models.Model):
                               verify=False
                               ).content
 
-                # parser = etree.XMLParser(ns_clean=True, recover=True, encoding='utf-8')
-                #xml_tree = objectify.fromstring(results, parser=parser)
                 xml_tree = objectify.fromstring(results)
                 dss = list(set(dss).union([ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]))
             except Exception, e:
