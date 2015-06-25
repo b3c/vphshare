@@ -13,7 +13,7 @@ import csv
 import hashlib as hl
 from lxml import etree, objectify
 import xml.dom.minidom as dom
-import collections as colls
+from urlparse import urlparse
 import logging
 
 logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
@@ -59,9 +59,7 @@ class DatasetQuery(models.Model):
         for guid in rel_guids:
             ds = Resource.objects.get(global_id=guid)
             ds.load_additional_metadata(ticket)
-            # TODO XXX
-            # ds["publishaddress"] = 
-            # ds["dbname"] = 
+            (ds["publishaddress"], ds["dbname"]) = _url_parse(ds.metadata.localID)
             rel_dss.append(ds)
 
         return (rel_guids,rel_dss)
@@ -170,6 +168,13 @@ class DatasetQuery(models.Model):
         return len(StringIO.StringIO(csv_results).readlines())
 
 
+def _url_parse(uri):
+    """ return tuple (host, 1º path without / )"""
+    host = ""
+    path = ""
 
+    p_uri = urlparse(uri)
+    host = p_uri.netloc
+    path = p_uri.path.rstrip('/').strip('/')
 
-
+    return (host,path)
