@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.cache import cache as cc
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -15,14 +14,15 @@ from lxml import etree, objectify
 import xml.dom.minidom as dom
 from urlparse import urlparse
 import logging
-
-logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-
-fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
-fileHandler.setFormatter(logFormatter)
-logger.addHandler(fileHandler)
+#
+#logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+logger = logging.getLogger(__name__)
+#logger = logging.getLogger()
+#logger.setLevel(logging.DEBUG)
+#
+#fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
+#fileHandler.setFormatter(logFormatter)
+#logger.addHandler(fileHandler)
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -108,44 +108,36 @@ class DatasetQuery(models.Model):
             "where": json_query["where"]
         }
 
-        # getting hex sha1 id
-        sha1_input = self.global_id + ":" + str( ticket ) + ":" + str( json_query )
-        sha1_id = hl.sha1(sha1_input.encode()).hexdigest()
+        if settings.FEDERATE_QUERY_SOAP_URL:
+            xml_query = render_to_response("datasets/query_template.xml", data)
 
-        # check from cache
-        cached_query = cc.get(sha1_id)
-        if cached_query is None:
-            if settings.FEDERATE_QUERY_SOAP_URL:
-                xml_query = render_to_response("datasets/query_template.xml", data)
+            results = requests.post(
+                        "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
+                          data=xml_query.content,
+                          auth=("admin", ticket),
+                          headers = {'content-type': 'text/xml', 
+                                    'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
+                          verify=False
+            ).content
+            
+            # parsing xml like dom to get result
+            root = dom.parseString(results)
+            cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
+                    childNodes[0].\
+                    data.\
+                    strip()
 
-                results = requests.post(
-                            "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
-                              data=xml_query.content,
-                              auth=("admin", ticket),
-                              headers = {'content-type': 'text/xml', 
-                                        'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
-                              verify=False
-                ).content
-                
-                root = dom.parseString(results)
-                cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
-                        childNodes[0].\
-                        data.\
-                        strip()
-
-                if len(cached_results.split(" ")) > 1:
-                    cc.set(sha1_id, cached_results, 60)
-                    return cached_results
-                else:
-                    return ""
-
+            # removing alot EOLs
+            cached_results = cached_results.rstrip('\r\n')
+            if len(cached_results.split(" ")) > 1:
+                return cached_results
             else:
-                logger.error("FEDERATE_QUERY_SOAP_URL var in settings.py doesn't exist")
                 return ""
 
-
         else:
-            return cached_query
+            logger.error("FEDERATE_QUERY_SOAP_URL var in settings.py doesn't exist")
+            return ""
+
 
     def get_header(self, ticket):
         csv_results = self.send_query(ticket)

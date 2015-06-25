@@ -13,15 +13,15 @@ import json
 from masterinterface.scs_resources.models import Resource
 from masterinterface.scs.views import page403, page404
 from masterinterface.datasets.models import DatasetQuery
-import logging
-
-logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-
-fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
-fileHandler.setFormatter(logFormatter)
-logger.addHandler(fileHandler)
+#import logging
+#
+#logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+#logger = logging.getLogger()
+#logger.setLevel(logging.DEBUG)
+#
+#fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
+#fileHandler.setFormatter(logFormatter)
+#logger.addHandler(fileHandler)
 
 @login_required
 def query_builder(request, global_id):
