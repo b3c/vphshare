@@ -59,7 +59,9 @@ class DatasetQuery(models.Model):
         for guid in rel_guids:
             ds = Resource.objects.get(global_id=guid)
             ds.load_additional_metadata(ticket)
-            (ds.metadata["publishaddress"], ds.metadata["dbname"]) = _url_parse(ds.metadata["localID"])
+            (paddress, dbname) = _url_parse(ds.metadata["localID"])
+            ds.metadata["publishaddress"] = paddress
+            ds.metadata["dbname"] = dbname
             rel_dss.append(ds)
 
         return (rel_guids,rel_dss)
