@@ -59,7 +59,7 @@ class DatasetQuery(models.Model):
         for guid in rel_guids:
             ds = Resource.objects.get(global_id=guid)
             ds.load_additional_metadata(ticket)
-            (ds["publishaddress"], ds["dbname"]) = _url_parse(ds.metadata["localID"])
+            (ds.metadata["publishaddress"], ds.metadata["dbname"]) = _url_parse(ds.metadata["localID"])
             rel_dss.append(ds)
 
         return (rel_guids,rel_dss)
@@ -129,7 +129,7 @@ class DatasetQuery(models.Model):
 
             # removing alot EOLs
             cached_results = cached_results.rstrip('\r\n')
-            if len(cached_results.split(" ")) > 1:
+            if len(cached_results.split("\n")) > 1:
                 return cached_results
             else:
                 return ""

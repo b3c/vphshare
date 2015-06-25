@@ -5,7 +5,7 @@
         <select>
           {% for field in select %}
           <selectitem returnas="{%  if field.displayAs  == "" %}{{ field.name }}{% else %}{{ field.displayAs }}{% endif %}">
-              <field fieldname="{{ field.name }}" publishaddress="{{ rel_datasets.0.metadata.publishaddress }}" dbname="{{ rel_datasets.0.metadata.dbname }}" tablename="{{ field.tablename }}" type="{{ field.type }}"/>
+              <field fieldname="{{ field.name }}" publishaddress="{{ rel_datasets.1.metadata.publishaddress }}" dbname="{{ rel_datasets.1.metadata.dbname }}" tablename="{{ field.tablename }}" type="{{ field.type }}"/>
           </selectitem>
           {% endfor %}
         </select>
@@ -27,7 +27,7 @@
                   {% endif %}
                   <qrelop operator="{% if operation.operator == 'isnull' %}={% elif operation.operator == 'isnotnull' %}NOT={% else %}{{ operation.operator }}{% endif %}">
                       <leftnode>
-                          <field fieldname="{{ operation.name }}" publishaddress="{{ dataset.metadata.publishaddress }}" dbname="{{ dataset.metadata.dbname }}" tablename="{{ operation.tablename }}" type="{{ operation.type }}"/>
+                          <field fieldname="{{ operation.name }}" publishaddress="{{ rel_datasets.1.metadata.publishaddress }}" dbname="{{ rel_datasets.1.metadata.dbname }}" tablename="{{ operation.tablename }}" type="{{ operation.type }}"/>
                       </leftnode>
                       {% if operation.operator == 'isnull' or operation.operator == 'isnotnull' %}
                           <rightnode ><qvalue type="numeric" isnull="true">0</qvalue></rightnode>
