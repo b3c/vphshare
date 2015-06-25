@@ -59,7 +59,7 @@ class DatasetQuery(models.Model):
         for guid in rel_guids:
             ds = Resource.objects.get(global_id=guid)
             ds.load_additional_metadata(ticket)
-            (ds["publishaddress"], ds["dbname"]) = _url_parse(ds.metadata.localID)
+            (ds["publishaddress"], ds["dbname"]) = _url_parse(ds.metadata["localID"])
             rel_dss.append(ds)
 
         return (rel_guids,rel_dss)
@@ -120,7 +120,6 @@ class DatasetQuery(models.Model):
         if cached_query is None:
             if settings.FEDERATE_QUERY_SOAP_URL:
                 xml_query = render_to_response("datasets/query_template.xml", data)
-                logger.debug( str(xml_query) )
 
                 results = requests.post(
                             "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
@@ -169,7 +168,7 @@ class DatasetQuery(models.Model):
 
 
 def _url_parse(uri):
-    """ return tuple (host, 1º path without / )"""
+    """ return tuple (host, 1st path without / )"""
     host = ""
     path = ""
 

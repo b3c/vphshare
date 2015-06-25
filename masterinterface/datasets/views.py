@@ -61,7 +61,8 @@ def query_builder(request, global_id):
             # here, we get all related datasets to pass to the template
             # TODO load all datasets resources
             (rel_guids, rel_datasets) = \
-                DatasetQuery(global_id=global_id).send_data_intersect_summary(request.ticket)
+                    DatasetQuery(global_id=global_id)\
+                        .send_data_intersect_summary_with_metadata(request.ticket)
 
             return render_to_response(
                 'datasets/query_builder.html',
