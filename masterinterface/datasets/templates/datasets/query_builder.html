@@ -210,8 +210,19 @@
                 {% for tablename, columns in dataset.metadata.schema.items %}
                     <div class="accordion-group">
                         <div class="accordion-heading">
+							<select>
+								{% for ds in rel_datasets %}
+									{% if ds.global_id == dataset.global_id %}
+										<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}</option>
+									{% else %}
+										<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }}</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+
+
                           <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#{{ tablename }}">
-                            <i class="fa fa-table"></i> {{ tablename|title }}
+							  <i class="fa fa-table"></i> {{ tablename|title }} - {{ rel_datasets.1.metadata.dbname|title }}
                           </a>
                         </div>
                         <div id="{{ tablename }}" class="accordion-body collapse {% if forloop.counter0 == 0 %} in {% endif %}">
