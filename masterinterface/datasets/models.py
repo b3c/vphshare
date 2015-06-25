@@ -74,7 +74,6 @@ class DatasetQuery(models.Model):
 
         if settings.FEDERATE_QUERY_URL:
             try:
-                logger.debug("send_data_intersect_summary dataset gid: ", dataset_id)
                 results = requests.post("%s/DataIntersectSummary" % 
                             (settings.FEDERATE_QUERY_URL,) ,
                               data="datasetGUID=%s" % (dataset_id,),
@@ -90,8 +89,6 @@ class DatasetQuery(models.Model):
                 logger.exception(e)
             finally:
                 return dss
-
-            logger.debug("send_data_intersect_summary: ",str(dss))
 
         else:
             logger.error("FEDERATE_QUERY_URL var in settings.py doesn't exist")
@@ -168,7 +165,7 @@ class DatasetQuery(models.Model):
 
 
 def _url_parse(uri):
-    """ return tuple (host, 1st path without / )"""
+    """ return tuple (host, 1st path without slash )"""
     host = ""
     path = ""
 
