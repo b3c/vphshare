@@ -29,6 +29,7 @@
       $(function () {
 
           QueryBuilder.autoDiscover();
+		  DatasetSelector.autoDiscover();
 
           $('#myTab a').click(function (e) {
                 e.preventDefault();
@@ -127,7 +128,7 @@
 
     <div class="well well-small well-white" style="margin-top: 0px !important;">
 
-	<select class="span4">
+	<select class="span4" id="datasetselector">
 		{% for ds in rel_datasets %}
 			{% if ds.global_id == dataset.global_id %}
 				<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}</option>
@@ -207,23 +208,13 @@
     </h1>
     <div id="query-builder" class="row-fluid" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
         <div class="span4">
-			<div id="datasetselector">
-				<select>
-				{% for ds in rel_datasets %}
-					{% if ds.global_id == dataset.global_id %}
-						<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}</option>
-					{% else %}
-						<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }}</option>
-					{% endif %}
-				{% endfor %}
-				</select>
-			</div>
-
 			{% for ds in rel_datasets %}
 				{% if ds.global_id == dataset.global_id %}
-				<div class="accordion" id="accordion{{ forloop.counter0 }}">
+				<!--div class="accordion" id="accordion{{ forloop.counter0 }}"-->
+				<div class="accordion" id="{{ sd.global_id }}">
 				{% else %}
-				<div class="accordion hidden" id="accordion{{ forloop.counter0 }}">
+				<!--div class="accordion hidden" id="accordion{{ forloop.counter0 }}"-->
+				<div class="accordion hidden" id="{{ sd.global_id }}">
 				{% endif %}
 
 				{% for tablename, columns in ds.metadata.schema.items %}

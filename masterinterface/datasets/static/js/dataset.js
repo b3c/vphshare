@@ -523,3 +523,36 @@
 
     };
 }).call(this);
+
+(function () {
+    var global, $, DatasetSelector;
+    global = this;
+    $ = global.$;
+
+    DatasetSelector = global.DatasetSelector = function (element, options) {
+        this.inizialize(element);
+    };
+
+    DatasetSelector.prototype.inizialize = function (root) {
+        var self = this;
+        this.$optionSelected = this.value ;
+        this.$optionPreviousSelected = self.$optionSelected;
+        this.$root = root;
+
+        this.change(function(){
+			self.$optionSelected = this.value;
+			console.log($optionSelected)
+        });
+
+		this.focus(function() {
+			self.$optionPreviousSelected = this.value;
+			onsole.log($optionPreviousSelected)
+		});
+    };
+
+    DatasetSelector.autoDiscover = function() {
+        var datasetSelector = $('#datasetselector');
+        new DatasetSelector(datasetSelector);
+
+    };
+}).call(this);
