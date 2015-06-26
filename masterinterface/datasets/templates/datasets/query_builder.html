@@ -9,7 +9,8 @@
  {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="/static/js/dataset.min.js"></script>
+    <!--script type="text/javascript" src="/static/js/dataset.min.js"></script-->
+    <script type="text/javascript" src="/static/js/dataset.js"></script>
     <script src="/static/js/jquery.dataTables.min.js"></script>
     <script src="/static/js/dataTables.tableTools.min.js"></script>
     <script src="/static/js/dataTables.bootstrap.min.js"></script>
@@ -206,39 +207,48 @@
     </h1>
     <div id="query-builder" class="row-fluid" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
         <div class="span4">
-            <div class="accordion" id="accordion1">
-                {% for tablename, columns in dataset.metadata.schema.items %}
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-							<select>
-								{% for ds in rel_datasets %}
-									{% if ds.global_id == dataset.global_id %}
-										<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}</option>
-									{% else %}
-										<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }}</option>
-									{% endif %}
-								{% endfor %}
-							</select>
+			<div id="datasetselector">
+				<select>
+				{% for ds in rel_datasets %}
+					{% if ds.global_id == dataset.global_id %}
+						<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}</option>
+					{% else %}
+						<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }}</option>
+					{% endif %}
+				{% endfor %}
+				</select>
+			</div>
 
+			{% for ds in rel_datasets %}
+				{% if ds.global_id == dataset.global_id %}
+				<div class="accordion" id="accordion{{ forloop.counter0 }}">
+				{% else %}
+				<div class="accordion hidden" id="accordion{{ forloop.counter0 }}">
+				{% endif %}
 
-                          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#{{ tablename }}">
-							  <i class="fa fa-table"></i> {{ tablename|title }} - {{ rel_datasets.1.metadata.dbname|title }}
-                          </a>
-                        </div>
-                        <div id="{{ tablename }}" class="accordion-body collapse {% if forloop.counter0 == 0 %} in {% endif %}">
-                            <div class="accordion-inner">
-                                <table cellpadding="0" cellspacing="0" border="0" class="display dataset-table" >
-                                    <tbody>
-                                    {% for column in columns %}
-                                        <tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}" data-tablename="{{ tablename }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
+				{% for tablename, columns in ds.metadata.schema.items %}
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#{{ tablename }}">
+							<i class="fa fa-table"></i> {{ tablename|title }} - {{ ds.metadata.dbname|title }}
+						</a>
+					</div>
+					<div id="{{ tablename }}" class="accordion-body collapse {% if forloop.counter0 == 0 %} in {% endif %}">
+						<div class="accordion-inner">
+							<table cellpadding="0" cellspacing="0" border="0" class="display dataset-table" >
+								<tbody>
+									{% for column in columns %}
+									<tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}" data-tablename="{{ tablename }}" data-dbname="{{ ds.metadata.dbname}}" data-publishaddress="ds.metadata.publishaddress"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+				</div>
+			{% endfor %}
+
         </div>
         <div class="span8">
             <ul class="nav nav-tabs" id="myTab">
