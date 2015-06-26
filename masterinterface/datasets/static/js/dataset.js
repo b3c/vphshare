@@ -532,6 +532,8 @@
   function DatasetPlugin(el, opts) {
     this.$el      = $(el);
     this.$el.data(name, this);
+	this.previousGUID = this.$el.val();
+	this.selectedGUID = this.$el.val();
 
     this.defaults = {};
 
@@ -543,7 +545,20 @@
 
   DatasetPlugin.prototype.init = function() {
 	  var self = this;
-	  console.log($(this))
+
+	  this.$el.change(function() {
+		  console.log($(this).val());
+
+		  console.log(self.previousGUID);
+
+		  self.previousGUID = self.selectedGUID;
+		  self.selectedGUID = $(this).val();
+
+		  console.log(self.selectedGUID);
+
+		  $('#'+self.previousGUID).addClass("hidden");
+		  $('#'+self.selectedGUID).removeClass("hidden");
+	  });
   };
 
   DatasetPlugin.prototype.destroy = function() {

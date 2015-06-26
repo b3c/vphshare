@@ -29,7 +29,7 @@
       $(function () {
 
           QueryBuilder.autoDiscover();
-		  $('#datasetselector').DatasetSelectorPlugin({});
+		  $('#datasetselector').DatasetPlugin({});
 
           $('#myTab a').click(function (e) {
                 e.preventDefault();
@@ -220,7 +220,7 @@
 				{% for tablename, columns in ds.metadata.schema.items %}
 				<div class="accordion-group">
 					<div class="accordion-heading">
-						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#{{ tablename }}">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ ds.global_id }}" href="#{{ tablename }}">
 							<i class="fa fa-table"></i> {{ tablename|title }} - {{ ds.metadata.dbname|title }}
 						</a>
 					</div>
