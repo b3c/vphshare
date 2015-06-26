@@ -547,14 +547,8 @@
 	  var self = this;
 
 	  this.$el.change(function() {
-		  console.log($(this).val());
-
-		  console.log(self.previousGUID);
-
 		  self.previousGUID = self.selectedGUID;
 		  self.selectedGUID = $(this).val();
-
-		  console.log(self.selectedGUID);
 
 		  $('#'+self.previousGUID).addClass("hidden");
 		  $('#'+self.selectedGUID).removeClass("hidden");

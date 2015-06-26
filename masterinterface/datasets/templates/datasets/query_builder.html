@@ -128,6 +128,14 @@
 
     <div class="well well-small well-white" style="margin-top: 0px !important;">
 
+	{% for ds in rel_datasets %}
+		{% if ds.global_id == dataset.global_id %}
+		<h1 id="h1-{{ ds.global_id }}"><i class="fa fa-database"></i> {{ ds.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ ds.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
+		{% else %}
+		<h1 class="hidden" id="h1-{{ ds.global_id }}"><i class="fa fa-database"></i> {{ ds.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ ds.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
+		{% endif %}
+	{% endfor %}
+
 	<select class="span4" id="datasetselector">
 		{% for ds in rel_datasets %}
 			{% if ds.global_id == dataset.global_id %}
@@ -137,7 +145,7 @@
 			{% endif %}
 		{% endfor %}
 	</select>
-    <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ dataset.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
+
 
     {% if endpoint == 'True' %}
     <div id="query-results" class="row-fluid hide" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
