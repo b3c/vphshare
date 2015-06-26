@@ -218,10 +218,8 @@
         <div class="span4">
 			{% for ds in rel_datasets %}
 				{% if ds.global_id == dataset.global_id %}
-				<!--div class="accordion" id="accordion{{ forloop.counter0 }}"-->
 				<div class="accordion" id="{{ ds.global_id }}">
 				{% else %}
-				<!--div class="accordion hidden" id="accordion{{ forloop.counter0 }}"-->
 				<div class="accordion hidden" id="{{ ds.global_id }}">
 				{% endif %}
 
@@ -229,7 +227,7 @@
 				<div class="accordion-group">
 					<div class="accordion-heading">
 						<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ ds.global_id }}" href="#{{ tablename }}">
-							<i class="fa fa-table"></i> {{ tablename|title }} - {{ ds.metadata.dbname|title }}
+							<i class="fa fa-table"></i> {{ tablename|title }}
 						</a>
 					</div>
 					<div id="{{ tablename }}" class="accordion-body collapse {% if forloop.counter0 == 0 %} in {% endif %}">
@@ -237,7 +235,7 @@
 							<table cellpadding="0" cellspacing="0" border="0" class="display dataset-table" >
 								<tbody>
 									{% for column in columns %}
-									<tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}" data-tablename="{{ tablename }}" data-dbname="{{ ds.metadata.dbname}}" data-publishaddress="{{ ds.metadata.publishaddress }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
+									<tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}" data-tablename="{{ tablename }}" data-dbname="{{ ds.metadata.dbname}}" data-publishaddress="{{ ds.metadata.publishaddress }}" data-datasetname="{{ ds.metadata.name }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
 									{% endfor %}
 								</tbody>
 							</table>

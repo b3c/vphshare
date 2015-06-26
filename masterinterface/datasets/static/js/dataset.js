@@ -167,6 +167,9 @@
         var columnObj = $(ui.draggable).clone();
         var name = columnObj.data('name');
         var type = columnObj.data('type');
+        var dbname = columnObj.data('dbname');
+        var publishaddress = columnObj.data('publishaddress');
+        var datasetname = columnObj.data('datasetname');
         var id = columnObj.attr('id');
         var tablename = columnObj.data('tablename');
         var operations = "";
@@ -231,6 +234,9 @@
            "type": type,
            "id": id,
            "tablename": tablename,
+           "dbname": dbname,
+           "publishaddress": publishaddress,
+           "datasetname": datasetname,
             "valuetype": valuetype
         });
 
@@ -280,6 +286,9 @@
            "name": name,
            "type": type,
            "id": id,
+           "dbname": dbname,
+           "publishaddress": publishaddress,
+           "datasetname": datasetname,
            "tablename": tablename
         });
         root.before(new_select);
@@ -336,6 +345,9 @@
                             "name": insideCondition.data("name"),
                             "type": insideCondition.data("type"),
                             "tablename": insideCondition.data("tablename"),
+							"dbname": insideCondition.data("dbname"),
+							"publishaddress": insideCondition.data("publishaddress"),
+							"datasetname": insideCondition.data("datasetname"),
                             "operator" : insideCondition.find('.operator:first').val(),
                             "value": insideCondition.find('input:first').val(),
                             "valueType": insideCondition.data("valuetype"),
@@ -550,8 +562,14 @@
 		  self.previousGUID = self.selectedGUID;
 		  self.selectedGUID = $(this).val();
 
+		  // change accordion
 		  $('#'+self.previousGUID).addClass("hidden");
 		  $('#'+self.selectedGUID).removeClass("hidden");
+
+		  // change dataset header
+		  $('#h1-'+self.previousGUID).addClass("hidden");
+		  $('#h1-'+self.selectedGUID).removeClass("hidden");
+
 	  });
   };
 
