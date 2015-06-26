@@ -273,6 +273,9 @@
 
         var name = columnObj.data('name');
         var type = columnObj.data('type');
+        var dbname = columnObj.data('dbname');
+        var publishaddress = columnObj.data('publishaddress');
+        var datasetname = columnObj.data('datasetname');
         var id = columnObj.attr('id');
         var tablename = columnObj.data('tablename');
         if (root.parent().find('.'+id).length){
