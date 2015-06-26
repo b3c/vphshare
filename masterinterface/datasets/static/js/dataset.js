@@ -83,6 +83,9 @@
             self.$columnsList[column.attr('id')] = {
                 name: column.data('name'),
                 type: column.data('type'),
+                dbname: column.data('dbname'),
+                datasetname: column.data('datasetname'),
+                publishaddress: column.data('publishaddress'),
                 tablename: column.data('tablename')
             };
             column.draggable({
@@ -368,6 +371,9 @@
                     selectCondition = {
                             "name": select.data("name"),
                             "type": select.data("type"),
+							"dbname": select.data("dbname"),
+							"publishaddress": select.data("publishaddress"),
+							"datasetname": select.data("datasetname"),
                             "tablename": select.data("tablename"),
                             "displayAs": select.find('input:first').val()
                     };
