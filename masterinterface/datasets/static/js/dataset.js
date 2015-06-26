@@ -570,7 +570,7 @@
 
   $.fn.DatasetPlugin = function(opts) {
     return this.each(function() {
-      new Widget(this, opts);
+      new DatasetPlugin(this, opts);
     });
   };
 
