@@ -83,6 +83,9 @@
             self.$columnsList[column.attr('id')] = {
                 name: column.data('name'),
                 type: column.data('type'),
+                dbname: column.data('dbname'),
+                datasetname: column.data('datasetname'),
+                publishaddress: column.data('publishaddress'),
                 tablename: column.data('tablename')
             };
             column.draggable({
@@ -167,6 +170,9 @@
         var columnObj = $(ui.draggable).clone();
         var name = columnObj.data('name');
         var type = columnObj.data('type');
+        var dbname = columnObj.data('dbname');
+        var publishaddress = columnObj.data('publishaddress');
+        var datasetname = columnObj.data('datasetname');
         var id = columnObj.attr('id');
         var tablename = columnObj.data('tablename');
         var operations = "";
@@ -231,6 +237,9 @@
            "type": type,
            "id": id,
            "tablename": tablename,
+           "dbname": dbname,
+           "publishaddress": publishaddress,
+           "datasetname": datasetname,
             "valuetype": valuetype
         });
 
@@ -267,6 +276,9 @@
 
         var name = columnObj.data('name');
         var type = columnObj.data('type');
+        var dbname = columnObj.data('dbname');
+        var publishaddress = columnObj.data('publishaddress');
+        var datasetname = columnObj.data('datasetname');
         var id = columnObj.attr('id');
         var tablename = columnObj.data('tablename');
         if (root.parent().find('.'+id).length){
@@ -280,6 +292,9 @@
            "name": name,
            "type": type,
            "id": id,
+           "dbname": dbname,
+           "publishaddress": publishaddress,
+           "datasetname": datasetname,
            "tablename": tablename
         });
         root.before(new_select);
@@ -336,6 +351,9 @@
                             "name": insideCondition.data("name"),
                             "type": insideCondition.data("type"),
                             "tablename": insideCondition.data("tablename"),
+							"dbname": insideCondition.data("dbname"),
+							"publishaddress": insideCondition.data("publishaddress"),
+							"datasetname": insideCondition.data("datasetname"),
                             "operator" : insideCondition.find('.operator:first').val(),
                             "value": insideCondition.find('input:first').val(),
                             "valueType": insideCondition.data("valuetype"),
@@ -353,6 +371,9 @@
                     selectCondition = {
                             "name": select.data("name"),
                             "type": select.data("type"),
+							"dbname": select.data("dbname"),
+							"publishaddress": select.data("publishaddress"),
+							"datasetname": select.data("datasetname"),
                             "tablename": select.data("tablename"),
                             "displayAs": select.find('input:first').val()
                     };
@@ -523,3 +544,63 @@
 
     };
 }).call(this);
+
+;(function($, doc, win) {
+  "use strict";
+
+  var name = 'dataset-plugin';
+
+  function DatasetPlugin(el, opts) {
+    this.$el      = $(el);
+    this.$el.data(name, this);
+	this.previousGUID = this.$el.val();
+	this.selectedGUID = this.$el.val();
+
+    this.defaults = {};
+
+    var meta      = this.$el.data(name + '-opts');
+    this.opts     = $.extend(this.defaults, opts, meta);
+
+    this.init();
+  }
+
+  DatasetPlugin.prototype.init = function() {
+	  var self = this;
+
+	  this.$el.change(function() {
+		  self.previousGUID = self.selectedGUID;
+		  self.selectedGUID = $(this).val();
+
+		  // change accordion
+		  $('#'+self.previousGUID).addClass("hidden");
+		  $('#'+self.selectedGUID).removeClass("hidden");
+
+		  // change dataset header
+		  $('#h1-'+self.previousGUID).addClass("hidden");
+		  $('#h1-'+self.selectedGUID).removeClass("hidden");
+
+	  });
+  };
+
+  DatasetPlugin.prototype.destroy = function() {
+    this.$el.off('.' + name);
+    this.$el.find('*').off('.' + name);
+    this.$el.removeData(name);
+    this.$el = null;
+  };
+
+  $.fn.DatasetPlugin = function(opts) {
+    return this.each(function() {
+      new DatasetPlugin(this, opts);
+    });
+  };
+
+  $(doc).on('dom_loaded ajax_loaded', function(e, nodes) {
+    var $nodes = $(nodes);
+    var $elements = $nodes.find('.' + name);
+    $elements = $elements.add($nodes.filter('.' + name));
+
+    $elements.DatasetPlugin();
+  });
+
+})(jQuery, document, window);
