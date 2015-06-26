@@ -29,7 +29,7 @@
       $(function () {
 
           QueryBuilder.autoDiscover();
-		  DatasetSelector.autoDiscover();
+		  $('#datasetselector').DatasetSelectorPlugin({});
 
           $('#myTab a').click(function (e) {
                 e.preventDefault();
@@ -211,10 +211,10 @@
 			{% for ds in rel_datasets %}
 				{% if ds.global_id == dataset.global_id %}
 				<!--div class="accordion" id="accordion{{ forloop.counter0 }}"-->
-				<div class="accordion" id="{{ sd.global_id }}">
+				<div class="accordion" id="{{ ds.global_id }}">
 				{% else %}
 				<!--div class="accordion hidden" id="accordion{{ forloop.counter0 }}"-->
-				<div class="accordion hidden" id="{{ sd.global_id }}">
+				<div class="accordion hidden" id="{{ ds.global_id }}">
 				{% endif %}
 
 				{% for tablename, columns in ds.metadata.schema.items %}

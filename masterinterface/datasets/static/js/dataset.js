@@ -524,35 +524,47 @@
     };
 }).call(this);
 
-(function () {
-    var global, $, DatasetSelector;
-    global = this;
-    $ = global.$;
+;(function($, doc, win) {
+  "use strict";
 
-    DatasetSelector = global.DatasetSelector = function (element, options) {
-        this.inizialize(element);
-    };
+  var name = 'dataset-plugin';
 
-    DatasetSelector.prototype.inizialize = function (root) {
-        var self = this;
-        this.$optionSelected = this.value ;
-        this.$optionPreviousSelected = self.$optionSelected;
-        this.$root = root;
+  function DatasetPlugin(el, opts) {
+    this.$el      = $(el);
+    this.$el.data(name, this);
 
-        this.change(function(){
-			self.$optionSelected = this.value;
-			console.log($optionSelected)
-        });
+    this.defaults = {};
 
-		this.focus(function() {
-			self.$optionPreviousSelected = this.value;
-			onsole.log($optionPreviousSelected)
-		});
-    };
+    var meta      = this.$el.data(name + '-opts');
+    this.opts     = $.extend(this.defaults, opts, meta);
 
-    DatasetSelector.autoDiscover = function() {
-        var datasetSelector = $('#datasetselector');
-        new DatasetSelector(datasetSelector);
+    this.init();
+  }
 
-    };
-}).call(this);
+  DatasetPlugin.prototype.init = function() {
+	  var self = this;
+	  console.log($(this))
+  };
+
+  DatasetPlugin.prototype.destroy = function() {
+    this.$el.off('.' + name);
+    this.$el.find('*').off('.' + name);
+    this.$el.removeData(name);
+    this.$el = null;
+  };
+
+  $.fn.DatasetPlugin = function(opts) {
+    return this.each(function() {
+      new Widget(this, opts);
+    });
+  };
+
+  $(doc).on('dom_loaded ajax_loaded', function(e, nodes) {
+    var $nodes = $(nodes);
+    var $elements = $nodes.find('.' + name);
+    $elements = $elements.add($nodes.filter('.' + name));
+
+    $elements.DatasetPlugin();
+  });
+
+})(jQuery, document, window);
