@@ -340,6 +340,9 @@ METADATA_TYPE = ['Dataset', 'File', 'SemanticWebService', 'Workflow', 'AtomicSer
 #WORKFLOW MANAGER URL
 WORKFLOW_MANANAGER_URL = 'http://wfmng.vph-share.eu/api'
 
+# federate query end point
+FEDERATE_QUERY_URL = 'https://vphsharefind.sheffield.ac.uk/find/VphShareFind.asmx'
+FEDERATE_QUERY_SOAP_URL = 'https://share2mdpgateway.sheffield.ac.uk/FederatedQuery'
 #PARAVIEWWEB CONFIGS
 LOBCDER_DOWNLOAD_DIR = os.path.join(PROJECT_ROOT, 'data_paraview/')
 PARAVIEW_HOST = '0.0.0.0:9000'

@@ -1,50 +1,79 @@
 # Create your views here.
-from django.template.loader import render_to_string
+# from django.template.loader import render_to_string
+# from django.core.exceptions import SuspiciousOperation
+# from django.http import Http404, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse
+
 from django.shortcuts import render_to_response, redirect
-from django.shortcuts import render_to_response
-from django.core.exceptions import SuspiciousOperation
 from django.template import RequestContext
-from django.http import Http404, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
 
 from masterinterface.scs_resources.models import Resource
-from masterinterface.scs.views import page403
+from masterinterface.scs.views import page403, page404
 from masterinterface.datasets.models import DatasetQuery
+import logging
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def query_builder(request, global_id):
     """Home view """
 
     if request.user.is_authenticated():
-        dataset = Resource.objects.get(global_id=global_id)
-        if not dataset.can_read(request.user):
-            return page403(request)
-        query_to_load = None
-        if "q" in request.GET:
-            try:
-                dataset_query = DatasetQuery.objects.get(id=request.GET['q'])
-                query_to_load= {
-                    "id" : dataset_query.id,
-                    "name": dataset_query.name,
-                    "query": json.loads(dataset_query.query)
-                }
-            except Exception, e:
-                request.session['errormessage'] = "The query you are looking for doesn't exist."
-                redirect("query_builder",global_id=global_id)
-        dataset.load_additional_metadata(request.ticket)
-        endpoint = dataset.metadata.get('sparqlEndpoint',dataset.metadata['localID'])
-        if 'read/sparql' not in endpoint:
-            request.session['errormessage'] = "The dataset you are looking for is not supported with the new query builder. Please update and try again."
-            endpoint = 'False'
-        else:
-            endpoint = 'True'
-        return render_to_response(
-            'datasets/query_builder.html',
-            {'dataset': dataset , "query_to_load": query_to_load, "query_list":request.user.datasetquery_set.filter(global_id=global_id), "endpoint":endpoint},
-            RequestContext(request)
-        )
+        try:
+            # getting the selected dataset using the resource UUID from uri
+            dataset = Resource.objects.get(global_id=global_id)
+            if not dataset.can_read(request.user):
+                return page403(request)
+
+            query_to_load = None
+            dataset_query = None
+            rel_datasets = []
+
+            if "q" in request.GET:
+                try:
+                    dataset_query = DatasetQuery.objects.get(id=request.GET['q'])
+                    query_to_load= {
+                        "id" : dataset_query.id,
+                        "name": dataset_query.name,
+                        "query": json.loads(dataset_query.query)
+                    }
+                except:
+                    request.session['errormessage'] = "The query you are looking for doesn't exist."
+                    redirect("query_builder",global_id=global_id)
+
+            dataset.load_additional_metadata(request.ticket)
+            endpoint = dataset.metadata.get('sparqlEndpoint',dataset.metadata['localID'])
+            if 'read/sparql' not in endpoint:
+                request.session['errormessage'] = "The dataset you are looking for is not supported with the new query builder. Please update and try again."
+                endpoint = 'False'
+            else:
+                endpoint = 'True'
+
+            # here, we get all related datasets to pass to the template
+            # TODO load all datasets resources
+            (rel_guids, rel_datasets) = \
+                    DatasetQuery(global_id=global_id)\
+                        .send_data_intersect_summary_with_metadata(request.ticket)
+
+            return render_to_response(
+                'datasets/query_builder.html',
+                {'dataset': dataset ,
+                    "query_to_load": query_to_load,
+                    "query_list":request.user.datasetquery_set.filter(global_id=global_id),
+                    "endpoint":endpoint,
+                    "rel_datasets": rel_datasets,
+                },
+                RequestContext(request) )
+
+        except Exception, e:
+            # provably dataset not found or non-existent in the uri
+            # so roughly prevent 500 fails
+            logger.exception(e)
+            return page404(request)
+
     return page403(request)
 
 @login_required
