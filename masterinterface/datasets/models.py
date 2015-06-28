@@ -1,11 +1,27 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
+from django.conf import settings
+
 from masterinterface.scs_resources.models import Resource
+
 import json
 import requests
 import StringIO
 import csv
+import hashlib as hl
+from lxml import etree, objectify
+import xml.dom.minidom as dom
+from urlparse import urlparse
+import logging
+
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+#
+fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
+fileHandler.setFormatter(logFormatter)
+logger.addHandler(fileHandler)
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -33,37 +49,125 @@ class DatasetQuery(models.Model):
     def __unicode__(self):
         return self.name
 
+    def send_data_intersect_summary_with_metadata(self, ticket):
+        """call send_data_insersect_summary and get metadata foreach guid
+            returns a tuple with ([guids],[datasets objs])
+        """
+        rel_guids = self.send_data_intersect_summary(ticket)
+        rel_dss = []
+        for guid in rel_guids:
+            ds = Resource.objects.get(global_id=guid)
+            ds.load_additional_metadata(ticket)
+            (paddress, dbname) = _url_parse(ds.metadata["localID"])
+            ds.metadata["publishaddress"] = paddress
+            ds.metadata["dbname"] = dbname
+            rel_dss.append(ds)
+
+        return (rel_guids,rel_dss)
+
+
+    def send_data_intersect_summary(self, ticket):
+        """get related dbs using global_id.
+            returns: [] if not related datasets else a [] with their global_id
+        """
+        dataset_id = self.global_id
+        dss = [dataset_id,]
+
+        if settings.FEDERATE_QUERY_URL:
+            try:
+                results = requests.post("%s/DataIntersectSummary" % 
+                            (settings.FEDERATE_QUERY_URL,) ,
+                              data="datasetGUID=%s" % (dataset_id,),
+                              auth=("admin", ticket),
+                              headers = {'content-type': 'application/x-www-form-urlencoded'},
+                              verify=False
+                              ).content
+
+                # xml parsing
+                xml_tree = objectify.fromstring(results)
+                dss = list(set(dss).union([ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]))
+                logger.debug(str(dss))
+            except Exception, e:
+                logger.exception(e)
+            finally:
+                return dss
+
+        else:
+            logger.error("FEDERATE_QUERY_URL var in settings.py doesn't exist")
+            return dss
+
+
     def send_query(self, ticket):
         """
         """
         json_query = json.loads(self.query)
-        dataset = Resource.objects.get(global_id=self.global_id)
+
+        logger.debug("send_query client json " + str(json_query))
+
+        (_test, rel_datasets) = \
+            self.send_data_intersect_summary_with_metadata(ticket)
+
+
+        logger.debug("send_query rel dbs " + str(_test))
+
+        dataset = [ el for el in rel_datasets if el.global_id == self.global_id ]
         data = {
-            "dataset": dataset,
+            "dataset": dataset[0],
+            "rel_datasets": rel_datasets,
             "select": json_query["select"],
             "where": json_query["where"]
         }
-        xml_query = render_to_response("datasets/query_template.xml", data)
-        if dataset.metadata['localID'][-1] != '/':
-            dataset.metadata['localID'] = dataset.metadata['localID'] + '/'
 
-        results = requests.post("%sxmlquery/DatasetSOAPQuery.asmx" % dataset.metadata['localID'],
-                      data=xml_query.content,
-                      auth=("admin", ticket),
-                      headers = {'content-type': 'text/xml', 'SOAPAction': 'http://vph-share.eu/dms/Query'},
-                      verify=False
-        ).text
-        if "<QueryResult />" in results:
-            return ""
+        logger.debug("send_query data to render " + str(data))
+
+        if settings.FEDERATE_QUERY_SOAP_URL:
+            xml_query = render_to_response("datasets/query_template.xml", data)
+
+            logger.debug("send_query xml_query " + str(xml_query))
+
+            results = requests.post(
+                        "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
+                          data=xml_query.content,
+                          auth=("admin", ticket),
+                          headers = {'content-type': 'text/xml', 
+                                    'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
+                          verify=False
+            ).content
+
+            logger.debug("send_query results " + str(results))
+
+            # parsing xml like dom to get result
+            root = dom.parseString(results)
+            cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
+                    childNodes[0].\
+                    data.\
+                    strip()
+
+            # removing alot EOLs
+            cached_results = cached_results.rstrip('\r\n')
+
+            logger.debug("send_query results " + str(cached_results))
+
+            if len(cached_results.split("\n")) > 1:
+                return cached_results
+            else:
+                return ""
+
         else:
-            return results[results.find("<QueryResult>")+len("<QueryResult>"):results.find("</QueryResult>")]
+            logger.error("FEDERATE_QUERY_SOAP_URL var in settings.py doesn't exist")
+            return ""
+
 
     def get_header(self, ticket):
         csv_results = self.send_query(ticket)
+
+        logger.debug("get_results header " + str(csv_results))
+
         return csv.reader(StringIO.StringIO(csv_results)).next()
 
     def get_results(self, ticket):
         csv_results = csv.reader(StringIO.StringIO(self.send_query(ticket)))
+        logger.debug("get_results data " + str(csv_results))
         #ignore the first header row
         csv_results.next()
         return [ row for row in csv_results ]
@@ -72,9 +176,19 @@ class DatasetQuery(models.Model):
         """
         """
         csv_results = self.send_query(ticket)
+
+        logger.debug("get_results number " + str(csv_results))
+
         return len(StringIO.StringIO(csv_results).readlines())
 
 
+def _url_parse(uri):
+    """ return tuple (host, 1st path without slash )"""
+    host = ""
+    path = ""
 
+    p_uri = urlparse(uri)
+    host = p_uri.netloc
+    path = p_uri.path.rstrip('/').strip('/')
 
-
+    return (host,path)

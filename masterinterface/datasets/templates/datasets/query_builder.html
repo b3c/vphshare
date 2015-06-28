@@ -9,7 +9,8 @@
  {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="/static/js/dataset.min.js"></script>
+    <!--script type="text/javascript" src="/static/js/dataset.min.js"></script-->
+    <script type="text/javascript" src="/static/js/dataset.js"></script>
     <script src="/static/js/jquery.dataTables.min.js"></script>
     <script src="/static/js/dataTables.tableTools.min.js"></script>
     <script src="/static/js/dataTables.bootstrap.min.js"></script>
@@ -28,6 +29,7 @@
       $(function () {
 
           QueryBuilder.autoDiscover();
+		  $('#datasetselector').DatasetPlugin({});
 
           $('#myTab a').click(function (e) {
                 e.preventDefault();
@@ -125,7 +127,26 @@
     </script>
 
     <div class="well well-small well-white" style="margin-top: 0px !important;">
-    <h1><i class="fa fa-database"></i> {{ dataset.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ dataset.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
+
+	{% for ds in rel_datasets %}
+		{% if ds.global_id == dataset.global_id %}
+		<h1 id="h1-{{ ds.global_id }}"><i class="fa fa-database"></i> {{ ds.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ ds.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
+		{% else %}
+		<h1 class="hidden" id="h1-{{ ds.global_id }}"><i class="fa fa-database"></i> {{ ds.metadata.name|title }} <a title="Explore dataset" style = "font-size: 22px;" target="_blank" href="{{ ds.metadata.explore }}" ><i class="fa fa-search-plus"></i></a> {% if query_to_load %} - {{ query_to_load.name }}{% endif %}</h1>
+		{% endif %}
+	{% endfor %}
+
+	<select class="span4" id="datasetselector">
+		{% for ds in rel_datasets %}
+			{% if ds.global_id == dataset.global_id %}
+				<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}</option>
+			{% else %}
+				<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }}</option>
+			{% endif %}
+		{% endfor %}
+	</select>
+
+
     {% if endpoint == 'True' %}
     <div id="query-results" class="row-fluid hide" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
         <div class="span12">
@@ -135,7 +156,7 @@
         </div>
     </div>
     <hr id="hr-query-results" class="hide"/>
-    <h1>
+	<h1>
         <div  class="btn-group " style="float: right">
           <button id="query_button" class="btn btn-info" data-loading-text="Loading the results..." >Get the results</button>
           <button class="btn dropdown-toggle btn-info" data-toggle="dropdown">
@@ -195,28 +216,36 @@
     </h1>
     <div id="query-builder" class="row-fluid" data-globalid="{{ dataset.global_id }}" data-queryid="{{ query_to_load.id }}" >
         <div class="span4">
-            <div class="accordion" id="accordion1">
-                {% for tablename, columns in dataset.metadata.schema.items %}
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#{{ tablename }}">
-                            <i class="fa fa-table"></i> {{ tablename|title }}
-                          </a>
-                        </div>
-                        <div id="{{ tablename }}" class="accordion-body collapse {% if forloop.counter0 == 0 %} in {% endif %}">
-                            <div class="accordion-inner">
-                                <table cellpadding="0" cellspacing="0" border="0" class="display dataset-table" >
-                                    <tbody>
-                                    {% for column in columns %}
-                                        <tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}" data-tablename="{{ tablename }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
+			{% for ds in rel_datasets %}
+				{% if ds.global_id == dataset.global_id %}
+				<div class="accordion" id="{{ ds.global_id }}">
+				{% else %}
+				<div class="accordion hidden" id="{{ ds.global_id }}">
+				{% endif %}
+
+				{% for tablename, columns in ds.metadata.schema.items %}
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ ds.global_id }}" href="#{{ tablename }}">
+							<i class="fa fa-table"></i> {{ tablename|title }}
+						</a>
+					</div>
+					<div id="{{ tablename }}" class="accordion-body collapse {% if forloop.counter0 == 0 %} in {% endif %}">
+						<div class="accordion-inner">
+							<table cellpadding="0" cellspacing="0" border="0" class="display dataset-table" >
+								<tbody>
+									{% for column in columns %}
+									<tr><td><div id="{{ tablename }}-{{ column.0 }}-{{ column.1 }}" class="column" data-name="{{ column.0 }}" data-type="{{ column.1 }}" data-tablename="{{ tablename }}" data-dbname="{{ ds.metadata.dbname}}" data-publishaddress="{{ ds.metadata.publishaddress }}" data-datasetname="{{ ds.metadata.name }}"><i class="fa fa-columns"></i> {{ column.0|title }}</div></td></tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+				</div>
+			{% endfor %}
+
         </div>
         <div class="span8">
             <ul class="nav nav-tabs" id="myTab">
@@ -232,7 +261,7 @@
                   </div>
                   <div id="select-message-error" class="alert alert-error hide hideMe"></div>
                   {% for select in query_to_load.query.select %}
-                      <div class="select" data-tablename="{{ select.tablename }}" data-name="{{ select.name }}" data-type="{{ select.type }}">
+                      <div class="select" data-tablename="{{ select.tablename }}" data-name="{{ select.name }}" data-type="{{ select.type }}" data-dbname="{{ select.dbname}}" data-publishaddress="{{ select.publishaddress }}" data-datasetname="{{ select.datasetname }}">
                           <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
                           <div class="condition-form">
                                 <div class="inline input"><i class="fa fa-columns"></i> {{ select.name }}</div>
@@ -254,7 +283,7 @@
                       <div class="condition drop">
                         <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove condition" data-placement="right" data-trigger="hover focus click" data-container="body">&times;</button>
                           {% for operation in condition.group %}
-                              <div class="inside-condition" data-name="{{  operation.name }}" data-type="{{ operation.type }}" data-id="{{ operation.id }}" data-tablename="{{ operation.tablename }}" data-valuetype="{{ operation.valueType }}">
+                              <div class="inside-condition" data-name="{{  operation.name }}" data-type="{{ operation.type }}" data-id="{{ operation.id }}" data-tablename="{{ operation.tablename }}" data-valuetype="{{ operation.valueType }}" data-dbname="{{ operation.dbname}}" data-publishaddress="{{ operation.publishaddress }}" data-datasetname="{{ operation.datasetname }}">
                                 <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove operation" data-placement="right"  data-trigger="hover focus click" data-container="body">&times;</button>
                                 <div class="condition-form">
                                     <div class="inline left-node"> <i class="fa fa-columns"></i> {{ operation.name }}</div>
