@@ -85,6 +85,8 @@ def getDatasetInputs(request):
     value = request.POST['value']
     dataset_query = DatasetQuery.objects.get(id=value)
     dataset = Resource.objects.get(global_id=dataset_query.global_id)
+    (rel_guids, rel_datasets) = dataset_query.send_data_intersect_summary_with_metadata(request.ticket)
+
     workflow = Workflow.objects.get(global_id=request.POST['workflowId'])
     tavernaIO = Taverna2WorkflowIO()
     tavernaIO.loadFromT2FLOWString(workflow.t2flow)
@@ -92,7 +94,7 @@ def getDatasetInputs(request):
     workflow_input = tavernaIO.getInputPorts()
     return render_to_response(
         'scs_workspace/datasetInputs.html',
-        {'workflow_input': workflow_input, 'dataset': dataset,'dataset_query':dataset_query, 'query_header': dataset_query.get_header(request.ticket), 'results':dataset_query.get_results(request.ticket)},
+        {'workflow_input': workflow_input, 'dataset': dataset, 'rel_datasets': rel_datasets , 'dataset_query':dataset_query, 'query_header': dataset_query.get_header(request.ticket), 'results':dataset_query.get_results(request.ticket)},
         RequestContext(request)
     )
 

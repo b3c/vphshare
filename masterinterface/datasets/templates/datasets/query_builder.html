@@ -261,7 +261,7 @@
                   </div>
                   <div id="select-message-error" class="alert alert-error hide hideMe"></div>
                   {% for select in query_to_load.query.select %}
-                      <div class="select" data-tablename="{{ select.tablename }}" data-name="{{ select.name }}" data-type="{{ select.type }}">
+                      <div class="select" data-tablename="{{ select.tablename }}" data-name="{{ select.name }}" data-type="{{ select.type }}" data-dbname="{{ select.dbname}}" data-publishaddress="{{ select.publishaddress }}" data-datasetname="{{ select.datasetname }}">
                           <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
                           <div class="condition-form">
                                 <div class="inline input"><i class="fa fa-columns"></i> {{ select.name }}</div>
@@ -283,7 +283,7 @@
                       <div class="condition drop">
                         <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove condition" data-placement="right" data-trigger="hover focus click" data-container="body">&times;</button>
                           {% for operation in condition.group %}
-                              <div class="inside-condition" data-name="{{  operation.name }}" data-type="{{ operation.type }}" data-id="{{ operation.id }}" data-tablename="{{ operation.tablename }}" data-valuetype="{{ operation.valueType }}">
+                              <div class="inside-condition" data-name="{{  operation.name }}" data-type="{{ operation.type }}" data-id="{{ operation.id }}" data-tablename="{{ operation.tablename }}" data-valuetype="{{ operation.valueType }}" data-dbname="{{ operation.dbname}}" data-publishaddress="{{ operation.publishaddress }}" data-datasetname="{{ operation.datasetname }}">
                                 <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove operation" data-placement="right"  data-trigger="hover focus click" data-container="body">&times;</button>
                                 <div class="condition-form">
                                     <div class="inline left-node"> <i class="fa fa-columns"></i> {{ operation.name }}</div>

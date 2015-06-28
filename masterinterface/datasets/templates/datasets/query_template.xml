@@ -27,7 +27,7 @@
                   {% endif %}
                   <qrelop operator="{% if operation.operator == 'isnull' %}={% elif operation.operator == 'isnotnull' %}NOT={% else %}{{ operation.operator }}{% endif %}">
                       <leftnode>
-                          <field fieldname="{{ operation.name }}" publishaddress="{{ opration.publishaddress }}" dbname="{{ operation.dbname }}" tablename="{{ operation.tablename }}" type="{{ operation.type }}"/>
+                          <field fieldname="{{ operation.name }}" publishaddress="{{ operation.publishaddress }}" dbname="{{ operation.dbname }}" tablename="{{ operation.tablename }}" type="{{ operation.type }}"/>
                       </leftnode>
                       {% if operation.operator == 'isnull' or operation.operator == 'isnotnull' %}
                           <rightnode ><qvalue type="numeric" isnull="true">0</qvalue></rightnode>
