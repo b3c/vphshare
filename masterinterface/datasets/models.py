@@ -15,7 +15,13 @@ import xml.dom.minidom as dom
 from urlparse import urlparse
 import logging
 
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+#
+fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
+fileHandler.setFormatter(logFormatter)
+logger.addHandler(fileHandler)
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -80,6 +86,7 @@ class DatasetQuery(models.Model):
                 # xml parsing
                 xml_tree = objectify.fromstring(results)
                 dss = list(set(dss).union([ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]))
+                logger.debug(str(dss))
             except Exception, e:
                 logger.exception(e)
             finally:
@@ -94,17 +101,29 @@ class DatasetQuery(models.Model):
         """
         """
         json_query = json.loads(self.query)
-        dataset = Resource.objects.get(global_id=self.global_id)
-        (_, rel_datasets) = self.send_data_intersect_summary_with_metadata(ticket)
+
+        logger.debug("send_query client json " + str(json_query))
+
+        (_test, rel_datasets) = \
+            self.send_data_intersect_summary_with_metadata(ticket)
+
+
+        logger.debug("send_query rel dbs " + str(_test))
+
+        dataset = [ el for el in rel_datasets if el.global_id == self.global_id ]
         data = {
-            "dataset": dataset,
+            "dataset": dataset[0],
             "rel_datasets": rel_datasets,
             "select": json_query["select"],
             "where": json_query["where"]
         }
 
+        logger.debug("send_query data to render " + str(data))
+
         if settings.FEDERATE_QUERY_SOAP_URL:
             xml_query = render_to_response("datasets/query_template.xml", data)
+
+            logger.debug("send_query xml_query " + str(xml_query))
 
             results = requests.post(
                         "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
@@ -114,7 +133,9 @@ class DatasetQuery(models.Model):
                                     'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
                           verify=False
             ).content
-            
+
+            logger.debug("send_query results " + str(results))
+
             # parsing xml like dom to get result
             root = dom.parseString(results)
             cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
@@ -124,6 +145,9 @@ class DatasetQuery(models.Model):
 
             # removing alot EOLs
             cached_results = cached_results.rstrip('\r\n')
+
+            logger.debug("send_query results " + str(cached_results))
+
             if len(cached_results.split("\n")) > 1:
                 return cached_results
             else:
@@ -136,10 +160,14 @@ class DatasetQuery(models.Model):
 
     def get_header(self, ticket):
         csv_results = self.send_query(ticket)
+
+        logger.debug("get_results header " + str(csv_results))
+
         return csv.reader(StringIO.StringIO(csv_results)).next()
 
     def get_results(self, ticket):
         csv_results = csv.reader(StringIO.StringIO(self.send_query(ticket)))
+        logger.debug("get_results data " + str(csv_results))
         #ignore the first header row
         csv_results.next()
         return [ row for row in csv_results ]
@@ -148,6 +176,9 @@ class DatasetQuery(models.Model):
         """
         """
         csv_results = self.send_query(ticket)
+
+        logger.debug("get_results number " + str(csv_results))
+
         return len(StringIO.StringIO(csv_results).readlines())
 
 
