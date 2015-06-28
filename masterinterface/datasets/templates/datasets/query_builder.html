@@ -139,9 +139,9 @@
 	<select class="span4" id="datasetselector">
 		{% for ds in rel_datasets %}
 			{% if ds.global_id == dataset.global_id %}
-			<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }} - ss:{{ ds.metadata.sharedsubjects|title }}</option>
+			<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}{% if ds.metadata.sharedsubjects %} ({{ ds.metadata.sharedsubjects|title }}){% endif %}</option>
 			{% else %}
-			<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }} - ss:{{ ds.metadata.sharedsubjects|title }}</option>
+			<option value="{{ ds.global_id }}">{{ ds.metadata.name|title }}{% if ds.metadata.sharedsubjects %} ({{ ds.metadata.sharedsubjects|title }}){% endif %}</option>
 			{% endif %}
 		{% endfor %}
 	</select>
