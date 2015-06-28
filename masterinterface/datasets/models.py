@@ -50,17 +50,18 @@ class DatasetQuery(models.Model):
         return self.name
 
     def send_data_intersect_summary_with_metadata(self, ticket):
-        """call send_data_insersect_summary and get metadata foreach guid
+        """call send_data_insersect_summary and get metadata foreach (guid,subjectnumber)
             returns a tuple with ([guids],[datasets objs])
         """
         rel_guids = self.send_data_intersect_summary(ticket)
         rel_dss = []
         for guid in rel_guids:
-            ds = Resource.objects.get(global_id=guid)
+            ds = Resource.objects.get(global_id=guid[0])
             ds.load_additional_metadata(ticket)
             (paddress, dbname) = _url_parse(ds.metadata["localID"])
             ds.metadata["publishaddress"] = paddress
             ds.metadata["dbname"] = dbname
+            ds.metadata["sharedsubjects"] = guid[1]
             rel_dss.append(ds)
 
         return (rel_guids,rel_dss)
@@ -71,7 +72,8 @@ class DatasetQuery(models.Model):
             returns: [] if not related datasets else a [] with their global_id
         """
         dataset_id = self.global_id
-        dss = [dataset_id,]
+        dss = [ ( dataset_id,0 ) ]
+        dss_tmp = []
 
         if settings.FEDERATE_QUERY_URL:
             try:
@@ -85,10 +87,18 @@ class DatasetQuery(models.Model):
 
                 # xml parsing
                 xml_tree = objectify.fromstring(results)
-                dss = list(set(dss).union([ el.text.split("|")[0] for el in xml_tree.string if xml_tree.countchildren() > 0 ]))
+                dss_tmp = list(set(dss_tmp).union( [ ( el.text.split("|")[0],el.text.split("|")[1] ) \
+                                                    for el in xml_tree.string \
+                                                        if xml_tree.countchildren() > 0 ]))
+                
+                if len(dss_tmp) > 0:
+                    dss = dss_tmp
+
                 logger.debug(str(dss))
+
             except Exception, e:
                 logger.exception(e)
+
             finally:
                 return dss
 
