@@ -15,7 +15,13 @@ from masterinterface.scs.views import page403, page404
 from masterinterface.datasets.models import DatasetQuery
 import logging
 
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+#
+fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
+fileHandler.setFormatter(logFormatter)
+logger.addHandler(fileHandler)
 
 @login_required
 def query_builder(request, global_id):
@@ -40,6 +46,9 @@ def query_builder(request, global_id):
                         "name": dataset_query.name,
                         "query": json.loads(dataset_query.query)
                     }
+
+                    logger.debug("query_builder dataset_query from db " + str(dataset_query.__dict__) )
+                    logger.debug("query_builder dataset_query from db to json " + str(dataset_query.query) )
                 except:
                     request.session['errormessage'] = "The query you are looking for doesn't exist."
                     redirect("query_builder",global_id=global_id)
@@ -57,6 +66,8 @@ def query_builder(request, global_id):
             (rel_guids, rel_datasets) = \
                     DatasetQuery(global_id=global_id)\
                         .send_data_intersect_summary_with_metadata(request.ticket)
+
+            logger.debug("query_builder loaded data " + str(rel_guids) )
 
             return render_to_response(
                 'datasets/query_builder.html',
@@ -82,6 +93,7 @@ def get_dataset_schema(request):
         global_id = request.GET['global_id']
         dataset = Resource.objects.get(global_id=global_id)
         dataset.load_additional_metadata(request.ticket)
+        logger.debug("calling get_dataset_schema")
     else:
         return page403(request)
     return HttpResponse(status=200,
@@ -93,13 +105,20 @@ def get_results(request):
     if request.user.is_authenticated() and request.method == 'POST' and 'globalID' in request.POST:
         global_id = request.POST['globalID']
         json_query = request.POST['query']
-        dataset = Resource.objects.get(global_id=global_id)
-        dataset.load_additional_metadata(request.ticket)
         dataset_query = DatasetQuery(query=json_query, global_id=global_id)
         dataset_query.save()
         dataset_query.user.add(request.user)
+
+        logger.debug("get results dict: " + str(dataset_query.__dict__))
+
         header = dataset_query.get_header(request.ticket)
+
+        logger.debug("get results header: " + str(header))
+
         results = dataset_query.get_results(request.ticket)
+
+        logger.debug("get results get_results query: " + str(results))
+
         dataset_query.delete()
         return HttpResponse(status=200,
                         content=json.dumps(
