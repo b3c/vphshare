@@ -136,7 +136,8 @@
 		{% endif %}
 	{% endfor %}
 
-	<select class="span4" id="datasetselector">
+	<span>Fed. Datasets </span>
+	<select class="span3" id="datasetselector">
 		{% for ds in rel_datasets %}
 			{% if ds.global_id == dataset.global_id %}
 			<option value="{{ ds.global_id }}" selected>{{ ds.metadata.name|title }}{% if ds.metadata.sharedsubjects %} ({{ ds.metadata.sharedsubjects|title }}){% endif %}</option>
