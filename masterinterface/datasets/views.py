@@ -99,8 +99,8 @@ def get_results(request):
         dataset_query.user.add(request.user)
 
         header = dataset_query.get_header(request.ticket)
-        if header is not None:
 
+        if header is not None and len(header) > 0:
             results = dataset_query.get_results(request.ticket)
 
             dataset_query.delete()

@@ -119,7 +119,9 @@ class DatasetQuery(models.Model):
 
         if settings.FEDERATE_QUERY_SOAP_URL:
             try:
-                key = _get_hash_key( str(ticket), self.query, str(_test) )
+                key = _get_hash_key(str(self.global_id),
+                        str(sorted(_test)),
+                        str(sorted(json_query.items())) )
 
                 from_cache = cache.get(key)
                 if from_cache is None:
@@ -155,37 +157,41 @@ class DatasetQuery(models.Model):
                 logger.exception(e)
 
             finally:
-                return None
+                return ""
 
         else:
             logger.error("FEDERATE_QUERY_SOAP_URL var in settings.py doesn't exist")
-            return None
+            return ""
 
 
     def get_header(self, ticket):
         csv_results = self.send_query(ticket)
 
-        if csv_results is not None:
-            return csv.reader(StringIO.StringIO(csv_results)).next()
+        if csv_results:
+            reader = csv.reader(StringIO.StringIO(csv_results))
+            header = [el for el in reader]
+            return header[0]
+
         else:
-            return csv_results
+            return []
 
     def get_results(self, ticket):
         csv_results = csv.reader(StringIO.StringIO(self.send_query(ticket)))
 
-        if csv_results is not None:
+        if csv_results:
             #ignore the first header row
             csv_results.next()
-            return [ row for row in csv_results ]
+            data = [ row for row in csv_results ]
+            return data
         else:
-            return csv_results
+            return []
 
     def get_results_number(self, ticket):
         """
         """
         csv_results = self.send_query(ticket)
         
-        if csv_results is not None:
+        if csv_results:
             return len(StringIO.StringIO(csv_results).readlines())
         else:
             return 0
@@ -204,5 +210,4 @@ def _url_parse(uri):
 
 def _get_hash_key(data, *args):
     """get sha1 sum hexdigest for a string"""
-
-    return hl.sha1( ":".join([data] + args) ).hexdigest()
+    return hl.sha1( ":".join([data] + [el for el in args]) ).hexdigest()
