@@ -155,8 +155,6 @@ class DatasetQuery(models.Model):
 
             except Exception, e:
                 logger.exception(e)
-
-            finally:
                 return ""
 
         else:
@@ -176,10 +174,10 @@ class DatasetQuery(models.Model):
             return []
 
     def get_results(self, ticket):
-        csv_results = csv.reader(StringIO.StringIO(self.send_query(ticket)))
+        data = self.send_query(ticket)
 
-        if csv_results:
-            #ignore the first header row
+        if data:
+            csv_results = csv.reader(StringIO.StringIO(data))
             csv_results.next()
             data = [ row for row in csv_results ]
             return data
@@ -195,6 +193,17 @@ class DatasetQuery(models.Model):
             return len(StringIO.StringIO(csv_results).readlines())
         else:
             return 0
+
+
+    def get_query_data(self, ticket):
+        data = self.send_query(ticket)
+
+        if data:
+            csv_results = csv.reader(StringIO.StringIO(data))
+            data = [ row for row in csv_results ]
+            return data
+        else:
+            return []
 
 
 def _url_parse(uri):

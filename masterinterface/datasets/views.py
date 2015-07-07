@@ -98,21 +98,16 @@ def get_results(request):
         dataset_query.save()
         dataset_query.user.add(request.user)
 
-        header = dataset_query.get_header(request.ticket)
+        data = dataset_query.get_query_data(request.ticket)
 
-        if header is not None and len(header) > 0:
-            results = dataset_query.get_results(request.ticket)
-
-            dataset_query.delete()
-            return HttpResponse(status=200,
-                            content=json.dumps(
-                                {
-                                    "header": header,
-                                    "results": results
-                                }, sort_keys=False),
-                            content_type='application/json')
-        else:
-            return page500(request)
+        dataset_query.delete()
+        return HttpResponse(status=200,
+                        content=json.dumps(
+                            {
+                                "header": data[0],
+                                "results": data[1:]
+                            }, sort_keys=False),
+                        content_type='application/json')
     else:
         return page403(request)
 
