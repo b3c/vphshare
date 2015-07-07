@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 import json
 
 from masterinterface.scs_resources.models import Resource
-from masterinterface.scs.views import page403, page404
+from masterinterface.scs.views import page403, page404, page500
 from masterinterface.datasets.models import DatasetQuery
 import logging
 
@@ -98,16 +98,14 @@ def get_results(request):
         dataset_query.save()
         dataset_query.user.add(request.user)
 
-        header = dataset_query.get_header(request.ticket)
-
-        results = dataset_query.get_results(request.ticket)
+        data = dataset_query.get_query_data(request.ticket)
 
         dataset_query.delete()
         return HttpResponse(status=200,
                         content=json.dumps(
                             {
-                                "header": header,
-                                "results": results
+                                "header": data[0],
+                                "results": data[1:]
                             }, sort_keys=False),
                         content_type='application/json')
     else:
