@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 import json
 
 from masterinterface.scs_resources.models import Resource
-from masterinterface.scs.views import page403, page404
+from masterinterface.scs.views import page403, page404, page500
 from masterinterface.datasets.models import DatasetQuery
 import logging
 
@@ -99,17 +99,20 @@ def get_results(request):
         dataset_query.user.add(request.user)
 
         header = dataset_query.get_header(request.ticket)
+        if header is not None:
 
-        results = dataset_query.get_results(request.ticket)
+            results = dataset_query.get_results(request.ticket)
 
-        dataset_query.delete()
-        return HttpResponse(status=200,
-                        content=json.dumps(
-                            {
-                                "header": header,
-                                "results": results
-                            }, sort_keys=False),
-                        content_type='application/json')
+            dataset_query.delete()
+            return HttpResponse(status=200,
+                            content=json.dumps(
+                                {
+                                    "header": header,
+                                    "results": results
+                                }, sort_keys=False),
+                            content_type='application/json')
+        else:
+            return page500(request)
     else:
         return page403(request)
 
