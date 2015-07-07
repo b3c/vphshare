@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.core.cache import cache
 
 from masterinterface.scs_resources.models import Resource
 
@@ -15,13 +16,7 @@ import xml.dom.minidom as dom
 from urlparse import urlparse
 import logging
 
-logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-#
-fileHandler = logging.FileHandler("{0}/{1}.log".format("/tmp", __name__))
-fileHandler.setFormatter(logFormatter)
-logger.addHandler(fileHandler)
+logger = logging.getLogger()
 
 fake_csv = """"date_of_birth","waist","smoker","FixedIM","gender","MovedIM","First_Name","weight","Last_Name","country","address","PatientID","autoid"
 NULL,38.65964957,2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0320.dcm",2,"C:\Users\smwood\Work\Y3Review\dicom\IM_0408.dcm","Dalton",51.98509226,"Coleman","Virgin Islands, British","Ap #700-2897 Dolor, Road","jRRhMftJ2qtV2Uco9C/E9/nUhqA=",1
@@ -58,11 +53,12 @@ class DatasetQuery(models.Model):
         for guid in rel_guids:
             ds = Resource.objects.get(global_id=guid[0])
             ds.load_additional_metadata(ticket)
-            (paddress, dbname) = _url_parse(ds.metadata["localID"])
-            ds.metadata["publishaddress"] = paddress
-            ds.metadata["dbname"] = dbname
-            ds.metadata["sharedsubjects"] = guid[1]
-            rel_dss.append(ds)
+            if ds.metadata is not None:
+                (paddress, dbname) = _url_parse(ds.metadata["localID"])
+                ds.metadata["publishaddress"] = paddress
+                ds.metadata["dbname"] = dbname
+                ds.metadata["sharedsubjects"] = guid[1]
+                rel_dss.append(ds)
 
         return (rel_guids,rel_dss)
 
@@ -94,8 +90,6 @@ class DatasetQuery(models.Model):
                 if len(dss_tmp) > 0:
                     dss = dss_tmp
 
-                logger.debug(str(dss))
-
             except Exception, e:
                 logger.exception(e)
 
@@ -112,13 +106,8 @@ class DatasetQuery(models.Model):
         """
         json_query = json.loads(self.query)
 
-        logger.debug("send_query client json " + str(json_query))
-
         (_test, rel_datasets) = \
             self.send_data_intersect_summary_with_metadata(ticket)
-
-
-        logger.debug("send_query rel dbs " + str(_test))
 
         dataset = [ el for el in rel_datasets if el.global_id == self.global_id ]
         data = {
@@ -128,39 +117,46 @@ class DatasetQuery(models.Model):
             "where": json_query["where"]
         }
 
-        logger.debug("send_query data to render " + str(data))
-
         if settings.FEDERATE_QUERY_SOAP_URL:
-            xml_query = render_to_response("datasets/query_template.xml", data)
+            try:
+                key = _get_hash_key(str(self.global_id),
+                        str(sorted(_test)),
+                        str(sorted(json_query.items())) )
 
-            logger.debug("send_query xml_query " + str(xml_query))
+                from_cache = cache.get(key)
+                if from_cache is None:
 
-            results = requests.post(
-                        "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
-                          data=xml_query.content,
-                          auth=("admin", ticket),
-                          headers = {'content-type': 'text/xml', 
-                                    'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
-                          verify=False
-            ).content
+                    xml_query = render_to_response("datasets/query_template.xml", data)
 
-            logger.debug("send_query results " + str(results))
+                    results = requests.post(
+                                "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
+                                  data=xml_query.content,
+                                  auth=("admin", ticket),
+                                  headers = {'content-type': 'text/xml', 
+                                            'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
+                                  verify=False
+                    ).content
 
-            # parsing xml like dom to get result
-            root = dom.parseString(results)
-            cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
-                    childNodes[0].\
-                    data.\
-                    strip()
+                    # parsing xml like dom to get result
+                    root = dom.parseString(results)
+                    cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
+                            childNodes[0].\
+                            data.\
+                            strip()
 
-            # removing alot EOLs
-            cached_results = cached_results.rstrip('\r\n')
+                    # removing alot EOLs
+                    cached_results = cached_results.rstrip('\r\n')
+                    cache.set(key,cached_results,300)
 
-            logger.debug("send_query results " + str(cached_results))
+                    return cached_results
 
-            if len(cached_results.split("\n")) > 1:
-                return cached_results
-            else:
+                else:
+                    return from_cache
+
+            except Exception, e:
+                logger.exception(e)
+
+            finally:
                 return ""
 
         else:
@@ -171,25 +167,34 @@ class DatasetQuery(models.Model):
     def get_header(self, ticket):
         csv_results = self.send_query(ticket)
 
-        logger.debug("get_results header " + str(csv_results))
+        if csv_results:
+            reader = csv.reader(StringIO.StringIO(csv_results))
+            header = [el for el in reader]
+            return header[0]
 
-        return csv.reader(StringIO.StringIO(csv_results)).next()
+        else:
+            return []
 
     def get_results(self, ticket):
         csv_results = csv.reader(StringIO.StringIO(self.send_query(ticket)))
-        logger.debug("get_results data " + str(csv_results))
-        #ignore the first header row
-        csv_results.next()
-        return [ row for row in csv_results ]
+
+        if csv_results:
+            #ignore the first header row
+            csv_results.next()
+            data = [ row for row in csv_results ]
+            return data
+        else:
+            return []
 
     def get_results_number(self, ticket):
         """
         """
         csv_results = self.send_query(ticket)
-
-        logger.debug("get_results number " + str(csv_results))
-
-        return len(StringIO.StringIO(csv_results).readlines())
+        
+        if csv_results:
+            return len(StringIO.StringIO(csv_results).readlines())
+        else:
+            return 0
 
 
 def _url_parse(uri):
@@ -202,3 +207,7 @@ def _url_parse(uri):
     path = p_uri.path.rstrip('/').strip('/')
 
     return (host,path)
+
+def _get_hash_key(data, *args):
+    """get sha1 sum hexdigest for a string"""
+    return hl.sha1( ":".join([data] + [el for el in args]) ).hexdigest()
