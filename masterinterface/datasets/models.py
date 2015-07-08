@@ -72,28 +72,39 @@ class DatasetQuery(models.Model):
         dss_tmp = []
 
         if settings.FEDERATE_QUERY_URL:
-            try:
-                results = requests.post("%s/DataIntersectSummary" % 
-                            (settings.FEDERATE_QUERY_URL,) ,
-                              data="datasetGUID=%s" % (dataset_id,),
-                              auth=("admin", ticket),
-                              headers = {'content-type': 'application/x-www-form-urlencoded'},
-                              verify=False
-                              ).content
 
-                # xml parsing
-                xml_tree = objectify.fromstring(results)
-                dss_tmp = list(set(dss_tmp).union( [ ( el.text.split("|")[0],el.text.split("|")[1] ) \
-                                                    for el in xml_tree.string \
-                                                        if xml_tree.countchildren() > 0 ]))
-                
-                if len(dss_tmp) > 0:
-                    dss = dss_tmp
+            # getting from cache
+            key = _get_hash_key("fq:", str(self.global_id), str(ticket))
+            from_cache = cache.get(key)
 
-            except Exception, e:
-                logger.exception(e)
+            if from_cache is None:
+                try:
+                    results = requests.post("%s/DataIntersectSummary" % 
+                                (settings.FEDERATE_QUERY_URL,) ,
+                                  data="datasetGUID=%s" % (dataset_id,),
+                                  auth=("admin", ticket),
+                                  headers = {'content-type': 'application/x-www-form-urlencoded'},
+                                  verify=False
+                                  ).content
 
-            finally:
+                    # xml parsing
+                    xml_tree = objectify.fromstring(results)
+                    dss_tmp = list(set(dss_tmp).union( [ ( el.text.split("|")[0],el.text.split("|")[1] ) \
+                                                        for el in xml_tree.string \
+                                                            if xml_tree.countchildren() > 0 ]))
+                    
+                    if len(dss_tmp) > 0:
+                        dss = dss_tmp
+                        cache.set(key,dss,300)
+
+                except Exception, e:
+                    logger.exception(e)
+
+                finally:
+                    return dss
+
+            else:
+                dss = from_cache
                 return dss
 
         else:
