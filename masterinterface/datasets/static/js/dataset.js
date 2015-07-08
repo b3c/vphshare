@@ -417,7 +417,7 @@
                             if (data === undefined)
                                 return data;
                             if (data.indexOf("https://lobcder.vph.cyfronet.pl/lobcder/dav/") > -1){
-								return "<a target='blank' href='"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav","/filestore#show?")+"'>"+data"</a>";
+								return "<a target='blank' href='"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav","/filestore#show?")+"'>"+data+"</a>";
                                 /*return "<a target='blank' href='"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav","/filestore#show?")+"'>"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav/","lobcder://")+"</a>";*/
                             }
                             else if (data.indexOf("http") > -1) {
