@@ -79,7 +79,7 @@ class DatasetQuery(models.Model):
 
             if from_cache is None:
                 try:
-                    results = requests.post("%s/DataIntersectSummary" % 
+                    results = requests.post("%s/DataIntersectSummary" %
                                 (settings.FEDERATE_QUERY_URL,) ,
                                   data="datasetGUID=%s" % (dataset_id,),
                                   auth=("admin", ticket),
@@ -92,7 +92,7 @@ class DatasetQuery(models.Model):
                     dss_tmp = list(set(dss_tmp).union( [ ( el.text.split("|")[0],el.text.split("|")[1] ) \
                                                         for el in xml_tree.string \
                                                             if xml_tree.countchildren() > 0 ]))
-                    
+
                     if len(dss_tmp) > 0:
                         dss = dss_tmp
                         cache.set(key,dss,300)
@@ -199,7 +199,7 @@ class DatasetQuery(models.Model):
         """
         """
         csv_results = self.send_query(ticket)
-        
+
         if csv_results:
             return len(StringIO.StringIO(csv_results).readlines())
         else:
