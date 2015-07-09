@@ -251,8 +251,8 @@ def _check_if_simple_query(query):
     """if query contains only 1 dataset then function return True
     otherwise return False
     """
-    datasets_used = set( [ el["datasetname"] for el in query["select"] ] +
-        [ el["datasetname"] for el in query["where"] ] )
+    datasets_used = set( [ el["datasetname"] for el in query["select"] if "select" in query ] +
+        [ el["datasetname"] for el in query["where"] if "where" in query ] )
 
     return len(datasets_used) == 1
 
