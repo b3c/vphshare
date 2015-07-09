@@ -104,8 +104,8 @@ def get_results(request):
         return HttpResponse(status=200,
                         content=json.dumps(
                             {
-                                "header": data[0],
-                                "results": data[1:]
+                                "header": data[0] if len(data) > 0 else [],
+                                "results": data[1:] if len(data) > 0 else []
                             }, sort_keys=False),
                         content_type='application/json')
     else:
