@@ -135,28 +135,9 @@ class DatasetQuery(models.Model):
                         str(sorted(json_query.items())) )
 
                 from_cache = cache.get(key)
+
                 if from_cache is None:
-
-                    xml_query = render_to_response("datasets/query_template.xml", data)
-
-                    results = requests.post(
-                                "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
-                                  data=xml_query.content,
-                                  auth=("admin", ticket),
-                                  headers = {'content-type': 'text/xml', 
-                                            'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
-                                  verify=False
-                    ).content
-
-                    # parsing xml like dom to get result
-                    root = dom.parseString(results)
-                    cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
-                            childNodes[0].\
-                            data.\
-                            strip()
-
-                    # removing alot EOLs
-                    cached_results = cached_results.rstrip('\r\n')
+                    cached_results = self._query_request(ticket, json_query, data)
                     cache.set(key,cached_results,300)
 
                     return cached_results
@@ -216,6 +197,64 @@ class DatasetQuery(models.Model):
         else:
             return []
 
+    def _query_request(self, ticket, query_dict, data):
+        """request single query or fed query
+            returns request .content response
+        """
+        results = ""
+        if _check_if_simple_query(query_dict):
+            xml_query = render_to_response("datasets/query_single_template.xml", data)
+
+            single_dataset = data["dataset"]
+            if single_dataset.metadata["localID"][-1] != "/":
+                single_dataset.metadata["localID"] = single_dataset.metadata["localID"] + "/"
+
+            results = requests.post(
+                    "%sxmlquery/DatasetSOAPQuery.asmx" % (single_dataset.metadata["localID"],),
+                    data=xml_query.content,
+                    auth=("admin", ticket),
+                    headers = {'content-type': 'text/xml',
+                        'SOAPAction': 'http://vph-share.eu/dms/Query'},
+                    verify=False
+                    ).content
+
+            # parsing xml like dom to get result
+            root = dom.parseString(results)
+            results = root.getElementsByTagName("QueryResult")[0].\
+                    childNodes[0].\
+                    data.\
+                    strip().rstrip('\r\n')
+
+        else:
+            xml_query = render_to_response("datasets/query_template.xml", data)
+
+            results = requests.post(
+                    "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
+                    data=xml_query.content,
+                    auth=("admin", ticket),
+                    headers = {'content-type': 'text/xml',
+                        'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
+                    verify=False
+                    ).content
+
+            root = dom.parseString(results)
+            results = root.getElementsByTagName("FederatedQueryResult")[0].\
+                    childNodes[0].\
+                    data.\
+                    strip().rstrip('\r\n')
+
+        # happy return
+        return results
+
+
+def _check_if_simple_query(query):
+    """if query contains only 1 dataset then function return True
+    otherwise return False
+    """
+    datasets_used = set( [ el["datasetname"] for el in query["select"] ] +
+        [ el["datasetname"] for el in query["where"] ] )
+
+    return len(datasets_used) == 1
 
 def _url_parse(uri):
     """ return tuple (host, 1st path without slash )"""

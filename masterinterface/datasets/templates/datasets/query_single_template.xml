@@ -1,0 +1,50 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Query xmlns="http://vph-share.eu/dms/">
+      <doc><query guid="7e07e87c-07b2-4502-bdd9-9d84484a5640" name="7d0d68fb-be8a-438e-9721-7c0c3169ee10" xmlns="">
+        <select>
+          {% for field in select %}
+          <selectitem returnas="{%  if field.displayAs  == "" %}{{ field.name }}{% else %}{{ field.displayAs }}{% endif %}">
+              <field fieldname="{{ field.name }}" publishaddress="{{ field.publishaddress }}" dbname="{{ field.dbname }}" tablename="{{ field.tablename }}" type="{{ field.type }}"/>
+          </selectitem>
+          {% endfor %}
+        </select>
+        <where>
+          {% for conditions in where %}
+              {% if conditions.connector == "and" %}
+              <qlogicop operator="AND"/>
+              {% elif conditions.connector == "or" %}
+              <qlogicop operator="OR"/>
+              {% endif %}
+              {% if not conditions.group|length_is:1 %}
+              <qgroup>
+              {% endif %}
+              {% for operation in conditions.group %}
+                  {% if operation.connector == "and" %}
+                  <qlogicop operator="AND"/>
+                  {% elif operation.connector == "or" %}
+                  <qlogicop operator="OR"/>
+                  {% endif %}
+                  <qrelop operator="{% if operation.operator == 'isnull' %}={% elif operation.operator == 'isnotnull' %}NOT={% else %}{{ operation.operator }}{% endif %}">
+                      <leftnode>
+                          <field fieldname="{{ operation.name }}" publishaddress="{{ operation.publishaddress }}" dbname="{{ operation.dbname }}" tablename="{{ operation.tablename }}" type="{{ operation.type }}"/>
+                      </leftnode>
+                      {% if operation.operator == 'isnull' or operation.operator == 'isnotnull' %}
+                          <rightnode ><qvalue type="numeric" isnull="true">0</qvalue></rightnode>
+                      {% else %}
+                          <rightnode>
+                          <qvalue type="{{ operation.valueType }}">{{ operation.value }}</qvalue>
+                          </rightnode>
+                      {% endif %}
+                  </qrelop>
+              {% endfor %}
+              {% if not conditions.group|length_is:1 %}
+              </qgroup>
+              {% endif %}
+          {% endfor %}
+        </where>
+        </query>
+      </doc>
+    </Query>
+  </s:Body>
+</s:Envelope>
