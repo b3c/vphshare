@@ -309,11 +309,11 @@
             return false;
         }
 
-        if (self.$root.find('#where > .condition:not(.new-condition)').length == 0){
+        /*if (self.$root.find('#where > .condition:not(.new-condition)').length == 0){
             $("#where-message-error").text("Please, define at least one -where- condition.").fadeIn().delay(5000).slideUp();
             $('#myTab a:last').tab('show');
             return false;
-        }
+        }*/
 
         var errors = self.$root.find("input,select,textarea").jqBootstrapValidation("collectErrors");
         for (key in errors){
@@ -417,7 +417,8 @@
                             if (data === undefined)
                                 return data;
                             if (data.indexOf("https://lobcder.vph.cyfronet.pl/lobcder/dav/") > -1){
-                                return "<a target='blank' href='"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav","/filestore#show?")+"'>"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav/","lobcder://")+"</a>";
+								return "<a target='blank' href='"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav","/filestore#show?")+"'>"+data+"</a>";
+                                /*return "<a target='blank' href='"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav","/filestore#show?")+"'>"+data.replace("https://lobcder.vph.cyfronet.pl/lobcder/dav/","lobcder://")+"</a>";*/
                             }
                             else if (data.indexOf("http") > -1) {
                                 return "<a target='blank' href='"+data+"'>"+data+"</a>";

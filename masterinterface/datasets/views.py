@@ -101,13 +101,23 @@ def get_results(request):
         data = dataset_query.get_query_data(request.ticket)
 
         dataset_query.delete()
-        return HttpResponse(status=200,
-                        content=json.dumps(
-                            {
-                                "header": data[0],
-                                "results": data[1:]
-                            }, sort_keys=False),
-                        content_type='application/json')
+
+        if data and len(data) > 0:
+            return HttpResponse(status=200,
+                            content=json.dumps(
+                                {
+                                    "header": data[0],
+                                    "results": data[1:]
+                                }, sort_keys=False),
+                            content_type='application/json')
+        else:
+            return HttpResponse(status=500,
+                            content=json.dumps(
+                                {
+                                    "message": "query response is empty",
+                                }, sort_keys=False),
+                            content_type='application/json')
+
     else:
         return page403(request)
 
