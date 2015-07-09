@@ -251,10 +251,9 @@ def _check_if_simple_query(query):
     """if query contains only 1 dataset then function return True
     otherwise return False
     """
-    datasets_used = set( [ el["datasetname"] for el in query["select"] if "select" in query ] +
-        [ el["datasetname"] for el in query["where"] if "where" in query ] )
-
-    return len(datasets_used) == 1
+    return len(set( [ el["datasetname"] for el in query["select"] if "select" in query ] +
+        [ el["datasetname"] for el["group"] in
+            [ el for el in query["where"] if "where" in query ] ] ) ) == 1
 
 def _url_parse(uri):
     """ return tuple (host, 1st path without slash )"""

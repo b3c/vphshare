@@ -102,7 +102,7 @@ def get_results(request):
 
         dataset_query.delete()
 
-        if len(data) > 0:
+        if data and len(data) > 0:
             return HttpResponse(status=200,
                             content=json.dumps(
                                 {
