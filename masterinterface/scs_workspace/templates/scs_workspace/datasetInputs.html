@@ -6,8 +6,8 @@
             <thead>
                 <tr>
                     <th> #</th>
-                    <th>Workflow input filed</th>
-                    <th>Dataset result filed</th>
+                    <th>Workflow input field</th>
+                    <th>Dataset result field</th>
                 </tr>
             </thead>
                 {% for input in workflow_input %}<tr><td>{{ forloop.counter }}</td><td>{{ input }}</td><td><select name="{{ input }}">{% for select in query_header %}<option value="{{ select }}">{{ select }}</option>{% endfor %}</select></td></tr>{% endfor %}
