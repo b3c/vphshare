@@ -14,6 +14,7 @@ import hashlib as hl
 from lxml import etree, objectify
 import xml.dom.minidom as dom
 from urlparse import urlparse
+import itertools
 import logging
 
 logger = logging.getLogger()
@@ -251,9 +252,11 @@ def _check_if_simple_query(query):
     """if query contains only 1 dataset then function return True
     otherwise return False
     """
+    flatted = list(itertools.chain.from_iterable(
+        [ el["group"] for el in query["where"] if "where" in query ] ) )
+
     return len(set( [ el["datasetname"] for el in query["select"] if "select" in query ] +
-        [ el["datasetname"] for el["group"] in
-            [ el for el in query["where"] if "where" in query ] ] ) ) == 1
+        [ el["datasetname"] for el["group"] in flatted ] ) ) == 1
 
 def _url_parse(uri):
     """ return tuple (host, 1st path without slash )"""
