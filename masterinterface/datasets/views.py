@@ -95,12 +95,8 @@ def get_results(request):
         global_id = request.POST['globalID']
         json_query = request.POST['query']
         dataset_query = DatasetQuery(query=json_query, global_id=global_id)
-        dataset_query.save()
-        dataset_query.user.add(request.user)
 
         data = dataset_query.get_query_data(request.ticket)
-
-        dataset_query.delete()
 
         if data and len(data) > 0:
             return HttpResponse(status=200,
