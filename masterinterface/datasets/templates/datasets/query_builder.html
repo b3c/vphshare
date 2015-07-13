@@ -168,7 +168,7 @@
             <li><a href="#saveas-query-modal"  role="button"   data-toggle="modal">Save as new query</a></li>
             {% if query_list %}<li class="divider"></li> {% endif %}
             {% for query in query_list %}
-                <li class="query-list" data-queryid="{{ query.id }}" data-name="{{ query.name }}" ><a style="display: inline-block;" href="/query_builder/{{ dataset.global_id }}/?q={{ query.id }}">{{ query.name }}</a> <button type="button" class="close delete-query" data-dismiss="alert" data-toggle="tooltip" title="Remove query" data-placement="right"  data-trigger="hover focus click" data-container="body" style="padding-right: 10px;display: inline-block;">&times;</button></li>
+                <li class="query-list" data-queryid="{{ query.id }}" data-name="{{ query.name }}" ><a style="display: inline-block;" href="/query_builder/{{ query.global_id }}/?q={{ query.id }}">{{ query.name }}</a> <button type="button" class="close delete-query" data-dismiss="alert" data-toggle="tooltip" title="Remove query" data-placement="right"  data-trigger="hover focus click" data-container="body" style="padding-right: 10px;display: inline-block;">&times;</button></li>
             {% endfor %}
           </ul>
         </div>

@@ -63,7 +63,7 @@ def query_builder(request, global_id):
                 'datasets/query_builder.html',
                 {'dataset': dataset ,
                     "query_to_load": query_to_load,
-                    "query_list":request.user.datasetquery_set.filter(global_id=global_id),
+                    "query_list":request.user.datasetquery_set.all(),
                     "endpoint":endpoint,
                     "rel_datasets": rel_datasets,
                 },
