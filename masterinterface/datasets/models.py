@@ -14,6 +14,7 @@ import hashlib as hl
 from lxml import etree, objectify
 import xml.dom.minidom as dom
 from urlparse import urlparse
+import itertools
 import logging
 
 logger = logging.getLogger()
@@ -72,28 +73,39 @@ class DatasetQuery(models.Model):
         dss_tmp = []
 
         if settings.FEDERATE_QUERY_URL:
-            try:
-                results = requests.post("%s/DataIntersectSummary" % 
-                            (settings.FEDERATE_QUERY_URL,) ,
-                              data="datasetGUID=%s" % (dataset_id,),
-                              auth=("admin", ticket),
-                              headers = {'content-type': 'application/x-www-form-urlencoded'},
-                              verify=False
-                              ).content
 
-                # xml parsing
-                xml_tree = objectify.fromstring(results)
-                dss_tmp = list(set(dss_tmp).union( [ ( el.text.split("|")[0],el.text.split("|")[1] ) \
-                                                    for el in xml_tree.string \
-                                                        if xml_tree.countchildren() > 0 ]))
-                
-                if len(dss_tmp) > 0:
-                    dss = dss_tmp
+            # getting from cache
+            key = _get_hash_key("fq:", str(self.global_id), str(ticket))
+            from_cache = cache.get(key)
 
-            except Exception, e:
-                logger.exception(e)
+            if from_cache is None:
+                try:
+                    results = requests.post("%s/DataIntersectSummary" %
+                                (settings.FEDERATE_QUERY_URL,) ,
+                                  data="datasetGUID=%s" % (dataset_id,),
+                                  auth=("admin", ticket),
+                                  headers = {'content-type': 'application/x-www-form-urlencoded'},
+                                  verify=False
+                                  ).content
 
-            finally:
+                    # xml parsing
+                    xml_tree = objectify.fromstring(results)
+                    dss_tmp = list(set(dss_tmp).union( [ ( el.text.split("|")[0],el.text.split("|")[1] ) \
+                                                        for el in xml_tree.string \
+                                                            if xml_tree.countchildren() > 0 ]))
+
+                    if len(dss_tmp) > 0:
+                        dss = dss_tmp
+                        cache.set(key,dss,300)
+
+                except Exception, e:
+                    logger.exception(e)
+
+                finally:
+                    return dss
+
+            else:
+                dss = from_cache
                 return dss
 
         else:
@@ -124,28 +136,9 @@ class DatasetQuery(models.Model):
                         str(sorted(json_query.items())) )
 
                 from_cache = cache.get(key)
+
                 if from_cache is None:
-
-                    xml_query = render_to_response("datasets/query_template.xml", data)
-
-                    results = requests.post(
-                                "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
-                                  data=xml_query.content,
-                                  auth=("admin", ticket),
-                                  headers = {'content-type': 'text/xml', 
-                                            'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
-                                  verify=False
-                    ).content
-
-                    # parsing xml like dom to get result
-                    root = dom.parseString(results)
-                    cached_results = root.getElementsByTagName("FederatedQueryResult")[0].\
-                            childNodes[0].\
-                            data.\
-                            strip()
-
-                    # removing alot EOLs
-                    cached_results = cached_results.rstrip('\r\n')
+                    cached_results = self._query_request(ticket, json_query, data)
                     cache.set(key,cached_results,300)
 
                     return cached_results
@@ -188,7 +181,7 @@ class DatasetQuery(models.Model):
         """
         """
         csv_results = self.send_query(ticket)
-        
+
         if csv_results:
             return len(StringIO.StringIO(csv_results).readlines())
         else:
@@ -205,6 +198,65 @@ class DatasetQuery(models.Model):
         else:
             return []
 
+    def _query_request(self, ticket, query_dict, data):
+        """request single query or fed query
+            returns request .content response
+        """
+        results = ""
+        if _check_if_simple_query(query_dict):
+            xml_query = render_to_response("datasets/query_single_template.xml", data)
+
+            single_dataset = data["dataset"]
+            if single_dataset.metadata["localID"][-1] != "/":
+                single_dataset.metadata["localID"] = single_dataset.metadata["localID"] + "/"
+
+            results = requests.post(
+                    "%sxmlquery/DatasetSOAPQuery.asmx" % (single_dataset.metadata["localID"],),
+                    data=xml_query.content,
+                    auth=("admin", ticket),
+                    headers = {'content-type': 'text/xml',
+                        'SOAPAction': 'http://vph-share.eu/dms/Query'},
+                    verify=False
+                    ).content
+
+            # parsing xml like dom to get result
+            root = dom.parseString(results)
+            results = root.getElementsByTagName("QueryResult")[0].\
+                    childNodes[0].\
+                    data.\
+                    strip().rstrip('\r\n')
+
+        else:
+            xml_query = render_to_response("datasets/query_template.xml", data)
+
+            results = requests.post(
+                    "%s/xmlquery/DatasetSOAPQuery.asmx" % (settings.FEDERATE_QUERY_SOAP_URL,),
+                    data=xml_query.content,
+                    auth=("admin", ticket),
+                    headers = {'content-type': 'text/xml',
+                        'SOAPAction': 'http://vph-share.eu/dms/FederatedQuery'},
+                    verify=False
+                    ).content
+
+            root = dom.parseString(results)
+            results = root.getElementsByTagName("FederatedQueryResult")[0].\
+                    childNodes[0].\
+                    data.\
+                    strip().rstrip('\r\n')
+
+        # happy return
+        return results
+
+
+def _check_if_simple_query(query):
+    """if query contains only 1 dataset then function return True
+    otherwise return False
+    """
+    flatted = list(itertools.chain.from_iterable(
+        [ el["group"] for el in query["where"] if "where" in query ] ) )
+
+    return len(set( [ el["datasetname"] for el in query["select"] if "select" in query ] +
+        [ el["datasetname"] for el["group"] in flatted ] ) ) == 1
 
 def _url_parse(uri):
     """ return tuple (host, 1st path without slash )"""
