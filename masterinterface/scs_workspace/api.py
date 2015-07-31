@@ -310,3 +310,47 @@ class WfMngApiHandler(BaseHandler):
         except Exception, e:
             client.captureException()
             return rc.INTERNAL_ERROR
+
+class GCMngApiHandler(BaseHandler):
+    """
+    REST service based on Django-Piston Library
+    """
+
+    def create(self, request, cache_namespace=None, cache_key=None, *args, **kwargs):
+        ticket = __check_header_ticket(request)
+
+        if ticket is not None:
+            # code inside
+            pass
+        else:
+            return rc.FORBIDDEN
+
+    def read(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
+        pass
+
+    def update(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
+        pass
+
+    def delete(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
+        pass
+
+def __check_header_ticket (req):
+    ticket = None
+
+    try:
+        client_address = req.META['REMOTE_ADDR']
+        ticket = req.META.get('HTTP_MI_TICKET', '')
+        if ticket:
+            try:
+                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+            except Exception:
+                ticket = None
+        else:
+            ticket = None
+
+    except Exception:
+        client.captureException()
+        ticket = None
+
+    finally:
+        return ticket
