@@ -15,11 +15,17 @@ from piston.utils import rc
 # import the logging library
 import logging
 
+import redis
+import pickle
+import hashlib as hl
+import json
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 EMPTY_BACLAVA = '<?xml version="1.0" encoding="UTF-8"?><b:dataThingMap xmlns:b="http://org.embl.ebi.escience/baclava/0.1alpha"></b:dataThingMap>'
 
+gc_pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
 class workflows_api(BaseHandler):
     """
         REST service based on Django-Piston Library.\n
@@ -302,7 +308,7 @@ class WfMngApiHandler(BaseHandler):
                     pass #return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
-            if wfrun_id is not None:                
+            if wfrun_id is not None:
                 taverna_execution = TavernaExecution.objects.get(pk=wfrun_id, ticket=ticket)
                 if taverna_execution.delete(ticket = ticket):
                     return True
@@ -310,3 +316,113 @@ class WfMngApiHandler(BaseHandler):
         except Exception, e:
             client.captureException()
             return rc.INTERNAL_ERROR
+
+class GCMngApiHandler(BaseHandler):
+    """
+    REST service based on Django-Piston Library
+    """
+    allowed_methods = ('GET','PUT','DELETE')
+
+    def read(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
+        ticket = _check_header_ticket(request)
+
+        if ticket is not None:
+            r = _get_rcache()
+            key = _get_hash_key(cache_namespace, cache_key)
+            if r and key:
+                data = r.get(key)
+                if data is not None:
+                    return pickle.loads(data)
+                else:
+                    return rc.NOT_FOUND
+            else:
+                return rc.NOT_FOUND
+        else:
+            return rc.FORBIDDEN
+
+    def update(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
+        ticket = _check_header_ticket(request)
+        ttl = _check_header_ttl(request)
+
+        if ticket is not None:
+            r = _get_rcache()
+            key = _get_hash_key(cache_namespace, cache_key)
+
+            if r and key:
+                tmp = r.get(key)
+                tmp = pickle.loads(tmp) if tmp is not None else None
+
+                if tmp is not None and tmp['meta']['owner'] != ticket[1].username:
+                    return rc.FORBIDDEN
+
+                data = { 'meta': { 'owner': ticket[1].username }}
+                try:
+                    data['data'] = json.loads(str(request.body))
+                    r.setex(key,pickle.dumps(data),ttl)
+
+                except Exception, e:
+                    data['error'] = { 'type': 'error', 'msg': str(e) }
+
+                return data
+            else:
+                return rc.NOT_FOUND
+
+        else:
+            return rc.FORBIDDEN
+
+    def delete(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
+        ticket = _check_header_ticket(request)
+
+        if ticket is not None:
+            r = _get_rcache()
+            key = _get_hash_key(cache_namespace, cache_key)
+
+            if r and key:
+                tmp = r.get(key)
+                tmp = pickle.loads(tmp) if tmp is not None else None
+
+                if tmp is not None and tmp['meta']['owner'] != ticket[1].username:
+                    return rc.FORBIDDEN
+
+                r.delete(key)
+                return rc.DELETED
+            else:
+                return rc.NOT_FOUND
+        else:
+            return rc.FORBIDDEN
+
+def _check_header_ticket(req):
+    ticket = None
+
+    try:
+        client_address = req.META['REMOTE_ADDR']
+        tkt = req.META.get('HTTP_MI_TICKET', '')
+        if tkt:
+            try:
+                usr, tkt64 = authenticate(ticket=tkt, cip=client_address)
+                ticket = (tkt,usr)
+
+            except Exception:
+                ticket = None
+        else:
+            ticket = None
+
+    except Exception:
+        client.captureException()
+        ticket = None
+
+    finally:
+        return ticket
+
+def _check_header_ttl(req):
+    """GC_TTL: in seconds, defaults to 86400secs - 1d"""
+    return req.META.get('HTTP_GC_TTL', '86400')
+
+def _get_rcache(pool=gc_pool):
+    """returns selected cache."""
+    cc = redis.Redis(connection_pool=pool)
+    return cc
+
+def _get_hash_key(data, *args):
+    """get sha1 sum hexdigest for a string"""
+    return hl.sha1( ":".join([data] + [el for el in args]) ).hexdigest()
