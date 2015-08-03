@@ -16,6 +16,7 @@ from piston.utils import rc
 import logging
 
 import redis
+import pickle
 import hashlib as hl
 import json
 
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 EMPTY_BACLAVA = '<?xml version="1.0" encoding="UTF-8"?><b:dataThingMap xmlns:b="http://org.embl.ebi.escience/baclava/0.1alpha"></b:dataThingMap>'
 
-gc_pool = redis.ConnectionPool(host='localhost')
+gc_pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
 class workflows_api(BaseHandler):
     """
         REST service based on Django-Piston Library.\n
@@ -331,7 +332,7 @@ class GCMngApiHandler(BaseHandler):
             if r and key:
                 data = r.get(key)
                 if data is not None:
-                    return { 'data': data }
+                    return pickle.loads(data)
                 else:
                     return rc.NOT_FOUND
             else:
@@ -346,10 +347,23 @@ class GCMngApiHandler(BaseHandler):
         if ticket is not None:
             r = _get_rcache()
             key = _get_hash_key(cache_namespace, cache_key)
+
             if r and key:
-                data = json.loads(request.data)
-                r.setex(key,data,ttl)
-                return { 'data': data }
+                tmp = r.get(key)
+                tmp = pickle.loads(tmp) if tmp is not None else None
+
+                if tmp is not None and tmp['meta']['owner'] != ticket[1].username:
+                    return rc.FORBIDDEN
+
+                data = { 'meta': { 'owner': ticket[1].username }}
+                try:
+                    data['data'] = json.loads(str(request.body))
+                    r.setex(key,pickle.dumps(data),ttl)
+
+                except Exception, e:
+                    data['error'] = { 'type': 'error', 'msg': str(e) }
+
+                return data
             else:
                 return rc.NOT_FOUND
 
@@ -362,7 +376,14 @@ class GCMngApiHandler(BaseHandler):
         if ticket is not None:
             r = _get_rcache()
             key = _get_hash_key(cache_namespace, cache_key)
+
             if r and key:
+                tmp = r.get(key)
+                tmp = pickle.loads(tmp) if tmp is not None else None
+
+                if tmp is not None and tmp['meta']['owner'] != ticket[1].username:
+                    return rc.FORBIDDEN
+
                 r.delete(key)
                 return rc.DELETED
             else:
@@ -375,10 +396,12 @@ def _check_header_ticket(req):
 
     try:
         client_address = req.META['REMOTE_ADDR']
-        ticket = req.META.get('HTTP_MI_TICKET', '')
-        if ticket:
+        tkt = req.META.get('HTTP_MI_TICKET', '')
+        if tkt:
             try:
-                user, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                usr, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                ticket = (tkt,usr)
+
             except Exception:
                 ticket = None
         else:
@@ -393,7 +416,7 @@ def _check_header_ticket(req):
 
 def _check_header_ttl(req):
     """GC_TTL: in seconds, defaults to 86400secs - 1d"""
-    return req.META.get('GC_TTL', '86400')
+    return req.META.get('HTTP_GC_TTL', '86400')
 
 def _get_rcache(pool=gc_pool):
     """returns selected cache."""
