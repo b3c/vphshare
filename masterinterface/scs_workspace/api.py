@@ -399,7 +399,7 @@ def _check_header_ticket(req):
         tkt = req.META.get('HTTP_MI_TICKET', '')
         if tkt:
             try:
-                usr, tkt64 = authenticate(ticket=ticket, cip=client_address)
+                usr, tkt64 = authenticate(ticket=tkt, cip=client_address)
                 ticket = (tkt,usr)
 
             except Exception:
