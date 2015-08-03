@@ -15,11 +15,16 @@ from piston.utils import rc
 # import the logging library
 import logging
 
+import redis
+import hashlib as hl
+import json
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 EMPTY_BACLAVA = '<?xml version="1.0" encoding="UTF-8"?><b:dataThingMap xmlns:b="http://org.embl.ebi.escience/baclava/0.1alpha"></b:dataThingMap>'
 
+gc_pool = redis.ConnectionPool(host='localhost')
 class workflows_api(BaseHandler):
     """
         REST service based on Django-Piston Library.\n
@@ -302,7 +307,7 @@ class WfMngApiHandler(BaseHandler):
                     pass #return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
-            if wfrun_id is not None:                
+            if wfrun_id is not None:
                 taverna_execution = TavernaExecution.objects.get(pk=wfrun_id, ticket=ticket)
                 if taverna_execution.delete(ticket = ticket):
                     return True
@@ -315,26 +320,57 @@ class GCMngApiHandler(BaseHandler):
     """
     REST service based on Django-Piston Library
     """
+    allowed_methods = ('GET','PUT','DELETE')
 
-    def create(self, request, cache_namespace=None, cache_key=None, *args, **kwargs):
-        ticket = __check_header_ticket(request)
+    def read(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
+        ticket = _check_header_ticket(request)
 
         if ticket is not None:
-            # code inside
-            pass
+            r = _get_rcache()
+            key = _get_hash_key(cache_namespace, cache_key)
+            if r and key:
+                data = r.get(key)
+                if data is not None:
+                    return { 'data': data }
+                else:
+                    return rc.NOT_FOUND
+            else:
+                return rc.NOT_FOUND
         else:
             return rc.FORBIDDEN
 
-    def read(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
-        pass
-
     def update(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
-        pass
+        ticket = _check_header_ticket(request)
+        ttl = _check_header_ttl(request)
+
+        if ticket is not None:
+            r = _get_rcache()
+            key = _get_hash_key(cache_namespace, cache_key)
+            if r and key:
+                data = json.loads(request.data)
+                r.setex(key,data,ttl)
+                return { 'data': data }
+            else:
+                return rc.NOT_FOUND
+
+        else:
+            return rc.FORBIDDEN
 
     def delete(self, request, cache_namespace=None, cache_key=None,  *args, **kwargs):
-        pass
+        ticket = _check_header_ticket(request)
 
-def __check_header_ticket (req):
+        if ticket is not None:
+            r = _get_rcache()
+            key = _get_hash_key(cache_namespace, cache_key)
+            if r and key:
+                r.delete(key)
+                return rc.DELETED
+            else:
+                return rc.NOT_FOUND
+        else:
+            return rc.FORBIDDEN
+
+def _check_header_ticket(req):
     ticket = None
 
     try:
@@ -354,3 +390,16 @@ def __check_header_ticket (req):
 
     finally:
         return ticket
+
+def _check_header_ttl(req):
+    """GC_TTL: in seconds, defaults to 86400secs - 1d"""
+    return req.META.get('GC_TTL', '86400')
+
+def _get_rcache(pool=gc_pool):
+    """returns selected cache."""
+    cc = redis.Redis(connection_pool=pool)
+    return cc
+
+def _get_hash_key(data, *args):
+    """get sha1 sum hexdigest for a string"""
+    return hl.sha1( ":".join([data] + [el for el in args]) ).hexdigest()
