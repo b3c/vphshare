@@ -10,7 +10,13 @@
                     <th>Dataset result field</th>
                 </tr>
             </thead>
-                {% for input in workflow_input %}<tr><td>{{ forloop.counter }}</td><td>{{ input }}</td><td><select name="{{ input }}">{% for select in query_header %}<option value="{{ select }}">{{ select }}</option>{% endfor %}</select></td></tr>{% endfor %}
+                {% for input in workflow_input %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ input }}</td>
+                    <td><select name="{{ input }}">{% for select in query_header %}<option value="{{ select }}">{{ select }}</option>{% endfor %}</select></td>
+                    <td><input id="CustomInput-{{forloop.counter}}" name="CustomInput-{{forloop.counter}}" value=""></td>
+                </tr>{% endfor %}
         </table>
     </div>
 </div>
