@@ -15,21 +15,6 @@ from masterinterface.datasets.models import DatasetQuery
 
 _CUSTOM_HEADER = "CustomValueFromInput"
 
-def _to_num(s):
-    try:
-        # try getting numeric values
-        if ( (type(s) == int) or (type(s) == float) ):
-            return s
-        # return type conversion from str
-        else:
-            return int(s)
-    except:
-        try:
-            return float(s)
-        except:
-            # is a str with no numbers to convert
-            return str(s)
-
 @login_required
 def workspace(request):
 
@@ -71,7 +56,7 @@ def create(request):
                     if dataset_results_field == _CUSTOM_HEADER:
                         tmpInput = "CustomInput-%d" % (idx,)
 
-                        custom_value = _to_num( request.POST[tmpInput] )
+                        custom_value = str( request.POST[tmpInput] )
                         custom_vector = [ custom_value for _ in range(len(results)) ]
 
                         values.extend(custom_vector)
