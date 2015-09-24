@@ -13,6 +13,7 @@ import json
 from masterinterface.scs_workspace.Taverna2WorkflowIO import Taverna2WorkflowIO
 from masterinterface.datasets.models import DatasetQuery
 
+_CUSTOM_HEADER = "CustomValueFromInput"
 
 @login_required
 def workspace(request):
@@ -33,26 +34,44 @@ def create(request):
         taverna_execution = form.save(commit=False)
         taverna_execution.title = request.POST['title']
         taverna_execution.t2flow = get_file_data(workflow.t2flow)
+
         if request.POST.get('default_inputs','off') == 'on':
             if request.POST['input_definition_tab'] == 'baclava':
                 taverna_execution.baclava = get_file_data(request.FILES['inputFile'])
+
             if request.POST['input_definition_tab'] == 'dataset':
                 dataset_query = DatasetQuery.objects.get(id=request.POST['dataset_queryid'])
                 tavernaIO = Taverna2WorkflowIO()
                 tavernaIO.loadFromT2FLOWString(taverna_execution.t2flow)
+
                 input_ports = tavernaIO.getInputPorts()
                 results = dataset_query.get_results(request.ticket)
                 header = dataset_query.get_header(request.ticket)
+
+                idx = 1
                 for input in input_ports:
                     dataset_results_field = request.POST[input]
                     values = []
-                    index = header.index(dataset_results_field)
-                    for row in results:
-                        values.append(row[index])
+
+                    if dataset_results_field == _CUSTOM_HEADER:
+                        tmpInput = "CustomInput-%d" % (idx,)
+
+                        custom_value = str( request.POST[tmpInput] )
+                        custom_vector = [ custom_value for _ in range(len(results)) ]
+
+                        values.extend(custom_vector)
+                    else:
+                        index = header.index(dataset_results_field)
+                        for row in results:
+                            values.append(row[index])
+
                     tavernaIO.setInputPortValues(input,values)
+                    idx += 1
+
                 taverna_execution.baclava = tavernaIO.inputsToBaclava()
         else:
             taverna_execution.baclava = get_file_data(workflow.xml)
+
         #taverna_execution.baclava = get_file_data(workflow.xml)
         taverna_execution.owner = request.user
         taverna_execution.status = 'Ready to run'
@@ -64,6 +83,7 @@ def create(request):
         taverna_execution.save()
         request.session['statusmessage'] = "The workflow execution has been correctly created"
         return redirect('workspace')
+
     if request.method == 'GET' and request.GET.get('workflow_id',None):
         workflow = Workflow.objects.get(pk=request.GET['workflow_id'])
         n = TavernaExecution.objects.filter(title__contains=workflow.metadata['name'], ticket=request.ticket).count() + 1
@@ -92,9 +112,18 @@ def getDatasetInputs(request):
     tavernaIO.loadFromT2FLOWString(workflow.t2flow)
     #tavernaIO.loadInputsFromBaclavaString(workflow.xml)
     workflow_input = tavernaIO.getInputPorts()
+
+    query_headers = dataset_query.get_header(request.ticket)
+    query_headers.append(_CUSTOM_HEADER)
+
     return render_to_response(
         'scs_workspace/datasetInputs.html',
-        {'workflow_input': workflow_input, 'dataset': dataset, 'rel_datasets': rel_datasets , 'dataset_query':dataset_query, 'query_header': dataset_query.get_header(request.ticket), 'results':dataset_query.get_results(request.ticket)},
+        {'workflow_input': workflow_input, \
+            'dataset': dataset, \
+            'rel_datasets': rel_datasets , \
+            'dataset_query':dataset_query, \
+            'query_header': query_headers,\
+            'results':dataset_query.get_results(request.ticket)},
         RequestContext(request)
     )
 
