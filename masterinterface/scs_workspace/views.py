@@ -13,7 +13,7 @@ import json
 from masterinterface.scs_workspace.Taverna2WorkflowIO import Taverna2WorkflowIO
 from masterinterface.datasets.models import DatasetQuery
 
-_CUSTOM_HEADER = "CustomValue"
+_CUSTOM_HEADER = "CustomValueFromInput"
 
 def _to_num(s):
     try:
@@ -63,12 +63,15 @@ def create(request):
                 results = dataset_query.get_results(request.ticket)
                 header = dataset_query.get_header(request.ticket)
 
+                idx = 1
                 for input in input_ports:
                     dataset_results_field = request.POST[input]
                     values = []
 
                     if dataset_results_field == _CUSTOM_HEADER:
-                        custom_value = _to_num( request.POST['_CUSTOM_HEADER'] )
+                        tmpInput = "CustomInput-%d" % (idx,)
+
+                        custom_value = _to_num( request.POST[tmpInput] )
                         custom_vector = [ custom_value for _ in range(len(results)) ]
 
                         values.extend(custom_vector)
@@ -78,6 +81,7 @@ def create(request):
                             values.append(row[index])
 
                     tavernaIO.setInputPortValues(input,values)
+                    idx += 1
 
                 taverna_execution.baclava = tavernaIO.inputsToBaclava()
         else:
