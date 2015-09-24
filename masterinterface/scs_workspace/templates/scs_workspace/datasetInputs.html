@@ -14,7 +14,7 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ input }}</td>
-                    <td><select class="CustomInput" custominput-plugin-data="{{ forloop.counter }}" name="{{ input }}">{% for select in query_header %}<option value="{{ select }}">{{ select }}</option>{% endfor %}</select></td>
+                    <td><select class="CustomInput" custominput-plugin-val="{{ forloop.counter }}" name="{{ input }}">{% for select in query_header %}<option value="{{ select }}">{{ select }}</option>{% endfor %}</select></td>
                     <td><input class="hidden" id="CustomInput-{{forloop.counter}}" name="CustomInput-{{forloop.counter}}" value=""></td>
                 </tr>{% endfor %}
         </table>

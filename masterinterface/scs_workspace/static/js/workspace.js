@@ -6,7 +6,6 @@
     function CustomInputPlugin(el, opts) {
         this.$el      = $(el);
         this.$el.data(name, this);
-        this.selected = this.$el.val();
 
         this.defaults = {};
 
@@ -20,17 +19,18 @@
         var self = this;
 
         this.$el.change(function() {
-            //self.previousGUID = self.selectedGUID;
-            self.selected = $(this).val();
-            var id = $(this).data(name + '-data')
+            var changed = $(this).val();
+            var customId = $(this).attr(name+'-val')
 
-            if (self.selected == "CustomInputFromValue") {
-                $('#CustomInput-'+id).removeClass("hidden");
-            } else {
-                $('#CustomInput-'+id).addClass("hidden");
-            }
+                if (changed == "CustomValueFromInput") {
+                    $('#CustomInput-'+customId).removeClass("hidden");
+                } else {
+                    $('#CustomInput-'+customId).addClass("hidden");
+                    $('#CustomInput-'+customId).val("");
+                }
 
         });
+
     };
 
     CustomInputPlugin.prototype.destroy = function() {
