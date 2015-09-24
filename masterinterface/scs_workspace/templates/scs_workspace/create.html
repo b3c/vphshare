@@ -18,6 +18,7 @@
     <script src="/static/js/jqBootstrapValidation.min.js"></script>
     <script src="/static/js/ICanHaz.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/static/js/workspace.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -115,7 +116,11 @@
             $.ajax('/workspace/getDatasetInputs', {
                 data: {value:value, workflowId:self.$workflow_global_id},
                 type: 'POST',
-                success: function(data) { self.getTableCallBack(data,self); self.$loading_dataset.hide();},
+                success: function(data) { 
+                    self.getTableCallBack(data,self);
+                    self.$loading_dataset.hide();
+                    $('.CustomInput').CustomInputPlugin({});
+                },
                 error: function(data) {self.$loading_dataset.hide(); return false; }
             });
 
@@ -124,6 +129,7 @@
 
 
         $.datasetInput=new DatasetInputs();
+
     }).call(this);
     </script>
 {% endblock %}
