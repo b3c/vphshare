@@ -7,7 +7,9 @@
         this.$el      = $(el);
         this.$el.data(name, this);
 
-        this.defaults = {};
+        this.defaults = {"CustomValueFromInput": "",
+                        "WorkflowOutFolderPath": "VPHSHARE_RUN_OUTPUT_FOLDER",
+                        "elem_prefix": "CustomInput"};
 
         var meta      = this.$el.data(name + '-opts');
         this.opts     = $.extend(this.defaults, opts, meta);
@@ -21,14 +23,21 @@
         this.$el.change(function() {
             var changed = $(this).val();
             var customId = $(this).attr(name+'-val')
+            var str_id = '#'+ self.opts.elem_prefix +'-'+ customId;
 
-                if (changed == "CustomValueFromInput") {
-                    $('#CustomInput-'+customId).removeClass("hidden");
+            if (changed in self.opts) {
+
+                if (self.opts[changed] != "") {
+                    $(str_id).val(self.opts[changed]);
                 } else {
-                    $('#CustomInput-'+customId).addClass("hidden");
-                    $('#CustomInput-'+customId).val("");
+                    $(str_id).val("");
                 }
 
+                $(str_id).removeClass("hidden");
+            } else {
+                $(str_id).addClass("hidden");
+                $(str_id).val("");
+            }
         });
 
     };
