@@ -13,7 +13,7 @@ import json
 from masterinterface.scs_workspace.Taverna2WorkflowIO import Taverna2WorkflowIO
 from masterinterface.datasets.models import DatasetQuery
 
-_CUSTOM_HEADER = "CustomValueFromInput"
+_CUSTOM_HEADERS = ["CustomValueFromInput","WorkflowOutFolderPath"]
 
 @login_required
 def workspace(request):
@@ -53,7 +53,7 @@ def create(request):
                     dataset_results_field = request.POST[input]
                     values = []
 
-                    if dataset_results_field == _CUSTOM_HEADER:
+                    if dataset_results_field in _CUSTOM_HEADERS:
                         tmpInput = "CustomInput-%d" % (idx,)
 
                         custom_value = str( request.POST[tmpInput] )
@@ -114,7 +114,7 @@ def getDatasetInputs(request):
     workflow_input = tavernaIO.getInputPorts()
 
     query_headers = dataset_query.get_header(request.ticket)
-    query_headers.append(_CUSTOM_HEADER)
+    query_headers.extend(_CUSTOM_HEADERS)
 
     return render_to_response(
         'scs_workspace/datasetInputs.html',
