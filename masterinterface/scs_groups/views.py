@@ -421,7 +421,7 @@ def create_institution(request):
 
         if form.is_valid():
             # filter post field "name"
-            form.POST['name'] = ''.join( c for c in string if c.isalnum() )
+            form.POST['name'] = ''.join( c for c in form.POST['name'] if c.isalnum() )
 
             group = form.save(commit=False)
             group.save()
