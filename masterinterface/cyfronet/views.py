@@ -28,13 +28,13 @@ def index(request):
 @login_required
 def lobcder(request, path = '/'):
     return render_to_response("cyfronet/slet.html", {
-    			'lobcderWebDavUrl': settings.LOBCDER_WEBDAV_URL,
-    			'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
-            	'lobcderRestUrl': settings.LOBCDER_REST_URL,
-            	'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH,
-            	'vphTicket': request.ticket,
-                #give the group name to show only the resource sharred with the institution
-                'institutionPortal':  request.session['institutionportal'].institution.name if request.session.get('institutionportal',None) else ''
+                    'lobcderWebDavUrl': settings.LOBCDER_WEBDAV_URL,
+                    'lobcderWebDavHref': settings.LOBCDER_WEBDAV_HREF,
+                    'lobcderRestUrl': settings.LOBCDER_REST_URL,
+                    'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH,
+                    'vphTicket': request.ticket,
+                    #give the group name to show only the resource sharred with the institution
+                    'institutionPortal':  request.session['institutionportal'].institution.name if request.session.get('institutionportal',None) else ''
             }, RequestContext(request))
 
 @csrf_exempt
@@ -80,7 +80,8 @@ def retriveVtk(request):
 @login_required
 def tools(request):
     return render_to_response('cyfronet/clew.html', {
-    			'cloudFacadeUrl': settings.CLOUDFACACE_URL,
-    			'vphTicket': request.ticket,
-    			'institutionPortal':  request.session['institutionportal'].institution.name if request.session.get('institutionportal',None) else ''
-    		}, RequestContext(request))
+                        'cloudFacadeUrl': settings.CLOUDFACACE_URL,
+                        'vphTicket': request.ticket,
+                        'institutionPortal':  request.session['institutionportal'].institution.name if request.session.get('institutionportal',None) else ''
+                }, RequestContext(request))
+
