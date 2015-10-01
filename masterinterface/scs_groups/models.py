@@ -2,8 +2,6 @@ __author__ = "Matteo Balasso (m.balasso@scsitaly.com)"
 
 from django.db import models
 from django.contrib.auth.models import Group, User
-import os
-
 
 class VPHShareSmartGroup(Group):
 

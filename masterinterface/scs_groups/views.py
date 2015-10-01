@@ -417,9 +417,12 @@ def create_institution(request):
         if request.user.id not in request.POST.getlist('managers'):
             request.POST.appendlist('managers', unicode(request.user.id))
 
+        # filter post field "name"
+        request.POST['name'] = ''.join( c for c in request.POST['name'] if c.isalnum() )
         form = InstitutionForm(request.POST, request.FILES)
 
         if form.is_valid():
+
             group = form.save(commit=False)
             group.save()
             set_workflow(group, GroupRequestWorkflow)
