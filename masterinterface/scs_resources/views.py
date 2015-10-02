@@ -1005,7 +1005,7 @@ def globalsearch(request):
                     'type':'<i title="%s" class="fa fa-%s"></i>'%( resource['type'], resource['type']),
                     'name':str(resource.get('name','')),
                     'owner':resource['author'],
-                    'update':resource['updateDate'],
+                    'update': str( resource.get('updateDate', '') ),
                     'rating':resource['rating'],
                     'views':resource['views'],
                     'actions':{'global_id':resource['globalID'], 'name':resource['name']},
@@ -1022,7 +1022,7 @@ def globalsearch(request):
         except Exception, e:
             from raven.contrib.django.raven_compat.models import client
             client.captureException()
-            raise SuspiciousOperation
+            raise SuspiciousOperation( str(e) )
 
 def resource_modal(request, global_id):
     r = Resource.objects.get(global_id=global_id)

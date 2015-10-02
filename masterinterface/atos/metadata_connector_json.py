@@ -229,5 +229,5 @@ def search_resource(text, filters = {}, numResults=10, page=1, orderBy = 'name',
         response['pages'] = pages
         return response
 
-    except BaseException, e:
+    except Exception, e:
         return EMPTY_LIST.copy()
