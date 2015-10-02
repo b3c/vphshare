@@ -15,4 +15,5 @@ class ContactUs(forms.Form):
         if request.user.is_authenticated():
             self.data['userID'] = request.user.username
         if getattr(request,'sentry',None) is not None:
-            self.data['sentryid'] = request.sentry.id
+            # self.data['sentryid'] = request.sentry.id
+            pass
