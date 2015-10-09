@@ -101,7 +101,7 @@
       <div class="select {% templatetag openvariable %} id {% templatetag closevariable %} ">
           <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
           <div class="condition-form">
-                <div class="inline input"><i class="fa fa-columns"></i> {% templatetag openvariable %} name {% templatetag closevariable %}</div>
+                <div class="inline input"><div class="span4" style="display:inline;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><i class="fa fa-columns"></i> {% templatetag openvariable %} name {% templatetag closevariable %}</div> </div>
                 <select class="inline operator" disabled><option value="rename"> rename as (optional) </option></select>
                 <input type="text" step="any"  class="inline"  placeholder="insert the new name"/>
           </div>
@@ -265,7 +265,7 @@
                       <div class="select" data-tablename="{{ select.tablename }}" data-name="{{ select.name }}" data-type="{{ select.type }}" data-dbname="{{ select.dbname}}" data-publishaddress="{{ select.publishaddress }}" data-datasetname="{{ select.datasetname }}">
                           <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
                           <div class="condition-form">
-                                <div class="inline input"><i class="fa fa-columns"></i> {{ select.name }}</div>
+                              <div class="inline input"><div class="span4" style="display:inline;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><i class="fa fa-columns"></i> {{ select.name }}</div></div>
                                 <select class="inline operator" disabled><option value="rename"> rename as (optional) </option></select>
                                 <input type="text" step="any"  class="inline"  placeholder="insert the new name" value="{{ select.displayAs }}"/>
                           </div>
