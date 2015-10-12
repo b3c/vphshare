@@ -118,7 +118,7 @@
                 this.$details = wfmngProtocol.find('#'+this.$executionId+'-status-details');
                 this.$status = wfmngProtocol.find('#'+this.$executionId+'-status');
                 this.$statusInfo = wfmngProtocol.find('#'+this.$executionId+'-status-info');
-                this.$timeoutid = 0;
+                this.$timeoutid = null;
                 this.$loading = wfmngProtocol.find('.loading-alert');
                 this.$playButton.click(function(){
                     self.startTaverna($(this));
@@ -129,6 +129,7 @@
                 //this.$statusInfo.hide();
                 //this.$details.hide();
                 this.getExecutioninfo();
+                this.$timeoutid = setInterval( function() {self.getExecutioninfo();}, 5000)
                 this.$alert = wfmngProtocol.find('.alert');
             };
 
@@ -153,7 +154,9 @@
                             error: function(data){self.getExecutioninfo();}
                         }
                 );
-                //this.$timeoutid = window.setTimeout(function(){self.getExecutioninfo()}, 5000);
+                if (null == this.$timeoutid) {
+                    this.$timeoutid = window.setInterval( function(){self.getExecutioninfo()}, 5000);
+                }
             };
 
             WfmngProtocol.prototype.deleteWorkflowCallBack = function(data){
@@ -188,24 +191,32 @@
             WfmngProtocol.prototype.getExecutioninfoCallBack = function(data){
                 var self = this;
                 var label = ["executionstatus",'error','error_msg',"Taverna workflow id"," Taverna url","AS config id "," Session Expire"," Execution started"," Execution finished"," Exit code"," Std output"," Std error","Output folder", "Output" , "Running"];
-                this.$details.empty();
                 var error = data[1];
                 var error_msg = data[2];
                 var executionStatusCode = parseInt(data[0]);
                 var is_running = data[data.length-1];
+                this.$details.empty();
+
                 if(executionStatusCode<8 && !error || is_running){
-                    setTimeout( function(){self.getExecutioninfo();} ,5000);
-                    if(is_running)
-                        this.$playButton.button('loading');
+                    this.$playButton.button('loading');
+                    console.log(["running no error",data]);
 
                 }else{
                     // last execution pass to get ret information
                     if (executionStatusCode<8 && !error && !is_running) {
-                        console.log(data);
+                        console.log(["no running && no error",data]);
                     }
+
                     this.$playButton.button('reset');
-                    this.$timeoutid = 0;
+
+                    if (!(null == this.$timeoutid)) {
+                        clearInterval(this.$timeoutid);
+                        this.$timeoutid = null;
+                    }
                 }
+                
+                console.log(["out if/else",data]);
+
                 var alerts = this.$statusInfo.children('.alert');
                 for (var j=0; j<9; j++){
                     if (executionStatusCode == j){
