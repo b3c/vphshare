@@ -199,6 +199,10 @@
                         this.$playButton.button('loading');
 
                 }else{
+                    // last execution pass to get ret information
+                    if (executionStatusCode<8 && !error && !is_running) {
+                        console.log(data);
+                    }
                     this.$playButton.button('reset');
                     this.$timeoutid = 0;
                 }
