@@ -161,6 +161,10 @@
 
             WfmngProtocol.prototype.deleteWorkflowCallBack = function(data){
 
+                if (!(null == this.$timeoutid)) {
+                    window.setInterval(this.$timeoutid);
+                }
+
                 if (data.results == 'true'){
                     $("#"+this.$executionId).remove();
                     delete this;
@@ -199,12 +203,10 @@
 
                 if(executionStatusCode<8 && !error || is_running){
                     this.$playButton.button('loading');
-                    console.log(["running no error",data]);
 
                 }else{
                     // last execution pass to get ret information
                     if (executionStatusCode<8 && !error && !is_running) {
-                        console.log(["no running && no error",data]);
                     }
 
                     this.$playButton.button('reset');
@@ -215,7 +217,6 @@
                     }
                 }
                 
-                console.log(["out if/else",data]);
 
                 var alerts = this.$statusInfo.children('.alert');
                 for (var j=0; j<9; j++){
