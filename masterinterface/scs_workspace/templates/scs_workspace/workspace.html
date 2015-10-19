@@ -201,6 +201,10 @@
 
                     if (null == this.$timeoutid) {
                         this.$timeoutid = window.setInterval( function(){self.getExecutioninfo()}, 5000);
+                    }
+
+                    // change button only if running but not ready to run
+                    if (is_running) {
                         this.$playButton.button('loading');
                     }
 
