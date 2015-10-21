@@ -2,6 +2,7 @@
 import logging
 import json
 import os
+import string
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -34,7 +35,7 @@ def lobcder(request, path = '/'):
                     'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH,
                     'vphTicket': request.ticket,
                     #give the group name to show only the resource sharred with the institution
-                    'institutionPortal':  request.session['institutionportal'].institution.name if request.session.get('institutionportal',None) else ''
+                    'institutionPortal':  filter(request.session['institutionportal'].institution.name.isalnum,string.printable) if request.session.get('institutionportal',None) else ''
             }, RequestContext(request))
 
 @csrf_exempt
