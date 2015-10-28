@@ -129,7 +129,6 @@
                 //this.$statusInfo.hide();
                 //this.$details.hide();
                 this.getExecutioninfo();
-                this.$timeoutid = setInterval( function() {self.getExecutioninfo();}, 5000)
                 this.$alert = wfmngProtocol.find('.alert');
             };
 
@@ -154,9 +153,6 @@
                             error: function(data){self.getExecutioninfo();}
                         }
                 );
-                if (null == this.$timeoutid) {
-                    this.$timeoutid = window.setInterval( function(){self.getExecutioninfo()}, 5000);
-                }
             };
 
             WfmngProtocol.prototype.deleteWorkflowCallBack = function(data){
@@ -202,7 +198,16 @@
                 this.$details.empty();
 
                 if(executionStatusCode<8 && !error || is_running){
-                    this.$playButton.button('loading');
+
+                    if (null == this.$timeoutid) {
+                        this.$timeoutid = window.setInterval( function(){self.getExecutioninfo()}, 5000);
+                    }
+
+                    // change button only if running but not ready to run
+                    if (is_running) {
+                        this.$playButton.button('loading');
+                    }
+
 
                 }else{
                     // last execution pass to get ret information
