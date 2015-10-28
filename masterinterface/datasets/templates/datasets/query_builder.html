@@ -82,7 +82,7 @@
         <div class="inside-condition">
             <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove operation" data-placement="right"  data-trigger="hover focus click" data-container="body">&times;</button>
             <div class="condition-form">
-                <div class="inline left-node"> {% templatetag openbrace %}{% templatetag openvariable %} left_node {% templatetag closevariable %}{% templatetag closebrace %}</div>
+                <div class="inline left-node"><div class="span4" style="padding-top:5px;display:inline;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"> {% templatetag openbrace %}{% templatetag openvariable %} left_node {% templatetag closevariable %}{% templatetag closebrace %}</div></div>
                 {% templatetag openbrace %}{% templatetag openvariable %} operations {% templatetag closevariable %}{% templatetag closebrace %}
                 {% templatetag openbrace %}{% templatetag openvariable %} input {% templatetag closevariable %}{% templatetag closebrace %}
             </div>
@@ -101,7 +101,7 @@
       <div class="select {% templatetag openvariable %} id {% templatetag closevariable %} ">
           <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
           <div class="condition-form">
-                <div class="inline input"><i class="fa fa-columns"></i> {% templatetag openvariable %} name {% templatetag closevariable %}</div>
+                <div class="inline input"><div class="span4" style="padding-top:5px;display:inline;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><i class="fa fa-columns"></i> {% templatetag openvariable %} name {% templatetag closevariable %}</div> </div>
                 <select class="inline operator" disabled><option value="rename"> rename as (optional) </option></select>
                 <input type="text" step="any"  class="inline"  placeholder="insert the new name"/>
           </div>
@@ -265,7 +265,7 @@
                       <div class="select" data-tablename="{{ select.tablename }}" data-name="{{ select.name }}" data-type="{{ select.type }}" data-dbname="{{ select.dbname}}" data-publishaddress="{{ select.publishaddress }}" data-datasetname="{{ select.datasetname }}">
                           <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove the selected column" data-placement="right"  data-trigger="hover focus click">&times;</button>
                           <div class="condition-form">
-                                <div class="inline input"><i class="fa fa-columns"></i> {{ select.name }}</div>
+                              <div class="inline input"><div class="span4" style="padding-top:5px;display:inline;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><i class="fa fa-columns"></i> {{ select.name }}</div></div>
                                 <select class="inline operator" disabled><option value="rename"> rename as (optional) </option></select>
                                 <input type="text" step="any"  class="inline"  placeholder="insert the new name" value="{{ select.displayAs }}"/>
                           </div>
@@ -287,7 +287,7 @@
                               <div class="inside-condition" data-name="{{  operation.name }}" data-type="{{ operation.type }}" data-id="{{ operation.id }}" data-tablename="{{ operation.tablename }}" data-valuetype="{{ operation.valueType }}" data-dbname="{{ operation.dbname}}" data-publishaddress="{{ operation.publishaddress }}" data-datasetname="{{ operation.datasetname }}">
                                 <button type="button" class="close" data-dismiss="alert" data-toggle="tooltip" title="Remove operation" data-placement="right"  data-trigger="hover focus click" data-container="body">&times;</button>
                                 <div class="condition-form">
-                                    <div class="inline left-node"> <i class="fa fa-columns"></i> {{ operation.name }}</div>
+                                    <div class="inline left-node"><div class="span4" style="padding-top:5px;padding-top:5px;display:inline;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"> <i class="fa fa-columns"></i> {{ operation.name }}</div></div>
                                     {% if operation.valueType  in "date datetime time numeric"%}
                                         <select class="inline operator"><option value="=" {% if operation.operator == "=" %}selected{% endif %}>=</option><option value="NOT=" {% if operation.operator == "NOT=" %}selected{% endif %}>not =</option><option value=">=" {% if operation.operator == ">=" %}selected{% endif %}>=></option><option value="<=" {% if operation.operator == "<=" %}selected{% endif %}><=</option><option value="<" {% if operation.operator == "<" %}selected{% endif %}> < </option><option value=">" {% if operation.operator == ">" %}selected{% endif %}> > </option><option value="isnull" {% if operation.operator == "isnull" %}selected{% endif %}>IS NULL</option><option value="isnotnull" {% if operation.operator == "isnotnull" %}selected{% endif %}>IS NOT NULL</option></select>
                                     {% else %}
