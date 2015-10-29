@@ -35,9 +35,15 @@ class EJobsAPIHandler(BaseHandler):
             uid = _get_id_and_check_tokens(uname,"producer")
 
             if uid:
-                # TODO now this user can submit a job
-                M.ejob_submit(uid,0,"")
-                return { "username": uname }
+                try:
+                    # TODO now this user can submit a job
+                    M.ejob_submit(uid,0,"")
+                    return { "username": uname }
+
+                except M.EJobException, e:
+                    logger.exception(e)
+                    return rc.FORBIDDEN
+
             else:
                 return rc.FORBIDDEN
         else:
@@ -52,9 +58,14 @@ class EJobsAPIHandler(BaseHandler):
             uid = _get_id_and_check_tokens(uname,"producer")
 
             if uid:
-                # TODO now this user can submit a job
-                M.ejob_submit(uid,0,"")
-                return { "username": uname }
+                try:
+                    # TODO if user can get tasks
+                    # get tasks from db
+                    return { "username": uname }
+
+                except M.EJobException, e:
+                    logger.exception(e)
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
         else:
@@ -68,9 +79,13 @@ class EJobsAPIHandler(BaseHandler):
             uid = _get_id_and_check_tokens(uname,"consumer")
 
             if uid:
-                # TODO now this user can submit a job
-                M.ejob_transit(0,uid,"")
-                return { "username": uname }
+                try:
+                    # TODO now this user can submit a job
+                    M.ejob_transit(0,uid,"")
+                    return { "username": uname }
+                except M.EJobException, e:
+                    logger.exception(e)
+                    return rc.FORBIDDEN
             else:
                 return rc.FORBIDDEN
         else:
@@ -111,11 +126,12 @@ def _check_header_ticket(req):
         else:
             ticket = None
 
-    except Exception:
-        client.captureException()
+    except Exception, e:
+        logger.exception(e)
         ticket = None
 
     finally:
+        logger.debug( "checked ticket for %s" %(ticket[1],) )
         return ticket
 
 def _get_id_and_check_tokens(uname,token_name):
@@ -124,7 +140,15 @@ def _get_id_and_check_tokens(uname,token_name):
     user = models.User.objects.get(username=uname)
     if user is not None:
         tokens = getUserTokens(user)
-        return user.id if (token_name in tokens) else None
+        logger.debug( "getid and check tokens %s" % (str(tokens),) )
+
+        if (token_name in tokens):
+            logger.debug("user with correct token")
+            return user.id
+        else:
+            logger.debug("feiled to check token in set")
+            return None
     else:
+        logger.debug("failed to get id")
         return None
 
