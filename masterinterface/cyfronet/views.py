@@ -35,7 +35,7 @@ def lobcder(request, path = '/'):
                     'lobcderFolderDownloadBaseUrl': settings.LOBCDER_REST_URL + settings.LOBCDER_FOLDER_DOWNLOAD_PATH,
                     'vphTicket': request.ticket,
                     #give the group name to show only the resource sharred with the institution
-                    'institutionPortal':  filter(request.session['institutionportal'].institution.name.isalnum,string.printable) if request.session.get('institutionportal',None) else ''
+                    'institutionPortal':  filter(lambda x: x in string.printable and x.isalnum(), request.session['institutionportal'].institution.name) if request.session.get('institutionportal',None) else ''
             }, RequestContext(request))
 
 @csrf_exempt
