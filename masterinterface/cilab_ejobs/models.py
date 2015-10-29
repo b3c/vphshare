@@ -59,7 +59,6 @@ class EJob(models.Model):
     worker_id = models.BigIntegerField()
 
 def ejob_submit(owner_id, worker_id, payload=""):
-    # check if owner in producer
     # check if worker in consumer
     # create object
     # return True if success else EJobException is raised
@@ -67,7 +66,6 @@ def ejob_submit(owner_id, worker_id, payload=""):
     pass
 
 def ejob_transit(job_id, worker_id, next_state):
-    # check worker in consumer role
     # get job and check if same worker
     # ckeck next state exists and transit
     # return True if success else EJobException is raised
@@ -75,7 +73,6 @@ def ejob_transit(job_id, worker_id, next_state):
     pass
 
 def ejob_cancel(job_id, owner_id):
-    # check owner in producer role
     # get job and check if same owner
     # transit to cancel state
     # return True if success else EJobException is raised

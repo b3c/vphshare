@@ -4,7 +4,13 @@ from django.db.models import Q
 from permissions.models import PrincipalRoleRelation
 from django.http import HttpResponse
 from piston.handler import BaseHandler
-from masterinterface.scs_auth.auth import authenticate
+from masterinterface.scs_auth.auth import authenticate, getUserTokens
+from masterinterface.scs_auth import models
+import models as M
+
+from permissions.models import Role
+from permissions.utils import get_roles
+
 from piston.utils import rc
 # import the logging library
 import logging
@@ -25,15 +31,32 @@ class EJobsAPIHandler(BaseHandler):
         ticket = _check_header_ticket(request)
 
         if ticket is not None:
-            return { "username": ticket[1] }
+            uname = ticket[1]
+            uid = _get_id_and_check_tokens(uname,"producer")
+
+            if uid:
+                # TODO now this user can submit a job
+                M.ejob_submit(uid,0,"")
+                return { "username": uname }
+            else:
+                return rc.FORBIDDEN
         else:
             return rc.FORBIDDEN
+
 
     def read(self, request, global_id=None,  *args, **kwargs):
         ticket = _check_header_ticket(request)
 
         if ticket is not None:
-            return { "username": ticket[1] }
+            uname = ticket[1]
+            uid = _get_id_and_check_tokens(uname,"producer")
+
+            if uid:
+                # TODO now this user can submit a job
+                M.ejob_submit(uid,0,"")
+                return { "username": uname }
+            else:
+                return rc.FORBIDDEN
         else:
             return rc.FORBIDDEN
 
@@ -41,7 +64,15 @@ class EJobsAPIHandler(BaseHandler):
         ticket = _check_header_ticket(request)
 
         if ticket is not None:
-            return { "username": ticket[1] }
+            uname = ticket[1]
+            uid = _get_id_and_check_tokens(uname,"consumer")
+
+            if uid:
+                # TODO now this user can submit a job
+                M.ejob_transit(0,uid,"")
+                return { "username": uname }
+            else:
+                return rc.FORBIDDEN
         else:
             return rc.FORBIDDEN
 
@@ -50,7 +81,15 @@ class EJobsAPIHandler(BaseHandler):
         ticket = _check_header_ticket(request)
 
         if ticket is not None:
-            return { "username": ticket[1] }
+            uname = ticket[1]
+            uid = _get_id_and_check_tokens(uname,"producer")
+
+            if uid:
+                # TODO now this user can submit a job
+                M.ejob_cancel(0,uid)
+                return { "username": uname }
+            else:
+                return rc.FORBIDDEN
         else:
             return rc.FORBIDDEN
 
@@ -78,4 +117,14 @@ def _check_header_ticket(req):
 
     finally:
         return ticket
+
+def _get_id_and_check_tokens(uname,token_name):
+    """get _id if token_name in user tokens else None
+    """
+    user = models.User.objects.get(username=uname)
+    if user is not None:
+        tokens = getUserTokens(user)
+        return user.id if (token_name in tokens) else None
+    else:
+        return None
 
