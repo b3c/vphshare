@@ -12,12 +12,22 @@ import logging
 import pickle
 import json
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 class EJobsAPIHandler(BaseHandler):
     """
     REST service based on Django-Piston Library
     """
-    #allowed_methods = ('GET','PUT','DELETE')
-    allowed_methods = ('GET',)
+    allowed_methods = ('POST', 'GET', 'PUT', 'DELETE')
+
+    def create(self, request, *args, **kwargs):
+        ticket = _check_header_ticket(request)
+
+        if ticket is not None:
+            return { "username": ticket[1] }
+        else:
+            return rc.FORBIDDEN
 
     def read(self, request, global_id=None,  *args, **kwargs):
         ticket = _check_header_ticket(request)
@@ -27,9 +37,22 @@ class EJobsAPIHandler(BaseHandler):
         else:
             return rc.FORBIDDEN
 
+    def update(self, request, global_id=None,  *args, **kwargs):
+        ticket = _check_header_ticket(request)
 
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
+        if ticket is not None:
+            return { "username": ticket[1] }
+        else:
+            return rc.FORBIDDEN
+
+
+    def delete(self, request, global_id=None,  *args, **kwargs):
+        ticket = _check_header_ticket(request)
+
+        if ticket is not None:
+            return { "username": ticket[1] }
+        else:
+            return rc.FORBIDDEN
 
 def _check_header_ticket(req):
     """check header ticket

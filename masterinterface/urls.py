@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     url(r'^api/', include('masterinterface.scs_groups.apiurls')),
     url(r'^api/', include('masterinterface.scs_resources.apiurls')),
     url(r'^api/', include('masterinterface.scs_workspace.apiurls')),
+    url(r'^api/', include('masterinterface.cilab_ejobs.apiurls')),
 
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
