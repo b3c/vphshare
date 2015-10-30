@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 class EJobsAPIHandler(BaseHandler):
     """
     REST service based on Django-Piston Library
+    This feature needs a cron job removing jobs completed|cancelled older than 1 day
     """
     allowed_methods = ('POST', 'GET', 'PUT', 'DELETE')
 
@@ -34,7 +35,8 @@ class EJobsAPIHandler(BaseHandler):
 
             no uri args but you have to post with params
             worker_id external worker id
-            data the input data (json dict) to include into the job
+            data the input data (json dict) to include into the job with
+            at least 2 fields: {"message":"task message","data":{"what":"ever dict"}}
         """
         ticket = _check_header_ticket(request)
 
@@ -45,7 +47,7 @@ class EJobsAPIHandler(BaseHandler):
             if uid:
                 try:
                     worker_id = int( request.POST.get("worker_id","-1") )
-                    input_data = request.POST.get("data","")
+                    input_data = json.loads(str(request.body))
                     logger.debug( "post with args %d %s" % (worker_id,input_data) )
                     M.ejob_submit(uid,worker_id,input_data)
                     return { "username": uname }
@@ -85,6 +87,7 @@ class EJobsAPIHandler(BaseHandler):
 
                     #get a list of tasks
                     else:
+                        l = M.EJob.objects.filter(Q(owner_id__exact=uid) | Q(worker_id__exact=uid) )
                         return { "username": uname }
 
                 except M.EJobException, e:

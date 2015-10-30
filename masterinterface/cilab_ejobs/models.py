@@ -58,12 +58,18 @@ class EJob(models.Model):
     owner_id = models.BigIntegerField()
     worker_id = models.BigIntegerField()
 
-def ejob_submit(owner_id, worker_id, payload=""):
-    # check if worker in consumer
+def ejob_submit(owner_id, worker_id, payload={}):
     # create object
     # return True if success else EJobException is raised
     # raise EJobException("error message")
-    pass
+    try:
+        ej = EJob(message=payload.get("messge",""),input_data=json.dumps(payload.get("data",{})),
+                owner_id=owner_id,worker_id=worker_id)
+        ej.save()
+        return True
+
+    except:
+        raise EJobException("failed to create ejob object")
 
 def ejob_transit(job_id, worker_id, next_state):
     # get job and check if same worker
