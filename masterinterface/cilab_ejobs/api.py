@@ -126,7 +126,7 @@ class EJobsAPIHandler(BaseHandler):
             uname = ticket[1]
             uid = _get_id_and_check_tokens(uname,set(["producer"]))
 
-            oid = int(str(global_id))
+            oid = int(global_id if global_id else -1)
             if uid and (oid > -1):
                 try:
                     # TODO change to transition

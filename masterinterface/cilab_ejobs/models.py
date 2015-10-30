@@ -81,8 +81,10 @@ def ejob_cancel(job_id, owner_id):
     # return True if success else EJobException is raised
     # raise EJobException("error message")
     ej = EJob.objects.get(Q(id__exact=job_id),Q(owner_id__exact=owner_id))
-    if ej.state() <= EJob.ST_STARTED:
-        ej.state(EJob.ST_CANCELLED)
+
+    st = ej.state
+    if st in set([EJob.ST_SUBMITED, EJob.ST_STARTED]):
+        ej.sate = EJob.ST_CANCELLED
         ej.save()
 
     return ej
