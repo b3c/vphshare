@@ -27,6 +27,8 @@ class EJobsAPIHandler(BaseHandler):
     """
     REST service based on Django-Piston Library
     This feature needs a cron job removing jobs completed|cancelled older than 1 day
+    python manage.py migrate cilab_ejobs to migrate to db
+    python manage.py schemamigration cilab_ejobs --auto to update model changes
     """
     allowed_methods = ('POST', 'GET', 'PUT', 'DELETE')
 
@@ -34,9 +36,8 @@ class EJobsAPIHandler(BaseHandler):
         """the post method to post a job into the queue.
 
             no uri args but you have to post with params
-            worker_id external worker id
             data the input data (json dict) to include into the job with
-            at least 2 fields: {"message":"task message","data":{"what":"ever dict"}}
+            at least 3 fields: {"message":"task message","data":{"what":"ever dict"},"worker_id":124}
         """
         ticket = _check_header_ticket(request)
 
@@ -46,13 +47,12 @@ class EJobsAPIHandler(BaseHandler):
 
             if uid:
                 try:
-                    worker_id = int( request.POST.get("worker_id","-1") )
                     input_data = json.loads(str(request.body))
-                    logger.debug( "post with args %d %s" % (worker_id,input_data) )
-                    M.ejob_submit(uid,worker_id,input_data)
-                    return { "username": uname }
+                    worker_id = input_data.get("worker_id",-1)
+                    o = M.ejob_submit(uid,worker_id,input_data)
+                    return o
 
-                except M.EJobException, e:
+                except Exception, e:
                     logger.exception(e)
                     return rc.BAD_REQUEST
 
@@ -81,16 +81,16 @@ class EJobsAPIHandler(BaseHandler):
 
                             #r = serializers.serialize("json",l)
                             return l
-                        except ObjectDoesNotExist, e:
+                        except Exception, e:
                             logger.exception(e)
                             return rc.NOT_FOUND
 
                     #get a list of tasks
                     else:
                         l = M.EJob.objects.filter(Q(owner_id__exact=uid) | Q(worker_id__exact=uid) )
-                        return { "username": uname }
+                        return l
 
-                except M.EJobException, e:
+                except Exception, e:
                     logger.exception(e)
                     return rc.BAD_REQUEST
             else:
@@ -110,7 +110,7 @@ class EJobsAPIHandler(BaseHandler):
                     # TODO now this user can submit a job
                     M.ejob_transit(0,uid,"")
                     return { "username": uname }
-                except M.EJobException, e:
+                except Exception, e:
                     logger.exception(e)
                     return rc.BAD_REQUEST
             else:
@@ -128,10 +128,10 @@ class EJobsAPIHandler(BaseHandler):
 
             if uid:
                 try:
-                    # TODO now this user can submit a job
-                    M.ejob_cancel(0,uid)
-                    return { "username": uname }
-                except M.EJobException, e:
+                    # TODO change to transition
+                    o = M.ejob_cancel(0,uid)
+                    return o
+                except Exception, e:
                     logger.exception(e)
                     return rc.BAD_REQUEST
             else:

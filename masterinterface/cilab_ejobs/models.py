@@ -62,14 +62,12 @@ def ejob_submit(owner_id, worker_id, payload={}):
     # create object
     # return True if success else EJobException is raised
     # raise EJobException("error message")
-    try:
-        ej = EJob(message=payload.get("messge",""),input_data=json.dumps(payload.get("data",{})),
-                owner_id=owner_id,worker_id=worker_id)
-        ej.save()
-        return True
-
-    except:
-        raise EJobException("failed to create ejob object")
+    if worker_id == -1:
+        raise EJobException("failed to create ejob with worker_id -1")
+    ej = EJob(message=payload.get("message",""),input_data=json.dumps(payload.get("data",{})),
+            owner_id=owner_id,worker_id=worker_id)
+    ej.save()
+    return ej
 
 def ejob_transit(job_id, worker_id, next_state):
     # get job and check if same worker
@@ -83,5 +81,10 @@ def ejob_cancel(job_id, owner_id):
     # transit to cancel state
     # return True if success else EJobException is raised
     # raise EJobException("error message")
-    pass
+    ej = EJob.objects.get(Q(id__exact=job_id),Q(owner_id__exact=owner_id))
+    if ej.state <= EJob.ST_STARTED:
+        ej.state = EJob.ST_CANCELLED
+        ej.save()
+
+    return ej
 
