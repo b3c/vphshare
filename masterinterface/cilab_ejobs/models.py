@@ -56,6 +56,7 @@ class EJob(models.Model):
     output_data = models.TextField(max_length=4096,default="")
     owner_id = models.BigIntegerField()
     worker_id = models.BigIntegerField()
+    auto_run = models.BooleanField(default=False)
 
 def ejob_submit(owner_id, worker_id, payload={}):
     # create object
