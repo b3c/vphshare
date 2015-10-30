@@ -50,7 +50,6 @@ class EJob(models.Model):
     # task_id = models.CharField(unique=True, null=True, max_length=39)
     creation_timestamp = models.DateTimeField(auto_now_add=True)
     modification_timestamp = models.DateTimeField(auto_now=True)
-    completion_timestamp = models.DateTimeField(default=timezone.now)
     state = models.PositiveIntegerField(choices=FSM_STATES,default=ST_SUBMITED)
     message = models.CharField(max_length=1024,default="")
     input_data = models.TextField(max_length=4096,default="")
@@ -82,8 +81,8 @@ def ejob_cancel(job_id, owner_id):
     # return True if success else EJobException is raised
     # raise EJobException("error message")
     ej = EJob.objects.get(Q(id__exact=job_id),Q(owner_id__exact=owner_id))
-    if ej.state <= EJob.ST_STARTED:
-        ej.state = EJob.ST_CANCELLED
+    if ej.state() <= EJob.ST_STARTED:
+        ej.state(EJob.ST_CANCELLED)
         ej.save()
 
     return ej

@@ -126,10 +126,11 @@ class EJobsAPIHandler(BaseHandler):
             uname = ticket[1]
             uid = _get_id_and_check_tokens(uname,set(["producer"]))
 
-            if uid:
+            oid = int(str(global_id))
+            if uid and (oid > -1):
                 try:
                     # TODO change to transition
-                    o = M.ejob_cancel(0,uid)
+                    o = M.ejob_cancel(oid,uid)
                     return o
                 except Exception, e:
                     logger.exception(e)
