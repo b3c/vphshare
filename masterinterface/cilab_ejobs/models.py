@@ -94,7 +94,7 @@ def ejob_cancel(job_id, owner_id):
 
     st = ej.state
     if st in set([EJob.ST_SUBMITED, EJob.ST_STARTED]):
-        ej.sate = EJob.ST_CANCELLED
+        ej.state = EJob.ST_CANCELLED
         ej.save()
 
     return ej
