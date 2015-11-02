@@ -29,7 +29,11 @@ class EJobsAPIHandler(BaseHandler):
 
             no uri args but you have to post with params
             data the input data (json dict) to include into the job with
-            at least 3 fields: {"message":"task message","data":{"what":"ever dict"},"worker_id":124}
+            at least 3 fields: {"message":"task message",
+                                "data":{"what":"ever dict"},
+                                "worker_id":-1,
+                                "worker_name":"el1mc",
+                                "auto_run":true}
         """
         ticket = _check_header_ticket(request)
 

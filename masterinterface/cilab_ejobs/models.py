@@ -51,7 +51,9 @@ def ejob_submit(owner_id, worker_id, payload={}):
     # raise EJobException("error message")
     if worker_id == -1:
         raise EJobException("failed to create ejob with worker_id -1")
-    ej = EJob(message=payload.get("message",""),input_data=json.dumps(payload.get("data",{})),
+    ej = EJob(message=payload.get("message",""),
+            input_data=json.dumps(payload.get("data",{})),
+            auto_run=payload.get("auto_run",False),
             owner_id=owner_id,worker_id=worker_id)
     ej.save()
     return ej
