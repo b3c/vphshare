@@ -17,6 +17,7 @@ class Command(BaseCommand):
                         Q(state__gt=1),
                         Q(modification_timestamp__range=(date_start,date_end)) )
                 for ejob in ejobs:
+                    self.stdout.write('ob: %s' % str(ejob))
                     ejob.delete()
 
             except Exception, e:
