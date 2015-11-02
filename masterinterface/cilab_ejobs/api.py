@@ -41,6 +41,14 @@ class EJobsAPIHandler(BaseHandler):
                 try:
                     input_data = json.loads(str(request.body))
                     worker_id = input_data.get("worker_id",-1)
+                    worker_name = input_data.get("worker_name","")
+
+                    # trying to get worker_name if worker_id -1
+                    # then using worker_name try if has role and get id
+                    if worker_id == -1 and worker_name:
+                        wid = _get_id_and_check_tokens(worker_name,set(["consumer"]))
+                        worker_id = wid if wid is not None else -1
+
                     o = M.ejob_submit(uid,worker_id,input_data)
                     return o
 
