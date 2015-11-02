@@ -1,23 +1,15 @@
 __author__ = 'Miguel C.'
-import base64
 from django.db.models import Q
-from permissions.models import PrincipalRoleRelation
 from django.http import HttpResponse
-from django.core import serializers
-from django.core.exceptions import ObjectDoesNotExist
 from piston.handler import BaseHandler
 from masterinterface.scs_auth.auth import authenticate, getUserTokens
 from masterinterface.scs_auth import models
 import models as M
 
-from permissions.models import Role
-from permissions.utils import get_roles
-
 from piston.utils import rc
 # import the logging library
 import logging
 
-import pickle
 import json
 
 # Get an instance of a logger
@@ -65,6 +57,10 @@ class EJobsAPIHandler(BaseHandler):
 
 
     def read(self, request, global_id=None,  *args, **kwargs):
+        """the read method to get a job <global_id> or all jobs from the queue.
+
+            You will get elements limited to your role (producer|consumer)
+        """
         ticket = _check_header_ticket(request)
 
         if ticket is not None:
@@ -76,18 +72,16 @@ class EJobsAPIHandler(BaseHandler):
                     #get from only one task with id global_id
                     if global_id:
                         try:
-                            l = M.EJob.objects.get(Q(id__exact=global_id),
-                                                Q(owner_id__exact=uid) | Q(worker_id__exact=uid) )
-
-                            #r = serializers.serialize("json",l)
+                            l = M.ejob_get_gte_one(uid, uid, global_id)
                             return l
+
                         except Exception, e:
                             logger.exception(e)
                             return rc.NOT_FOUND
 
                     #get a list of tasks
                     else:
-                        l = M.EJob.objects.filter(Q(owner_id__exact=uid) | Q(worker_id__exact=uid) )
+                        l = M.ejob_get_gte_one(uid, uid)
                         return l
 
                 except Exception, e:
@@ -99,17 +93,27 @@ class EJobsAPIHandler(BaseHandler):
             return rc.FORBIDDEN
 
     def update(self, request, global_id=None,  *args, **kwargs):
+        """the opdate method to put a job from the queue.
+
+            global_id the job to modify
+            json body data (json dict) with information about what to modify
+            at least 1 fields: {"state": (>=1,!=2),"data":{"what":"ever dict"}}
+            the data field can be optional but only used when transits to done
+        """
         ticket = _check_header_ticket(request)
 
         if ticket is not None:
             uname = ticket[1]
             uid = _get_id_and_check_tokens(uname,set(["consumer"]))
 
-            if uid:
+            oid = int(global_id if global_id else -1)
+            input_data = json.loads(str(request.body))
+
+            if uid and (oid > -1):
                 try:
-                    # TODO now this user can submit a job
-                    M.ejob_transit(0,uid,"")
-                    return { "username": uname }
+                    o = M.ejob_transit(oid,uid,input_data)
+                    return o
+
                 except Exception, e:
                     logger.exception(e)
                     return rc.BAD_REQUEST
@@ -120,6 +124,10 @@ class EJobsAPIHandler(BaseHandler):
 
 
     def delete(self, request, global_id=None,  *args, **kwargs):
+        """delete method to transit a ejob to cancelled.
+
+        You have to be the producer to do this
+        """
         ticket = _check_header_ticket(request)
 
         if ticket is not None:
@@ -129,7 +137,6 @@ class EJobsAPIHandler(BaseHandler):
             oid = int(global_id if global_id else -1)
             if uid and (oid > -1):
                 try:
-                    # TODO change to transition
                     o = M.ejob_cancel(oid,uid)
                     return o
                 except Exception, e:

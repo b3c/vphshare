@@ -1,21 +1,8 @@
+__author__ = 'Miguel C.'
 from django.db import models
-from django.contrib.auth.models import User
-from django.shortcuts import render_to_response
 from django.db.models import Q
-from django.http import HttpResponse
-from django.utils import timezone
-from permissions.models import PrincipalRoleRelation
 
-from piston.handler import BaseHandler
-from piston.utils import rc
-
-from masterinterface.scs_auth.auth import authenticate
-from masterinterface.scs_resources.models import Resource
-
-import base64
 import json
-import requests
-from urlparse import urlparse
 import itertools
 
 import logging
@@ -69,12 +56,34 @@ def ejob_submit(owner_id, worker_id, payload={}):
     ej.save()
     return ej
 
-def ejob_transit(job_id, worker_id, next_state):
+def ejob_transit(job_id, worker_id, data):
     # get job and check if same worker
     # ckeck next state exists and transit
-    # return True if success else EJobException is raised
+    # return transited ejob if success else EJobException is raised
     # raise EJobException("error message")
-    pass
+    submited_nstates = set(EJob.ST_STARTED,)
+    started_nstates = set(EJob.ST_COMPLETED, EJob.ST_FAILED)
+
+    ej = EJob.objects.get(Q(id__exact=job_id),Q(worker_id__exact=worker_id))
+
+    next_state = data["state"]
+    output_data = json.dumps(data.get("data",{}))
+    st = ej.state
+    # start or cancel
+    if st == EJob.ST_SUBMITED and next_state in submited_nstates:
+        ej.state = st
+        ej.save()
+
+    # finish or cancel
+    elif st == EJob.ST_STARTED and next_state in started_nstates:
+        ej.state = st
+        ej.output_data = output_data
+        ej.save()
+
+    else:
+        raise EJobException("Wrong next_state")
+
+    return ej
 
 def ejob_cancel(job_id, owner_id):
     # get job and check if same owner
@@ -90,3 +99,9 @@ def ejob_cancel(job_id, owner_id):
 
     return ej
 
+def ejob_get_gte_one(owner_id,worker_id,ejob_id=None):
+    if ejob_id:
+        return EJob.objects.get(Q(id__exact=ejob_id),
+                Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id) )
+    else:
+        return EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id) )
