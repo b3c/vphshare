@@ -44,8 +44,41 @@
 {% endblock %}
 {% block content %}
 
-	{% for ej in ejobs %}
-        <p>{{ ej }}</p>
-	{% endfor %}
+    <div class="row">
+        <div class="span12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>State</th>
+                        <th>auto_run</th>
+                        <th>OwnerID</th>
+                        <th>WorkerID</th>
+                        <th>Message</th>
+                        <th>Creation</th>
+                        <th>Modification</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+            {% for ej in ejobs %}
+                <tr>
+                    <td>{{ ej.id }}</td>
+                    <td>{{ ej.state }}</td>
+                    <td>{{ ej.auto_run }}</td>
+                    <td>{{ ej.owner_id }}</td>
+                    <td>{{ ej.worker_id }}</td>
+                    <td>{{ ej.message }}</td>
+                    <td>{{ ej.creation_timestamp }}</td>
+                    <td>{{ ej.modification_timestamp }}</td>
+                    <td>{{ ej.input_data }}</td>
+                    <td>{{ ej.output_data }}</td>
+                </tr>
+            {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 {% endblock %}
