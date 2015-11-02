@@ -195,8 +195,10 @@ INSTALLED_APPS = (
     #celery
     'djcelery',
     # color picker widget used in the insitutional portal wizard.
-    'paintstore'
+    'paintstore',
 
+    # external jobs
+    'masterinterface.cilab_ejobs'
     ##NEW_APP
 )
 
