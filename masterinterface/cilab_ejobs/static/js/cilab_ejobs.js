@@ -25,7 +25,7 @@
 
           $.ajax({
               type:"POST",
-              url:"/ejobs/",
+              url:"/ejobs/delete/",
               dataType: "json",
               data: {"job_id":self.ejob_id,},
               success: function(data){
