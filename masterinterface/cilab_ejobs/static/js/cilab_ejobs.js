@@ -17,13 +17,43 @@
   }
 
   EJobPlugin.prototype.init = function() {
-	  var self = this;
+      var self = this;
 
       // this has to be the submit function when button pressed
       this.$el.find(".cancel-button").click(function() {
-          system.log(["the id", self.ejob_id])
+          console.log(["the id", self.ejob_id],self.getCookie('csrftoken'));
+
+          $.ajax({
+              type:"POST",
+              url:"/ejobs/",
+              dataType: "json",
+              data: {"job_id":self.ejob_id,},
+              success: function(data){
+                  console.log(["deleted", data]);
+              },
+              fail: function(data){
+                  console.log(["fail", data]);
+              }
+          });
       });
 
+  };
+
+  // using jQuery
+  EJobPlugin.prototype.getCookie = function(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie != '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
   };
 
   EJobPlugin.prototype.destroy = function() {

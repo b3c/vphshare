@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.http import HttpResponse
-#from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from masterinterface.scs.views import page403, page404, page500
 import models as M
@@ -25,3 +25,23 @@ def ejobs_view_get(request):
                     )
         except:
             page403(request)
+
+@login_required
+@csrf_exempt
+def ejobs_view_delete(request):
+    if request.user.is_authenticated() and request.method == 'POST' and 'job_id' in request.POST:
+        try:
+            job_id = request.POST["job_id"]
+            ej = M.ejob_cancel(job_id,request.user.id)
+
+            return HttpResponse(status=200,
+                    content=json.dumps(ej, sort_keys=False),
+                    content_type='application/json')
+        except Exception, e:
+            return HttpResponse(status=500,
+                    content=json.dumps(
+                        { "exception":"%s" % (str(e),) },
+                        sort_keys=False
+                        ),
+                    content_type='application/json')
+
