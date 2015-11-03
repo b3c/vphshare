@@ -10,7 +10,7 @@
 
 {% block javascripts %}
     <!--script type="text/javascript" src="/static/js/dataset.min.js"></script-->
-    <!--script type="text/javascript" src="/static/js/dataset.js"></script-->
+    <script type="text/javascript" src="/static/js/cilab_ejobs.js"></script>
     <script src="/static/js/jquery.dataTables.min.js"></script>
     <script src="/static/js/dataTables.tableTools.min.js"></script>
     <script src="/static/js/dataTables.bootstrap.min.js"></script>
@@ -27,7 +27,7 @@
     <![endif]-->
     <script>
       $(function () {
-
+          $('.ejob').EJobPlugin({});
       }
       );
     </script>
@@ -59,11 +59,12 @@
                         <th>Modification</th>
                         <th>Input</th>
                         <th>Output</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
             {% for ej in ejobs %}
-                <tr>
+            <tr id="{{ ej.id}}" class="ejob">
                     <td>{{ ej.id }}</td>
                     <td>{{ ej.state }}</td>
                     <td>{{ ej.auto_run }}</td>
@@ -74,6 +75,7 @@
                     <td>{{ ej.modification_timestamp }}</td>
                     <td>{{ ej.input_data }}</td>
                     <td>{{ ej.output_data }}</td>
+                    <td><button type="button" class="btn btn-link cancel-button">Cancel</button></td>
                 </tr>
             {% endfor %}
                 </tbody>
