@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     url(r'^api/', include('masterinterface.scs_groups.apiurls')),
     url(r'^api/', include('masterinterface.scs_resources.apiurls')),
     url(r'^api/', include('masterinterface.scs_workspace.apiurls')),
+    url(r'^api/', include('masterinterface.cilab_ejobs.api_urls')),
 
     # default roolback
     url(r'', include('masterinterface.scs.urls')),
@@ -50,6 +51,7 @@ urlpatterns = patterns('',
     url(r'', include('masterinterface.scs_workspace.urls')),
     url(r'', include('masterinterface.datasets.urls')),
     url(r'', include('masterinterface.cyfronet.urls')),
+    url(r'', include('masterinterface.cilab_ejobs.urls')),
 
     url(r'^select2/', include('django_select2.urls')),
 
