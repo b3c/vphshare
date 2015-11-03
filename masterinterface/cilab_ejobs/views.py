@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from masterinterface.scs.views import page403, page404, page500
+from django.forms.models import model_to_dict
 import models as M
 
 import json
@@ -35,7 +36,7 @@ def ejobs_view_delete(request):
             ej = M.ejob_cancel(job_id,request.user.id)
 
             return HttpResponse(status=200,
-                    content=json.dumps(ej, sort_keys=False),
+                    content=json.dumps(model_to_dict(ej), sort_keys=False),
                     content_type='application/json')
         except Exception, e:
             return HttpResponse(status=500,

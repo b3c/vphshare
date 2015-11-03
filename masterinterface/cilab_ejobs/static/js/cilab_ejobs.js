@@ -7,6 +7,7 @@
     this.$el      = $(el);
     this.$el.data(name, this);
 	this.ejob_id = this.$el.attr("id");
+	this.ejob_state = parseInt(this.$el.attr("state"));
 
     this.defaults = {};
 
@@ -20,22 +21,30 @@
       var self = this;
 
       // this has to be the submit function when button pressed
-      this.$el.find(".cancel-button").click(function() {
-          console.log(["the id", self.ejob_id],self.getCookie('csrftoken'));
+      var el = this.$el.find(".cancel-button");
+      if ((self.ejob_state >= 0) && (self.ejob_state <=1)) {
 
-          $.ajax({
-              type:"POST",
-              url:"/ejobs/delete/",
-              dataType: "json",
-              data: {"job_id":self.ejob_id,},
-              success: function(data){
-                  console.log(["deleted", data]);
-              },
-              fail: function(data){
-                  console.log(["fail", data]);
-              }
+          el.click(function() {
+              // console.log(["the id", self.ejob_id],self.getCookie('csrftoken'));
+
+              $.ajax({
+                  type:"POST",
+                  url:"/ejobs/delete/",
+                  dataType: "json",
+                  data: {"job_id":self.ejob_id,},
+                  success: function(data){
+                      self.$el.find(".cancel-button").addClass("disabled");
+                      // console.log(["deleted", data]);
+                  },
+                  fail: function(data){
+                      // console.log(["fail", data]);
+                  }
+              });
           });
-      });
+
+      } else {
+          el.addClass("disabled");
+      }
 
   };
 
