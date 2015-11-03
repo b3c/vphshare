@@ -1,0 +1,86 @@
+{% extends 'datasets/base.html' %}
+{% load scs_extras %}
+{% block stylesheets %}
+    <!--link rel="stylesheet" href="/static/css/dataset.min.css" type="text/css" media="screen" /-->
+    <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css"  type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/dataTables.bootstrap.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/datetimepicker.css" type="text/css" media="all" rel="stylesheet">
+
+ {% endblock %}
+
+{% block javascripts %}
+    <!--script type="text/javascript" src="/static/js/dataset.min.js"></script-->
+    <script type="text/javascript" src="/static/js/cilab_ejobs.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/dataTables.tableTools.min.js"></script>
+    <script src="/static/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/js/jqBootstrapValidation.min.js"></script>
+    <script src="/static/js/ICanHaz.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js"></script>
+{% endblock %}
+
+{% block extrahead %}
+    <script src="/static/jquery-scrolltofixed-min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/static/font-awesome-ie7.min.css">
+    <![endif]-->
+    <script>
+      $(function () {
+          $('.ejob').EJobPlugin({});
+      }
+      );
+    </script>
+{% endblock %}
+{% block content-title %}
+    <ul class="nav nav-pills nav-header-page nav-resources-Dataset">
+      <li data-target="#dashboard-container" data-get="{{ BASE_URL }}/resources/list/Dataset/" class="resource-tab">
+          <a href="" class="Dataset-bkgr">
+            <i class="fa fa-magic"></i>
+            EJobs listing
+          </a>
+      </li>
+    </ul>
+{% endblock %}
+{% block content %}
+
+    <div class="row">
+        <div class="span12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>State</th>
+                        <th>auto_run</th>
+                        <th>OwnerID</th>
+                        <th>WorkerID</th>
+                        <th>Message</th>
+                        <th>Creation</th>
+                        <th>Modification</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+            {% for ej in ejobs %}
+            <tr id="{{ ej.id}}" class="ejob">
+                    <td>{{ ej.id }}</td>
+                    <td>{{ ej.state }}</td>
+                    <td>{{ ej.auto_run }}</td>
+                    <td>{{ ej.owner_id }}</td>
+                    <td>{{ ej.worker_id }}</td>
+                    <td>{{ ej.message }}</td>
+                    <td>{{ ej.creation_timestamp }}</td>
+                    <td>{{ ej.modification_timestamp }}</td>
+                    <td>{{ ej.input_data }}</td>
+                    <td>{{ ej.output_data }}</td>
+                    <td><button type="button" class="btn btn-link cancel-button">Cancel</button></td>
+                </tr>
+            {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
