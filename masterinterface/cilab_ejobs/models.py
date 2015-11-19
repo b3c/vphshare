@@ -23,6 +23,7 @@ class EJob(models.Model):
     ST_CANCELLED = 2
     ST_COMPLETED = 3
     ST_FAILED = 4
+    ST_CURATED = 5
     FSM_STATES = (
         (ST_SUBMITED,"Submited"),
         (ST_STARTED,"Started"),
@@ -48,9 +49,11 @@ class EJob(models.Model):
     auto_run = models.BooleanField(default=False)
 
 def ejob_submit(owner_id, worker_id, payload={}):
-    # create object
-    # return True if success else EJobException is raised
-    # raise EJobException("error message")
+    """"create object
+
+    return True if success else EJobException is raised
+    raise EJobException("error message")
+    """
     if worker_id == -1:
         raise EJobException("failed to create ejob with worker_id -1")
     ej = EJob(message=payload.get("message",""),
@@ -61,12 +64,15 @@ def ejob_submit(owner_id, worker_id, payload={}):
     return ej
 
 def ejob_transit(job_id, worker_id, data):
-    # get job and check if same worker
-    # ckeck next state exists and transit
-    # return transited ejob if success else EJobException is raised
-    # raise EJobException("error message")
+    """get job and check if same worker
+
+    ckeck next state exists and transit
+    return transited ejob if success else EJobException is raised
+    raise EJobException("error message")
+    """
     submited_nstates = set([EJob.ST_STARTED])
     started_nstates = set([EJob.ST_COMPLETED, EJob.ST_FAILED])
+    completed_nstates = set([EJob.ST_FAILED, EJob.ST_CURATED])
 
     ej = EJob.objects.get(Q(id__exact=job_id),Q(worker_id__exact=worker_id))
 
@@ -84,16 +90,23 @@ def ejob_transit(job_id, worker_id, data):
         ej.output_data = output_data
         ej.save()
 
+    elif st == EJob.ST_COMPLETED and next_state in completed_nstates:
+        ej.state = next_state
+        ej.output_data = output_data
+        ej.save()
+
     else:
         raise EJobException("Wrong next_state")
 
     return ej
 
 def ejob_cancel(job_id, owner_id):
-    # get job and check if same owner
-    # transit to cancel state
-    # return True if success else EJobException is raised
-    # raise EJobException("error message")
+    """get job and check if same owner
+
+    transit to cancel state
+    return True if success else EJobException is raised
+    raise EJobException("error message")
+    """
     ej = EJob.objects.get(Q(id__exact=job_id),Q(owner_id__exact=owner_id))
 
     st = ej.state
@@ -108,4 +121,4 @@ def ejob_get_gte_one(owner_id,worker_id,ejob_id=None):
         return model_to_dict(EJob.objects.get(Q(id__exact=ejob_id),
                                               Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id) ), include=['id'])
     else:
-        return [ model_to_dict(o,include=['id']) for o in EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)) )
+        return [ model_to_dict(o,include=['id']) for o in EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)) ]
