@@ -52,8 +52,8 @@
                         <th>ID</th>
                         <th>State</th>
                         <th>auto_run</th>
-                        <th>OwnerID</th>
-                        <th>WorkerID</th>
+                        <th>Owner</th>
+                        <th>Worker</th>
                         <th>Message</th>
                         <th>Creation</th>
                         <th>Modification</th>
@@ -68,8 +68,8 @@
                     <td>{{ ej.id }}</td>
                     <td>{{ ej.state }}</td>
                     <td>{{ ej.auto_run }}</td>
-                    <td>{{ ej.owner_id }}</td>
-                    <td>{{ ej.worker_id }}</td>
+                    <td>{{ ej.owner_id }} - {{ej.owner_name}}</td>
+                    <td>{{ ej.worker_id }} - {{ej.worker_name}}</td>
                     <td>{{ ej.message }}</td>
                     <td>{{ ej.creation_timestamp }}</td>
                     <td>{{ ej.modification_timestamp }}</td>

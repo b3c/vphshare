@@ -14,8 +14,9 @@ class Command(BaseCommand):
                 days = int(pass_days)
                 date_end = timezone.now() - timedelta(days=days)
                 ejobs = EJob.objects.filter(
-                        Q(state__gt=1),
-                        Q(modification_timestamp__lte=date_end) )
+                    Q(state__gt=1),
+                    ~Q(state=3),
+                    Q(modification_timestamp__lte=date_end) )
                 for ejob in ejobs:
                     self.stdout.write('ob: %s\n' % str(ejob.id))
                     ejob.delete()
