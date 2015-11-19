@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from masterinterface.scs_auth import models as scs_models
+import copy
 
 import json
 import itertools
@@ -126,7 +127,14 @@ def ejob_cancel(job_id, owner_id):
 
 def ejob_get_gte_one(owner_id,worker_id,ejob_id=None):
     if ejob_id:
-        return model_to_dict(EJob.objects.get(Q(id__exact=ejob_id),
+        return _remove_from_dict(EJob.objects.get(Q(id__exact=ejob_id),
                                               Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)), exclude=["_state"] )
     else:
-        return [ model_to_dict(o,exclude=["_state"]) for o in EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)) ]
+        return [ _remove_from_dict(o,exclude=["_state"]) for o in EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)) ]
+
+def _remove_from_dict(obj,exclude):
+    """remove fields from obj"""
+    d = copy.deepcopy(obj.__dict__)
+    for el in exclude:
+        del d[el]
+    return d
