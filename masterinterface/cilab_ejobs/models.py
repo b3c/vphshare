@@ -48,7 +48,7 @@ class EJob(models.Model):
     owner_id = models.BigIntegerField()
     worker_id = models.BigIntegerField()
     owner_name = models.CharField(max_length=128,default=False)
-    worker_name = models.BigIntegerField(max_length=128,default=False)
+    worker_name = models.CharField(max_length=128,default=False)
     auto_run = models.BooleanField(default=False)
 
 def ejob_submit(owner_id, worker_id, payload={}):
