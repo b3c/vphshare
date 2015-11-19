@@ -127,6 +127,6 @@ def ejob_cancel(job_id, owner_id):
 def ejob_get_gte_one(owner_id,worker_id,ejob_id=None):
     if ejob_id:
         return model_to_dict(EJob.objects.get(Q(id__exact=ejob_id),
-                                              Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id), exclude=["_state"] ))
+                                              Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)), exclude=["_state"] )
     else:
         return [ model_to_dict(o,exclude=["_state"]) for o in EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)) ]
