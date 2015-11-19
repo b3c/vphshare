@@ -2,6 +2,7 @@ __author__ = 'Miguel C.'
 from django.db import models
 from django.db.models import Q
 from django.forms.models import model_to_dict
+from masterinterface.scs_auth import models as scs_models
 
 import json
 import itertools
@@ -46,6 +47,8 @@ class EJob(models.Model):
     output_data = models.TextField(max_length=4096,default="")
     owner_id = models.BigIntegerField()
     worker_id = models.BigIntegerField()
+    owner_name = models.CharField(max_length=128,default=False)
+    worker_name = models.BigIntegerField(max_length=128,default=False)
     auto_run = models.BooleanField(default=False)
 
 def ejob_submit(owner_id, worker_id, payload={}):
@@ -56,10 +59,15 @@ def ejob_submit(owner_id, worker_id, payload={}):
     """
     if worker_id == -1:
         raise EJobException("failed to create ejob with worker_id -1")
+
+    oname = scs_models.User.objects.get(id=owner_id).username
+    wname = scs_models.User.objects.get(id=worker_id).username
+
     ej = EJob(message=payload.get("message",""),
             input_data=json.dumps(payload.get("data",{})),
             auto_run=payload.get("auto_run",False),
-            owner_id=owner_id,worker_id=worker_id)
+              owner_id=owner_id,worker_id=worker_id,
+              owner_name=oname,worker_name=wname)
     ej.save()
     return ej
 
