@@ -1,6 +1,7 @@
 __author__ = 'Miguel C.'
 from django.db import models
 from django.db.models import Q
+from django.forms.models import model_to_dict
 
 import json
 import itertools
@@ -28,6 +29,7 @@ class EJob(models.Model):
         (ST_CANCELLED,"Cancelled"),
         (ST_COMPLETED,"Completed"),
         (ST_FAILED,"Failed"),
+        (ST_CURATED,"Curated"),
     )
 
     # given by default using djando.models
@@ -103,7 +105,7 @@ def ejob_cancel(job_id, owner_id):
 
 def ejob_get_gte_one(owner_id,worker_id,ejob_id=None):
     if ejob_id:
-        return EJob.objects.get(Q(id__exact=ejob_id),
-                Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id) )
+        return model_to_dict(EJob.objects.get(Q(id__exact=ejob_id),
+                                              Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id) ), include=['id'])
     else:
-        return EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id) )
+        return [ model_to_dict(o,include=['id']) for o in EJob.objects.filter(Q(owner_id__exact=owner_id) | Q(worker_id__exact=worker_id)) )
