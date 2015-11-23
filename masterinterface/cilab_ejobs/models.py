@@ -80,7 +80,7 @@ def ejob_transit(job_id, worker_id, data):
     raise EJobException("error message")
     """
     submited_nstates = set([EJob.ST_STARTED])
-    started_nstates = set([EJob.ST_COMPLETED, EJob.ST_FAILED])
+    started_nstates = set([EJob.ST_STARTED, EJob.ST_COMPLETED, EJob.ST_FAILED])
     completed_nstates = set([EJob.ST_FAILED, EJob.ST_CURATED])
 
     ej = EJob.objects.get(Q(id__exact=job_id),Q(worker_id__exact=worker_id))
@@ -91,6 +91,7 @@ def ejob_transit(job_id, worker_id, data):
     # start or cancel
     if st == EJob.ST_SUBMITED and next_state in submited_nstates:
         ej.state = next_state
+        ej.output_data = output_data
         ej.save()
 
     # finish or cancel
