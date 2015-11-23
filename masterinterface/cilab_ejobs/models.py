@@ -85,7 +85,7 @@ def ejob_transit(job_id, worker_id, data):
 
     ej = EJob.objects.get(Q(id__exact=job_id),Q(worker_id__exact=worker_id))
 
-    data_dict = json.loads( {} if not ej.output_data else ej.output_data ) 
+    data_dict = json.loads( '{}' if not ej.output_data else ej.output_data ) 
     next_state = data["state"]
     data_dict = data_dict.update(data.get("data",{}))
     output_data = json.dumps(data_dict)
