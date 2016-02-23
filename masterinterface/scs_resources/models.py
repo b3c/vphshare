@@ -11,6 +11,8 @@ from django.db.models import Avg
 from django.core.cache import cache
 from django.conf import settings
 
+from raven.contrib.django.raven_compat.models import client
+
 from masterinterface.atos.metadata_connector_json import update_resource_metadata, get_resource_metadata, delete_resource_metadata, get_resources_metadata_by_list, search_resource
 from config import request_accept_transition, resource_reader, ResourceWorkflow, ResourceRequestWorkflow, resource_owner
 from masterinterface.scs_groups.models import VPHShareSmartGroup, Institution, Study
@@ -277,7 +279,6 @@ class Resource(models.Model):
                     self.metadata['dbname'] = parsed_endpoint.path[1:]
             return True
         except Exception,e:
-            from raven.contrib.django.raven_compat.models import client
             client.captureException()
             return False
 
