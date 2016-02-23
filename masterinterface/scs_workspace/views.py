@@ -51,7 +51,7 @@ def create(request):
                     try:
                         tavernaIO = Taverna2WorkflowIO()
                         tavernaIO.loadInputsFromCSVString(
-                            taverna_execution.baclava)
+                            taverna_execution.baclava.replace(r'\r', ''))
 
                     # fail to load from csv
                     except Exception:
