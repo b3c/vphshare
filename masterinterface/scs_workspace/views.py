@@ -1,4 +1,3 @@
-import os
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -12,13 +11,16 @@ from django.contrib.auth.decorators import login_required
 import json
 from masterinterface.scs_workspace.Taverna2WorkflowIO import Taverna2WorkflowIO
 from masterinterface.datasets.models import DatasetQuery
+from raven.contrib.django.raven_compat.models import client
 
-_CUSTOM_HEADERS = ["CustomValueFromInput","WorkflowOutFolderPath"]
+_CUSTOM_HEADERS = ["CustomValueFromInput", "WorkflowOutFolderPath"]
+
 
 @login_required
 def workspace(request):
-
-    executions = TavernaExecution.objects.filter(owner=request.user, ticket=request.ticket).order_by('-creation_datetime')
+    executions = TavernaExecution.objects.filter(
+        owner=request.user,
+        ticket=request.ticket).order_by('-creation_datetime')
 
     return render_to_response(
         'scs_workspace/workspace.html',
@@ -26,23 +28,44 @@ def workspace(request):
         RequestContext(request)
     )
 
+
 @login_required
 def create(request):
-    if request.method == 'POST' and request.POST.get('workflowId',None):
+    if request.method == 'POST' and request.POST.get('workflowId', None):
         form = TavernaExecutionForm()
         workflow = Workflow.objects.get(global_id=request.POST['workflowId'])
         taverna_execution = form.save(commit=False)
         taverna_execution.title = request.POST['title']
         taverna_execution.t2flow = get_file_data(workflow.t2flow)
 
-        if request.POST.get('default_inputs','off') == 'on':
+        if request.POST.get('default_inputs', 'off') == 'on':
             if request.POST['input_definition_tab'] == 'baclava':
-                taverna_execution.baclava = get_file_data(request.FILES['inputFile'])
+
+                # get file from post request
+                taverna_execution.baclava = get_file_data(
+                    request.FILES['inputFile'])
+
+                # if filename is a csv file we convert to baclava
+                fname = request.FILES['inputFile'].name
+                if (fname.lower().endswith(".csv")):
+                    try:
+                        tavernaIO = Taverna2WorkflowIO()
+                        tavernaIO.loadInputsFromCSVString(
+                            taverna_execution.baclava)
+
+                    # fail to load from csv
+                    except Exception:
+                        client.captureException()
+
+                    # the xml baclava file
+                    taverna_execution.baclava = tavernaIO.inputsToBaclava()
 
             if request.POST['input_definition_tab'] == 'dataset':
-                dataset_query = DatasetQuery.objects.get(id=request.POST['dataset_queryid'])
+                dataset_query = DatasetQuery.objects.get(
+                    id=request.POST['dataset_queryid'])
                 tavernaIO = Taverna2WorkflowIO()
                 tavernaIO.loadFromT2FLOWString(taverna_execution.t2flow)
+                tavernaIO.loadInputsFromCSVFile
 
                 input_ports = tavernaIO.getInputPorts()
                 results = dataset_query.get_results(request.ticket)
@@ -65,7 +88,7 @@ def create(request):
                         for row in results:
                             values.append(row[index])
 
-                    tavernaIO.setInputPortValues(input,values)
+                    tavernaIO.setInputPortValues(input, values)
                     idx += 1
 
                 taverna_execution.baclava = tavernaIO.inputsToBaclava()
