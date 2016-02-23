@@ -122,10 +122,11 @@ class Taverna2WorkflowIO(object):
             for i in range(len(self.inputsDic)):
                self.inputsDic[ inputPorts[i] ] = []
             for numLine in range(1,len(lines)):
-                vals = lines[numLine].split(',')
-                for i in range(len(inputPorts)):
-                    if vals[i]!='':
-                        self.inputsDic[ inputPorts[i] ].append(vals[i])
+                if len(lines[numLine])>0:
+                    vals = lines[numLine].split(',')
+                    for i in range(len(inputPorts)):
+                        if vals[i]!='':
+                            self.inputsDic[ inputPorts[i] ].append(vals[i])
         except Exception as e:
             raise Exception('Error while acquiring inputs from CSV String: ' + e.message)
 
@@ -183,8 +184,8 @@ class Taverna2WorkflowIO(object):
                             # take the input file string, decode it, insert the new folder name on it an modify the input definition XML
                             elementData = dataElement['b:dataElementData']
                             decodedString = base64.b64decode(elementData)
-                            print "decodedString", decodedString
-                            print "singlePort", singlePort
+                            # print "decodedString", decodedString
+                            # print "singlePort", singlePort
                             port = None
                             if singlePort!=None:
                                 port = singlePort
