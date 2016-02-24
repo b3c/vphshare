@@ -16,6 +16,6 @@ if __name__ == "__main__":
         with open(sys.argv[1], 'r') as f:
             tio = Taverna2WorkflowIO()
             buff = get_file_data(f)
-            tio.loadInputsFromCSVString(buff.replace(r'\r', ''))
+            tio.loadInputsFromCSVString(buff)
             with open(sys.argv[1] + ".xml", 'w') as fout:
                 fout.write(tio.inputsToBaclava())
