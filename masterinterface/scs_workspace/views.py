@@ -53,12 +53,12 @@ def create(request):
                         tavernaIO.loadInputsFromCSVString(
                             taverna_execution.baclava.replace(r'\r', ''))
 
+                        # the xml baclava file
+                        taverna_execution.baclava = tavernaIO.inputsToBaclava()
+
                     # fail to load from csv
                     except Exception:
                         client.captureException()
-
-                    # the xml baclava file
-                    taverna_execution.baclava = tavernaIO.inputsToBaclava()
 
             if request.POST['input_definition_tab'] == 'dataset':
                 dataset_query = DatasetQuery.objects.get(
