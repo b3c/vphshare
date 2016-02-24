@@ -49,9 +49,13 @@ def create(request):
                 fname = request.FILES['inputFile'].name
                 if (fname.lower().endswith(".csv")):
                     try:
+                        # get file from post request
+                        taverna_execution.baclava = _read_csv_file(
+                            request.FILES['inputFile'])
+
                         tavernaIO = Taverna2WorkflowIO()
                         tavernaIO.loadInputsFromCSVString(
-                            taverna_execution.baclava.replace(r'\r', ''))
+                            taverna_execution.baclava)
 
                         # the xml baclava file
                         taverna_execution.baclava = tavernaIO.inputsToBaclava()
@@ -185,3 +189,8 @@ def getExecutionInfo(request):
             results.append(getattr(taverna_execution, key))
         return HttpResponse(content=json.dumps(results))
     return HttpResponse(status=403)
+
+
+def _read_csv_file(f):
+    buff = f.read().replace('\r', '')
+    return buff
